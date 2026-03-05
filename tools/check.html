@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>每日备考复盘</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #faf8f4;
+    --card: #ffffff;
+    --ink: #2c2416;
+    --ink-light: #6b5f4e;
+    --ink-faint: #b5a99a;
+    --accent: #c17f3a;
+    --accent-light: #f0e6d3;
+    --accent-pale: #fdf6ec;
+    --red: #c0392b;
+    --green: #27735a;
+    --border: #e8e0d4;
+    --shadow: 0 2px 20px rgba(44,36,22,0.07);
+    --radius: 16px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans SC', sans-serif;
+    background: var(--bg);
+    color: var(--ink);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  /* Header */
+  .header {
+    background: var(--ink);
+    color: #fff;
+    padding: 28px 24px 24px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .header::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+      45deg,
+      transparent,
+      transparent 20px,
+      rgba(255,255,255,0.02) 20px,
+      rgba(255,255,255,0.02) 21px
+    );
+  }
+  .header-date {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 13px;
+    color: rgba(255,255,255,0.55);
+    letter-spacing: 2px;
+    margin-bottom: 6px;
+  }
+  .header-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 22px;
+    font-weight: 500;
+    color: #fff;
+    letter-spacing: 1px;
+  }
+  .countdown-badge {
+    display: inline-block;
+    margin-top: 10px;
+    background: var(--accent);
+    color: #fff;
+    font-size: 12px;
+    padding: 4px 14px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+  }
+
+  /* Progress bar */
+  .progress-wrap {
+    padding: 16px 20px 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 12px;
+  }
+  .progress-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: var(--ink-faint);
+    margin-bottom: 6px;
+  }
+  .progress-bar-bg {
+    height: 4px;
+    background: var(--border);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: var(--accent);
+    border-radius: 4px;
+    transition: width 0.4s ease;
+    width: 0%;
+  }
+
+  /* Sections */
+  .sections {
+    padding: 20px 16px;
+    max-width: 680px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .section-card {
+    background: var(--card);
+    border-radius: var(--radius);
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+  }
+
+  .section-header {
+    padding: 16px 20px 12px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-icon {
+    font-size: 18px;
+  }
+  .section-title {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+  }
+  .section-body {
+    padding: 16px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  /* Question */
+  .q-label {
+    font-size: 13px;
+    color: var(--ink-light);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .q-label .req { color: var(--accent); font-size: 10px; }
+
+  /* Emoji Mood Picker */
+  .mood-picker {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .mood-btn {
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    border: 2px solid var(--border);
+    background: var(--bg);
+    font-size: 24px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    position: relative;
+  }
+  .mood-btn:hover { transform: scale(1.08); border-color: var(--accent-light); }
+  .mood-btn.selected {
+    border-color: var(--accent);
+    background: var(--accent-pale);
+    box-shadow: 0 0 0 3px rgba(193,127,58,0.15);
+    transform: scale(1.05);
+  }
+  .mood-label {
+    font-size: 9px;
+    color: var(--ink-faint);
+    position: absolute;
+    bottom: -16px;
+    left: 50%;
+    transform: translateX(-50%);
+    white-space: nowrap;
+  }
+  .mood-wrap { position: relative; padding-bottom: 16px; }
+
+  /* Star Rating */
+  .star-row {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .star {
+    font-size: 28px;
+    cursor: pointer;
+    color: var(--border);
+    transition: all 0.1s;
+    line-height: 1;
+  }
+  .star.on { color: #f0a500; }
+  .star:hover { transform: scale(1.15); }
+
+  /* Stress slider */
+  .slider-wrap { display: flex; align-items: center; gap: 12px; }
+  .slider-wrap input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 6px;
+    border-radius: 3px;
+    background: linear-gradient(to right, var(--green) 0%, #f0a500 50%, var(--red) 100%);
+    outline: none;
+  }
+  .slider-wrap input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--card);
+    border: 2.5px solid var(--accent);
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+  }
+  .slider-val {
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 24px;
+    text-align: center;
+  }
+  .slider-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10px;
+    color: var(--ink-faint);
+    margin-top: 4px;
+  }
+
+  /* Text input */
+  .text-input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-size: 13px;
+    color: var(--ink);
+    background: var(--bg);
+    outline: none;
+    transition: border-color 0.2s;
+    resize: none;
+  }
+  .text-input:focus { border-color: var(--accent); background: var(--card); }
+  .text-input::placeholder { color: var(--ink-faint); }
+
+  /* Hour inputs */
+  .hour-row {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .hour-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 8px 12px;
+    flex: 1;
+    min-width: 90px;
+  }
+  .hour-item label { font-size: 12px; color: var(--ink-light); white-space: nowrap; }
+  .hour-item input {
+    width: 38px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    font-weight: 500;
+    color: var(--accent);
+    text-align: center;
+    outline: none;
+  }
+  .hour-item .unit { font-size: 11px; color: var(--ink-faint); }
+
+  /* Quick choice chips */
+  .chips { display: flex; flex-wrap: wrap; gap: 8px; }
+  .chip {
+    padding: 7px 14px;
+    border-radius: 20px;
+    border: 1.5px solid var(--border);
+    background: var(--bg);
+    font-size: 12px;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .chip:hover { border-color: var(--accent); color: var(--accent); }
+  .chip.selected {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+
+  /* Tasks */
+  .task-list { display: flex; flex-direction: column; gap: 8px; }
+  .task-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+    transition: border-color 0.2s;
+  }
+  .task-item.done { border-color: var(--green); background: #f0faf6; }
+  .task-check {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    border: 2px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .task-check.checked { background: var(--green); border-color: var(--green); color: #fff; font-size: 11px; }
+  .task-text { font-size: 13px; flex: 1; outline: none; border: none; background: transparent; color: var(--ink); font-family: inherit; }
+
+  /* Distraction table */
+  .distract-list { display: flex; flex-direction: column; gap: 10px; }
+  .distract-item {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    transition: border-color 0.2s;
+  }
+  .distract-item.active { border-color: #e07b5a; background: #fff8f5; }
+  .distract-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .distract-name { font-size: 13px; font-weight: 500; color: var(--ink); }
+  .distract-toggle {
+    display: flex;
+    gap: 6px;
+  }
+  .d-chip {
+    padding: 4px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    border: 1.5px solid var(--border);
+    background: transparent;
+    color: var(--ink-light);
+    cursor: pointer;
+    transition: all 0.12s;
+  }
+  .d-chip.on { background: #e07b5a; border-color: #e07b5a; color: #fff; }
+  .distract-detail {
+    display: none;
+    gap: 8px;
+    flex-direction: column;
+    margin-top: 8px;
+  }
+  .distract-detail.show { display: flex; }
+  .distract-detail input {
+    width: 100%;
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    padding: 7px 10px;
+    font-size: 12px;
+    font-family: inherit;
+    color: var(--ink);
+    background: var(--card);
+    outline: none;
+  }
+
+  /* Review pairs */
+  .review-pair {
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .review-tag {
+    font-size: 11px;
+    color: var(--ink-faint);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+
+  /* Tomorrow tasks */
+  .tomorrow-task {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--bg);
+    border: 1.5px dashed var(--border);
+    border-radius: 10px;
+    padding: 10px 12px;
+  }
+  .tomorrow-task::before {
+    content: '→';
+    color: var(--accent);
+    font-size: 13px;
+    flex-shrink: 0;
+  }
+  .tomorrow-task input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 13px;
+    color: var(--ink);
+    font-family: inherit;
+    outline: none;
+  }
+
+  /* Sleep row */
+  .sleep-row {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .sleep-item {
+    flex: 1;
+    min-width: 130px;
+    background: var(--bg);
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    padding: 10px 14px;
+  }
+  .sleep-item label { font-size: 11px; color: var(--ink-faint); display: block; margin-bottom: 4px; }
+  .sleep-item input {
+    width: 100%;
+    border: none;
+    background: transparent;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--ink);
+    font-family: inherit;
+    outline: none;
+  }
+
+  /* Submit area */
+  .submit-area {
+    max-width: 680px;
+    margin: 0 auto;
+    padding: 0 16px 20px;
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .btn {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-family: 'Noto Sans SC', sans-serif;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: all 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .btn-primary {
+    flex: 1;
+    background: var(--ink);
+    color: #fff;
+  }
+  .btn-primary:hover { background: #3d3425; transform: translateY(-1px); box-shadow: 0 4px 14px rgba(44,36,22,0.2); }
+  .btn-download {
+    background: var(--border);
+    color: var(--ink-faint);
+    pointer-events: none;
+    cursor: not-allowed;
+    font-size: 13px;
+    padding: 14px 20px;
+    flex-shrink: 0;
+  }
+  .btn-download.active {
+    background: var(--accent-light);
+    color: var(--accent);
+    pointer-events: auto;
+    cursor: pointer;
+    border: 1.5px solid var(--accent);
+  }
+  .btn-download.active:hover { background: var(--accent); color: #fff; }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--ink);
+    color: #fff;
+    padding: 12px 22px;
+    border-radius: 12px;
+    font-size: 13px;
+    z-index: 100;
+    transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+    white-space: nowrap;
+    max-width: 90vw;
+    text-align: center;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Divider */
+  .q-divider { height: 1px; background: var(--border); margin: 2px 0; }
+
+  /* Confirm modal */
+  .modal-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(44,36,22,0.45);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+  }
+  .modal-overlay.show { display: flex; }
+  .modal-box {
+    background: var(--card);
+    border-radius: 20px;
+    padding: 28px 24px;
+    max-width: 320px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(44,36,22,0.2);
+  }
+  .modal-icon { font-size: 36px; margin-bottom: 12px; }
+  .modal-title { font-family: 'Noto Serif SC', serif; font-size: 17px; font-weight: 500; margin-bottom: 8px; }
+  .modal-text { font-size: 13px; color: var(--ink-light); line-height: 1.6; margin-bottom: 20px; }
+  .modal-btns { display: flex; gap: 10px; }
+  .modal-btns .btn { flex: 1; padding: 12px; font-size: 13px; }
+  .btn-cancel { background: var(--bg); color: var(--ink-light); border: 1.5px solid var(--border); }
+  .btn-confirm { background: var(--accent); color: #fff; }
+
+  @media (max-width: 480px) {
+    .header-title { font-size: 18px; }
+    .section-body { padding: 14px 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-date" id="headerDate">加载中…</div>
+  <div class="header-title">每日备考复盘</div>
+  <div class="countdown-badge" id="countdownBadge">距考试 — 天</div>
+</div>
+
+<div class="progress-wrap">
+  <div class="progress-labels">
+    <span id="progressText">0 / 8 项已完成</span>
+    <span id="progressPct">0%</span>
+  </div>
+  <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill"></div></div>
+</div>
+
+<div class="sections">
+
+  <!-- 1. 基础信息 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📋</span>
+      <span class="section-title">基础信息</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">考试名称 <span class="req">必填</span></div>
+        <input class="text-input" id="examName" type="text" placeholder="例：考研数学 / 英语 / 政治…" style="height:42px;">
+      </div>
+      <div>
+        <div class="q-label">今日学习时长</div>
+        <div class="hour-row">
+          <div class="hour-item"><label>计划</label><input type="number" id="planHour" min="0" max="24" placeholder="0"><span class="unit">h</span></div>
+          <div class="hour-item"><label>实际</label><input type="number" id="realHour" min="0" max="24" placeholder="0"><span class="unit">h</span></div>
+          <div class="hour-item"><label>专注</label><input type="number" id="focusHour" min="0" max="24" placeholder="0"><span class="unit">h</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. 状态速览 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🌡️</span>
+      <span class="section-title">今日状态</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">心情怎么样？<span class="req">必填</span></div>
+        <div class="mood-picker">
+          <div class="mood-wrap"><button class="mood-btn" data-val="非常好" onclick="selectMood(this)">🥳</button><div class="mood-label">超棒</div></div>
+          <div class="mood-wrap"><button class="mood-btn" data-val="不错" onclick="selectMood(this)">😊</button><div class="mood-label">不错</div></div>
+          <div class="mood-wrap"><button class="mood-btn" data-val="一般" onclick="selectMood(this)">😐</button><div class="mood-label">一般</div></div>
+          <div class="mood-wrap"><button class="mood-btn" data-val="有点低落" onclick="selectMood(this)">😔</button><div class="mood-label">低落</div></div>
+          <div class="mood-wrap"><button class="mood-btn" data-val="很差" onclick="selectMood(this)">😫</button><div class="mood-label">很差</div></div>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">整体学习状态 <span class="req">必填</span></div>
+        <div class="star-row" id="starRow">
+          <span class="star" data-v="1" onclick="selectStar(1)">☆</span>
+          <span class="star" data-v="2" onclick="selectStar(2)">☆</span>
+          <span class="star" data-v="3" onclick="selectStar(3)">☆</span>
+          <span class="star" data-v="4" onclick="selectStar(4)">☆</span>
+          <span class="star" data-v="5" onclick="selectStar(5)">☆</span>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">压力值 <span class="req">必填</span></div>
+        <div class="slider-wrap">
+          <input type="range" id="stressSlider" min="1" max="10" value="5" oninput="document.getElementById('stressVal').textContent=this.value; updateProgress()">
+          <div class="slider-val" id="stressVal">5</div>
+        </div>
+        <div class="slider-labels"><span>🌿 轻松</span><span>🔥 高压</span></div>
+      </div>
+      <div>
+        <div class="q-label">一句话总结今天 <span class="req">必填</span></div>
+        <input class="text-input" id="summary" type="text" placeholder="今天的关键词是…" style="height:42px;" oninput="updateProgress()">
+      </div>
+    </div>
+  </div>
+
+  <!-- 3. 学习记录 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">📚</span>
+      <span class="section-title">学习记录</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">今日主攻内容 <span class="req">必填</span></div>
+        <input class="text-input" id="studyContent" type="text" placeholder="例：线性代数 第三章 / 英语阅读 20篇" style="height:42px;" oninput="updateProgress()">
+      </div>
+      <div>
+        <div class="q-label">整体进度感觉</div>
+        <div class="chips" id="progressChips">
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">超预期完成 🚀</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">按计划完成 ✅</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">完成七八成 📈</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">完成一半 🌓</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">不太理想 📉</div>
+        </div>
+        <input type="hidden" id="progressVal">
+      </div>
+      <div>
+        <div class="q-label">今日任务打卡 <span class="req">必填</span></div>
+        <div class="task-list" id="taskList">
+          <div class="task-item" id="task0">
+            <div class="task-check" onclick="toggleTask(0)">✓</div>
+            <input class="task-text" placeholder="任务 1（输入内容，点左侧打卡）" oninput="updateProgress()" data-idx="0">
+          </div>
+          <div class="task-item" id="task1">
+            <div class="task-check" onclick="toggleTask(1)">✓</div>
+            <input class="task-text" placeholder="任务 2" data-idx="1">
+          </div>
+          <div class="task-item" id="task2">
+            <div class="task-check" onclick="toggleTask(2)">✓</div>
+            <input class="task-text" placeholder="任务 3（可留空）" data-idx="2">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 4. 干扰源 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">⚠️</span>
+      <span class="section-title">干扰源记录</span>
+    </div>
+    <div class="section-body">
+      <div class="q-label" style="margin-bottom:0">今天被什么打扰了？点击遇到的干扰源 <span class="req">必选</span></div>
+      <div class="distract-list">
+        <div class="distract-item" id="d0">
+          <div class="distract-top">
+            <span class="distract-name">📱 手机 / 社交软件</span>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(0,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(0,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(0,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(0,'严重')">严重</button>
+            </div>
+          </div>
+          <div class="distract-detail" id="dd0">
+            <input placeholder="如何应对？（可选）">
+          </div>
+        </div>
+        <div class="distract-item" id="d1">
+          <div class="distract-top">
+            <span class="distract-name">😴 疲劳 / 犯困</span>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(1,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(1,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(1,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(1,'严重')">严重</button>
+            </div>
+          </div>
+          <div class="distract-detail" id="dd1">
+            <input placeholder="如何应对？（可选）">
+          </div>
+        </div>
+        <div class="distract-item" id="d2">
+          <div class="distract-top">
+            <span class="distract-name">🔊 环境噪音</span>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(2,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(2,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(2,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(2,'严重')">严重</button>
+            </div>
+          </div>
+          <div class="distract-detail" id="dd2">
+            <input placeholder="如何应对？（可选）">
+          </div>
+        </div>
+        <div class="distract-item" id="d3">
+          <div class="distract-top">
+            <span class="distract-name">😰 情绪 / 焦虑</span>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(3,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(3,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(3,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(3,'严重')">严重</button>
+            </div>
+          </div>
+          <div class="distract-detail" id="dd3">
+            <input placeholder="如何应对？（可选）">
+          </div>
+        </div>
+        <div class="distract-item" id="d4">
+          <div class="distract-top">
+            <span class="distract-name">🔖 其他</span>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(4,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(4,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(4,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(4,'严重')">严重</button>
+            </div>
+          </div>
+          <div class="distract-detail" id="dd4">
+            <input placeholder="具体是什么？（可选）">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5. 复盘 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🔍</span>
+      <span class="section-title">复盘总结</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">✅ 今天做得最好的一件事 <span class="req">必填</span></div>
+        <div class="review-pair">
+          <input class="text-input" id="keepGood" type="text" placeholder="是什么…" style="height:38px;" oninput="updateProgress()">
+          <div class="review-tag">💡 因为</div>
+          <input class="text-input" id="keepWhy" type="text" placeholder="背后的原因…" style="height:38px;">
+        </div>
+      </div>
+      <div>
+        <div class="q-label">🔧 需要改进的一个问题 <span class="req">必填</span></div>
+        <div class="review-pair">
+          <input class="text-input" id="improveProblem" type="text" placeholder="问题是…" style="height:38px;" oninput="updateProgress()">
+          <div class="review-tag">🗓️ 明日如何改善</div>
+          <input class="text-input" id="improvePlan" type="text" placeholder="具体的改善方案…" style="height:38px;">
+        </div>
+      </div>
+      <div>
+        <div class="q-label">今天的状态主要受什么影响？</div>
+        <div class="chips" id="stateChips">
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">睡眠质量 😴</div>
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">饮食状态 🍱</div>
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">目标清晰度 🎯</div>
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">学习环境 🏠</div>
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">心理压力 💭</div>
+          <div class="chip" onclick="selectChip(this,'stateChips','stateVal')">外部干扰 📳</div>
+        </div>
+        <input type="hidden" id="stateVal">
+      </div>
+    </div>
+  </div>
+
+  <!-- 6. 今日收获 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">✨</span>
+      <span class="section-title">今日收获</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">今天最重要的知识点/突破 <span class="req">必填</span></div>
+        <textarea class="text-input" id="knowledge" rows="2" placeholder="写下让你印象最深的一个点…" oninput="updateProgress()"></textarea>
+      </div>
+      <div>
+        <div class="q-label">今天的感悟</div>
+        <textarea class="text-input" id="insight" rows="2" placeholder="关于学习、状态、方法的一点想法…"></textarea>
+      </div>
+      <div>
+        <div class="q-label">给自己说一句话</div>
+        <input class="text-input" id="selfTalk" type="text" placeholder="明天的自己，加油 💪" style="height:42px;">
+      </div>
+    </div>
+  </div>
+
+  <!-- 7. 明日计划 -->
+  <div class="section-card">
+    <div class="section-header">
+      <span class="section-icon">🌅</span>
+      <span class="section-title">明日计划</span>
+    </div>
+    <div class="section-body">
+      <div>
+        <div class="q-label">明日三件事 <span class="req">必填</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px;" id="tomorrowTasks">
+          <div class="tomorrow-task"><input id="tmr0" placeholder="任务 1（最重要）" oninput="updateProgress()"></div>
+          <div class="tomorrow-task"><input id="tmr1" placeholder="任务 2"></div>
+          <div class="tomorrow-task"><input id="tmr2" placeholder="任务 3（可留空）"></div>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">睡眠计划</div>
+        <div class="sleep-row">
+          <div class="sleep-item"><label>🌙 几点睡</label><input id="sleepTime" type="text" placeholder="23:00"></div>
+          <div class="sleep-item"><label>☀️ 几点起</label><input id="wakeTime" type="text" placeholder="7:00"></div>
+          <div class="sleep-item"><label>🏃 运动分钟</label><input id="exercise" type="number" placeholder="30"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div><!-- end sections -->
+
+<div class="submit-area">
+  <button class="btn btn-primary" onclick="handleSubmit()">📄 生成复盘记录</button>
+  <button class="btn btn-download" id="downloadBtn" onclick="downloadMd()">⬇ 下载</button>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal-overlay" id="confirmModal">
+  <div class="modal-box">
+    <div class="modal-icon">⚠️</div>
+    <div class="modal-title">总结未完成</div>
+    <div class="modal-text">部分内容尚未填写，确定现在生成 md 文件吗？</div>
+    <div class="modal-btns">
+      <button class="btn btn-cancel" onclick="closeModal()">继续填写</button>
+      <button class="btn btn-confirm" onclick="confirmGenerate()">确定生成</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ─── State ────────────────────────────────────────────────────────────────────
+let state = {
+  mood: '',
+  stars: 0,
+  distractLevels: ['','','','',''],  // per distract item
+};
+let mdContent = '';
+let taskChecked = [false, false, false];
+
+// ─── Progress fields (must be before init IIFE) ───────────────────────────────
+const REQUIRED_FIELDS = [
+  () => document.getElementById('examName').value.trim(),
+  () => state.mood,
+  () => state.stars > 0 ? 'ok' : '',
+  () => document.getElementById('summary').value.trim(),
+  () => document.getElementById('studyContent').value.trim(),
+  () => document.getElementById('task0') && document.querySelector('#task0 .task-text').value.trim(),
+  () => state.distractLevels.some(l => l !== '') ? 'ok' : '',
+  () => document.getElementById('keepGood').value.trim(),
+  () => document.getElementById('improveProblem').value.trim(),
+  () => document.getElementById('knowledge').value.trim(),
+  () => document.getElementById('tmr0').value.trim(),
+];
+
+// ─── Init ─────────────────────────────────────────────────────────────────────
+(function init() {
+  const now = new Date();
+  const days = ['日','一','二','三','四','五','六'];
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const dayStr = `星期${days[now.getDay()]}`;
+  document.getElementById('headerDate').textContent = `${dateStr}  ${dayStr}`;
+
+  // countdown to Dec 20
+  const target = new Date(now.getFullYear(), 11, 20);
+  if (now > target) target.setFullYear(target.getFullYear() + 1);
+  const diff = Math.ceil((target - now) / 86400000);
+  document.getElementById('countdownBadge').textContent = `距考试还有 ${diff} 天`;
+
+  updateProgress();
+})();
+
+// ─── Mood ─────────────────────────────────────────────────────────────────────
+function selectMood(btn) {
+  document.querySelectorAll('.mood-btn').forEach(b => b.classList.remove('selected'));
+  btn.classList.add('selected');
+  state.mood = btn.dataset.val;
+  updateProgress();
+}
+
+// ─── Stars ────────────────────────────────────────────────────────────────────
+function selectStar(n) {
+  state.stars = n;
+  document.querySelectorAll('.star').forEach((s,i) => {
+    s.textContent = i < n ? '★' : '☆';
+    s.classList.toggle('on', i < n);
+  });
+  updateProgress();
+}
+
+// ─── Chips ────────────────────────────────────────────────────────────────────
+function selectChip(el, groupId, hiddenId) {
+  document.querySelectorAll(`#${groupId} .chip`).forEach(c => c.classList.remove('selected'));
+  el.classList.add('selected');
+  document.getElementById(hiddenId).value = el.textContent.trim();
+  updateProgress();
+}
+
+// ─── Tasks ────────────────────────────────────────────────────────────────────
+function toggleTask(idx) {
+  taskChecked[idx] = !taskChecked[idx];
+  const item = document.getElementById(`task${idx}`);
+  const check = item.querySelector('.task-check');
+  check.classList.toggle('checked', taskChecked[idx]);
+  item.classList.toggle('done', taskChecked[idx]);
+  updateProgress();
+}
+
+// ─── Distractions ─────────────────────────────────────────────────────────────
+function toggleDistract(idx, level) {
+  const prev = state.distractLevels[idx];
+  const item = document.getElementById(`d${idx}`);
+  const detail = document.getElementById(`dd${idx}`);
+  const chips = item.querySelectorAll('.d-chip');
+
+  chips.forEach(c => c.classList.remove('on'));
+
+  if (prev === level) {
+    // deselect
+    state.distractLevels[idx] = '';
+    item.classList.remove('active');
+    detail.classList.remove('show');
+  } else {
+    state.distractLevels[idx] = level;
+    chips.forEach(c => { if (c.textContent.trim() === level) c.classList.add('on'); });
+    if (level !== '无') {
+      item.classList.add('active');
+      detail.classList.add('show');
+    } else {
+      item.classList.remove('active');
+      detail.classList.remove('show');
+    }
+  }
+  updateProgress();
+}
+
+// ─── Progress ─────────────────────────────────────────────────────────────────
+function updateProgress() {
+  const done = REQUIRED_FIELDS.filter(f => f()).length;
+  const total = REQUIRED_FIELDS.length;
+  const pct = Math.round(done / total * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressText').textContent = `${done} / ${total} 项已完成`;
+  document.getElementById('progressPct').textContent = pct + '%';
+}
+
+// ─── Submit & Generate ────────────────────────────────────────────────────────
+function handleSubmit() {
+  const done = REQUIRED_FIELDS.filter(f => f()).length;
+  if (done < REQUIRED_FIELDS.length) {
+    document.getElementById('confirmModal').classList.add('show');
+  } else {
+    generate();
+  }
+}
+
+function closeModal() {
+  document.getElementById('confirmModal').classList.remove('show');
+}
+
+function confirmGenerate() {
+  closeModal();
+  generate();
+}
+
+function generate() {
+  const now = new Date();
+  const days = ['日','一','二','三','四','五','六'];
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,'0')}-${String(now.getDate()).padStart(2,'0')}`;
+  const dayStr = `星期${days[now.getDay()]}`;
+
+  const target = new Date(now.getFullYear(), 11, 20);
+  if (now > target) target.setFullYear(target.getFullYear() + 1);
+  const diff = Math.ceil((target - now) / 86400000);
+
+  const examName = v('examName') || '（未填写）';
+  const planH = v('planHour') || '?';
+  const realH = v('realHour') || '?';
+  const focH = v('focusHour') || '?';
+  const mood = state.mood || '（未选）';
+  const stars = state.stars ? '⭐'.repeat(state.stars) + '☆'.repeat(5-state.stars) : '（未评）';
+  const stress = document.getElementById('stressSlider').value;
+  const summary = v('summary') || '（未填写）';
+  const content = v('studyContent') || '（未填写）';
+  const progressChip = v('progressVal') || '（未选）';
+
+  const tasks = [0,1,2].map(i => {
+    const txt = document.querySelector(`#task${i} .task-text`).value.trim();
+    if (!txt) return null;
+    return `- [${taskChecked[i] ? 'x' : ' '}] ${txt}`;
+  }).filter(Boolean).join('\n') || '- （未填写）';
+
+  const distractNames = ['手机/社交软件','疲劳/犯困','环境噪音','情绪/焦虑','其他'];
+  const distractMd = [0,1,2,3,4].map(i => {
+    const lv = state.distractLevels[i] || '（未选）';
+    const cope = document.querySelector(`#dd${i} input`)?.value.trim() || '—';
+    return `| ${distractNames[i]} | ${lv} | ${cope} |`;
+  }).join('\n');
+
+  const keepGood = v('keepGood') || '（未填写）';
+  const keepWhy = v('keepWhy') || '—';
+  const impProblem = v('improveProblem') || '（未填写）';
+  const impPlan = v('improvePlan') || '—';
+  const stateInfluence = v('stateVal') || '（未选）';
+
+  const knowledge = v('knowledge') || '（未填写）';
+  const insight = v('insight') || '—';
+  const selfTalk = v('selfTalk') || '—';
+
+  const tmrTasks = [0,1,2].map(i => {
+    const t = document.getElementById(`tmr${i}`).value.trim();
+    return t ? `- [ ] ${t}` : null;
+  }).filter(Boolean).join('\n') || '- （未填写）';
+
+  const sleepT = v('sleepTime') || '？';
+  const wakeT = v('wakeTime') || '？';
+  const exer = v('exercise') ? v('exercise') + ' 分钟' : '（未填）';
+
+  mdContent = `# 📋 每日备考复盘｜${dateStr} ${dayStr}
+
+> **考试**：${examName}　｜　**距考研**：${diff} 天
+
+---
+
+## 基础信息
+
+| 项目 | 数据 |
+|------|------|
+| 日期 | ${dateStr} ${dayStr} |
+| 考试 | ${examName} |
+| 倒计时 | ${diff} 天 |
+| 计划时长 | ${planH}h |
+| 实际时长 | ${realH}h |
+| 专注时长 | ${focH}h |
+
+---
+
+## 今日状态
+
+| 心情 | 整体状态 | 压力值 |
+|------|---------|--------|
+| ${mood} | ${stars} | ${stress} / 10 |
+
+**一句话总结**：${summary}
+
+---
+
+## 学习记录
+
+**今日内容**：${content}
+
+**进度感觉**：${progressChip}
+
+**任务完成情况**：
+
+${tasks}
+
+---
+
+## 干扰源记录
+
+| 干扰类型 | 程度 | 应对措施 |
+|---------|------|---------|
+${distractMd}
+
+---
+
+## 复盘总结
+
+### ✅ 保持
+
+- **做得好**：${keepGood}
+- **原因**：${keepWhy}
+
+### 🔧 改进
+
+- **问题**：${impProblem}
+- **明日方案**：${impPlan}
+
+**状态主要受什么影响**：${stateInfluence}
+
+---
+
+## 今日收获
+
+- **知识点 / 突破**：${knowledge}
+- **感悟**：${insight}
+- **给自己的话**：${selfTalk}
+
+---
+
+## 明日计划
+
+${tmrTasks}
+
+**睡眠**：${sleepT} 入睡　/　${wakeT} 起床　｜　**运动**：${exer}
+
+---
+
+*由「每日备考复盘」自动生成 · ${dateStr}*
+`;
+
+  document.getElementById('downloadBtn').classList.add('active');
+  showToast('✅ 复盘记录已生成，点击"下载"保存 md 文件');
+}
+
+function downloadMd() {
+  if (!mdContent) return;
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}${String(now.getMonth()+1).padStart(2,'0')}${String(now.getDate()).padStart(2,'0')}`;
+  const blob = new Blob([mdContent], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `备考复盘_${dateStr}.md`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('📥 已下载到本地');
+}
+
+function v(id) {
+  const el = document.getElementById(id);
+  return el ? el.value.trim() : '';
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3000);
+}
+</script>
+</body>
+</html>
