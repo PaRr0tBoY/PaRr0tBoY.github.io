@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="zh-CN" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SMART 目标工坊</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;700&family=Noto+Sans+SC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  /* ── Light theme ── */
+  :root, [data-theme="light"] {
+    --primary: #325235;
+    --primary-dark: #223825;
+    --primary-light: #eaf0ea;
+    --bg: #f7f7f5;
+    --surface: #ffffff;
+    --border: #e2e2de;
+    --text: #1a1a18;
+    --text-muted: #6b6b65;
+    --text-placeholder: #b8b8b2;
+    --preview-bg: #325235;
+    --preview-text: #ffffff;
+    --preview-chip: rgba(255,255,255,0.15);
+    --preview-chip-text: rgba(255,255,255,0.92);
+    --preview-empty: rgba(255,255,255,0.28);
+    --preview-btn: rgba(255,255,255,0.12);
+    --preview-btn-border: rgba(255,255,255,0.2);
+    --preview-btn-hover: rgba(255,255,255,0.22);
+    --hint-bg: #eaf0ea;
+    --hint-border: #325235;
+    --hint-text: #223825;
+    --radius: 10px;
+  }
+
+  /* ── Dark theme ── */
+  [data-theme="dark"] {
+    --primary: #558a5a;
+    --primary-dark: #447048;
+    --primary-light: #2a3530;
+    --bg: #2a2a2a;
+    --surface: #333333;
+    --border: #444440;
+    --text: #e2e2dc;
+    --text-muted: #9a9a92;
+    --text-placeholder: #666660;
+    --preview-bg: #2e3a2f;
+    --preview-text: #d8ead8;
+    --preview-chip: rgba(100,160,106,0.22);
+    --preview-chip-text: #b0d8b4;
+    --preview-empty: rgba(255,255,255,0.22);
+    --preview-btn: rgba(255,255,255,0.08);
+    --preview-btn-border: rgba(255,255,255,0.15);
+    --preview-btn-hover: rgba(255,255,255,0.16);
+    --hint-bg: #2a3530;
+    --hint-border: #558a5a;
+    --hint-text: #90c496;
+    --radius: 10px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--text);
+    min-height: 100vh;
+    transition: background 0.25s, color 0.25s;
+  }
+
+  .page {
+    max-width: 660px;
+    margin: 0 auto;
+    padding: 44px 20px 80px;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 28px;
+    gap: 16px;
+  }
+  .header-left {}
+  .header-tag {
+    display: inline-block;
+    background: var(--primary);
+    color: #fff;
+    font-size: 10px;
+    letter-spacing: 2.5px;
+    padding: 3px 10px;
+    border-radius: 3px;
+    margin-bottom: 13px;
+    font-weight: 500;
+  }
+  .header h1 {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 23px;
+    font-weight: 700;
+    line-height: 1.3;
+    color: var(--text);
+  }
+  .header p {
+    margin-top: 6px;
+    font-size: 13px;
+    color: var(--text-muted);
+    font-weight: 300;
+  }
+
+  /* Dark mode toggle */
+  .theme-btn {
+    flex-shrink: 0;
+    margin-top: 4px;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: var(--surface);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.15s, border-color 0.15s;
+    color: var(--text-muted);
+  }
+  .theme-btn:hover { background: var(--border); color: var(--text); }
+  .theme-btn svg { width: 16px; height: 16px; }
+  .icon-sun { display: none; }
+  .icon-moon { display: block; }
+  [data-theme="dark"] .icon-sun { display: block; }
+  [data-theme="dark"] .icon-moon { display: none; }
+
+  /* ── Preview Card ── */
+  .preview-card {
+    background: var(--preview-bg);
+    border-radius: var(--radius);
+    padding: 24px 26px;
+    margin-bottom: 22px;
+    min-height: 120px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    transition: background 0.25s;
+    border: 1px solid transparent;
+  }
+  [data-theme="dark"] .preview-card {
+    border-color: #2e4a30;
+  }
+  .preview-label {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--preview-empty);
+    font-weight: 500;
+    text-transform: uppercase;
+  }
+  .preview-text {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px;
+    line-height: 1.85;
+    color: var(--preview-text);
+    flex: 1;
+  }
+  .preview-text .chip {
+    background: var(--preview-chip);
+    border-radius: 3px;
+    padding: 1px 6px;
+    color: var(--preview-chip-text);
+  }
+  .preview-empty {
+    color: var(--preview-empty);
+    font-size: 14px;
+    font-style: italic;
+    font-family: 'Noto Serif SC', serif;
+    line-height: 1.7;
+  }
+  .preview-actions { display: flex; gap: 8px; flex-wrap: wrap; }
+  .btn-ghost-white {
+    background: var(--preview-btn);
+    color: var(--preview-text);
+    border: 1px solid var(--preview-btn-border);
+    border-radius: 6px;
+    padding: 6px 13px;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: 'Noto Sans SC', sans-serif;
+    transition: background 0.15s;
+    display: flex; align-items: center; gap: 5px;
+    opacity: 0.85;
+  }
+  .btn-ghost-white:hover { background: var(--preview-btn-hover); opacity: 1; }
+  .btn-ghost-white svg { width: 13px; height: 13px; flex-shrink: 0; }
+
+  /* ── Progress ── */
+  .progress-bar-wrap { display: flex; gap: 5px; margin-bottom: 20px; }
+  .prog-seg {
+    flex: 1; height: 2px;
+    background: var(--border);
+    border-radius: 2px;
+    transition: background 0.3s;
+  }
+  .prog-seg.active { background: var(--primary); }
+
+  /* ── Form Card ── */
+  .form-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: background 0.25s, border-color 0.25s;
+  }
+
+  /* ── Tabs ── */
+  .step-tabs {
+    display: flex;
+    border-bottom: 1px solid var(--border);
+    overflow-x: auto;
+    scrollbar-width: none;
+    background: var(--surface);
+  }
+  .step-tabs::-webkit-scrollbar { display: none; }
+  .step-tab {
+    flex: 1; min-width: 56px;
+    padding: 12px 6px 10px;
+    text-align: center; cursor: pointer;
+    font-size: 12px; color: var(--text-muted);
+    border-bottom: 2px solid transparent;
+    transition: all 0.18s;
+    background: none;
+    border-top: none; border-left: none; border-right: none;
+    font-family: 'Noto Sans SC', sans-serif;
+    white-space: nowrap;
+  }
+  .step-tab .letter {
+    display: block;
+    font-size: 17px; font-weight: 700;
+    font-family: 'Noto Serif SC', serif;
+    line-height: 1; margin-bottom: 3px;
+  }
+  .step-tab.active { color: var(--primary); border-bottom-color: var(--primary); }
+  .step-tab.active .letter { color: var(--primary); }
+  .step-tab.filled .letter { color: var(--text); }
+
+  /* ── Panel ── */
+  .step-panel { display: none; padding: 24px 24px 20px; animation: fadeUp 0.18s ease; }
+  .step-panel.active { display: block; }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step-heading {
+    font-family: 'Noto Serif SC', serif;
+    font-size: 16px; font-weight: 700; margin-bottom: 4px;
+    color: var(--text);
+  }
+  .step-desc {
+    font-size: 13px; color: var(--text-muted);
+    margin-bottom: 16px; line-height: 1.65; font-weight: 300;
+  }
+  .step-desc strong { color: var(--text); font-weight: 500; }
+  .hint-box {
+    background: var(--hint-bg);
+    border-left: 3px solid var(--hint-border);
+    border-radius: 0 6px 6px 0;
+    padding: 9px 13px;
+    font-size: 13px; color: var(--hint-text);
+    margin-bottom: 16px; line-height: 1.6;
+    transition: background 0.25s;
+  }
+  .hint-label {
+    font-size: 10px; letter-spacing: 1px; font-weight: 500;
+    margin-bottom: 2px; opacity: 0.65;
+  }
+
+  label {
+    display: block; font-size: 11.5px; font-weight: 500;
+    color: var(--text-muted); margin-bottom: 6px; letter-spacing: 0.4px;
+  }
+  input[type="text"], textarea {
+    width: 100%;
+    border: 1px solid var(--border); border-radius: 7px;
+    padding: 10px 13px; font-size: 13.5px;
+    font-family: 'Noto Sans SC', sans-serif;
+    color: var(--text); background: var(--bg);
+    outline: none; transition: border-color 0.15s, box-shadow 0.15s, background 0.25s;
+    resize: none;
+  }
+  input[type="text"]:focus, textarea:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(50,82,53,0.12);
+    background: var(--surface);
+  }
+  [data-theme="dark"] input[type="text"]:focus,
+  [data-theme="dark"] textarea:focus {
+    box-shadow: 0 0 0 3px rgba(90,144,96,0.18);
+  }
+  input[type="text"]::placeholder, textarea::placeholder { color: var(--text-placeholder); }
+  .field-group { margin-bottom: 13px; }
+
+  /* ── Nav ── */
+  .step-nav {
+    display: flex; justify-content: space-between; align-items: center;
+    padding: 13px 24px 17px;
+    border-top: 1px solid var(--border);
+  }
+  .btn {
+    border: none; border-radius: 7px; padding: 8px 20px;
+    font-size: 13px; font-family: 'Noto Sans SC', sans-serif;
+    cursor: pointer; font-weight: 500; transition: all 0.15s;
+  }
+  .btn-primary { background: var(--primary); color: #fff; }
+  .btn-primary:hover { background: var(--primary-dark); }
+  .btn-outline {
+    background: none; color: var(--text-muted);
+    border: 1px solid var(--border);
+  }
+  .btn-outline:hover { border-color: var(--text-muted); color: var(--text); }
+  .btn:disabled { opacity: 0.3; cursor: not-allowed; }
+  .step-count { font-size: 12px; color: var(--text-muted); }
+
+  /* ── AI Section ── */
+  .ai-section {
+    border: 1px solid var(--border); border-radius: var(--radius);
+    margin-top: 14px; overflow: hidden;
+    background: var(--surface);
+    transition: background 0.25s, border-color 0.25s;
+  }
+  .ai-toggle {
+    width: 100%; background: none; border: none;
+    padding: 13px 16px; text-align: left; cursor: pointer;
+    display: flex; justify-content: space-between; align-items: center;
+    font-size: 13px; font-family: 'Noto Sans SC', sans-serif;
+    color: var(--text); font-weight: 500; gap: 8px;
+  }
+  .ai-toggle:hover { background: var(--bg); }
+  .ai-toggle svg { transition: transform 0.2s; color: var(--text-muted); flex-shrink: 0; }
+  .ai-toggle.open svg { transform: rotate(180deg); }
+  .ai-body {
+    display: none; padding: 16px 18px 20px;
+    border-top: 1px solid var(--border); background: var(--bg);
+    transition: background 0.25s;
+  }
+  .ai-body.open { display: block; }
+
+  /* Two-col row for base url + key */
+  .ai-row { display: flex; gap: 10px; }
+  .ai-row .field-group { flex: 1; min-width: 0; }
+
+  .api-input-wrap { position: relative; }
+  .api-input-wrap input { padding-right: 52px; }
+  .toggle-vis {
+    position: absolute; right: 10px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer;
+    font-size: 11px; color: var(--text-muted); font-family: 'Noto Sans SC', sans-serif;
+  }
+  .ai-note { font-size: 12px; color: var(--text-muted); margin-top: 5px; line-height: 1.5; }
+
+  .save-key-row {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12.5px; cursor: pointer; font-weight: 400;
+    color: var(--text-muted); margin-top: 2px;
+  }
+  .save-key-row input[type="checkbox"] { accent-color: var(--primary); width: 13px; height: 13px; }
+
+  .btn-ai {
+    margin-top: 14px; background: var(--primary); color: #fff; border: none;
+    border-radius: 7px; padding: 9px 20px; font-size: 13px;
+    font-family: 'Noto Sans SC', sans-serif; cursor: pointer; font-weight: 500;
+    transition: background 0.15s; display: flex; align-items: center; gap: 7px;
+  }
+  .btn-ai:hover { background: var(--primary-dark); }
+  .btn-ai:disabled { opacity: 0.4; cursor: not-allowed; }
+  .ai-status { margin-top: 10px; font-size: 12.5px; color: var(--text-muted); }
+
+  /* ── Toast ── */
+  .toast {
+    position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(16px);
+    background: #1a1a18; color: #f0f0ec;
+    padding: 9px 20px; border-radius: 7px;
+    font-size: 13px; opacity: 0; transition: all 0.22s;
+    pointer-events: none; white-space: nowrap; z-index: 999;
+  }
+  [data-theme="dark"] .toast { background: #e8e8e4; color: #1a1a18; }
+  .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  @media (max-width: 480px) {
+    .page { padding: 24px 14px 60px; }
+    .preview-card { padding: 18px 16px; }
+    .step-panel { padding: 18px 16px 14px; }
+    .step-nav { padding: 12px 16px 15px; }
+    .ai-row { flex-direction: column; gap: 0; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-tag">SMART GOALS</div>
+      <h1>写一个真正清晰的目标</h1>
+      <p>五个维度，逐步填写，生成一句完整的 SMART 目标语句</p>
+    </div>
+    <button class="theme-btn" onclick="toggleTheme()" title="切换明暗模式">
+      <!-- Sun icon -->
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <!-- Moon icon -->
+      <svg class="icon-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- Preview -->
+  <div class="preview-card">
+    <div class="preview-label">目标预览</div>
+    <div class="preview-text" id="preview-text">
+      <span class="preview-empty">填写下方表单后，你的目标将在这里自动拼合……</span>
+    </div>
+    <div class="preview-actions">
+      <button class="btn-ghost-white" onclick="copyGoal()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+        复制
+      </button>
+      <button class="btn-ghost-white" onclick="shareUrl()">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10 13a5 5 0 007.54.54l3-3a5 5 0 00-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 00-7.54-.54l-3 3a5 5 0 007.07 7.07l1.71-1.71"/></svg>
+        分享链接
+      </button>
+      <button class="btn-ghost-white" onclick="resetAll()" style="margin-left:auto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 102.13-9.36L1 10"/></svg>
+        重置
+      </button>
+    </div>
+  </div>
+
+  <!-- Progress -->
+  <div class="progress-bar-wrap">
+    <div class="prog-seg" id="ps0"></div>
+    <div class="prog-seg" id="ps1"></div>
+    <div class="prog-seg" id="ps2"></div>
+    <div class="prog-seg" id="ps3"></div>
+    <div class="prog-seg" id="ps4"></div>
+  </div>
+
+  <!-- Form -->
+  <div class="form-card">
+    <div class="step-tabs">
+      <button class="step-tab active" onclick="goStep(0)" id="tab0"><span class="letter">S</span>具体</button>
+      <button class="step-tab" onclick="goStep(1)" id="tab1"><span class="letter">M</span>可量</button>
+      <button class="step-tab" onclick="goStep(2)" id="tab2"><span class="letter">A</span>可达</button>
+      <button class="step-tab" onclick="goStep(3)" id="tab3"><span class="letter">R</span>相关</button>
+      <button class="step-tab" onclick="goStep(4)" id="tab4"><span class="letter">T</span>时限</button>
+    </div>
+
+    <div class="step-panel active" id="panel0">
+      <div class="step-heading">S · 具体性 Specific</div>
+      <div class="step-desc">目标要足够<strong>明确</strong>，说清楚做什么、在哪里做。</div>
+      <div class="hint-box"><div class="hint-label">引导问题</div>你想在哪个领域、哪个场景做什么？</div>
+      <div class="field-group">
+        <label>目标描述（做什么）</label>
+        <input type="text" id="s-what" placeholder="例：提升英语口语表达能力" oninput="updatePreview()">
+      </div>
+      <div class="field-group">
+        <label>聚焦范围（可选：场景 / 产品 / 地区）</label>
+        <input type="text" id="s-scope" placeholder="例：在工作汇报场景中" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="step-panel" id="panel1">
+      <div class="step-heading">M · 可衡量性 Measurable</div>
+      <div class="step-desc">设定一个<strong>数字或标准</strong>，让你知道达成了没有。</div>
+      <div class="hint-box"><div class="hint-label">引导问题</div>从哪里到哪里？用什么指标衡量？</div>
+      <div class="field-group">
+        <label>量化指标</label>
+        <input type="text" id="m-metric" placeholder="例：雅思口语从 5.5 分提升到 7.0 分" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="step-panel" id="panel2">
+      <div class="step-heading">A · 可实现性 Achievable</div>
+      <div class="step-desc">目标应<strong>挑战但可达</strong>，说明你的具体行动计划。</div>
+      <div class="hint-box"><div class="hint-label">引导问题</div>每天 / 每周打算怎么做，做什么？</div>
+      <div class="field-group">
+        <label>关键行动</label>
+        <input type="text" id="a-action" placeholder="例：每天练习口语 30 分钟，每周参加 1 次外教课" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="step-panel" id="panel3">
+      <div class="step-heading">R · 相关性 Relevant</div>
+      <div class="step-desc">这个目标与你<strong>更大的方向</strong>或当前阶段的重要事项相关。</div>
+      <div class="hint-box"><div class="hint-label">引导问题</div>实现它，对你的哪个更大目标有价值？</div>
+      <div class="field-group">
+        <label>意义 / 更大目标</label>
+        <input type="text" id="r-reason" placeholder="例：以达成年底晋升国际业务岗的目标" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="step-panel" id="panel4">
+      <div class="step-heading">T · 时限性 Time-bound</div>
+      <div class="step-desc">设定<strong>明确的截止日期</strong>，创造紧迫感并便于检查进度。</div>
+      <div class="hint-box"><div class="hint-label">引导问题</div>你打算在多长时间内完成？</div>
+      <div class="field-group">
+        <label>完成时限</label>
+        <input type="text" id="t-time" placeholder="例：在接下来的 6 个月内（2025 年底前）" oninput="updatePreview()">
+      </div>
+    </div>
+
+    <div class="step-nav">
+      <button class="btn btn-outline" id="btn-prev" onclick="prevStep()" disabled>← 上一步</button>
+      <span class="step-count" id="step-count">1 / 5</span>
+      <button class="btn btn-primary" id="btn-next" onclick="nextStep()">下一步 →</button>
+    </div>
+  </div>
+
+  <!-- AI Section -->
+  <div class="ai-section">
+    <button class="ai-toggle" id="ai-toggle-btn" onclick="toggleAI()">
+      <span>✦ AI 润色（可选）— 输入模糊想法，自动补全各维度</span>
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+    </button>
+    <div class="ai-body" id="ai-body">
+      <div class="field-group">
+        <label>你的模糊想法</label>
+        <textarea id="ai-input" rows="3" placeholder="例：我想今年提升英语，方便工作汇报用"></textarea>
+      </div>
+
+      <div class="ai-row">
+        <div class="field-group">
+          <label>Base URL</label>
+          <input type="text" id="ai-base-url" placeholder="https://api.openai.com/v1">
+          <div class="ai-note">兼容 OpenAI 格式的任意接口地址</div>
+        </div>
+        <div class="field-group">
+          <label>API Key</label>
+          <div class="api-input-wrap">
+            <input type="password" id="api-key" placeholder="sk-..." autocomplete="off">
+            <button class="toggle-vis" onclick="toggleKeyVis()">显示</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="field-group">
+        <label>模型名称</label>
+        <input type="text" id="ai-model" placeholder="例：gpt-4o / claude-3-5-sonnet-20241022 / deepseek-chat">
+      </div>
+
+      <div class="ai-note" style="margin-top:-6px;margin-bottom:10px">Key 与配置仅存于本地，不会上传任何服务器。</div>
+
+      <label class="save-key-row">
+        <input type="checkbox" id="save-key"> 记住配置（存入 localStorage）
+      </label>
+
+      <button class="btn-ai" id="btn-ai-run" onclick="runAI()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+        生成 SMART 目标
+      </button>
+      <div class="ai-status" id="ai-status"></div>
+    </div>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ── Theme ──
+  function initTheme() {
+    const saved = localStorage.getItem('smart_theme');
+    const prefer = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    setTheme(saved || prefer);
+  }
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('smart_theme', t);
+  }
+  function toggleTheme() {
+    const cur = document.documentElement.getAttribute('data-theme');
+    setTheme(cur === 'dark' ? 'light' : 'dark');
+  }
+
+  // ── State ──
+  let currentStep = 0;
+  const fieldIds = ['s-what','s-scope','m-metric','a-action','r-reason','t-time'];
+  const fields = {};
+  fieldIds.forEach(k => fields[k] = '');
+
+  function loadFromURL() {
+    const p = new URLSearchParams(location.search);
+    fieldIds.forEach(k => {
+      if (p.has(k)) {
+        fields[k] = p.get(k);
+        const el = document.getElementById(k);
+        if (el) el.value = fields[k];
+      }
+    });
+    // Load saved AI config
+    const cfg = JSON.parse(localStorage.getItem('smart_ai_cfg') || '{}');
+    if (cfg.key)     document.getElementById('api-key').value = cfg.key;
+    if (cfg.baseUrl) document.getElementById('ai-base-url').value = cfg.baseUrl;
+    if (cfg.model)   document.getElementById('ai-model').value = cfg.model;
+    if (cfg.key)     document.getElementById('save-key').checked = true;
+    updatePreview();
+  }
+
+  function saveToURL() {
+    const p = new URLSearchParams();
+    fieldIds.forEach(k => { if (fields[k]) p.set(k, fields[k]); });
+    history.replaceState(null, '', location.pathname + (p.toString() ? '?' + p.toString() : ''));
+  }
+
+  function esc(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  }
+
+  function updatePreview() {
+    fieldIds.forEach(k => {
+      const el = document.getElementById(k);
+      if (el) fields[k] = el.value.trim();
+    });
+    saveToURL();
+
+    const what   = fields['s-what'];
+    const scope  = fields['s-scope'];
+    const metric = fields['m-metric'];
+    const action = fields['a-action'];
+    const reason = fields['r-reason'];
+    const time   = fields['t-time'];
+    const hasAny = what || metric || action || reason || time;
+    const el = document.getElementById('preview-text');
+
+    if (!hasAny) {
+      el.innerHTML = '<span class="preview-empty">填写下方表单后，你的目标将在这里自动拼合……</span>';
+      updateProgress(); return;
+    }
+
+    let parts = [];
+    if (time) parts.push(`<span class="chip">${esc(time)}</span>`);
+    let spart = '';
+    if (what && scope) spart = `在<span class="chip">${esc(scope)}</span>，<span class="chip">${esc(what)}</span>`;
+    else if (what)     spart = `<span class="chip">${esc(what)}</span>`;
+    else if (scope)    spart = `在<span class="chip">${esc(scope)}</span>`;
+    if (spart) parts.push(spart);
+    if (metric) parts.push(`达到<span class="chip">${esc(metric)}</span>`);
+    if (reason) parts.push(`以实现<span class="chip">${esc(reason)}</span>`);
+    if (action) parts.push(`为此<span class="chip">${esc(action)}</span>`);
+
+    const glue = ['','，','，','，','，'];
+    let sentence = parts.map((p,i) => (glue[i]||'，') + p).join('') + '。';
+    sentence = sentence.replace(/^，/, '');
+    el.innerHTML = sentence;
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const stepFields = [['s-what','s-scope'],['m-metric'],['a-action'],['r-reason'],['t-time']];
+    stepFields.forEach((flds, i) => {
+      const filled = flds.some(f => fields[f]);
+      document.getElementById('ps'+i).classList.toggle('active', filled);
+      const tab = document.getElementById('tab'+i);
+      tab.classList.toggle('filled', filled && i !== currentStep);
+    });
+  }
+
+  function goStep(n) {
+    document.getElementById('panel'+currentStep).classList.remove('active');
+    document.getElementById('tab'+currentStep).classList.remove('active');
+    currentStep = n;
+    document.getElementById('panel'+n).classList.add('active');
+    document.getElementById('tab'+n).classList.add('active');
+    document.getElementById('btn-prev').disabled = (n === 0);
+    document.getElementById('btn-next').textContent = n === 4 ? '完成 ✓' : '下一步 →';
+    document.getElementById('step-count').textContent = (n+1) + ' / 5';
+    updateProgress();
+  }
+
+  function nextStep() {
+    if (currentStep < 4) goStep(currentStep + 1);
+    else showToast('目标填写完成！可复制或分享 🎉');
+  }
+  function prevStep() { if (currentStep > 0) goStep(currentStep - 1); }
+
+  function copyGoal() {
+    const text = document.getElementById('preview-text').innerText;
+    if (!text || text.includes('填写下方')) { showToast('请先填写目标内容'); return; }
+    navigator.clipboard.writeText(text).then(() => showToast('已复制到剪贴板 ✓'));
+  }
+
+  function shareUrl() {
+    navigator.clipboard.writeText(location.href).then(() => showToast('链接已复制 ✓'));
+  }
+
+  function resetAll() {
+    if (!confirm('确认清空所有内容？')) return;
+    fieldIds.forEach(k => { fields[k]=''; const el=document.getElementById(k); if(el) el.value=''; });
+    updatePreview(); goStep(0);
+    history.replaceState(null, '', location.pathname);
+  }
+
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg; t.classList.add('show');
+    setTimeout(() => t.classList.remove('show'), 2400);
+  }
+
+  function toggleAI() {
+    document.getElementById('ai-toggle-btn').classList.toggle('open');
+    document.getElementById('ai-body').classList.toggle('open');
+  }
+
+  function toggleKeyVis() {
+    const inp = document.getElementById('api-key');
+    inp.type = inp.type === 'password' ? 'text' : 'password';
+    event.target.textContent = inp.type === 'password' ? '显示' : '隐藏';
+  }
+
+  async function runAI() {
+    const input   = document.getElementById('ai-input').value.trim();
+    const key     = document.getElementById('api-key').value.trim();
+    const baseUrl = (document.getElementById('ai-base-url').value.trim() || 'https://api.openai.com/v1').replace(/\/$/, '');
+    const model   = document.getElementById('ai-model').value.trim() || 'gpt-4o';
+
+    if (!input) { showToast('请先输入想法'); return; }
+    if (!key)   { showToast('请填写 API Key'); return; }
+
+    if (document.getElementById('save-key').checked) {
+      localStorage.setItem('smart_ai_cfg', JSON.stringify({ key, baseUrl, model }));
+    } else {
+      localStorage.removeItem('smart_ai_cfg');
+    }
+
+    const btn = document.getElementById('btn-ai-run');
+    const status = document.getElementById('ai-status');
+    btn.disabled = true; status.textContent = '正在生成……';
+
+    const prompt = `用户描述了一个模糊目标："${input}"
+请扩展为 SMART 各维度，只返回如下 JSON，不要其他任何文字：
+{"s_what":"","s_scope":"","m_metric":"","a_action":"","r_reason":"","t_time":""}`;
+
+    try {
+      const res = await fetch(`${baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${key}`
+        },
+        body: JSON.stringify({
+          model,
+          max_tokens: 600,
+          messages: [{ role: 'user', content: prompt }]
+        })
+      });
+
+      if (!res.ok) {
+        const e = await res.json().catch(() => ({}));
+        throw new Error(e.error?.message || `HTTP ${res.status}`);
+      }
+
+      const data = await res.json();
+      const raw = data.choices?.[0]?.message?.content || '';
+      const obj = JSON.parse(raw.replace(/```json|```/g,'').trim());
+
+      const map = { s_what:'s-what', s_scope:'s-scope', m_metric:'m-metric', a_action:'a-action', r_reason:'r-reason', t_time:'t-time' };
+      Object.entries(map).forEach(([ak, dk]) => {
+        if (obj[ak]) document.getElementById(dk).value = obj[ak];
+      });
+      updatePreview();
+      status.textContent = '✓ 已自动填入，请检查并按需调整';
+      showToast('AI 已补全各维度 ✓');
+      goStep(0);
+    } catch(e) {
+      status.textContent = '错误：' + e.message;
+      showToast('请求失败：' + e.message);
+    } finally {
+      btn.disabled = false;
+    }
+  }
+
+  // ── Init ──
+  initTheme();
+  loadFromURL();
+</script>
+</body>
+</html>
