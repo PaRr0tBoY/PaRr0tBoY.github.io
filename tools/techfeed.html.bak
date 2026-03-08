@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>THE FEED</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 15px; }
+:root {
+  --bg:       #0e0e0e;
+  --surface:  #161616;
+  --surface2: #1e1e1e;
+  --border:   #272727;
+  --border2:  #333;
+  --text:     #f0f0f0;
+  --text2:    #a0a0a0;
+  --text3:    #565656;
+  --red:      #e5173f;
+  --amber:    #d4911a;
+  --teal:     #0fb8a0;
+  --orange:   #e8721a;
+  --green:    #1daa55;
+  --font:     'DM Sans', system-ui, sans-serif;
+  --mono:     'DM Mono', monospace;
+}
+body { background:var(--bg); color:var(--text); font-family:var(--font); line-height:1.5; -webkit-font-smoothing:antialiased; }
+a { color:inherit; text-decoration:none; }
+
+/* ── HEADER ──────────────────────── */
+header {
+  position:sticky; top:0; z-index:200;
+  background:rgba(14,14,14,0.96); backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--border);
+}
+.hdr {
+  max-width:1380px; margin:0 auto; padding:0 24px;
+  height:50px; display:flex; align-items:center; gap:24px;
+}
+.logo { font-size:20px; font-weight:800; letter-spacing:-0.5px; color:#fff; flex-shrink:0; }
+.logo em { color:var(--red); font-style:normal; }
+.nav { display:flex; gap:2px; flex:1; }
+.np {
+  font-size:11px; font-weight:600; letter-spacing:0.05em; text-transform:uppercase;
+  padding:4px 10px; border-radius:3px; color:var(--text3); cursor:default;
+}
+.np.on { color:var(--text2); background:var(--surface2); }
+.hdr-r { display:flex; align-items:center; gap:14px; margin-left:auto; flex-shrink:0; }
+.ts { font-family:var(--mono); font-size:11px; color:var(--text3); }
+.rbtn {
+  display:flex; align-items:center; gap:5px;
+  font-family:var(--font); font-size:11.5px; font-weight:600;
+  letter-spacing:0.04em; text-transform:uppercase;
+  background:var(--surface2); border:1px solid var(--border2);
+  color:var(--text2); padding:5px 13px; cursor:pointer; border-radius:3px;
+  transition:all .15s;
+}
+.rbtn:hover { background:var(--surface); color:#fff; border-color:#444; }
+.rbtn .ico { display:inline-block; font-size:14px; }
+.rbtn.spin .ico { animation:spin .7s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+/* ── PAGE ────────────────────────── */
+.page { max-width:1380px; margin:0 auto; padding:0 24px 64px; }
+
+/* ── SECTION HEADING ─────────────── */
+.sh {
+  display:flex; align-items:center; gap:10px;
+  padding:26px 0 13px; border-bottom:1px solid var(--border2);
+}
+.sh-dot { width:7px; height:7px; border-radius:50%; flex-shrink:0; }
+.sh-label { font-size:10.5px; font-weight:700; letter-spacing:0.09em; text-transform:uppercase; color:var(--text3); }
+.tag {
+  font-size:10.5px; font-weight:700; letter-spacing:0.05em; text-transform:uppercase;
+  padding:2px 8px; border-radius:3px;
+}
+.d-red    { background:var(--red); }
+.d-amber  { background:var(--amber); }
+.d-teal   { background:var(--teal); }
+.d-orange { background:var(--orange); }
+.d-green  { background:var(--green); }
+.t-red    { background:rgba(229,23,63,.1);  color:var(--red); }
+.t-amber  { background:rgba(212,145,26,.1); color:var(--amber); }
+.t-teal   { background:rgba(15,184,160,.1); color:var(--teal); }
+.t-orange { background:rgba(232,114,26,.1); color:var(--orange); }
+.t-green  { background:rgba(29,170,85,.1);  color:var(--green); }
+
+/* ── TOP GRID ────────────────────── */
+.tg {
+  display:grid; grid-template-columns:1fr 350px; gap:0;
+  border:1px solid var(--border); border-top:none;
+}
+.tm-col { border-right:1px solid var(--border); }
+.sb { display:flex; flex-direction:column; background:var(--surface); }
+
+/* ── BLOCK HEADER ────────────────── */
+.bh {
+  padding:11px 18px; border-bottom:1px solid var(--border);
+  display:flex; align-items:center; justify-content:space-between;
+  background:var(--surface2);
+}
+.bl { font-size:10.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase; color:var(--text3); display:flex; align-items:center; gap:8px; }
+
+/* ── TECHMEME HERO ───────────────── */
+.tm-hero {
+  display:block; padding:22px 22px 18px;
+  border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.tm-hero:hover { background:var(--surface); }
+.tm-eyebrow {
+  font-size:10.5px; font-weight:700; letter-spacing:0.07em; text-transform:uppercase;
+  color:var(--red); margin-bottom:10px;
+  display:flex; align-items:center; gap:7px;
+}
+.tm-eyebrow::before { content:''; width:6px; height:6px; border-radius:50%; background:var(--red); display:inline-block; animation:pulse 2s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+.tm-hero h2 { font-size:21px; font-weight:800; line-height:1.28; letter-spacing:-0.3px; color:#fff; margin-bottom:10px; }
+.tm-hero:hover h2 { color:var(--text2); }
+.meta { font-size:11px; color:var(--text3); }
+.meta .src { color:var(--text2); font-weight:600; margin-right:6px; }
+
+/* ── TECHMEME LIST ITEM ──────────── */
+.tm-row {
+  display:grid; grid-template-columns:32px 1fr; align-items:start; gap:14px;
+  padding:12px 22px; border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.tm-row:last-child { border-bottom:none; }
+.tm-row:hover { background:var(--surface); }
+.rn { font-family:var(--mono); font-size:12px; color:var(--text3); text-align:right; padding-top:2px; line-height:1.4; }
+.rl { font-size:14px; font-weight:500; line-height:1.42; color:var(--text); display:block; }
+.tm-row:hover .rl { color:#fff; }
+.rm { font-size:10.5px; color:var(--text3); margin-top:3px; }
+.rm .src { color:var(--text2); font-weight:600; margin-right:5px; }
+
+/* ── HN ITEMS ────────────────────── */
+.hn-block { flex:1 1 auto; border-bottom:1px solid var(--border); overflow:hidden; }
+.hi {
+  padding:10px 18px; border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.hi:last-child { border-bottom:none; }
+.hi:hover { background:var(--surface2); }
+.hl { font-size:13px; font-weight:400; line-height:1.38; color:var(--text); font-style:italic; display:block; }
+.hi:hover .hl { color:#fff; font-style:normal; }
+.hm { font-size:10.5px; color:var(--text3); margin-top:3px; }
+.hm .src { color:var(--amber); font-style:normal; font-weight:600; margin-right:5px; }
+
+/* ── SOLIDOT ITEMS ───────────────── */
+.solidot-block {}
+.si {
+  padding:8px 18px; border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.si:last-child { border-bottom:none; }
+.si:hover { background:var(--surface2); }
+.sl { font-size:12.5px; color:var(--text2); display:block; line-height:1.35; }
+.si:hover .sl { color:var(--text); }
+.sd { font-size:11px; color:var(--text3); margin-top:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* ── BOTTOM GRID ─────────────────── */
+.bg {
+  display:grid; grid-template-columns:1fr 1fr; gap:0;
+  border:1px solid var(--border); border-top:none;
+}
+.ph-col { border-right:1px solid var(--border); }
+
+.pi {
+  display:grid; grid-template-columns:1fr auto; gap:10px; align-items:start;
+  padding:12px 20px; border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.pi:last-child { border-bottom:none; }
+.pi:hover { background:var(--surface); }
+.pl { font-size:13.5px; font-weight:600; line-height:1.32; color:var(--text); display:block; }
+.pi:hover .pl { color:var(--orange); }
+.pd { font-size:11.5px; color:var(--text3); margin-top:3px; line-height:1.35; }
+.pa { color:var(--text3); font-size:14px; padding-top:2px; }
+
+.gi {
+  display:grid; grid-template-columns:1fr auto; gap:10px; align-items:start;
+  padding:12px 20px; border-bottom:1px solid var(--border);
+  transition:background .12s;
+}
+.gi:last-child { border-bottom:none; }
+.gi:hover { background:var(--surface); }
+.gl { font-family:var(--mono); font-size:12px; font-weight:500; line-height:1.32; color:var(--text); display:block; }
+.gi:hover .gl { color:var(--green); }
+.gd { font-size:11.5px; color:var(--text3); margin-top:3px; line-height:1.35; }
+.glang { font-family:var(--mono); font-size:10px; color:var(--green); white-space:nowrap; padding-top:2px; }
+
+/* ── SKELETON ────────────────────── */
+.sk { padding:18px 22px; }
+.skl {
+  height:13px; border-radius:2px; margin-bottom:10px;
+  background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);
+  background-size:200% 100%; animation:sk 1.4s ease infinite;
+}
+.skl.w80{width:80%} .skl.w60{width:60%} .skl.w40{width:40%}
+.skl.h18{height:18px;margin-bottom:14px}
+@keyframes sk { to { background-position:-200% 0; } }
+
+/* ── ERROR ───────────────────────── */
+.err { padding:18px 22px; font-family:var(--mono); font-size:11px; color:var(--red); line-height:1.7; }
+
+/* ── FADE ────────────────────────── */
+@keyframes fu { from{opacity:0;transform:translateY(6px)} to{opacity:1;transform:none} }
+.f { animation:fu .3s ease both; }
+
+/* ── RESPONSIVE ──────────────────── */
+@media(max-width:1024px){
+  .tg{grid-template-columns:1fr}
+  .tm-col{border-right:none;border-bottom:1px solid var(--border)}
+  .bg{grid-template-columns:1fr}
+  .ph-col{border-right:none;border-bottom:1px solid var(--border)}
+}
+@media(max-width:600px){
+  .page{padding:0 13px 48px}
+  .hdr{padding:0 13px;gap:10px}
+  .nav,.ts{display:none}
+  .tm-hero h2{font-size:18px}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header>
+  <div class="hdr">
+    <div class="logo">THE<em>FEED</em></div>
+    <nav class="nav">
+      <div class="np on">科技新闻</div>
+      <div class="np">荐读</div>
+      <div class="np">趣闻</div>
+      <div class="np">新玩意</div>
+    </nav>
+    <div class="hdr-r">
+      <span class="ts" id="ts"></span>
+      <button class="rbtn" id="rbtn" onclick="loadAll()">
+        <span class="ico">↻</span> Refresh
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- PAGE -->
+<div class="page">
+
+  <!-- § 科技新闻 -->
+  <div class="sh">
+    <div class="sh-dot d-red"></div>
+    <div class="sh-label">科技新闻 · Tech News</div>
+    <span class="tag t-red">Techmeme</span>
+    <span class="tag t-amber" style="margin-left:4px">HN Classic</span>
+    <span class="tag t-teal"  style="margin-left:4px">Solidot</span>
+  </div>
+
+  <div class="tg">
+
+    <!-- TECHMEME -->
+    <div class="tm-col" id="tm-col">
+      <div class="sk">
+        <div class="skl h18 w80"></div><div class="skl w60"></div>
+        <div class="skl w40"></div><div class="skl w80"></div>
+        <div class="skl w60"></div><div class="skl w40"></div>
+        <div class="skl w80"></div><div class="skl w60"></div>
+      </div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sb">
+
+      <!-- HN -->
+      <div class="hn-block">
+        <div class="bh">
+          <div class="bl"><div class="sh-dot d-amber"></div>Hacker News · 荐读</div>
+          <span class="tag t-amber">Classic</span>
+        </div>
+        <div id="hn-items">
+          <div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div><div class="skl w80"></div></div>
+        </div>
+      </div>
+
+      <!-- SOLIDOT -->
+      <div class="solidot-block">
+        <div class="bh">
+          <div class="bl"><div class="sh-dot d-teal"></div>Solidot · 趣闻</div>
+          <span class="tag t-teal">奇趣</span>
+        </div>
+        <div id="solidot-items">
+          <div class="sk"><div class="skl w80"></div><div class="skl w60"></div></div>
+        </div>
+      </div>
+
+    </div>
+  </div><!-- /tg -->
+
+  <!-- § 新玩意 -->
+  <div class="sh" style="padding-top:34px">
+    <div class="sh-dot d-orange"></div>
+    <div class="sh-label">新玩意 · New Things</div>
+    <span class="tag t-orange">Product Hunt</span>
+    <span class="tag t-green" style="margin-left:4px">GitHub Trending</span>
+  </div>
+
+  <div class="bg">
+
+    <!-- PRODUCTHUNT -->
+    <div class="ph-col">
+      <div class="bh">
+        <div class="bl"><div class="sh-dot d-orange"></div>Product Hunt</div>
+        <span class="tag t-orange">今日产品</span>
+      </div>
+      <div id="ph-items">
+        <div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div>
+      </div>
+    </div>
+
+    <!-- GITHUB -->
+    <div>
+      <div class="bh">
+        <div class="bl"><div class="sh-dot d-green"></div>GitHub Trending</div>
+        <span class="tag t-green">Daily</span>
+      </div>
+      <div id="gh-items">
+        <div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div>
+      </div>
+    </div>
+
+  </div><!-- /bg -->
+</div><!-- /page -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+//  PROXY FALLBACK — tries 4 different CORS proxies in order
+// ═══════════════════════════════════════════════════════════
+const PROXIES = [
+  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+  u => `https://thingproxy.freeboard.io/fetch/${u}`,
+];
+
+async function proxyFetch(url) {
+  let lastErr;
+  for (const mk of PROXIES) {
+    try {
+      const r = await fetch(mk(url), { cache: 'no-store' });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      const t = await r.text();
+      if (t.length < 60) throw new Error('Empty');
+      if (t.trimStart().startsWith('{"contents"')) {
+        try { return JSON.parse(t).contents; } catch {}
+      }
+      return t;
+    } catch(e) { lastErr = e; }
+  }
+  throw new Error(lastErr?.message ?? 'All proxies failed');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  XML PARSER — handles RSS 2.0 and Atom
+// ═══════════════════════════════════════════════════════════
+function parseXML(raw) {
+  // Sanitise stray & that aren't already entities
+  const safe = raw.replace(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[\da-fA-F]+);)/g, '&amp;');
+  const doc = new DOMParser().parseFromString(safe, 'text/xml');
+  const isAtom = !!doc.querySelector('feed');
+  if (isAtom) {
+    return [...doc.querySelectorAll('entry')].map(e => ({
+      title: e.querySelector('title')?.textContent?.trim() ?? '',
+      link:  e.querySelector('link[rel="alternate"]')?.getAttribute('href')
+          ?? e.querySelector('link:not([rel])')?.getAttribute('href')
+          ?? e.querySelector('link')?.textContent?.trim() ?? '',
+      date:  e.querySelector('published,updated')?.textContent?.trim() ?? '',
+      desc:  strip(e.querySelector('summary,content')?.textContent ?? ''),
+    }));
+  }
+  return [...doc.querySelectorAll('item')].map(e => {
+    // RSS <link> is a text node, not an attribute
+    let link = '';
+    const le = e.querySelector('link');
+    if (le) {
+      link = le.textContent.trim();
+      if (!link) {
+        let n = le.nextSibling;
+        while (n) {
+          const t = n.textContent?.trim();
+          if (t?.startsWith('http')) { link = t; break; }
+          n = n.nextSibling;
+        }
+      }
+    }
+    return {
+      title: e.querySelector('title')?.textContent?.trim() ?? '',
+      link,
+      date:  e.querySelector('pubDate')?.textContent?.trim() ?? '',
+      desc:  strip(e.querySelector('description')?.textContent ?? ''),
+    };
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HELPERS
+// ═══════════════════════════════════════════════════════════
+function strip(s) {
+  const d = document.createElement('div');
+  d.innerHTML = s;
+  return (d.textContent || '').replace(/\s+/g,' ').trim();
+}
+function host(u) {
+  try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; }
+}
+function ago(ds) {
+  if (!ds) return '';
+  const d = new Date(ds);
+  if (isNaN(d)) return '';
+  const s = (Date.now() - d) / 1000;
+  if (s < 60)    return '刚刚';
+  if (s < 3600)  return `${Math.floor(s/60)}m`;
+  if (s < 86400) return `${Math.floor(s/3600)}h`;
+  return `${Math.floor(s/86400)}d`;
+}
+function esc(s) {
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════════════
+//  TECHMEME
+// ═══════════════════════════════════════════════════════════
+async function loadTechmeme() {
+  const col = document.getElementById('tm-col');
+  try {
+    const xml   = await proxyFetch('https://www.techmeme.com/feed.xml');
+    const items = parseXML(xml).filter(i => i.title && i.link).slice(0, 26);
+    if (!items.length) throw new Error('No items parsed');
+
+    const [h, ...rest] = items;
+    let html = `<a class="tm-hero f" href="${esc(h.link)}" target="_blank" rel="noopener">
+      <div class="tm-eyebrow">Breaking</div>
+      <h2>${esc(h.title)}</h2>
+      <div class="meta">
+        ${host(h.link) ? `<span class="src">${esc(host(h.link))}</span>` : ''}
+        ${ago(h.date)}
+      </div>
+    </a>`;
+
+    rest.forEach((it, i) => {
+      const n = String(i+2).padStart(2,'0');
+      html += `<div class="tm-row f" style="animation-delay:${i*18}ms">
+        <div class="rn">${n}</div>
+        <div>
+          <a class="rl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+          <div class="rm">
+            ${host(it.link) ? `<span class="src">${esc(host(it.link))}</span>` : ''}
+            ${ago(it.date)}
+          </div>
+        </div>
+      </div>`;
+    });
+    col.innerHTML = html;
+  } catch(e) {
+    col.innerHTML = `<div class="err">⚠ Techmeme 加载失败<br><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  HN CLASSIC
+// ═══════════════════════════════════════════════════════════
+async function loadHN() {
+  const el = document.getElementById('hn-items');
+  try {
+    const xml   = await proxyFetch('https://hnrss.org/classic');
+    const items = parseXML(xml).filter(i => i.title).slice(0, 14);
+    if (!items.length) throw new Error('No items');
+
+    el.innerHTML = items.map((it, i) => `
+      <div class="hi f" style="animation-delay:${i*22}ms">
+        <a class="hl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+        <div class="hm">
+          <span class="src">${esc(host(it.link)||'ycombinator.com')}</span>${ago(it.date)}
+        </div>
+      </div>`).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="err">⚠ HN 加载失败<br><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  SOLIDOT
+// ═══════════════════════════════════════════════════════════
+async function loadSolidot() {
+  const el = document.getElementById('solidot-items');
+  try {
+    const xml   = await proxyFetch('https://www.solidot.org/index.rss');
+    const items = parseXML(xml).filter(i => i.title).slice(0, 7);
+    if (!items.length) throw new Error('No items');
+
+    el.innerHTML = items.map((it, i) => {
+      const d = it.desc.slice(0,72);
+      return `<div class="si f" style="animation-delay:${i*28}ms">
+        <a class="sl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+        ${d ? `<div class="sd">${esc(d)}…</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="err">⚠ Solidot 加载失败<br><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  PRODUCT HUNT
+// ═══════════════════════════════════════════════════════════
+async function loadProductHunt() {
+  const el = document.getElementById('ph-items');
+  try {
+    const xml   = await proxyFetch('https://www.producthunt.com/feed?category=undefined');
+    const items = parseXML(xml).filter(i => i.title).slice(0, 10);
+    if (!items.length) throw new Error('No items');
+
+    el.innerHTML = items.map((it, i) => {
+      const d = it.desc.slice(0,85);
+      return `<div class="pi f" style="animation-delay:${i*22}ms">
+        <div>
+          <a class="pl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}</a>
+          ${d ? `<div class="pd">${esc(d)}${it.desc.length>85?'…':''}</div>` : ''}
+        </div>
+        <div class="pa">↗</div>
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="err">⚠ Product Hunt 加载失败<br><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  GITHUB TRENDING
+// ═══════════════════════════════════════════════════════════
+async function loadGitHub() {
+  const el = document.getElementById('gh-items');
+  try {
+    const xml   = await proxyFetch('https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml');
+    const items = parseXML(xml).filter(i => i.title).slice(0, 12);
+    if (!items.length) throw new Error('No items');
+
+    el.innerHTML = items.map((it, i) => {
+      const d    = it.desc.slice(0,85);
+      const lm   = it.desc.match(/[Ll]anguage[:\s]+([A-Za-z+#\-\.]+)/);
+      const lang = lm ? lm[1].trim() : '';
+      return `<div class="gi f" style="animation-delay:${i*22}ms">
+        <div>
+          <a class="gl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title.trim())}</a>
+          ${d ? `<div class="gd">${esc(d)}${it.desc.length>85?'…':''}</div>` : ''}
+        </div>
+        ${lang ? `<div class="glang">${esc(lang)}</div>` : ''}
+      </div>`;
+    }).join('');
+  } catch(e) {
+    el.innerHTML = `<div class="err">⚠ GitHub 加载失败<br><small>${esc(e.message)}</small></div>`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════
+//  ORCHESTRATOR
+// ═══════════════════════════════════════════════════════════
+async function loadAll() {
+  const btn = document.getElementById('rbtn');
+  btn.classList.add('spin'); btn.disabled = true;
+
+  await Promise.allSettled([
+    loadTechmeme(), loadHN(), loadSolidot(),
+    loadProductHunt(), loadGitHub()
+  ]);
+
+  const n = new Date();
+  document.getElementById('ts').textContent =
+    `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')} updated`;
+  btn.classList.remove('spin'); btn.disabled = false;
+}
+
+loadAll();
+setInterval(loadAll, 15 * 60 * 1000);
+</script>
+</body>
+</html>
