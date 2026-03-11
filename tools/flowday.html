@@ -47,11 +47,15 @@ input,textarea{font-family:inherit}
 .hist-hd-title{font-size:15px;font-weight:700}
 .hist-list{flex:1;overflow-y:auto;padding:6px 0}
 .hist-grp-lbl{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.9px;color:var(--text-3);padding:10px 16px 4px}
-.hist-item{padding:9px 16px;cursor:pointer;transition:background .14s}
+.hist-item{padding:9px 16px 9px 16px;cursor:pointer;transition:background .14s;display:flex;align-items:center;gap:8px}
 .hist-item:hover{background:var(--border)}
 .hist-item.active{background:var(--accent-soft)}
-.hi-title{font-size:13px;font-weight:500}
+.hi-body{flex:1;min-width:0}
+.hi-title{font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hi-sub{font-size:11px;color:var(--text-3);margin-top:2px}
+.hist-del{width:22px;height:22px;border-radius:5px;background:transparent;border:none;color:var(--text-3);font-size:11px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all .14s;flex-shrink:0;opacity:0}
+.hist-item:hover .hist-del{opacity:1}
+.hist-del:hover{background:rgba(255,69,58,0.1);color:var(--danger)}
 .hist-empty{padding:36px 16px;text-align:center;font-size:12px;color:var(--text-3)}
 
 /* ═══════════════════════ BUTTONS ═══════════════════════ */
@@ -102,7 +106,7 @@ input,textarea{font-family:inherit}
 .ep-item:hover{background:var(--border)}
 
 /* ═══════════════════════ PLANNER BODY ═══════════════════════ */
-.planner-body{display:grid;grid-template-columns:58px 1fr;padding:32px 22px 120px;max-width:880px;margin:0 auto;width:100%;position:relative}
+.planner-body{display:grid;grid-template-columns:58px 1fr;padding:28px 22px 120px;max-width:880px;margin:0 auto;width:100%;position:relative;align-items:start}
 
 /* Current Time Line */
 .ctl{position:absolute;left:0;right:0;display:none;pointer-events:none;z-index:22}
@@ -111,7 +115,7 @@ input,textarea{font-family:inherit}
 .ctl-label{position:absolute;left:64px;top:50%;transform:translateY(-50%) translateY(-11px);font-size:9px;font-weight:700;color:var(--accent);background:var(--bg);padding:1px 5px;border-radius:4px;letter-spacing:.3px}
 
 /* Timeline Rail */
-.tl-rail{position:relative}
+.tl-rail{position:relative;align-self:stretch}
 .tl-line{position:absolute;top:0;bottom:0;left:calc(100% - 1px);width:1px;background:var(--border)}
 .tl-tick{position:absolute;left:0;right:0;display:flex;align-items:center;justify-content:flex-end;padding-right:10px;transform:translateY(-50%);pointer-events:none}
 .tl-tick-lbl{font-size:9px;color:var(--text-3);font-weight:500;white-space:nowrap;line-height:1}
@@ -133,44 +137,127 @@ input,textarea{font-family:inherit}
 .add-task-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
 .add-task-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
 
+/* ═══════════════════════ RANGE SLIDER (clean inline) ═══════════════════════ */
+.range-wrap{padding:2px 0 14px}
+.range-row{display:flex;align-items:center;gap:8px}
+.range-lbl{font-size:11px;font-weight:700;color:var(--accent);white-space:nowrap;min-width:38px;text-align:center;flex-shrink:0}
+.range-inner{position:relative;flex:1;height:22px;display:flex;align-items:center}
+.range-bg{position:absolute;left:0;right:0;height:3px;background:var(--border);border-radius:2px;pointer-events:none}
+.range-fill{position:absolute;height:3px;background:var(--accent);border-radius:2px;pointer-events:none}
+.range-inner input[type="range"]{position:absolute;left:0;width:100%;-webkit-appearance:none;appearance:none;background:transparent;pointer-events:none;height:22px;margin:0;padding:0}
+.range-inner input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;pointer-events:all;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 1px 5px rgba(0,0,0,0.25);transition:transform .1s,box-shadow .1s}
+.range-inner input[type="range"]::-webkit-slider-thumb:hover{transform:scale(1.18);box-shadow:0 2px 8px rgba(0,122,255,0.4)}
+.range-inner input[type="range"]::-webkit-slider-thumb:active{transform:scale(1.1)}
+.range-inner input[type="range"]::-moz-range-thumb{pointer-events:all;width:13px;height:13px;border-radius:50%;background:var(--accent);cursor:pointer;border:none;box-shadow:0 1px 5px rgba(0,0,0,0.25)}
+.range-sub{font-size:10px;color:var(--text-3);text-align:center;margin-top:3px}
+
+/* Settings footer save button saved state */
+.btn-settings-save.saved{background:var(--success)!important;transform:scale(.97)}
+.btn-settings-save:active{transform:scale(.95)}
+
 /* ═══════════════════════ TASK GROUPS & CARDS ═══════════════════════ */
 .tasks-list{min-height:40px}
 .task-group{position:relative}
 
-/* Parent card */
-.task-card{position:relative;display:flex;align-items:stretch;background:var(--surface);backdrop-filter:var(--blur);border:1px solid var(--border);border-radius:var(--r-s);margin-bottom:7px;box-shadow:var(--shadow);transition:box-shadow var(--dur),transform var(--dur),border-color var(--dur);overflow:hidden}
-.task-card:hover{box-shadow:var(--shadow-xl);transform:translateY(-1px)}
+/* ── Card shell ── */
+.task-card{
+  position:relative;
+  container-type:size;          /* enables @container height queries */
+  display:grid;
+  grid-template-columns:22px 1fr 68px;
+  grid-template-rows:1fr;
+  background:var(--surface);backdrop-filter:var(--blur);
+  border:1px solid var(--border);border-radius:var(--r-s);
+  margin-bottom:7px;box-shadow:var(--shadow);
+  transition:box-shadow var(--dur),border-color var(--dur);
+  overflow:hidden;
+}
+.task-card:hover{box-shadow:var(--shadow-xl)}
 .task-card.completed{opacity:.5}
 .task-card.completed .card-title{text-decoration:line-through}
-.task-card.is-editing{overflow:visible!important;height:auto!important;border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--shadow-xl);z-index:10;transform:none}
+.task-card.is-editing{
+  overflow:visible!important;height:auto!important;
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px var(--accent-soft),var(--shadow-xl);
+  z-index:10;
+  grid-template-columns:22px 1fr; /* collapse side */
+  container-type:normal;          /* disable container query in edit */
+}
 .task-card.new-task{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-soft),var(--shadow-xl)}
-@keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-5px)}40%{transform:translateX(5px)}60%{transform:translateX(-4px)}80%{transform:translateX(3px)}}
-.task-card.shake{animation:shake .36s var(--ease)}
+@keyframes completePop{0%{opacity:1}30%{opacity:.6;filter:brightness(1.2)}100%{opacity:.5}}
+.task-card.complete-pop{animation:completePop .38s var(--ease) forwards!important}
 
-/* Drag handle */
-.card-dragger{width:24px;flex-shrink:0;display:flex;align-items:center;justify-content:center;color:var(--text-3);cursor:grab;border-right:1px solid var(--border);font-size:11px;transition:color var(--dur)}
-.task-card:hover .card-dragger{color:var(--text-2)}
-.card-dragger:active{cursor:grabbing}
+/* ── Handle column ── */
+.card-handle{
+  grid-column:1;grid-row:1 / -1;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--text-3);cursor:grab;
+  border-right:1px solid var(--border);
+  font-size:11px;transition:color var(--dur);
+  min-height:44px;
+}
+.task-card:hover .card-handle{color:var(--text-2)}
+.card-handle:active{cursor:grabbing}
 
-/* Card content */
-.card-content{flex:1;position:relative;min-width:0;display:flex;flex-direction:column}
-.card-body{flex:1;overflow:hidden;padding:8px 8px 16px;cursor:pointer;display:flex;flex-direction:row;gap:6px;min-height:0}
+/* ── Body (middle column) ── */
+.card-body{
+  grid-column:2;grid-row:1;
+  padding:8px 6px 16px 8px;
+  overflow:hidden;cursor:pointer;
+  display:flex;flex-direction:column;gap:2px;
+  min-height:44px;
+}
 .task-card.is-editing .card-body{display:none}
-.card-main{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;overflow:hidden}
-.card-title{font-size:13px;font-weight:500;line-height:1.4;word-break:break-word;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3}
-.card-note{font-size:11px;color:var(--text-2);line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2}
-.card-side{flex-shrink:0;width:66px;display:flex;flex-direction:column;justify-content:space-between;align-items:flex-end;gap:3px}
-.card-time-lbl{font-size:9px;color:var(--text-3);font-weight:500;white-space:nowrap;text-align:right;line-height:1.3}
-.card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
-.badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:100px;font-size:9px;font-weight:600;white-space:nowrap}
-.bdg-dur{background:var(--accent-soft);color:var(--accent)}
-.bdg-cat{background:var(--border);color:var(--text-2);max-width:62px;overflow:hidden;text-overflow:ellipsis}
-.st-toggle{display:flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:4px;background:transparent;border:none;color:var(--text-3);font-size:10px;cursor:pointer;transition:all .16s;margin-top:2px;flex-shrink:0;align-self:flex-start}
+.card-title{
+  font-size:13px;font-weight:500;line-height:1.4;
+  word-break:break-word;overflow:hidden;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;
+}
+.card-note{
+  font-size:11px;color:var(--text-2);line-height:1.5;
+  overflow:hidden;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;
+}
+.st-toggle{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:18px;height:18px;border-radius:4px;background:transparent;border:none;
+  color:var(--text-3);font-size:10px;cursor:pointer;transition:all .16s;
+  margin-top:3px;align-self:flex-start;flex-shrink:0;
+}
 .st-toggle:hover{background:var(--border);color:var(--text)}
 .st-toggle.collapsed{transform:rotate(-90deg)}
 
-/* Card edit */
-.card-edit{display:none;flex-direction:column;gap:7px;padding:9px 10px 10px}
+/* ── Side column ── */
+.card-side{
+  grid-column:3;grid-row:1;
+  display:flex;flex-direction:column;
+  justify-content:space-between;align-items:flex-end;
+  padding:7px 8px 14px 4px;
+  overflow:hidden;
+}
+.task-card.is-editing .card-side{display:none}
+.card-time-lbl{font-size:9px;color:var(--text-3);font-weight:500;white-space:nowrap;text-align:right;line-height:1.3}
+.card-meta{display:flex;flex-direction:column;align-items:flex-end;gap:3px}
+.badge{display:inline-flex;align-items:center;padding:2px 6px;border-radius:100px;font-size:9px;font-weight:600;white-space:nowrap;height:18px}
+.bdg-dur{background:var(--accent-soft);color:var(--accent)}
+.bdg-cat{background:var(--border);color:var(--text-2);max-width:62px;overflow:hidden;text-overflow:ellipsis}
+
+/* ── Container query: compact mode (height ≤ 52px) ── */
+@container (max-height: 52px) {
+  .card-body{padding:0 6px 0 8px;justify-content:center}
+  .card-note{display:none}
+  .st-toggle{display:none}
+  .card-side{
+    flex-direction:row;align-items:center;
+    padding:0 8px 0 4px;gap:5px;
+    justify-content:flex-end;
+  }
+  .card-time-lbl{display:none}
+  .card-meta{flex-direction:row;gap:4px;align-items:center}
+  .bdg-cat{display:none}
+}
+
+/* ── Edit panel ── */
+.card-edit{display:none;flex-direction:column;gap:7px;padding:9px 10px 10px;grid-column:2 / -1;grid-row:1}
 .task-card.is-editing .card-edit{display:flex}
 .e-input{width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xs);font-size:13px;color:var(--text);outline:none;transition:border-color .16s}
 .e-input:focus{border-color:var(--accent)}
@@ -189,20 +276,41 @@ textarea.e-input{min-height:50px;resize:none;line-height:1.5;font-size:12px}
 .e-add-st{display:flex;align-items:center;gap:5px;font-size:11px;color:var(--accent);cursor:pointer;padding:3px 0;background:none;border:none;font-family:inherit}
 .e-add-st:hover{opacity:.8}
 
-/* Card action buttons — left of card-side */
-.card-acts{position:absolute;top:5px;right:70px;display:flex;gap:2px;opacity:0;transition:opacity var(--dur);z-index:5}
+/* ── Action buttons ── */
+.card-acts{position:absolute;top:5px;right:72px;display:flex;gap:2px;opacity:0;transition:opacity var(--dur);z-index:5}
 .task-card:hover .card-acts,.task-card.is-editing .card-acts{opacity:1}
 .act-btn{width:22px;height:22px;border-radius:5px;background:var(--surface-solid);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text-3);font-size:11px;transition:all .14s;box-shadow:var(--shadow)}
 .act-btn:hover{background:var(--border-h);color:var(--text)}
 .act-btn.del:hover{background:rgba(255,69,58,0.1);color:var(--danger)}
 
-/* Resize handle */
-.card-resizer{position:absolute;bottom:0;left:0;right:70px;height:14px;cursor:ns-resize;z-index:4;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur)}
-.task-card:hover .card-resizer{opacity:1}
+/* ── Resize handle ── */
+.card-resizer{position:absolute;bottom:0;left:22px;right:68px;height:14px;cursor:ns-resize;z-index:4;display:flex;align-items:center;justify-content:center;opacity:0;transition:opacity var(--dur),background .14s}
+.task-card:hover .card-resizer,
+.task-card.is-resizing .card-resizer{opacity:1}
 .task-card.is-editing .card-resizer{display:none}
-.card-resizer::after{content:'';width:32px;height:3px;border-radius:2px;background:var(--text-3)}
-.card-resizer.at-limit{cursor:not-allowed}
+.card-resizer::after{content:'';width:28px;height:3px;border-radius:2px;background:var(--text-3);transition:background .14s}
 .card-resizer.at-limit::after{background:var(--warn)}
+
+/* ═══════════════════════ PROMPT EDITOR ═══════════════════════ */
+.prompt-editor-wrap{position:relative}
+.prompt-editor-wrap textarea.f-input{position:relative;z-index:1;background:transparent;color:var(--text);caret-color:var(--text)}
+.prompt-highlight{position:absolute;inset:0;padding:8px 11px;font-size:11px;font-family:'Courier New',monospace;line-height:1.55;white-space:pre-wrap;word-break:break-word;pointer-events:none;z-index:0;color:transparent;border:1px solid transparent;border-radius:var(--r-xs);overflow:hidden}
+.prompt-var{color:var(--accent);font-weight:700}
+.var-chip{display:inline-flex;align-items:center;padding:2px 8px;border-radius:100px;background:var(--accent-soft);color:var(--accent);font-size:10px;font-weight:700;cursor:pointer;border:1px solid rgba(10,132,255,0.22);transition:background .13s,transform .1s;white-space:nowrap;font-family:'Courier New',monospace}
+.var-chip:hover{background:var(--accent);color:#fff;transform:scale(1.05)}
+
+/* ── Edit panel extra fields ── */
+.e-row{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.e-label-sm{display:block;font-size:10px;font-weight:600;color:var(--text-3);margin-bottom:3px;text-transform:uppercase;letter-spacing:.4px}
+.e-time-row{display:flex;align-items:center;gap:5px}
+.e-time-row span{font-size:11px;color:var(--text-3)}
+
+/* ═══════════════════════ SETTINGS MODAL FOOTER ═══════════════════════ */
+.modal-footer{padding:10px 20px 20px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
+.btn-settings-save{padding:8px 20px;border-radius:var(--r-xs);background:var(--accent);color:white;font-size:13px;font-weight:600;transition:all .16s}
+.btn-settings-save:hover{background:var(--accent-h)}
+.btn-settings-cancel{padding:8px 16px;border-radius:var(--r-xs);background:transparent;color:var(--text-2);border:1px solid var(--border);font-size:13px;transition:all .16s}
+.btn-settings-cancel:hover{color:var(--text);border-color:var(--border-h)}
 
 /* ═══════════════════════ SUBTASK CARDS ═══════════════════════ */
 .subtask-list{overflow:hidden;max-height:2000px;transition:max-height .3s var(--ease)}
@@ -450,14 +558,62 @@ textarea.f-input{min-height:96px;resize:vertical;line-height:1.55;font-size:11px
       </div>
       <div class="tab-pane" id="pane-time">
         <div class="s-hd">时间段</div>
-        <div class="f-grp"><label class="f-lbl">早晨</label><div class="f-row"><input id="s-ms" type="time" class="f-input" value="08:00"><input id="s-me" type="time" class="f-input" value="11:30"></div></div>
-        <div class="f-grp"><label class="f-lbl">下午</label><div class="f-row"><input id="s-as" type="time" class="f-input" value="14:10"><input id="s-ae" type="time" class="f-input" value="18:30"></div></div>
-        <div class="f-grp"><label class="f-lbl">晚上</label><div class="f-row"><input id="s-es" type="time" class="f-input" value="19:00"><input id="s-ee" type="time" class="f-input" value="23:00"></div></div>
+        <div class="f-grp">
+          <label class="f-lbl">早晨</label>
+          <div class="range-wrap" id="tr-morning">
+            <div class="range-row">
+              <span class="range-lbl" id="tr-morning-s">08:00</span>
+              <div class="range-inner"><div class="range-bg"></div><div class="range-fill"></div>
+                <input type="range" class="tr-start" min="420" max="720" step="15" value="480">
+                <input type="range" class="tr-end"   min="420" max="720" step="15" value="690">
+              </div>
+              <span class="range-lbl" id="tr-morning-e">11:30</span>
+            </div>
+            <div class="range-sub">07:00 — 12:00</div>
+          </div>
+        </div>
+        <div class="f-grp">
+          <label class="f-lbl">午后</label>
+          <div class="range-wrap" id="tr-afternoon">
+            <div class="range-row">
+              <span class="range-lbl" id="tr-afternoon-s">14:10</span>
+              <div class="range-inner"><div class="range-bg"></div><div class="range-fill"></div>
+                <input type="range" class="tr-start" min="780" max="1080" step="15" value="850">
+                <input type="range" class="tr-end"   min="780" max="1080" step="15" value="1110">
+              </div>
+              <span class="range-lbl" id="tr-afternoon-e">18:30</span>
+            </div>
+            <div class="range-sub">13:00 — 18:00</div>
+          </div>
+        </div>
+        <div class="f-grp">
+          <label class="f-lbl">傍晚</label>
+          <div class="range-wrap" id="tr-evening">
+            <div class="range-row">
+              <span class="range-lbl" id="tr-evening-s">19:00</span>
+              <div class="range-inner"><div class="range-bg"></div><div class="range-fill"></div>
+                <input type="range" class="tr-start" min="1140" max="1440" step="15" value="1140">
+                <input type="range" class="tr-end"   min="1140" max="1440" step="15" value="1380">
+              </div>
+              <span class="range-lbl" id="tr-evening-e">23:00</span>
+            </div>
+            <div class="range-sub">19:00 — 00:00</div>
+          </div>
+        </div>
         <div class="divider"></div>
-        <div class="s-hd">任务时长</div>
-        <div class="f-row" style="margin-bottom:10px">
-          <div class="f-grp"><label class="f-lbl">最短（分钟）</label><input id="s-min-dur" type="number" class="f-input" value="40"></div>
-          <div class="f-grp"><label class="f-lbl">最长（分钟）</label><input id="s-max-dur" type="number" class="f-input" value="120"></div>
+        <div class="s-hd">任务时长范围</div>
+        <div class="f-grp">
+          <div class="range-wrap" id="dur-range">
+            <div class="range-row">
+              <span class="range-lbl" id="s-min-dur-lbl">40min</span>
+              <div class="range-inner"><div class="range-bg"></div><div class="range-fill"></div>
+                <input type="range" id="s-min-dur" min="30" max="180" step="5" value="40">
+                <input type="range" id="s-max-dur" min="30" max="180" step="5" value="120">
+              </div>
+              <span class="range-lbl" id="s-max-dur-lbl">120min</span>
+            </div>
+            <div class="range-sub">30 — 180 分钟</div>
+          </div>
         </div>
         <div class="divider"></div>
         <div class="s-hd">时间轴 & 调整</div>
@@ -470,9 +626,18 @@ textarea.f-input{min-height:96px;resize:vertical;line-height:1.55;font-size:11px
         </div>
       </div>
       <div class="tab-pane" id="pane-prompts">
-        <div class="f-grp"><label class="f-lbl">第一步：模糊输入 → 清晰分类待办</label><textarea id="s-p1" class="f-input"></textarea></div>
-        <div class="f-grp"><label class="f-lbl">第二步：分类 → 精力时间块分配</label><textarea id="s-p2" class="f-input"></textarea></div>
-        <button class="btn-p" onclick="saveSettings();showToast('✅ 已保存')">保存提示词</button>
+        <div class="f-grp"><label class="f-lbl">第一步：模糊输入 → 清晰分类待办</label>
+          <div class="prompt-editor-wrap"><div class="prompt-highlight" id="ph-p1"></div><textarea id="s-p1" class="f-input" rows="6" oninput="renderPromptHL('p1')"></textarea></div>
+        </div>
+        <div class="f-grp"><label class="f-lbl">第二步：分类 → 精力时间块分配</label>
+          <div class="prompt-editor-wrap"><div class="prompt-highlight" id="ph-p2"></div><textarea id="s-p2" class="f-input" rows="9" oninput="renderPromptHL('p2')"></textarea></div>
+        </div>
+        <div style="margin-top:8px">
+          <p style="font-size:11px;color:var(--text-3);margin-bottom:5px">点击变量可插入到光标位置：</p>
+          <div id="var-chips" style="display:flex;flex-wrap:wrap;gap:4px 6px">
+          </div>
+        </div>
+        <p style="font-size:11px;color:var(--text-3);margin-top:6px">修改后点击「保存设置」生效</p>
       </div>
       <div class="tab-pane" id="pane-display">
         <div class="f-grp"><label class="f-lbl">主题模式</label>
@@ -500,10 +665,12 @@ textarea.f-input{min-height:96px;resize:vertical;line-height:1.55;font-size:11px
         <button class="btn-d" onclick="clearCache()">🗑 清除所有数据</button>
       </div>
     </div>
+    <div class="modal-footer">
+      <button class="btn-settings-cancel" id="settings-cancel-btn">取消</button>
+      <button class="btn-settings-save" id="settings-save-btn">保存设置</button>
+    </div>
   </div>
-</div>
-
-<div class="toast" id="toast"></div>
+</div> id="toast"></div>
 <div class="undo-bar" id="undo-bar"><span id="undo-msg"></span><button class="undo-act" id="undo-act-btn">撤销</button></div>
 
 <script>
@@ -514,14 +681,31 @@ const MAX_H  = 168;
 
 const DP = {
   step1:`你是专业任务整理助手。将用户的模糊待办转化为清晰的分类任务列表。
-规则：1.识别所有任务，合理分类（工作、学习、生活、健康、创意等）2.每个任务估算时长（分钟，最少40最多120）3.起一个简洁的今日标题（6-10字）
+规则：
+1. 识别所有任务，合理分类（工作、学习、生活、健康、创意等）
+2. 每个任务估算时长（分钟，最少{taskMinDuration}最多{taskMaxDuration}）
+3. 为每个任务填写 note（执行提示，不少于一句话，例如具体步骤、注意事项）
+4. 如果用户提到了上午/下午/晚上/早/夜等时间意图，务必记录在 note 中
+5. 起一个简洁的今日标题（6-10字）
 
 严格只输出JSON，不含任何其他文字：
-{"dayTitle":"今日标题","categories":[{"name":"分类","tasks":[{"id":"t1","title":"任务名","note":"执行提示","duration":60,"category":"分类名"}]}]}`,
+{"dayTitle":"今日标题","categories":[{"name":"分类","tasks":[{"id":"t1","title":"任务名","note":"具体执行提示","duration":60,"category":"分类名"}]}]}`,
 
   step2:`你是时间规划专家。根据人体精力曲线将任务分配到三个时段。
-精力规律：早晨（峰值）→深度/创意工作；午后（中等）→沟通/常规事务；傍晚（较低）→轻松/生活事务。
-注意：每个时段总时长不超过该时段可用时间。
+
+用户原始输入（请参考其中的时间意图，如"上午""下午""晚上"等，优先尊重用户的时间偏好）：
+---
+{userRawInput}
+---
+
+精力规律（在不违背用户意图时参考）：早晨（峰值）→深度/创意工作；午后（中等）→沟通/常规事务；傍晚（较低）→轻松/生活事务。
+
+时段范围（严格遵守，不允许任务的时间超出此范围）：
+- 早晨：{morningStart}–{morningEnd}，可用时长 {morningDuration} 分钟
+- 午后：{afternoonStart}–{afternoonEnd}，可用时长 {afternoonDuration} 分钟
+- 傍晚：{eveningStart}–{eveningEnd}，可用时长 {eveningDuration} 分钟
+
+规则：每时段所有任务时长之和严格不超过该时段可用时长，每个任务时长 {taskMinDuration}–{taskMaxDuration} 分钟。
 
 严格只输出JSON，不含任何其他文字：{"morning":[...],"afternoon":[...],"evening":[]}`
 };
@@ -541,7 +725,8 @@ let cfg = {
 let fetchedModels=[], sortables={}, stSortables={}, mdlSortable=null;
 let undoStack=[], undoTimer=null, ctlInterval=null;
 let blockListenersReady=false;
-let _lastResizeEndTime=0; // prevent drag→click toggle
+let _lastResizeEndTime=0;
+let _cfgSnapshot=null; // snapshot when settings opens, restored on cancel
 
 // ═══════════════════════ UTILS ═══════════════════════
 const genId=()=>'t'+Date.now().toString(36)+Math.random().toString(36).substr(2,5);
@@ -567,6 +752,25 @@ function blockRemainingMin(block){
 function snapDur(m){
   if(cfg.time.stepMode!=='step') return m;
   return Math.max(cfg.time.minDur,Math.min(cfg.time.maxDur,Math.round(m/30)*30));
+}
+
+function resolvePromptVars(template, extra={}){
+  const md=t2m(cfg.time.morning.end)-t2m(cfg.time.morning.start);
+  const ad=t2m(cfg.time.afternoon.end)-t2m(cfg.time.afternoon.start);
+  const ed=t2m(cfg.time.evening.end)-t2m(cfg.time.evening.start);
+  return template
+    .replace(/{morningStart}/g,cfg.time.morning.start)
+    .replace(/{morningEnd}/g,cfg.time.morning.end)
+    .replace(/{morningDuration}/g,String(md))
+    .replace(/{afternoonStart}/g,cfg.time.afternoon.start)
+    .replace(/{afternoonEnd}/g,cfg.time.afternoon.end)
+    .replace(/{afternoonDuration}/g,String(ad))
+    .replace(/{eveningStart}/g,cfg.time.evening.start)
+    .replace(/{eveningEnd}/g,cfg.time.evening.end)
+    .replace(/{eveningDuration}/g,String(ed))
+    .replace(/{taskMinDuration}/g,String(cfg.time.minDur))
+    .replace(/{taskMaxDuration}/g,String(cfg.time.maxDur))
+    .replace(/{userRawInput}/g,extra.userRawInput||'（未提供）');
 }
 
 // ═══════════════════════ TOAST & UNDO ═══════════════════════
@@ -607,9 +811,10 @@ function applyTheme(v){
   document.getElementById('theme-btn').textContent=ico;
   document.getElementById('theme-btn-p').textContent=ico;
 }
-function setTheme(v,el){document.querySelectorAll('[data-tv]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.display.theme=v;saveCfg();applyTheme(v)}
-function setAnim(v,el){document.querySelectorAll('[data-av]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.display.anim=v;saveCfg();const sp={slow:'0.5s',normal:'0.24s',fast:'0.12s',none:'0s'}[v]||'0.24s';document.documentElement.style.setProperty('--dur',sp)}
-function setStepMode(v,el){document.querySelectorAll('[data-sv]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.time.stepMode=v;saveCfg()}
+// setTheme/setAnim/setStepMode: only update preview in settings, do NOT persist until Save
+function setTheme(v,el){document.querySelectorAll('[data-tv]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.display.theme=v;applyTheme(v)}
+function setAnim(v,el){document.querySelectorAll('[data-av]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.display.anim=v;const sp={slow:'0.5s',normal:'0.24s',fast:'0.12s',none:'0s'}[v]||'0.24s';document.documentElement.style.setProperty('--dur',sp)}
+function setStepMode(v,el){document.querySelectorAll('[data-sv]').forEach(b=>b.classList.remove('on'));el.classList.add('on');cfg.time.stepMode=v}
 ['theme-btn','theme-btn-p'].forEach(id=>document.getElementById(id).addEventListener('click',()=>{
   cfg.display.theme=document.documentElement.getAttribute('data-theme')==='dark'?'light':'dark';
   saveCfg();applyTheme(cfg.display.theme);
@@ -619,22 +824,36 @@ function setStepMode(v,el){document.querySelectorAll('[data-sv]').forEach(b=>b.c
 function deepMerge(t,s){const r={...t};for(const k in s){if(s[k]&&typeof s[k]==='object'&&!Array.isArray(s[k]))r[k]=deepMerge(t[k]||{},s[k]);else r[k]=s[k]}return r}
 
 function loadCfg(){
-  try{const s=localStorage.getItem('fd_cfg');if(s)cfg=deepMerge(cfg,JSON.parse(s))}catch(e){}
-  applyCfgToUI();applyTheme(cfg.display.theme);
+  try{
+    const s=localStorage.getItem('fd_cfg');
+    if(s){
+      cfg=deepMerge(cfg,JSON.parse(s));
+      // Migrate: if saved prompts are missing key variables, reset to new defaults
+      if(!cfg.prompts.step1.includes('{taskMinDuration}')||!cfg.prompts.step1.includes('note')){
+        cfg.prompts.step1=DP.step1;
+      }
+      if(!cfg.prompts.step2.includes('{morningStart}')||!cfg.prompts.step2.includes('{userRawInput}')){
+        cfg.prompts.step2=DP.step2;
+      }
+    }
+  }catch(e){}
+  applyTheme(cfg.display.theme);
 }
 
 function saveCfg(){
   cfg.api.baseUrl=(document.getElementById('s-base-url').value.trim())||'https://open.bigmodel.cn/api/paas/v4';
   cfg.api.apiKey=document.getElementById('s-api-key').value.trim();
-  cfg.time.morning.start=document.getElementById('s-ms').value;
-  cfg.time.morning.end=document.getElementById('s-me').value;
-  cfg.time.afternoon.start=document.getElementById('s-as').value;
-  cfg.time.afternoon.end=document.getElementById('s-ae').value;
-  cfg.time.evening.start=document.getElementById('s-es').value;
-  cfg.time.evening.end=document.getElementById('s-ee').value;
-  cfg.time.minDur=parseInt(document.getElementById('s-min-dur').value)||40;
-  cfg.time.maxDur=parseInt(document.getElementById('s-max-dur').value)||120;
-  cfg.time.tickH=parseInt(document.getElementById('s-tick-h').value)||2;
+  // Read time ranges from dual-range sliders
+  cfg.time.morning.start=m2t(parseInt(document.querySelector('#tr-morning .tr-start').value)||480);
+  cfg.time.morning.end=m2t(parseInt(document.querySelector('#tr-morning .tr-end').value)||690);
+  cfg.time.afternoon.start=m2t(parseInt(document.querySelector('#tr-afternoon .tr-start').value)||850);
+  cfg.time.afternoon.end=m2t(parseInt(document.querySelector('#tr-afternoon .tr-end').value)||1110);
+  cfg.time.evening.start=m2t(parseInt(document.querySelector('#tr-evening .tr-start').value)||1140);
+  cfg.time.evening.end=m2t(parseInt(document.querySelector('#tr-evening .tr-end').value)||1380);
+  // Duration range
+  cfg.time.minDur=Math.min(180,Math.max(30,parseInt(document.getElementById('s-min-dur').value)||40));
+  cfg.time.maxDur=Math.min(180,Math.max(30,parseInt(document.getElementById('s-max-dur').value)||120));
+  cfg.time.tickH=Math.min(4,Math.max(1,parseInt(document.getElementById('s-tick-h').value)||2));
   cfg.prompts.step1=document.getElementById('s-p1').value;
   cfg.prompts.step2=document.getElementById('s-p2').value;
   localStorage.setItem('fd_cfg',JSON.stringify(cfg));
@@ -645,14 +864,14 @@ function saveSettings(){saveCfg()}
 function applyCfgToUI(){
   document.getElementById('s-base-url').value=cfg.api.baseUrl;
   document.getElementById('s-api-key').value=cfg.api.apiKey;
-  document.getElementById('s-ms').value=cfg.time.morning.start;
-  document.getElementById('s-me').value=cfg.time.morning.end;
-  document.getElementById('s-as').value=cfg.time.afternoon.start;
-  document.getElementById('s-ae').value=cfg.time.afternoon.end;
-  document.getElementById('s-es').value=cfg.time.evening.start;
-  document.getElementById('s-ee').value=cfg.time.evening.end;
+  // Push times to range sliders
+  setTimeRange('tr-morning',t2m(cfg.time.morning.start),t2m(cfg.time.morning.end));
+  setTimeRange('tr-afternoon',t2m(cfg.time.afternoon.start),t2m(cfg.time.afternoon.end));
+  setTimeRange('tr-evening',t2m(cfg.time.evening.start),t2m(cfg.time.evening.end));
+  // Duration
   document.getElementById('s-min-dur').value=cfg.time.minDur;
   document.getElementById('s-max-dur').value=cfg.time.maxDur;
+  updateDurRange();
   document.getElementById('s-tick-h').value=cfg.time.tickH||2;
   document.getElementById('s-p1').value=cfg.prompts.step1;
   document.getElementById('s-p2').value=cfg.prompts.step2;
@@ -661,6 +880,94 @@ function applyCfgToUI(){
   document.querySelectorAll('[data-av]').forEach(b=>b.classList.toggle('on',b.dataset.av===cfg.display.anim));
   document.querySelectorAll('[data-sv]').forEach(b=>b.classList.toggle('on',b.dataset.sv===(cfg.time.stepMode||'free')));
   updateLabels();
+  requestAnimationFrame(()=>{renderPromptHL('1');renderPromptHL('2');});
+}
+
+function updateRangeSlider(wrap){
+  if(!wrap)return;
+  const si=wrap.querySelector('.tr-start')||wrap.querySelector('input[type="range"]:first-of-type');
+  const ei=wrap.querySelector('.tr-end')||wrap.querySelector('input[type="range"]:last-of-type');
+  const fill=wrap.querySelector('.range-fill');
+  if(!si||!ei||!fill)return;
+
+  const minV=parseInt(si.min)||0, maxV=parseInt(si.max)||180;
+  let sv=parseInt(si.value), ev=parseInt(ei.value);
+  if(sv>ev){const t=sv;sv=t;ev=t} // guard
+  const range=maxV-minV;
+  const sp=((sv-minV)/range)*100;
+  const ep=((ev-minV)/range)*100;
+  fill.style.left=sp+'%';
+  fill.style.width=(ep-sp)+'%';
+
+  // Labels: time sliders use id="tr-{block}-s/e", dur slider uses id="s-min/max-dur-lbl"
+  const wid=wrap.id||'';
+  if(wid==='dur-range'){
+    const sl=document.getElementById('s-min-dur-lbl'),el=document.getElementById('s-max-dur-lbl');
+    if(sl)sl.textContent=fmtDur(sv);
+    if(el)el.textContent=fmtDur(ev);
+  } else {
+    // wid = 'tr-morning' / 'tr-afternoon' / 'tr-evening'
+    const prefix=wid.replace('tr-','');
+    const sl=document.getElementById('tr-'+prefix+'-s');
+    const el=document.getElementById('tr-'+prefix+'-e');
+    if(sl)sl.textContent=m2t(sv);
+    if(el)el.textContent=m2t(ev);
+  }
+}
+
+function updateDurRange(){
+  updateRangeSlider(document.getElementById('dur-range'));
+}
+
+function initRangeSliders(){
+  // Time range sliders
+  ['tr-morning','tr-afternoon','tr-evening'].forEach(id=>{
+    const wrap=document.getElementById(id);if(!wrap)return;
+    const si=wrap.querySelector('.tr-start'),ei=wrap.querySelector('.tr-end');
+    if(!si||!ei)return;
+    const enforce=()=>{
+      let sv=parseInt(si.value),ev=parseInt(ei.value);
+      const minGap=30;
+      if(sv>ev-minGap){
+        if(document.activeElement===si)si.value=ev-minGap;
+        else ei.value=sv+minGap;
+      }
+      updateRangeSlider(wrap);
+    };
+    si.addEventListener('input',enforce);
+    ei.addEventListener('input',enforce);
+    updateRangeSlider(wrap);
+  });
+  // Duration range
+  const durWrap=document.getElementById('dur-range');
+  if(durWrap){
+    const mn=document.getElementById('s-min-dur'),mx=document.getElementById('s-max-dur');
+    if(mn&&mx){
+      const enforce=()=>{
+        let sv=parseInt(mn.value),ev=parseInt(mx.value);
+        if(sv>=ev){
+          if(document.activeElement===mn)mn.value=ev-5;
+          else mx.value=sv+5;
+        }
+        updateDurRange();
+      };
+      mn.addEventListener('input',enforce);
+      mx.addEventListener('input',enforce);
+      updateDurRange();
+    }
+  }
+  // Live tick preview
+  document.getElementById('s-tick-h')?.addEventListener('input',()=>{
+    if(state.screen==='planner')requestAnimationFrame(buildTimeline);
+  });
+}
+
+function setTimeRange(id,startMin,endMin){
+  const wrap=document.getElementById(id);if(!wrap)return;
+  const si=wrap.querySelector('.tr-start'),ei=wrap.querySelector('.tr-end');
+  if(si)si.value=startMin;
+  if(ei)ei.value=endMin;
+  updateRangeSlider(wrap);
 }
 
 function updateLabels(){
@@ -669,6 +976,61 @@ function updateLabels(){
   document.getElementById('bt-evening').textContent=`${cfg.time.evening.start} – ${cfg.time.evening.end}`;
   document.getElementById('gap-lunch').textContent=`午休 ${cfg.time.morning.end} – ${cfg.time.afternoon.start}`;
   document.getElementById('gap-dinner').textContent=`晚饭 ${cfg.time.afternoon.end} – ${cfg.time.evening.start}`;
+}
+
+// ═══════════════════════ PROMPT VARIABLE HIGHLIGHT ═══════════════════════
+const KNOWN_VARS=['morningStart','morningEnd','afternoonStart','afternoonEnd','eveningStart','eveningEnd',
+  'morningDuration','afternoonDuration','eveningDuration','taskMinDuration','taskMaxDuration','userRawInput'];
+
+let _lastFocusedPromptTA=null; // track which textarea was last focused
+
+function initVarChips(){
+  const container=document.getElementById('var-chips');
+  if(!container)return;
+  container.innerHTML=KNOWN_VARS.map((v,i)=>
+    `<button class="var-chip" data-var="${v}">{${v}}</button>${i<KNOWN_VARS.length-1?'<span style="color:var(--text-3);font-size:10px;line-height:2">,</span>':''}`
+  ).join('');
+  container.addEventListener('click',e=>{
+    const chip=e.target.closest('.var-chip');
+    if(!chip)return;
+    const ta=_lastFocusedPromptTA;
+    if(!ta)return;
+    const insert=`{${chip.dataset.var}}`;
+    const s=ta.selectionStart,en=ta.selectionEnd;
+    ta.value=ta.value.slice(0,s)+insert+ta.value.slice(en);
+    ta.selectionStart=ta.selectionEnd=s+insert.length;
+    ta.focus();
+    // trigger highlight update
+    const which=ta.id==='s-p1'?'1':'2';
+    renderPromptHL(which);
+  });
+}
+
+function renderPromptHL(which){
+  const ta=document.getElementById('s-p'+which);
+  const hl=document.getElementById('ph-p'+which);
+  if(!ta||!hl)return;
+  hl.style.width=ta.offsetWidth+'px';
+  hl.style.height=ta.offsetHeight+'px';
+  hl.style.fontSize=getComputedStyle(ta).fontSize;
+  hl.scrollTop=ta.scrollTop;
+  const text=ta.value;
+  const varRe=/\{([a-zA-Z]+)\}/g;
+  let result='',last=0,m;
+  while((m=varRe.exec(text))!==null){
+    result+=escHtml(text.slice(last,m.index));
+    if(KNOWN_VARS.includes(m[1])) result+=`<span class="prompt-var">{${m[1]}}</span>`;
+    else result+=escHtml(m[0]);
+    last=m.index+m[0].length;
+  }
+  result+=escHtml(text.slice(last));
+  hl.innerHTML=result+' ';
+}
+function escHtml(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function syncPromptScroll(which){
+  const ta=document.getElementById('s-p'+which);
+  const hl=document.getElementById('ph-p'+which);
+  if(ta&&hl)hl.scrollTop=ta.scrollTop;
 }
 
 // ═══════════════════════ MODEL MANAGEMENT ═══════════════════════
@@ -760,15 +1122,31 @@ async function startProcessing(){
   setScreen('processing');
   document.getElementById('proc-text').textContent='✨ 第一步：整理分类待办清单...';
   try{
-    const r1=await callAI([{role:'user',content:raw}],cfg.prompts.step1);
+    const r1=await callAI([{role:'user',content:raw}],resolvePromptVars(cfg.prompts.step1,{userRawInput:raw}));
     state.dayTitle=r1.dayTitle||'今日任务';
     let allTasks=[];
     (r1.categories||[]).forEach(cat=>(cat.tasks||[]).forEach(t=>allTasks.push(normalizeTask({...t,category:t.category||cat.name}))));
     document.getElementById('proc-text').textContent='📅 第二步：按精力规律分配时间段...';
-    const r2=await callAI([{role:'user',content:JSON.stringify(allTasks)}],cfg.prompts.step2);
-    state.tasks.morning=(r2.morning||[]).map(normalizeTask);
-    state.tasks.afternoon=(r2.afternoon||[]).map(normalizeTask);
-    state.tasks.evening=(r2.evening||[]).map(normalizeTask);
+    const r2=await callAI([{role:'user',content:JSON.stringify(allTasks)}],resolvePromptVars(cfg.prompts.step2,{userRawInput:raw}));
+    // Clamp tasks to fit within block time limits
+    const clampBlock=(tasks,block)=>{
+      const blockMin=t2m(cfg.time[block].end)-t2m(cfg.time[block].start);
+      let used=0;
+      return tasks.map(t=>{
+        const normalised=normalizeTask(t);
+        const avail=Math.max(0,blockMin-used);
+        normalised.duration=Math.max(cfg.time.minDur,Math.min(cfg.time.maxDur,Math.min(normalised.duration,avail)));
+        used+=normalised.duration;
+        return normalised;
+      }).filter((_,i,arr)=>{
+        // drop tasks that can't fit (accumulated duration exceeds block)
+        let s=0;for(let j=0;j<i;j++)s+=arr[j].duration;
+        return s<blockMin;
+      });
+    };
+    state.tasks.morning=clampBlock(r2.morning||[],'morning');
+    state.tasks.afternoon=clampBlock(r2.afternoon||[],'afternoon');
+    state.tasks.evening=clampBlock(r2.evening||[],'evening');
     document.getElementById('planner-title').textContent=state.dayTitle;
     document.getElementById('planner-date').textContent=getToday();
     updateLabels();
@@ -792,12 +1170,15 @@ function renderBlock(block,animated=false){
   const tasks=state.tasks[block]||[];
   const times=calcTaskTimes(block);
   container.innerHTML=tasks.map((t,i)=>makeTaskGroup(t,times[i],block,i,animated)).join('');
+  // Enforce visual max-height so tasks never overflow into the next block
+  const blockDurMin=t2m(cfg.time[block].end)-t2m(cfg.time[block].start);
+  container.style.minHeight='40px';
   updateAddTaskBtnState(block);
 }
 
 function makeTaskGroup(t,times,block,idx,animated=false){
   const h=Math.max(MIN_H,Math.min(MAX_H,t.duration*PX_PM));
-  const tLabel=times?`${times.start} – ${times.end}`:'';
+  const tLabel=times?`${times.start}–${times.end}`:'';
   const hasSubtasks=t.subtasks&&t.subtasks.length>0;
   const stCollapsed=t.collapsed?'collapsed':'';
   const delay=animated?`animation-delay:${idx*0.045}s`:'';
@@ -828,31 +1209,41 @@ function makeTaskGroup(t,times,block,idx,animated=false){
 
   return `<div class="task-group" data-gid="${t.id}"${block?` data-block="${block}"`:''}>
     <div class="${cardCls}" data-id="${t.id}"${block?` data-block="${block}"`:''} style="height:${h}px;${delay}">
-      <div class="card-dragger">⠿</div>
-      <div class="card-content">
-        <div class="card-body">
-          <div class="card-main">
-            <div class="card-title">${esc(t.title)}</div>
-            ${t.note?`<div class="card-note">${esc(t.note)}</div>`:''}
-            ${hasSubtasks?`<button class="st-toggle${t.collapsed?' collapsed':''}" data-action="toggle-st">▾</button>`:''}
+      <div class="card-handle">⠿</div>
+      <div class="card-body">
+        <div class="card-title">${esc(t.title)}</div>
+        ${t.note?`<div class="card-note">${esc(t.note)}</div>`:''}
+        ${hasSubtasks?`<button class="st-toggle${t.collapsed?' collapsed':''}" data-action="toggle-st">▾</button>`:''}
+      </div>
+      <div class="card-side">
+        <div class="card-time-lbl">${esc(tLabel)}</div>
+        <div class="card-meta">
+          <span class="badge bdg-dur">⏱ ${fmtDur(t.duration)}</span>
+          ${t.category?`<span class="badge bdg-cat">${esc(t.category)}</span>`:''}
+        </div>
+      </div>
+      <div class="card-edit">
+        <input type="text" class="e-input" data-f="title" value="${esc(t.title)}" placeholder="任务标题">
+        <textarea class="e-input" data-f="note" placeholder="备注 / 执行提示">${esc(t.note||'')}</textarea>
+        <div class="e-row">
+          <div>
+            <span class="e-label-sm">标签 / 分类</span>
+            <input type="text" class="e-input" data-f="category" value="${esc(t.category||'')}" placeholder="如：工作、学习…">
           </div>
-          <div class="card-side">
-            <div class="card-time-lbl">${esc(tLabel)}</div>
-            <div class="card-meta">
-              <span class="badge bdg-dur">⏱ ${fmtDur(t.duration)}</span>
-              ${t.category?`<span class="badge bdg-cat">${esc(t.category)}</span>`:''}
+          <div>
+            <span class="e-label-sm">起止时间</span>
+            <div class="e-time-row">
+              <input type="time" class="e-input" data-f="startTime" value="${esc(times?times.start:'')}">
+              <span>—</span>
+              <input type="time" class="e-input" data-f="endTime" value="${esc(times?times.end:'')}">
             </div>
           </div>
         </div>
-        <div class="card-edit">
-          <input type="text" class="e-input" data-f="title" value="${esc(t.title)}" placeholder="任务标题">
-          <textarea class="e-input" data-f="note" placeholder="备注（可选）">${esc(t.note||'')}</textarea>
-          <div class="e-st-list" id="est-${t.id}">${editStHtml}</div>
-          <button class="e-add-st" data-action="add-edit-st" data-pid="${t.id}">＋ 添加子任务</button>
-          <div class="e-btns">
-            <button class="e-cancel" data-action="cancel">取消</button>
-            <button class="e-save" data-action="save">保存</button>
-          </div>
+        <div class="e-st-list" id="est-${t.id}">${editStHtml}</div>
+        <button class="e-add-st" data-action="add-edit-st" data-pid="${t.id}">＋ 添加子任务</button>
+        <div class="e-btns">
+          <button class="e-cancel" data-action="cancel">取消</button>
+          <button class="e-save" data-action="save">保存</button>
         </div>
       </div>
       <div class="card-acts">
@@ -891,29 +1282,69 @@ function updateAddTaskBtnState(block){
   }
 }
 
-// ═══════════════════════ TIMELINE (fixed ticks only) ═══════════════════════
+// ═══════════════════════ TIMELINE — card-DOM-measured for perfect alignment ═══════════════════════
+// Returns pixel position (relative to planner-body) for a given time within a block.
+// Walks actual rendered card heights so ticks match card positions exactly.
+function getTimePxInBody(block, nowMin){
+  const sMin=t2m(cfg.time[block].start);
+  const list=document.getElementById('tl-'+block);
+  const bodyEl=document.getElementById('planner-body');
+  if(!list||!bodyEl)return null;
+  const listTop=list.getBoundingClientRect().top - bodyEl.getBoundingClientRect().top;
+  const offsetMin=nowMin-sMin;
+  if(offsetMin<=0)return listTop;
+  // Walk rendered cards summing actual heights (offsetHeight includes border)
+  const tasks=state.tasks[block]||[];
+  const cards=[...list.querySelectorAll(':scope > .task-group > .task-card')];
+  let usedMin=0, usedPx=0;
+  for(let i=0;i<tasks.length;i++){
+    const dur=tasks[i].duration;
+    const h=cards[i]?cards[i].offsetHeight:Math.max(MIN_H,Math.min(MAX_H,dur*PX_PM));
+    const mb=7; // .task-card margin-bottom
+    if(usedMin+dur>=offsetMin){
+      const frac=(offsetMin-usedMin)/dur;
+      return listTop+usedPx+frac*h;
+    }
+    usedMin+=dur; usedPx+=h+mb;
+  }
+  return listTop+usedPx+(offsetMin-usedMin)*PX_PM; // after last task
+}
+
 function buildTimeline(){
   const rail=document.getElementById('tl-rail');if(!rail)return;
   rail.querySelectorAll('.tl-tick').forEach(e=>e.remove());
-  const bodyEl=document.getElementById('planner-body');if(!bodyEl)return;
-  const bodyRect=bodyEl.getBoundingClientRect();
+  const bc=document.querySelector('.blocks-col');
+  if(bc)rail.style.height=bc.offsetHeight+'px';
+  const railRect=rail.getBoundingClientRect();
+  if(!railRect.height)return;
+
+  const tickHField=document.getElementById('s-tick-h');
+  const liveTickH=Math.min(4,Math.max(1,parseInt(tickHField?.value)||cfg.time.tickH));
+  const tickIntervalMin=liveTickH*60;
+  const bodyEl=document.getElementById('planner-body');
+  const railOffsetInBody=bodyEl?railRect.top-bodyEl.getBoundingClientRect().top:0;
+  const seen=new Set();
+
+  function addTick(topInBody,label){
+    const py=Math.round(topInBody-railOffsetInBody);
+    const bucket=Math.floor(py/4);
+    if(seen.has(bucket))return; seen.add(bucket);
+    const d=document.createElement('div');
+    d.className='tl-tick'; d.style.top=py+'px';
+    d.innerHTML=`<span class="tl-tick-lbl">${label}</span><div class="tl-tick-dot"></div>`;
+    rail.appendChild(d);
+  }
 
   ['morning','afternoon','evening'].forEach(block=>{
-    const list=document.getElementById('tl-'+block);if(!list)return;
-    const listRect=list.getBoundingClientRect();
-    const listTopPx=listRect.top-bodyRect.top;
     const blockStart=t2m(cfg.time[block].start);
     const blockEnd=t2m(cfg.time[block].end);
-    const tickH=(cfg.time.tickH||2)*60;
-
-    // Only fixed interval ticks — no task boundary markers
-    for(let m=blockStart;m<=blockEnd;m+=tickH){
-      const py=listTopPx+(m-blockStart)*PX_PM;
-      const d=document.createElement('div');
-      d.className='tl-tick';
-      d.style.top=py+'px';
-      d.innerHTML=`<span class="tl-tick-lbl">${m2t(m)}</span><div class="tl-tick-dot"></div>`;
-      rail.appendChild(d);
+    const startPx=getTimePxInBody(block,blockStart);
+    if(startPx===null)return;
+    addTick(startPx,m2t(blockStart));
+    const firstTick=Math.ceil((blockStart+1)/tickIntervalMin)*tickIntervalMin;
+    for(let m=firstTick;m<=blockEnd;m+=tickIntervalMin){
+      const px=getTimePxInBody(block,m);
+      if(px!==null)addTick(px,m2t(m));
     }
   });
 }
@@ -924,21 +1355,17 @@ function startCTL(){if(ctlInterval)clearInterval(ctlInterval);ctlInterval=setInt
 function updateCTL(){
   const ctl=document.getElementById('ctl');if(!ctl)return;
   const now=new Date(),nowMin=now.getHours()*60+now.getMinutes();
-  const bodyEl=document.getElementById('planner-body');if(!bodyEl)return;
-  const bodyRect=bodyEl.getBoundingClientRect();
-  let found=false;
   for(const block of['morning','afternoon','evening']){
     const sMin=t2m(cfg.time[block].start),eMin=t2m(cfg.time[block].end);
-    if(nowMin>=sMin&&nowMin<=eMin){
-      const list=document.getElementById('tl-'+block);if(!list)continue;
-      const lr=list.getBoundingClientRect();
-      const top=(lr.top-bodyRect.top)+(nowMin-sMin)*PX_PM;
-      ctl.style.display='block';ctl.style.top=top+'px';
-      document.getElementById('ctl-label').textContent=m2t(nowMin);
-      found=true;break;
-    }
+    if(nowMin<sMin||nowMin>eMin)continue;
+    const top=getTimePxInBody(block,nowMin);
+    if(top===null){ctl.style.display='none';return;}
+    ctl.style.display='block';
+    ctl.style.top=Math.round(top)+'px';
+    document.getElementById('ctl-label').textContent=m2t(nowMin);
+    return;
   }
-  if(!found)ctl.style.display='none';
+  ctl.style.display='none';
 }
 
 // ═══════════════════════ SETUP BLOCK LISTENERS ═══════════════════════
@@ -1010,7 +1437,7 @@ function handleCardClick(e,block){
   if(action==='rm-edit-st'){e.stopPropagation();rmEditSubtask(e.target.closest('[data-stidx]').dataset.stidx,card);return}
 
   // Card body click = toggle done
-  if(!e.target.closest('.card-acts')&&!e.target.closest('.card-edit')&&!e.target.closest('.card-dragger')&&!e.target.closest('.card-resizer')&&!e.target.closest('.st-toggle')){
+  if(!e.target.closest('.card-acts')&&!e.target.closest('.card-edit')&&!e.target.closest('.card-handle')&&!e.target.closest('.card-resizer')&&!e.target.closest('.st-toggle')){
     toggleDone(id,card,block);
   }
 }
@@ -1047,8 +1474,17 @@ function findTask(block,id){return state.tasks[block]?.find(t=>t.id===id)}
 function toggleDone(id,card,block){
   const task=findTask(block,id);if(!task)return;
   task.completed=!task.completed;
+  // Strip card-in FIRST to prevent it from replaying during reflow
+  card.classList.remove('card-in','complete-pop','shake');
   card.classList.toggle('completed',task.completed);
   card.querySelector('.card-title')?.style&&(card.querySelector('.card-title').style.textDecoration=task.completed?'line-through':'');
+  // Completion pop animation (only when marking done)
+  if(task.completed){
+    requestAnimationFrame(()=>{
+      card.classList.add('complete-pop');
+      card.addEventListener('animationend',()=>card.classList.remove('complete-pop'),{once:true});
+    });
+  }
   if(task.subtasks){
     task.subtasks.forEach(s=>s.completed=task.completed);
     card.closest('.task-group')?.querySelectorAll('.subtask-card').forEach(sc=>{
@@ -1130,8 +1566,42 @@ function saveEdit(id,card,block){
   const task=findTask(block,id);if(!card||!task)return;
   const ti=card.querySelector('[data-f="title"]');
   const ni=card.querySelector('[data-f="note"]');
+  const ci=card.querySelector('[data-f="category"]');
+  const sti=card.querySelector('[data-f="startTime"]');
+  const eti=card.querySelector('[data-f="endTime"]');
   if(ti?.value.trim())task.title=ti.value.trim();
   task.note=(ni?.value||'').trim();
+  if(ci)task.category=(ci.value||'').trim();
+
+  // Time editing: if user changed start/end, recalculate durations of all tasks in block
+  if(sti?.value&&eti?.value){
+    const newStart=sti.value, newEnd=eti.value;
+    const newStartMin=t2m(newStart), newEndMin=t2m(newEnd);
+    const dur=newEndMin-newStartMin;
+    if(dur>0){
+      // Clamp to allowed range
+      const clamped=Math.max(cfg.time.minDur,Math.min(cfg.time.maxDur,dur));
+      task.duration=clamped;
+      // Also adjust the block start offset: recalc preceding tasks so this task starts at newStartMin
+      const blockStart=t2m(cfg.time[block].start);
+      const taskIdx=state.tasks[block].findIndex(t=>t.id===id);
+      if(taskIdx>=0){
+        const targetOffset=newStartMin-blockStart;
+        let usedMin=0;
+        for(let i=0;i<taskIdx;i++) usedMin+=state.tasks[block][i].duration;
+        const diff=targetOffset-usedMin;
+        // Distribute diff among preceding tasks proportionally if positive, or trim last preceding task
+        if(diff!==0&&taskIdx>0){
+          const prev=state.tasks[block][taskIdx-1];
+          const newPrevDur=Math.max(cfg.time.minDur,Math.min(cfg.time.maxDur,prev.duration+diff));
+          const blockRem=t2m(cfg.time[block].end)-t2m(cfg.time[block].start);
+          const othersSum=state.tasks[block].filter((_,i)=>i!==taskIdx&&i!==taskIdx-1).reduce((a,t)=>a+t.duration,0);
+          if(newPrevDur+clamped+othersSum<=blockRem) prev.duration=newPrevDur;
+        }
+      }
+    }
+  }
+
   // Collect subtasks
   const stItems=card.querySelectorAll('.e-st-item');
   const newSubs=[];
@@ -1142,12 +1612,10 @@ function saveEdit(id,card,block){
   });
   task.subtasks=newSubs;
   // Re-render group
-  const container=document.getElementById('tl-'+block);
   const group=card.closest('.task-group');
   const times=calcTaskTimes(block);
   const taskIdx=state.tasks[block].findIndex(t=>t.id===id);
   if(group&&taskIdx>=0)group.outerHTML=makeTaskGroup(task,times[taskIdx],block,taskIdx,false);
-  // Re-init subtask sortable for this task
   initSubtaskSortableForTask(id,block);
   updateBlockTimeLabels(block);buildTimeline();updateBlockProgress(block);updateAddTaskBtnState(block);
   showToast('✅ 已保存');saveCurrentToHistory();
@@ -1211,54 +1679,77 @@ function initSortableForBlock(b){
   if(sortables[b]){try{sortables[b].destroy()}catch(e){}}
   sortables[b]=new Sortable(el,{
     group:{name:'tasks',pull:true,put:true},
-    animation:240,draggable:'.task-group',handle:'.card-dragger',
+    animation:240,draggable:'.task-group',handle:'.card-handle',
     ghostClass:'sortable-ghost',chosenClass:'sortable-chosen',
     disabled:!state.enabled,
+    // Reject cross-block drag before it lands → Sortable stays functional
+    onMove:evt=>{
+      const fromBlock=evt.from.dataset.block;
+      const toBlock=evt.to.dataset.block;
+      if(!fromBlock||!toBlock||fromBlock===toBlock)return; // allow
+      const id=evt.dragged.querySelector('.task-card')?.dataset.id;
+      const task=state.tasks[fromBlock]?.find(t=>t.id===id);
+      const taskDur=task?.duration||cfg.time.minDur;
+      const dstRem=blockRemainingMin(toBlock);
+      if(dstRem<cfg.time.minDur){
+        showToast('⚠️ 该时间块所剩时间不足',1800);
+        return false; // cancel — Sortable reverts automatically, stays enabled
+      }
+    },
     onStart:evt=>{
       evt.item.classList.add('dragging');
       const stList=evt.item.querySelector('.subtask-list');
-      if(stList&&!stList.classList.contains('collapsed')){
-        stList.style.maxHeight=stList.scrollHeight+'px';
-        void stList.offsetHeight;stList.classList.add('collapsing');
-        setTimeout(()=>stList.classList.remove('collapsing'),200);
+      if(stList){
+        stList._wasCollapsed=stList.classList.contains('collapsed');
+        if(!stList._wasCollapsed){
+          stList.style.maxHeight=stList.scrollHeight+'px';
+          void stList.offsetHeight;
+          stList.classList.add('collapsing');
+          setTimeout(()=>{stList.classList.remove('collapsing');stList.classList.add('_drag-hide')},180);
+        }
       }
     },
     onEnd:evt=>{
       evt.item.classList.remove('dragging');
-      const srcBlockEl=evt.from;const dstBlockEl=evt.to;
-      const srcBlock=srcBlockEl.dataset.block||b;
-      const dstBlock=dstBlockEl.dataset.block||b;
+      const srcBlock=evt.from.dataset.block||b;
+      const dstBlock=evt.to.dataset.block||b;
       const id=evt.item.querySelector('.task-card')?.dataset.id;
       if(!id)return;
 
+      // Restore subtask visibility
+      const stList=evt.item.querySelector('.subtask-list');
+      if(stList){
+        stList.classList.remove('_drag-hide','collapsing');
+        if(!stList._wasCollapsed){stList.classList.remove('collapsed');stList.style.maxHeight='';}
+        delete stList._wasCollapsed;
+      }
+
       if(srcBlock===dstBlock){
-        // Same block reorder
         const arr=state.tasks[dstBlock];
         const[mv]=arr.splice(evt.oldIndex,1);
         arr.splice(evt.newIndex,0,mv);
       } else {
-        // Cross-block move: update state
         const srcArr=state.tasks[srcBlock];
         const dstArr=state.tasks[dstBlock];
         const srcIdx=srcArr.findIndex(t=>t.id===id);
         if(srcIdx>=0){
           const[mv]=srcArr.splice(srcIdx,1);
-          // Clamp duration to destination block capacity
           const dstRem=blockRemainingMin(dstBlock);
-          mv.duration=Math.min(mv.duration,Math.max(cfg.time.minDur,dstRem));
+          if(mv.duration>dstRem) mv.duration=Math.max(cfg.time.minDur,dstRem);
           dstArr.splice(evt.newIndex,0,mv);
+          const movedCard=evt.item.querySelector('.task-card');
+          if(movedCard){
+            movedCard.style.height=Math.max(MIN_H,Math.min(MAX_H,mv.duration*PX_PM))+'px';
+            const bdg=movedCard.querySelector('.bdg-dur');if(bdg)bdg.textContent='⏱ '+fmtDur(mv.duration);
+          }
         }
-        // Update block data-attributes on task-group and task-card
         evt.item.dataset.block=dstBlock;
         evt.item.querySelector('.task-card')&&(evt.item.querySelector('.task-card').dataset.block=dstBlock);
         evt.item.querySelectorAll('.subtask-card').forEach(sc=>sc.dataset.block=dstBlock);
         updateBlockProgress(srcBlock);updateAddTaskBtnState(srcBlock);
         updateBlockTimeLabels(srcBlock);
       }
-      // Restore subtask visibility
-      const stList=evt.item.querySelector('.subtask-list');
-      const task=findTask(dstBlock,id);
-      if(stList&&task&&!task.collapsed){stList.style.maxHeight='';stList.classList.remove('collapsed');}
+
       updateBlockTimeLabels(dstBlock);updateBlockProgress(dstBlock);updateAddTaskBtnState(dstBlock);
       buildTimeline();saveCurrentToHistory();
     }
@@ -1284,6 +1775,8 @@ function initSubtaskSortableForEl(stList,block){
   if(stSortables[key]){try{stSortables[key].destroy()}catch(e){}}
   if(!window.Sortable)return;
   stSortables[key]=new Sortable(stList,{
+    // Isolated group — subtasks can ONLY reorder within their own parent
+    group:{name:'st-'+pid,pull:false,put:false},
     animation:180,draggable:'.subtask-wrap',handle:'.st-dragger',
     ghostClass:'sortable-ghost',
     disabled:!state.enabled,
@@ -1298,6 +1791,9 @@ function initSubtaskSortableForEl(stList,block){
 
 // ═══════════════════════ RESIZE ═══════════════════════
 function startResize(card,startY,block){
+  // Remove card-in animation class immediately — prevents flicker when shake reflows
+  card.classList.remove('card-in');
+
   const startH=card.offsetHeight;
   const id=card.dataset.id;
   const task=findTask(block,id);
@@ -1305,20 +1801,18 @@ function startResize(card,startY,block){
   const othersDur=(state.tasks[block]||[]).filter(t=>t.id!==id).reduce((a,t)=>a+t.duration,0);
   const maxAllowed=Math.min(cfg.time.maxDur,Math.max(cfg.time.minDur,blockTotalMin-othersDur));
   let wasDragged=false;
-
-  const tryShake=(reason)=>{
-    card.classList.remove('shake');
-    void card.offsetWidth; // reflow to restart animation
-    card.classList.add('shake');
-    showToast(reason,2000);
-    card.addEventListener('animationend',()=>card.classList.remove('shake'),{once:true});
+  card.classList.add('is-resizing');
+  const rz=card.querySelector('.card-resizer');
+  let _atLimitReason='', _limitTimer=null;
+  const setAtLimit=(reason)=>{
+    if(_atLimitReason===reason)return;
+    _atLimitReason=reason;
+    if(rz)rz.classList.add('at-limit');
+    showToast(reason,1600);
+    clearTimeout(_limitTimer);
+    _limitTimer=setTimeout(()=>{_atLimitReason='';if(rz)rz.classList.remove('at-limit');},600);
   };
-
-  // Check if already at a limit before drag starts
-  if(task&&(task.duration<=cfg.time.minDur||task.duration>=maxAllowed)){
-    const rz=card.querySelector('.card-resizer');
-    if(rz){rz.classList.add('at-limit');setTimeout(()=>rz.classList.remove('at-limit'),2000);}
-  }
+  const clearAtLimit=()=>{_atLimitReason='';clearTimeout(_limitTimer);if(rz)rz.classList.remove('at-limit');};
 
   const mv=e=>{
     wasDragged=true;
@@ -1327,23 +1821,27 @@ function startResize(card,startY,block){
     const prevDur=task?task.duration:cfg.time.minDur;
     const clampedDur=Math.max(cfg.time.minDur,Math.min(maxAllowed,newDur));
     if(clampedDur!==newDur){
-      if(newDur<cfg.time.minDur&&prevDur===cfg.time.minDur){
-        tryShake(`最短时长为 ${fmtDur(cfg.time.minDur)}`);
-      } else if(newDur>maxAllowed&&prevDur===maxAllowed){
-        if(maxAllowed===cfg.time.maxDur) tryShake(`最长时长为 ${fmtDur(cfg.time.maxDur)}`);
-        else tryShake('已达到时间块截止时间');
+      if(newDur<cfg.time.minDur&&prevDur<=cfg.time.minDur){
+        setAtLimit(`最短时长 ${fmtDur(cfg.time.minDur)}`);
+      } else if(newDur>maxAllowed&&prevDur>=maxAllowed){
+        if(maxAllowed===cfg.time.maxDur) setAtLimit(`最长时长 ${fmtDur(cfg.time.maxDur)}`);
+        else setAtLimit('已达时间块截止时间');
       }
+    } else {
+      clearAtLimit();
     }
     newDur=clampedDur;
     const nh=newDur*PX_PM;
     card.style.height=nh+'px';
     if(task)task.duration=newDur;
     const b=card.querySelector('.bdg-dur');if(b)b.textContent='⏱ '+fmtDur(newDur);
-    updateBlockTimeLabels(block);buildTimeline();
+    updateBlockTimeLabels(block);updateBlockProgress(block);buildTimeline();
   };
   const up=()=>{
     document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
     document.removeEventListener('touchmove',mv);document.removeEventListener('touchend',up);
+    card.classList.remove('is-resizing');
+    clearAtLimit();
     if(wasDragged)_lastResizeEndTime=Date.now();
     saveCurrentToHistory();
   };
@@ -1352,8 +1850,53 @@ function startResize(card,startY,block){
 }
 
 // ═══════════════════════ SETTINGS MODAL ═══════════════════════
-function openSettings(){applyCfgToUI();document.getElementById('settings-overlay').classList.add('open')}
-function closeSettings(){saveCfg();document.getElementById('settings-overlay').classList.remove('open')}
+function openSettings(){
+  _cfgSnapshot=cloneDeep(cfg);
+  applyCfgToUI();
+  document.getElementById('settings-overlay').classList.add('open');
+}
+function cancelSettings(){
+  // Revert cfg to snapshot and re-apply
+  if(_cfgSnapshot){
+    cfg=cloneDeep(_cfgSnapshot);
+    applyTheme(cfg.display.theme);
+    const sp={slow:'0.5s',normal:'0.24s',fast:'0.12s',none:'0s'}[cfg.display.anim]||'0.24s';
+    document.documentElement.style.setProperty('--dur',sp);
+    _cfgSnapshot=null;
+  }
+  document.getElementById('settings-overlay').classList.remove('open');
+}
+function confirmSettings(){
+  // Validate
+  const minD=parseInt(document.getElementById('s-min-dur').value)||0;
+  const maxD=parseInt(document.getElementById('s-max-dur').value)||0;
+  const tickH=parseInt(document.getElementById('s-tick-h').value)||0;
+  const errors=[];
+  if(minD<30||minD>180)errors.push('最短时长需在 30–180 分钟之间（当前：'+minD+'min）');
+  if(maxD<30||maxD>180)errors.push('最长时长需在 30–180 分钟之间（当前：'+maxD+'min）');
+  if(minD>=maxD)errors.push('最短时长须小于最长时长');
+  if(tickH<1||tickH>4)errors.push('主刻度间隔须在 1–4 小时之间');
+  // Validate time ranges have at least 30-min span
+  ['tr-morning','tr-afternoon','tr-evening'].forEach((id,i)=>{
+    const wrap=document.getElementById(id);if(!wrap)return;
+    const sv=parseInt(wrap.querySelector('.tr-start').value);
+    const ev=parseInt(wrap.querySelector('.tr-end').value);
+    const names=['早晨','午后','傍晚'];
+    if(ev-sv<30)errors.push(names[i]+'：结束时间须比开始时间至少晚 30 分钟');
+  });
+  if(errors.length){
+    showToast('⚠️ '+errors[0],3200);
+    return;
+  }
+  saveCfg();
+  _cfgSnapshot=null;
+  // Save button visual feedback
+  const btn=document.getElementById('settings-save-btn');
+  btn.textContent='✓ 已保存';btn.classList.add('saved');
+  setTimeout(()=>{btn.textContent='保存设置';btn.classList.remove('saved');},1600);
+  showToast('✅ 设置已保存');
+  document.getElementById('settings-overlay').classList.remove('open');
+}
 document.querySelectorAll('.t-btn[data-tab]').forEach(btn=>{
   btn.addEventListener('click',()=>{
     const tab=btn.dataset.tab;
@@ -1363,8 +1906,10 @@ document.querySelectorAll('.t-btn[data-tab]').forEach(btn=>{
   });
 });
 ['settings-btn-top','settings-btn-p'].forEach(id=>document.getElementById(id).addEventListener('click',openSettings));
-document.getElementById('settings-close').addEventListener('click',closeSettings);
-document.getElementById('settings-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)closeSettings()});
+document.getElementById('settings-close').addEventListener('click',cancelSettings);
+document.getElementById('settings-cancel-btn').addEventListener('click',cancelSettings);
+document.getElementById('settings-save-btn').addEventListener('click',confirmSettings);
+document.getElementById('settings-overlay').addEventListener('click',e=>{if(e.target===e.currentTarget)cancelSettings()});
 
 // ═══════════════════════ EXPORT ═══════════════════════
 const exportBtn=document.getElementById('export-btn');
@@ -1445,14 +1990,36 @@ function renderHistoryList(){
     html+=`<div class="hist-grp-lbl">${grp.label}</div>`;
     grp.items.forEach(h=>{
       const t=new Date(h.date),ts=`${String(t.getHours()).padStart(2,'0')}:${String(t.getMinutes()).padStart(2,'0')}`;
-      html+=`<div class="hist-item${h.id===state.currentHistId?' active':''}" data-hid="${h.id}"><div class="hi-title">${esc(h.dayTitle)}</div><div class="hi-sub">${ts} · ${h.taskCount||0} 个任务</div></div>`;
+      html+=`<div class="hist-item${h.id===state.currentHistId?' active':''}" data-hid="${h.id}">
+        <div class="hi-body"><div class="hi-title">${esc(h.dayTitle)}</div><div class="hi-sub">${ts} · ${h.taskCount||0} 个任务</div></div>
+        <button class="hist-del" data-del-hid="${h.id}" title="删除">✕</button>
+      </div>`;
     });
   }
   el.innerHTML=html;
-  el.querySelectorAll('.hist-item').forEach(item=>item.addEventListener('click',()=>loadHistory(item.dataset.hid)));
+  el.querySelectorAll('.hist-item').forEach(item=>{
+    item.addEventListener('click',e=>{
+      if(e.target.closest('.hist-del'))return;
+      loadHistory(item.dataset.hid);
+    });
+  });
+  el.querySelectorAll('.hist-del').forEach(btn=>{
+    btn.addEventListener('click',e=>{
+      e.stopPropagation();
+      deleteHistory(btn.dataset.delHid);
+    });
+  });
 }
 
 function getDateLabel(d){const now=new Date();if(d.toDateString()===now.toDateString())return'今天';const y=new Date(now-86400000);if(d.toDateString()===y.toDateString())return'昨天';return`${d.getMonth()+1}月${d.getDate()}日`}
+
+function deleteHistory(hid){
+  const history=getHistory().filter(h=>h.id!==hid);
+  localStorage.setItem('fd_history',JSON.stringify(history));
+  if(state.currentHistId===hid){state.currentHistId=null}
+  renderHistoryList();
+  showToast('已删除该规划');
+}
 
 function loadHistory(hid){
   const h=getHistory().find(h=>h.id===hid);if(!h){showToast('找不到该记录');return}
@@ -1518,11 +2085,22 @@ window.addEventListener('resize',()=>{clearTimeout(_rebuildTimer);_rebuildTimer=
 
 // ═══════════════════════ INIT ═══════════════════════
 loadCfg();
+initRangeSliders();
+applyCfgToUI();
 setupModelInput();
+initVarChips();
 document.getElementById('planner-date').textContent=getToday();
 renderHistoryList();
 applyTheme(cfg.display.theme);
 setScreen('input');
+// Prompt textarea scroll sync + focus tracking
+['1','2'].forEach(w=>{
+  const ta=document.getElementById('s-p'+w);
+  if(!ta)return;
+  ta.addEventListener('scroll',()=>syncPromptScroll(w));
+  ta.addEventListener('input',()=>renderPromptHL(w));
+  ta.addEventListener('focus',()=>{_lastFocusedPromptTA=ta});
+});
 </script>
 </body>
 </html>

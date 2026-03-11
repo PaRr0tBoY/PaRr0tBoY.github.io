@@ -56,6 +56,8 @@ header{position:sticky;top:0;z-index:200;background:rgba(14,14,14,0.96);backdrop
 .sp-deepl{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;margin-bottom:8px}
 .deepl-status{font-size:11px;color:var(--text3);margin-top:6px}
 .deepl-status.ok{color:var(--green)}
+.test-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:3px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;transition:all .15s}
+.test-btn:hover{color:#fff;border-color:#555}
 .deepl-status.err{color:var(--red)}
 .sp-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
 .sp-save{background:var(--red);border:none;color:#fff;padding:8px 20px;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;transition:opacity .15s}
@@ -211,32 +213,77 @@ header{position:sticky;top:0;z-index:200;background:rgba(14,14,14,0.96);backdrop
     <div class="sp-sub">编辑 Feed 链接、条目数量，以及配置自动翻译</div>
     <button class="sp-close" onclick="closeSettings()">×</button>
 
-    <!-- DEEPL -->
+    <!-- TRANSLATION -->
     <div class="sp-section">
-      <div class="sp-section-title">🌐 DeepL 翻译</div>
-      <div class="trans-toggle" style="margin-bottom:10px">
-        <label class="toggle"><input type="checkbox" id="transEnabled"><span class="toggle-slider"></span></label>
-        <span class="toggle-label">启用自动翻译（将标题和摘要翻译为中文）</span>
+      <div class="sp-section-title">🌐 自动翻译</div>
+
+      <!-- engine tabs -->
+      <div style="display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border2);border-radius:4px;overflow:hidden">
+        <button id="tab-deepl" onclick="switchTransTab('deepl')" style="flex:1;padding:7px 0;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border:none;background:var(--red);color:#fff;transition:all .15s">DeepL</button>
+        <button id="tab-ai" onclick="switchTransTab('ai')" style="flex:1;padding:7px 0;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border:none;background:var(--surface2);color:var(--text3);transition:all .15s">✦ AstrDark AI</button>
       </div>
-      <div class="sp-deepl">
-        <label class="feed-label">API Key</label>
-        <div style="display:flex;gap:8px">
-          <input class="sp-input" type="password" id="deeplKey" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx  （免费版在末尾加 :fx）" style="flex:1">
-          <button onclick="testDeepL()" style="background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:3px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;transition:all .15s" onmouseover="this.style.color='#fff';this.style.borderColor='#444'" onmouseout="this.style.color='var(--text2)';this.style.borderColor='var(--border2)'">测试连接</button>
+
+      <!-- DeepL pane -->
+      <div id="pane-deepl">
+        <div class="trans-toggle" style="margin-bottom:10px">
+          <label class="toggle"><input type="checkbox" id="transEnabled"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">启用 DeepL 翻译</span>
         </div>
+        <div class="sp-deepl">
+          <label class="feed-label">API Key</label>
+          <div style="display:flex;gap:8px">
+            <input class="sp-input" type="password" id="deeplKey" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" style="flex:1">
+            <button onclick="testDeepL()" class="test-btn">测试</button>
+          </div>
+        </div>
+        <div class="sp-deepl">
+          <label class="feed-label">目标语言</label>
+          <select class="sp-input" id="deeplLang" style="font-family:var(--font)">
+            <option value="ZH">中文（简体）</option>
+            <option value="ZH-HANT">中文（繁体）</option>
+            <option value="JA">日语</option>
+            <option value="KO">韩语</option>
+            <option value="FR">法语</option>
+            <option value="DE">德语</option>
+          </select>
+        </div>
+        <div class="deepl-status" id="deeplStatus"></div>
       </div>
-      <div class="sp-deepl">
-        <label class="feed-label">目标语言</label>
-        <select class="sp-input" id="deeplLang" style="font-family:var(--font)">
-          <option value="ZH">中文（简体）</option>
-          <option value="ZH-HANT">中文（繁体）</option>
-          <option value="JA">日语</option>
-          <option value="KO">韩语</option>
-          <option value="FR">法语</option>
-          <option value="DE">德语</option>
-        </select>
+
+      <!-- AstrDark AI pane -->
+      <div id="pane-ai" style="display:none">
+        <div class="trans-toggle" style="margin-bottom:10px">
+          <label class="toggle"><input type="checkbox" id="aiTransEnabled"><span class="toggle-slider"></span></label>
+          <span class="toggle-label">启用 AI 翻译（免费 · 无限额度）</span>
+        </div>
+        <div class="sp-deepl">
+          <label class="feed-label">Endpoint</label>
+          <input class="sp-input" id="aiEndpoint" placeholder="https://api.astrdark.cyou" value="https://api.astrdark.cyou">
+        </div>
+        <div class="sp-deepl">
+          <label class="feed-label">API Key</label>
+          <div style="display:flex;gap:8px">
+            <input class="sp-input" type="password" id="aiKey" placeholder="sk-..." style="flex:1">
+            <button onclick="testAI()" class="test-btn">测试</button>
+          </div>
+        </div>
+        <div class="sp-deepl">
+          <label class="feed-label">模型</label>
+          <input class="sp-input" id="aiModel" placeholder="gpt-4o-mini" value="gpt-4o-mini">
+        </div>
+        <div class="sp-deepl">
+          <label class="feed-label">目标语言</label>
+          <select class="sp-input" id="aiLang" style="font-family:var(--font)">
+            <option value="Chinese">中文（简体）</option>
+            <option value="Traditional Chinese">中文（繁体）</option>
+            <option value="Japanese">日语</option>
+            <option value="Korean">韩语</option>
+            <option value="French">法语</option>
+            <option value="German">德语</option>
+          </select>
+        </div>
+        <div class="deepl-status" id="aiStatus"></div>
       </div>
-      <div class="deepl-status" id="deeplStatus"></div>
     </div>
 
     <!-- FEED SETTINGS -->
@@ -359,7 +406,8 @@ const DEFAULTS = {
     { name:'Vivaldi',  url:'https://vivaldi.com/category/desktop-snapshots/feed/', count:8 },
     { name:'Claude',   url:'https://raw.githubusercontent.com/SebastianLavertheDe/blog-rss-feed/main/rss/claude_blog_rss.xml', count:8 },
   ],
-  deepl: { enabled:false, key:'', lang:'ZH' },
+  deepl:   { enabled:false, key:'', lang:'ZH' },
+  aiTrans: { enabled:false, endpoint:'https://api.astrdark.cyou', key:'', model:'gpt-4o-mini', lang:'Chinese' },
 };
 
 function loadConfig() {
@@ -403,93 +451,131 @@ async function proxyFetch(url) {
 }
 
 // ═══════════════════════════════════════════════
-//  DEEPL TRANSLATION
-//  Problem: local file:// has origin=null → DeepL
-//  rejects the CORS preflight. Fix: POST the JSON
-//  payload through corsproxy.io so the request
-//  originates from a real domain.
+//  TRANSLATION ENGINE (DeepL  or  AstrDark AI)
 // ═══════════════════════════════════════════════
 const transCache = new Map();
 
+// ── DeepL ────────────────────────────────────────
 async function deeplFetch(key, texts, lang) {
-  const isFree = key.endsWith(':fx');
-  const apiUrl  = isFree
-    ? 'https://api-free.deepl.com/v2/translate'
-    : 'https://api.deepl.com/v2/translate';
-
-  // Encode our POST body as a data-URI so corsproxy
-  // can forward it. We POST to the proxy with the
-  // real URL as the query parameter.
-  const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
-
-  const res = await fetch(proxyUrl, {
-    method: 'POST',
-    headers: {
-      'Authorization':  `DeepL-Auth-Key ${key}`,
-      'Content-Type':   'application/json',
-    },
-    body: JSON.stringify({ text: texts, target_lang: lang }),
+  const isFree  = key.endsWith(':fx');
+  const apiUrl  = isFree ? 'https://api-free.deepl.com/v2/translate'
+                         : 'https://api.deepl.com/v2/translate';
+  const proxy   = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+  const res = await fetch(proxy, {
+    method:'POST',
+    headers:{ 'Authorization':`DeepL-Auth-Key ${key}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({ text:texts, target_lang:lang }),
   });
-
-  if (!res.ok) {
-    const msg = await res.text().catch(() => '');
-    throw new Error(`DeepL ${res.status}: ${msg.slice(0, 120)}`);
-  }
+  if (!res.ok) { const t=await res.text().catch(()=>''); throw new Error(`DeepL ${res.status}: ${t.slice(0,120)}`); }
   return res.json();
 }
 
+// ── AstrDark AI (OpenAI-compatible) ─────────────
+async function aiFetch(endpoint, key, model, texts, lang) {
+  const url    = endpoint.replace(/\/+$/, '') + '/v1/chat/completions';
+  const joined = texts.map((t,i) => `[${i+1}] ${t}`).join('\n');
+  const res = await fetch(url, {
+    method:'POST',
+    headers:{ 'Authorization':`Bearer ${key}`, 'Content-Type':'application/json' },
+    body: JSON.stringify({
+      model,
+      max_tokens: 1024,
+      messages:[
+        { role:'system', content:`You are a professional translator. Translate each numbered item to ${lang}. Reply ONLY with the same numbered list format, no explanation.` },
+        { role:'user', content: joined },
+      ],
+    }),
+  });
+  if (!res.ok) { const t=await res.text().catch(()=>''); throw new Error(`AI ${res.status}: ${t.slice(0,200)}`); }
+  const data = await res.json();
+  const raw  = data.choices?.[0]?.message?.content ?? '';
+  // Parse "[1] text\n[2] text ..."
+  const results = [];
+  for (let i = 0; i < texts.length; i++) {
+    const m = raw.match(new RegExp(`\\[${i+1}\\]\\s*([\\s\\S]*?)(?=\\n\\[${i+2}\\]|$)`));
+    results.push(m ? m[1].trim() : texts[i]);
+  }
+  return results;
+}
+
+// ── Unified translate() ──────────────────────────
 async function translate(texts) {
-  const { enabled, key, lang } = CFG.deepl;
-  if (!enabled || !key || !texts.length) return texts;
+  if (!texts.length) return texts;
 
-  // Separate already-cached vs new
+  const useAI    = CFG.aiTrans?.enabled && CFG.aiTrans?.key;
+  const useDeepL = CFG.deepl?.enabled   && CFG.deepl?.key;
+  if (!useAI && !useDeepL) return texts;
+
   const uncached = texts.filter(t => !transCache.has(t));
-
   if (uncached.length) {
     try {
-      const data = await deeplFetch(key, uncached, lang);
-      data.translations.forEach((tr, j) => {
-        transCache.set(uncached[j], tr.text);
-      });
+      if (useAI) {
+        const { endpoint, key, model, lang } = CFG.aiTrans;
+        const out = await aiFetch(endpoint, key, model, uncached, lang);
+        uncached.forEach((t, j) => transCache.set(t, out[j] ?? t));
+      } else {
+        const { key, lang } = CFG.deepl;
+        const data = await deeplFetch(key, uncached, lang);
+        data.translations.forEach((tr, j) => transCache.set(uncached[j], tr.text));
+      }
     } catch(e) {
-      console.warn('DeepL error:', e.message);
-      return texts; // graceful fallback — show originals
+      console.warn('Translation error:', e.message);
+      return texts;
     }
   }
-
   return texts.map(t => transCache.get(t) ?? t);
 }
 
 async function translateItem(item) {
-  if (!CFG.deepl.enabled || !CFG.deepl.key) return item;
+  const active = (CFG.aiTrans?.enabled && CFG.aiTrans?.key) ||
+                 (CFG.deepl?.enabled   && CFG.deepl?.key);
+  if (!active) return item;
   const inputs = [item.title, item.desc].filter(Boolean);
   const out    = await translate(inputs);
   const hasTrans = out.some((o, i) => o !== inputs[i]);
-  return {
-    ...item,
-    title:      out[0] ?? item.title,
-    desc:       item.desc ? (out[1] ?? item.desc) : '',
-    translated: hasTrans,
-  };
+  return { ...item, title: out[0]??item.title, desc: item.desc?(out[1]??item.desc):'', translated:hasTrans };
 }
 
-// ── DeepL API test (called from settings panel)
+// ── Test buttons ─────────────────────────────────
 async function testDeepL() {
-  const key  = document.getElementById('deeplKey').value.trim();
+  const key = document.getElementById('deeplKey').value.trim();
   const lang = document.getElementById('deeplLang').value;
-  const statusEl = document.getElementById('deeplStatus');
-  if (!key) { statusEl.className = 'deepl-status err'; statusEl.textContent = '⚠ 请先填写 API Key'; return; }
-  statusEl.className = 'deepl-status'; statusEl.textContent = '⏳ 测试中…';
+  const el  = document.getElementById('deeplStatus');
+  if (!key) { el.className='deepl-status err'; el.textContent='⚠ 请先填写 API Key'; return; }
+  el.className='deepl-status'; el.textContent='⏳ 测试中…';
   try {
     const data = await deeplFetch(key, ['Hello, world!'], lang);
-    const result = data?.translations?.[0]?.text;
-    if (!result) throw new Error('No translation returned');
-    statusEl.className = 'deepl-status ok';
-    statusEl.textContent = `✓ 连接成功！测试翻译: "Hello, world!" → "${result}"`;
-  } catch(e) {
-    statusEl.className = 'deepl-status err';
-    statusEl.textContent = `✗ 失败: ${e.message}`;
-  }
+    const r = data?.translations?.[0]?.text;
+    if (!r) throw new Error('No result');
+    el.className='deepl-status ok'; el.textContent=`✓ 成功: "Hello, world!" → "${r}"`;
+  } catch(e) { el.className='deepl-status err'; el.textContent=`✗ ${e.message}`; }
+}
+
+async function testAI() {
+  const endpoint = document.getElementById('aiEndpoint').value.trim();
+  const key      = document.getElementById('aiKey').value.trim();
+  const model    = document.getElementById('aiModel').value.trim() || 'gpt-4o-mini';
+  const lang     = document.getElementById('aiLang').value;
+  const el       = document.getElementById('aiStatus');
+  if (!key) { el.className='deepl-status err'; el.textContent='⚠ 请先填写 API Key'; return; }
+  el.className='deepl-status'; el.textContent='⏳ 测试中…';
+  try {
+    const out = await aiFetch(endpoint, key, model, ['Hello, world!'], lang);
+    const r = out[0];
+    if (!r) throw new Error('No result');
+    el.className='deepl-status ok'; el.textContent=`✓ 成功: "Hello, world!" → "${r}"`;
+  } catch(e) { el.className='deepl-status err'; el.textContent=`✗ ${e.message}`; }
+}
+
+// ── Tab switcher ─────────────────────────────────
+function switchTransTab(tab) {
+  const isAI = tab === 'ai';
+  document.getElementById('pane-deepl').style.display = isAI ? 'none' : '';
+  document.getElementById('pane-ai').style.display    = isAI ? ''     : 'none';
+  document.getElementById('tab-deepl').style.background = isAI ? 'var(--surface2)' : 'var(--red)';
+  document.getElementById('tab-deepl').style.color      = isAI ? 'var(--text3)'    : '#fff';
+  document.getElementById('tab-ai').style.background    = isAI ? 'var(--purple)'   : 'var(--surface2)';
+  document.getElementById('tab-ai').style.color         = isAI ? '#fff'            : 'var(--text3)';
 }
 
 // ═══════════════════════════════════════════════
@@ -524,10 +610,11 @@ function parseXML(raw) {
       }
     }
     return {
-      title: e.querySelector('title')?.textContent?.trim() ?? '',
+      title:    e.querySelector('title')?.textContent?.trim() ?? '',
       link,
-      date:  e.querySelector('pubDate')?.textContent?.trim() ?? '',
-      desc:  strip(e.querySelector('description')?.textContent ?? ''),
+      comments: e.querySelector('comments')?.textContent?.trim() ?? '',
+      date:     e.querySelector('pubDate')?.textContent?.trim() ?? '',
+      desc:     strip(e.querySelector('description')?.textContent ?? ''),
     };
   });
 }
@@ -589,11 +676,18 @@ async function loadHN() {
     let items = parseXML(xml).filter(i=>i.title).slice(0, CFG.feeds.hn.count);
     if (!items.length) throw new Error('No items');
     items = await Promise.all(items.map(translateItem));
-    el.innerHTML = items.map((it,i) => `
-      <div class="hi f" style="animation-delay:${i*20}ms">
-        <a class="hl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
-        <div class="hm"><span class="src">${esc(host(it.link)||'ycombinator.com')}</span>${ago(it.date)}</div>
-      </div>`).join('');
+    el.innerHTML = items.map((it,i) => {
+      const commentsUrl = it.comments || it.link;
+      const articleUrl  = it.link && it.link !== commentsUrl ? it.link : '';
+      return `<div class="hi f" style="animation-delay:${i*20}ms">
+        <a class="hl" href="${esc(commentsUrl)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
+        <div class="hm">
+          ${articleUrl ? `<span class="src">${esc(host(articleUrl))}</span>` : ''}
+          <span>${ago(it.date)}</span>
+          ${articleUrl ? `<a class="hn-comments" href="${esc(articleUrl)}" target="_blank" rel="noopener" title="打开原文">↗ 原文</a>` : ''}
+        </div>
+      </div>`;
+    }).join('');
   } catch(e) { el.innerHTML = `<div class="err">⚠ HN 加载失败<br><small>${esc(e.message)}</small></div>`; }
 }
 
@@ -733,11 +827,20 @@ function openSettings() {
     document.getElementById(`f-${k}`).value = f[k].url;
     document.getElementById(`n-${k}`).value = f[k].count;
   });
-  // DeepL
+  // Translation
   document.getElementById('transEnabled').checked = CFG.deepl.enabled;
-  document.getElementById('deeplKey').value = CFG.deepl.key;
-  document.getElementById('deeplLang').value = CFG.deepl.lang;
+  document.getElementById('deeplKey').value        = CFG.deepl.key;
+  document.getElementById('deeplLang').value       = CFG.deepl.lang;
   document.getElementById('deeplStatus').textContent = '';
+  document.getElementById('aiTransEnabled').checked = CFG.aiTrans?.enabled ?? false;
+  document.getElementById('aiEndpoint').value       = CFG.aiTrans?.endpoint ?? 'https://api.astrdark.cyou';
+  document.getElementById('aiKey').value            = CFG.aiTrans?.key ?? '';
+  document.getElementById('aiModel').value          = CFG.aiTrans?.model ?? 'gpt-4o-mini';
+  document.getElementById('aiLang').value           = CFG.aiTrans?.lang ?? 'Chinese';
+  document.getElementById('aiStatus').textContent   = '';
+  // Show correct tab based on which engine is configured
+  const activeTab = (CFG.aiTrans?.enabled) ? 'ai' : 'deepl';
+  switchTransTab(activeTab);
   // Updates
   renderUpdateRows();
   document.getElementById('overlay').classList.add('open');
@@ -778,6 +881,13 @@ function saveSettings() {
   CFG.deepl.enabled = document.getElementById('transEnabled').checked;
   CFG.deepl.key     = document.getElementById('deeplKey').value.trim();
   CFG.deepl.lang    = document.getElementById('deeplLang').value;
+  // AI Translation
+  if (!CFG.aiTrans) CFG.aiTrans = {};
+  CFG.aiTrans.enabled  = document.getElementById('aiTransEnabled').checked;
+  CFG.aiTrans.endpoint = document.getElementById('aiEndpoint').value.trim() || 'https://api.astrdark.cyou';
+  CFG.aiTrans.key      = document.getElementById('aiKey').value.trim();
+  CFG.aiTrans.model    = document.getElementById('aiModel').value.trim() || 'gpt-4o-mini';
+  CFG.aiTrans.lang     = document.getElementById('aiLang').value;
   // Updates
   const n = CFG.updates.length;
   CFG.updates = Array.from({length:n}, (_,i) => ({
