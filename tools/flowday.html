@@ -131,11 +131,22 @@ input,textarea{font-family:inherit}
 .bpb-track{flex:1;height:3px;background:var(--border);border-radius:2px;overflow:hidden}
 .bpb-fill{height:100%;background:var(--accent);border-radius:2px;transition:width .4s var(--ease)}
 .bpb-lbl{font-size:10px;color:var(--text-3);font-weight:500;white-space:nowrap;min-width:28px}
-.block-gap{display:flex;align-items:center;gap:12px;padding:14px 0 20px;font-size:11px;color:var(--text-3)}
-.gap-line{flex:1;height:1px;background:var(--border)}
+.block-gap{display:flex;align-items:center;gap:12px;padding:14px 0 20px;font-size:11px;color:var(--text-3);transition:color .3s}
+.gap-line{flex:1;height:1px;background:var(--border);transition:background .3s}
+.block-gap.gap-active{color:var(--accent);font-weight:700}
+.block-gap.gap-active .gap-line{background:var(--accent-soft)}
+.block-name{font-size:19px;font-weight:700;letter-spacing:-.3px;transition:color .3s}
+.block-name.name-active{color:var(--accent)}
 .add-task-btn{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:var(--r-xs);border:1.5px dashed var(--border-h);background:transparent;color:var(--text-3);font-size:12px;font-weight:500;transition:all .16s;width:100%;justify-content:center;margin-top:8px;cursor:pointer}
 .add-task-btn:hover{color:var(--accent);border-color:var(--accent);background:var(--accent-soft)}
 .add-task-btn:disabled{opacity:.4;cursor:not-allowed;pointer-events:none}
+/* Tag input */
+.tag-input-wrap{display:flex;flex-wrap:wrap;gap:5px;align-items:center;padding:5px 8px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r-xs);min-height:36px;cursor:text;transition:border-color .16s}
+.tag-input-wrap:focus-within{border-color:var(--accent)}
+.tag-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:100px;background:var(--accent-soft);color:var(--accent);font-size:11px;font-weight:600;white-space:nowrap}
+.tag-pill-rm{background:none;border:none;cursor:pointer;color:var(--accent);font-size:11px;padding:0;line-height:1;opacity:.7}
+.tag-pill-rm:hover{opacity:1}
+.tag-input{border:none;outline:none;background:transparent;font-size:12px;color:var(--text);min-width:80px;flex:1;font-family:inherit}
 
 /* ═══════════════════════ RANGE SLIDER (clean inline) ═══════════════════════ */
 .range-wrap{padding:2px 0 14px}
@@ -508,23 +519,23 @@ textarea.f-input{min-height:96px;resize:vertical;line-height:1.55;font-size:11px
     <div class="blocks-col">
       <!-- Morning -->
       <div class="block-wrap" id="bw-morning">
-        <div class="block-hd"><span class="block-name">早晨</span><span class="block-time" id="bt-morning"></span></div>
+        <div class="block-hd"><span class="block-name" id="bn-morning">早晨</span><span class="block-time" id="bt-morning"></span></div>
         <div class="block-prog-row"><div class="bpb-track"><div class="bpb-fill" id="bpf-morning" style="width:0%"></div></div><span class="bpb-lbl" id="bpl-morning">0%</span></div>
         <div class="tasks-list" id="tl-morning" data-block="morning"></div>
         <button class="add-task-btn" data-block="morning">＋ 添加任务</button>
       </div>
-      <div class="block-gap"><div class="gap-line"></div><span id="gap-lunch"></span><div class="gap-line"></div></div>
+      <div class="block-gap" id="gap-wrap-lunch"><div class="gap-line"></div><span id="gap-lunch"></span><div class="gap-line"></div></div>
       <!-- Afternoon -->
       <div class="block-wrap" id="bw-afternoon">
-        <div class="block-hd"><span class="block-name">午后</span><span class="block-time" id="bt-afternoon"></span></div>
+        <div class="block-hd"><span class="block-name" id="bn-afternoon">午后</span><span class="block-time" id="bt-afternoon"></span></div>
         <div class="block-prog-row"><div class="bpb-track"><div class="bpb-fill" id="bpf-afternoon" style="width:0%"></div></div><span class="bpb-lbl" id="bpl-afternoon">0%</span></div>
         <div class="tasks-list" id="tl-afternoon" data-block="afternoon"></div>
         <button class="add-task-btn" data-block="afternoon">＋ 添加任务</button>
       </div>
-      <div class="block-gap"><div class="gap-line"></div><span id="gap-dinner"></span><div class="gap-line"></div></div>
+      <div class="block-gap" id="gap-wrap-dinner"><div class="gap-line"></div><span id="gap-dinner"></span><div class="gap-line"></div></div>
       <!-- Evening -->
       <div class="block-wrap" id="bw-evening">
-        <div class="block-hd"><span class="block-name">傍晚</span><span class="block-time" id="bt-evening"></span></div>
+        <div class="block-hd"><span class="block-name" id="bn-evening">傍晚</span><span class="block-time" id="bt-evening"></span></div>
         <div class="block-prog-row"><div class="bpb-track"><div class="bpb-fill" id="bpf-evening" style="width:0%"></div></div><span class="bpb-lbl" id="bpl-evening">0%</span></div>
         <div class="tasks-list" id="tl-evening" data-block="evening"></div>
         <button class="add-task-btn" data-block="evening">＋ 添加任务</button>
@@ -670,7 +681,8 @@ textarea.f-input{min-height:96px;resize:vertical;line-height:1.55;font-size:11px
       <button class="btn-settings-save" id="settings-save-btn">保存设置</button>
     </div>
   </div>
-</div> id="toast"></div>
+</div>
+<div class="toast" id="toast"></div>
 <div class="undo-bar" id="undo-bar"><span id="undo-msg"></span><button class="undo-act" id="undo-act-btn">撤销</button></div>
 
 <script>
@@ -717,7 +729,7 @@ let state = {
   enabled:false, currentHistId:null
 };
 let cfg = {
-  api:{baseUrl:'https://open.bigmodel.cn/api/paas/v4',apiKey:'',models:[]},
+  api:{baseUrl:'https://open.bigmodel.cn/api/paas/v4',apiKey:'',models:['glm-4-flash']},
   time:{morning:{start:'08:00',end:'11:30'},afternoon:{start:'14:10',end:'18:30'},evening:{start:'19:00',end:'23:00'},minDur:40,maxDur:120,tickH:2,stepMode:'free'},
   prompts:{step1:DP.step1,step2:DP.step2},
   display:{theme:'dark',anim:'normal'}
@@ -828,7 +840,9 @@ function loadCfg(){
     const s=localStorage.getItem('fd_cfg');
     if(s){
       cfg=deepMerge(cfg,JSON.parse(s));
-      // Migrate: if saved prompts are missing key variables, reset to new defaults
+      // Migrate: ensure default model list
+      if(!cfg.api.models||!cfg.api.models.length) cfg.api.models=['glm-4-flash'];
+      // Migrate: if saved prompts missing key variables, reset to new defaults
       if(!cfg.prompts.step1.includes('{taskMinDuration}')||!cfg.prompts.step1.includes('note')){
         cfg.prompts.step1=DP.step1;
       }
@@ -975,7 +989,29 @@ function updateLabels(){
   document.getElementById('bt-afternoon').textContent=`${cfg.time.afternoon.start} – ${cfg.time.afternoon.end}`;
   document.getElementById('bt-evening').textContent=`${cfg.time.evening.start} – ${cfg.time.evening.end}`;
   document.getElementById('gap-lunch').textContent=`午休 ${cfg.time.morning.end} – ${cfg.time.afternoon.start}`;
-  document.getElementById('gap-dinner').textContent=`晚饭 ${cfg.time.afternoon.end} – ${cfg.time.evening.start}`;
+  document.getElementById('gap-dinner').textContent=`晚休 ${cfg.time.afternoon.end} – ${cfg.time.evening.start}`;
+}
+
+// Highlight active block name or gap based on current time
+function updateTimeHighlights(){
+  const nowMin=new Date().getHours()*60+new Date().getMinutes();
+  // Clear all
+  ['morning','afternoon','evening'].forEach(b=>{
+    document.getElementById('bn-'+b)?.classList.remove('name-active');
+  });
+  document.getElementById('gap-wrap-lunch')?.classList.remove('gap-active');
+  document.getElementById('gap-wrap-dinner')?.classList.remove('gap-active');
+
+  // Check which block/gap is active
+  const mS=t2m(cfg.time.morning.start),mE=t2m(cfg.time.morning.end);
+  const aS=t2m(cfg.time.afternoon.start),aE=t2m(cfg.time.afternoon.end);
+  const eS=t2m(cfg.time.evening.start),eE=t2m(cfg.time.evening.end);
+
+  if(nowMin>=mS&&nowMin<=mE) document.getElementById('bn-morning')?.classList.add('name-active');
+  else if(nowMin>mE&&nowMin<aS) document.getElementById('gap-wrap-lunch')?.classList.add('gap-active');
+  else if(nowMin>=aS&&nowMin<=aE) document.getElementById('bn-afternoon')?.classList.add('name-active');
+  else if(nowMin>aE&&nowMin<eS) document.getElementById('gap-wrap-dinner')?.classList.add('gap-active');
+  else if(nowMin>=eS&&nowMin<=eE) document.getElementById('bn-evening')?.classList.add('name-active');
 }
 
 // ═══════════════════════ PROMPT VARIABLE HIGHLIGHT ═══════════════════════
@@ -1094,9 +1130,22 @@ async function callAI(messages,sysPmt){
   const key=cfg.api.apiKey;
   const model=cfg.api.models[0]||'glm-4-flash';
   if(!key){showToast('⚠️ 请先填写 API Key',3000);openSettings();throw new Error('No key')}
+  if(!model){showToast('⚠️ 请先添加至少一个模型',3000);openSettings();throw new Error('No model')}
   const msgs=sysPmt?[{role:'system',content:sysPmt},...messages]:messages;
-  const r=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:msgs,max_tokens:4000,temperature:0.6})});
-  if(!r.ok){const t=await r.text();throw new Error(`HTTP ${r.status}: ${t.slice(0,200)}`)}
+  let r;
+  try{
+    r=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+key},body:JSON.stringify({model,messages:msgs,max_tokens:4000,temperature:0.6})});
+  }catch(err){
+    throw new Error(`网络错误：无法连接到 ${base}，请检查 Base URL 是否正确`);
+  }
+  if(!r.ok){
+    let body='';try{body=await r.text()}catch(_){}
+    if(r.status===401) throw new Error('API Key 无效或已过期（401），请在设置中更新');
+    if(r.status===403) throw new Error('API Key 无访问权限（403），请检查账户状态');
+    if(r.status===404) throw new Error(`模型 "${model}" 不存在（404），请检查模型名称`);
+    if(r.status===429) throw new Error('请求过于频繁（429），请稍后重试');
+    throw new Error(`HTTP ${r.status}：${body.slice(0,120)}`);
+  }
   const d=await r.json();
   return parseJSON(d.choices?.[0]?.message?.content||'');
 }
@@ -1107,7 +1156,7 @@ function normalizeTask(t){
   return{
     id:t.id||genId(),title:t.title||'未命名任务',note:t.note||'',
     duration:Math.min(Math.max(parseInt(t.duration)||mn,mn),mx),
-    category:t.category||'',completed:false,collapsed:false,
+    category:t.category||'',tags:t.tags||(t.category?[t.category]:[]),completed:false,collapsed:false,
     subtasks:(t.subtasks||[]).map(s=>({id:s.id||genId(),title:s.title||'',duration:s.duration||20,completed:false}))
   };
 }
@@ -1117,7 +1166,8 @@ async function startProcessing(){
   saveCfg();
   const raw=document.getElementById('main-input').value.trim();
   if(!raw){showToast('请先输入你的待办事项');return}
-  if(!cfg.api.apiKey){showToast('⚠️ 请先填写 API Key',3000);openSettings();return}
+  if(!cfg.api.apiKey){showToast('⚠️ 请先在设置中填写 API Key',3200);openSettings();return}
+  if(!cfg.api.models||!cfg.api.models.length){showToast('⚠️ 请先在设置中添加至少一个模型',3200);openSettings();return}
   state.enabled=false;state.rawInput=raw;
   setScreen('processing');
   document.getElementById('proc-text').textContent='✨ 第一步：整理分类待办清单...';
@@ -1218,7 +1268,7 @@ function makeTaskGroup(t,times,block,idx,animated=false){
         <div class="card-time-lbl">${esc(tLabel)}</div>
         <div class="card-meta">
           <span class="badge bdg-dur">⏱ ${fmtDur(t.duration)}</span>
-          ${t.category?`<span class="badge bdg-cat">${esc(t.category)}</span>`:''}
+          ${(t.tags||[t.category].filter(Boolean)).map(tag=>`<span class="badge bdg-cat">${esc(tag)}</span>`).join('')}
         </div>
       </div>
       <div class="card-edit">
@@ -1226,8 +1276,11 @@ function makeTaskGroup(t,times,block,idx,animated=false){
         <textarea class="e-input" data-f="note" placeholder="备注 / 执行提示">${esc(t.note||'')}</textarea>
         <div class="e-row">
           <div>
-            <span class="e-label-sm">标签 / 分类</span>
-            <input type="text" class="e-input" data-f="category" value="${esc(t.category||'')}" placeholder="如：工作、学习…">
+            <span class="e-label-sm">标签（回车添加）</span>
+            <div class="tag-input-wrap" data-f="tags" onclick="this.querySelector('.tag-input').focus()">
+              ${(t.tags||[t.category].filter(Boolean)).map(tag=>`<span class="tag-pill">${esc(tag)}<button class="tag-pill-rm" onclick="removeTagPill(this)" type="button">×</button></span>`).join('')}
+              <input class="tag-input" placeholder="${(t.tags||[t.category].filter(Boolean)).length?'':'工作、学习…'}" onkeydown="handleTagInput(event,this)">
+            </div>
           </div>
           <div>
             <span class="e-label-sm">起止时间</span>
@@ -1351,8 +1404,9 @@ function buildTimeline(){
 // ═══════════════════════ CURRENT TIME LINE ═══════════════════════
 function startCTL(){
   if(ctlInterval)clearInterval(ctlInterval);
-  updateCTL(); // immediate on start
-  ctlInterval=setInterval(updateCTL,30000); // every 30s for reliability
+  updateCTL();
+  updateTimeHighlights();
+  ctlInterval=setInterval(()=>{updateCTL();updateTimeHighlights();},30000);
 }
 
 function updateCTL(){
@@ -1564,17 +1618,60 @@ function delCardSilent(id,block,card){
   updateBlockProgress(block);updateAddTaskBtnState(block);buildTimeline();
 }
 
+function handleTagInput(e,inp){
+  if(e.key==='Enter'||e.key===','){
+    e.preventDefault();
+    const val=inp.value.trim().replace(/,$/,'');
+    if(!val)return;
+    const wrap=inp.closest('[data-f="tags"]');
+    const pill=document.createElement('span');
+    pill.className='tag-pill';
+    pill.innerHTML=`${esc(val)}<button class="tag-pill-rm" onclick="removeTagPill(this)" type="button">×</button>`;
+    wrap.insertBefore(pill,inp);
+    inp.value='';
+    inp.placeholder='';
+  }
+  if(e.key==='Backspace'&&!inp.value){
+    const wrap=inp.closest('[data-f="tags"]');
+    const pills=wrap.querySelectorAll('.tag-pill');
+    if(pills.length) pills[pills.length-1].remove();
+    if(!wrap.querySelectorAll('.tag-pill').length) inp.placeholder='工作、学习…';
+  }
+}
+function removeTagPill(btn){
+  const wrap=btn.closest('[data-f="tags"]');
+  btn.closest('.tag-pill').remove();
+  const inp=wrap.querySelector('.tag-input');
+  if(inp&&!wrap.querySelectorAll('.tag-pill').length) inp.placeholder='工作、学习…';
+}
+function getTagsFromWrap(wrap){
+  return [...wrap.querySelectorAll('.tag-pill')].map(p=>p.childNodes[0].textContent.trim()).filter(Boolean);
+}
+
 function saveEdit(id,card,block){
   if(!card)card=document.getElementById('tl-'+block)?.querySelector(`.task-card[data-id="${id}"]`);
   const task=findTask(block,id);if(!card||!task)return;
   const ti=card.querySelector('[data-f="title"]');
   const ni=card.querySelector('[data-f="note"]');
-  const ci=card.querySelector('[data-f="category"]');
+  const tagWrap=card.querySelector('[data-f="tags"]');
   const sti=card.querySelector('[data-f="startTime"]');
   const eti=card.querySelector('[data-f="endTime"]');
   if(ti?.value.trim())task.title=ti.value.trim();
   task.note=(ni?.value||'').trim();
-  if(ci)task.category=(ci.value||'').trim();
+  if(tagWrap){
+    // commit any un-entered text in the input field as a tag
+    const tagInp=tagWrap.querySelector('.tag-input');
+    if(tagInp?.value.trim()){
+      const pill=document.createElement('span');
+      pill.className='tag-pill';
+      pill.innerHTML=`${esc(tagInp.value.trim())}<button class="tag-pill-rm" onclick="removeTagPill(this)" type="button">×</button>`;
+      tagWrap.insertBefore(pill,tagInp);
+      tagInp.value='';
+    }
+    const tags=getTagsFromWrap(tagWrap);
+    task.tags=tags;
+    task.category=tags[0]||''; // keep backward compat for badge display
+  }
 
   // Time editing: if user changed start/end, recalculate durations of all tasks in block
   if(sti?.value&&eti?.value){
