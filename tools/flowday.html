@@ -1153,8 +1153,7 @@ async function startProcessing(){
     setupBlockListeners();
     ['morning','afternoon','evening'].forEach(b=>{renderBlock(b,true);updateBlockProgress(b)});
     setScreen('planner');
-    updateCTL(); // immediate
-    requestAnimationFrame(()=>{buildTimeline();startCTL();});
+    requestAnimationFrame(()=>{buildTimeline();updateCTL();startCTL();});
     state.enabled=true;
     initAllSortable();
     saveCurrentToHistory();
@@ -1350,7 +1349,11 @@ function buildTimeline(){
 }
 
 // ═══════════════════════ CURRENT TIME LINE ═══════════════════════
-function startCTL(){if(ctlInterval)clearInterval(ctlInterval);ctlInterval=setInterval(updateCTL,60000)}
+function startCTL(){
+  if(ctlInterval)clearInterval(ctlInterval);
+  updateCTL(); // immediate on start
+  ctlInterval=setInterval(updateCTL,30000); // every 30s for reliability
+}
 
 function updateCTL(){
   const ctl=document.getElementById('ctl');if(!ctl)return;
@@ -1835,13 +1838,14 @@ function startResize(card,startY,block){
     card.style.height=nh+'px';
     if(task)task.duration=newDur;
     const b=card.querySelector('.bdg-dur');if(b)b.textContent='⏱ '+fmtDur(newDur);
-    updateBlockTimeLabels(block);updateBlockProgress(block);buildTimeline();
+    updateBlockTimeLabels(block);updateBlockProgress(block);updateAddTaskBtnState(block);buildTimeline();
   };
   const up=()=>{
     document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);
     document.removeEventListener('touchmove',mv);document.removeEventListener('touchend',up);
     card.classList.remove('is-resizing');
     clearAtLimit();
+    updateAddTaskBtnState(block);
     if(wasDragged)_lastResizeEndTime=Date.now();
     saveCurrentToHistory();
   };
@@ -2030,8 +2034,7 @@ function loadHistory(hid){
   updateLabels();setupBlockListeners();
   ['morning','afternoon','evening'].forEach(b=>{renderBlock(b,false);updateBlockProgress(b)});
   setScreen('planner');
-  updateCTL(); // immediate
-  requestAnimationFrame(()=>{buildTimeline();startCTL();initAllSortable();});
+  requestAnimationFrame(()=>{buildTimeline();updateCTL();startCTL();initAllSortable();});
   closeHistory();renderHistoryList();
 }
 
