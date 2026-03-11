@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snippy - 网页批量提取工具</title>
+    <!-- 依赖库加载 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@mozilla/readability@0.5.0/Readability.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/turndown@7.1.3/dist/turndown.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/lucide@0.344.0/dist/umd/lucide.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+        body { font-family: 'Inter', system-ui, -apple-system, sans-serif; transition: background-color 0.3s ease; overflow-x: hidden; }
+        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
+        
+        /* 加载动画 */
+        .loading-ring { 
+            border: 2px solid rgba(255,255,255,0.1); 
+            border-top: 2px solid #3b82f6; 
+            border-radius: 50%; 
+            width: 18px; 
+            height: 18px; 
+            animation: spin 1s linear infinite; 
+        }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        /* 丝滑平移动画：利用上下两个 Spacer 的 flex-grow 变化实现从居中到置顶 */
+        .spacer {
+            transition: flex-grow 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+            flex-grow: 1;
+            height: 0;
+        }
+        #mainContainer.is-active .spacer {
+            flex-grow: 0;
+        }
+        
+        /* 额外控制底部间隔在激活后消失，防止占据空间 */
+        #mainContainer.is-active #bottomSpacer {
+            display: none;
+        }
+
+        #heroSection {
+            transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+    </style>
+</head>
+<body class="bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 min-h-screen">
+
+    <!-- 主容器 -->
+    <div id="mainContainer" class="max-w-4xl mx-auto p-4 md:p-8 min-h-screen flex flex-col">
+        
+        <!-- 顶部占位符 -->
+        <div id="topSpacer" class="spacer"></div>
+
+        <div id="heroSection" class="w-full shrink-0">
+            <!-- 头部 -->
+            <header class="mb-8 flex justify-between items-start">
+                <div>
+                    <h1 class="text-4xl md:text-5xl font-black flex items-center gap-3 tracking-tight text-slate-800 dark:text-white transition-all duration-700" id="mainTitle">
+                        <i data-lucide="scissors" class="w-10 h-10 text-blue-500"></i>
+                        Snippy
+                    </h1>
+                    <p id="heroSubtitle" class="text-slate-500 dark:text-slate-400 mt-2 text-lg transition-all duration-700">快速识别、提取并转换网页为 Markdown</p>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="toggleTheme()" class="p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors" title="切换模式">
+                        <i id="themeIcon" data-lucide="sun" class="w-5 h-5 text-amber-500 dark:text-blue-400"></i>
+                    </button>
+                </div>
+            </header>
+
+            <!-- 第一步：输入 -->
+            <section class="bg-white dark:bg-slate-900 rounded-2xl shadow-xl border border-slate-200 dark:border-slate-800 p-6 md:p-8 transition-all">
+                <div class="flex items-center justify-between mb-4">
+                    <label class="font-semibold flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                        <i data-lucide="text-cursor-input" class="w-4 h-4 text-blue-500"></i>
+                        粘贴网页链接（自动识别并拆分多个链接）
+                    </label>
+                </div>
+                <textarea 
+                    id="rawInput"
+                    class="w-full h-40 p-4 bg-slate-50 dark:bg-slate-950 border border-slate-200 dark:border-slate-800 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all resize-none text-sm font-mono leading-relaxed"
+                    placeholder="粘贴内容，支持多个链接粘连，Snippy 会自动处理..."
+                ></textarea>
+                <div class="mt-6 flex gap-3">
+                    <button onclick="parseUrls()" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center gap-2 shadow-lg shadow-blue-500/30 active:scale-95">
+                        <i data-lucide="search" class="w-5 h-5"></i> 识别链接
+                    </button>
+                    <button onclick="clearAll()" class="text-slate-500 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 px-6 py-3 rounded-xl transition-all flex items-center gap-2 font-medium">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i> 清空
+                    </button>
+                </div>
+            </section>
+        </div>
+
+        <!-- 底部占位符：初始时与顶部 Spacer 配合实现垂直居中 -->
+        <div id="bottomSpacer" class="spacer"></div>
+
+        <!-- 列表与结果区域：仅在激活后显示在 HeroSection 下方 -->
+        <div id="contentBody" class="w-full mt-6">
+            <!-- 第二步：确认列表 -->
+            <section id="listSection" class="hidden opacity-0 translate-y-8 bg-white dark:bg-slate-900 rounded-xl shadow-sm border border-slate-200 dark:border-slate-800 p-6 mb-6 transition-all duration-700 ease-out">
+                <div class="flex items-center justify-between mb-4">
+                    <label class="font-semibold flex items-center gap-2 text-slate-700 dark:text-slate-200">
+                        <i data-lucide="list-checks" class="w-4 h-4 text-emerald-500"></i>
+                        待提取列表 (<span id="urlCount">0</span>)
+                    </label>
+                </div>
+                <div id="urlList" class="space-y-2 max-h-80 overflow-y-auto custom-scrollbar mb-6"></div>
+                <div class="flex flex-wrap items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+                    <div class="flex items-center gap-2 text-sm">
+                        <label class="text-slate-500">跨域代理:</label>
+                        <select id="proxySelect" class="border border-slate-200 dark:border-slate-700 rounded p-1 bg-transparent outline-none cursor-pointer">
+                            <option value="https://corsproxy.io/?">CORS Proxy (推荐)</option>
+                            <option value="https://api.allorigins.win/raw?url=">AllOrigins</option>
+                        </select>
+                    </div>
+                    <button onclick="startExtraction()" id="extractBtn" class="bg-emerald-600 hover:bg-emerald-700 text-white px-6 py-2 rounded-lg font-medium transition-all flex items-center gap-2 ml-auto shadow-lg shadow-emerald-600/20">
+                        <i data-lucide="play" class="w-4 h-4"></i> 开始提取
+                    </button>
+                </div>
+            </section>
+
+            <!-- 第三步：进度与 AI 增强 -->
+            <section id="resultSection" class="hidden opacity-0 translate-y-8 bg-slate-100 dark:bg-slate-900 rounded-xl shadow-lg border border-slate-200 dark:border-slate-800 p-6 transition-all duration-700 mb-20">
+                <div class="flex items-center justify-between mb-4">
+                    <div class="flex items-center gap-3">
+                        <div id="statusIconContainer">
+                            <div id="statusIcon" class="loading-ring"></div>
+                        </div>
+                        <span id="globalStatus" class="font-medium text-slate-700 dark:text-slate-200">就绪</span>
+                    </div>
+                    <div class="flex gap-2">
+                        <button id="aiBtn" disabled onclick="runAIEnhancement()" class="hidden bg-purple-600 hover:bg-purple-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-purple-600/20">
+                            <i data-lucide="sparkles" class="w-4 h-4"></i> AI 总结
+                        </button>
+                        <button id="downloadZipBtn" disabled onclick="downloadZip()" class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 text-white px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-all shadow-lg shadow-blue-600/20">
+                            <i data-lucide="file-archive" class="w-4 h-4"></i> 下载 ZIP
+                        </button>
+                    </div>
+                </div>
+                <div id="progressContainer" class="w-full bg-slate-200 dark:bg-slate-800 h-2 rounded-full overflow-hidden">
+                    <div id="progressBar" class="bg-blue-500 h-full transition-all duration-300" style="width: 0%"></div>
+                </div>
+                <div id="logOutput" class="mt-4 text-[10px] font-mono text-slate-500 dark:text-slate-400 max-h-40 overflow-y-auto custom-scrollbar space-y-1 bg-white dark:bg-slate-950 p-3 rounded-lg border border-slate-100 dark:border-slate-800"></div>
+            </section>
+        </div>
+
+        <!-- 底部缓冲空间 -->
+        <div class="h-10 shrink-0"></div>
+    </div>
+
+    <script>
+        const apiKey = ""; 
+        let taskList = [];
+        const turndownService = new TurndownService({
+            headingStyle: 'atx',
+            hr: '---',
+            bulletListMarker: '-',
+            codeBlockStyle: 'fenced'
+        });
+
+        window.onload = () => {
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            setTheme(savedTheme);
+            lucide.createIcons();
+        }
+
+        function setTheme(theme) {
+            const html = document.documentElement;
+            html.classList.toggle('dark', theme === 'dark');
+            document.getElementById('themeIcon').setAttribute('data-lucide', theme === 'dark' ? 'sun' : 'moon');
+            localStorage.setItem('theme', theme);
+            lucide.createIcons();
+        }
+
+        function toggleTheme() {
+            setTheme(document.documentElement.classList.contains('dark') ? 'light' : 'dark');
+        }
+
+        // 核心：强化版 URL 识别与丝滑动画触发
+        function parseUrls() {
+            const input = document.getElementById('rawInput').value.trim();
+            if (!input) return;
+
+            // 1. 强化拆分逻辑：针对 https?:// 标记进行强制切分，并清洗各种脏数据
+            const rawParts = input.split(/(?=https?:\/\/)/);
+            const foundUrls = [];
+            
+            rawParts.forEach(part => {
+                // 贪婪匹配合法的 URL 字符，直到遇到空格或非法字符
+                const match = part.match(/https?:\/\/[^\s,，;；"']+/);
+                if (match) {
+                    let cleaned = match[0].replace(/[)）\]}，,。;；!！?？]+$/, ''); // 清除末尾标点
+                    foundUrls.push(cleaned);
+                }
+            });
+
+            if (foundUrls.length === 0) return alert("未发现有效链接");
+
+            // 2. 触发丝滑布局动画
+            const container = document.getElementById('mainContainer');
+            const mainTitle = document.getElementById('mainTitle');
+            const subtitle = document.getElementById('heroSubtitle');
+            
+            // 改变 class 触发 CSS 中 Spacer 的 flex-grow 变换
+            container.classList.add('is-active');
+            
+            // 标题缩小动画
+            mainTitle.style.fontSize = "1.875rem"; // 相当于 text-3xl
+            subtitle.classList.add('opacity-0', 'h-0', 'overflow-hidden', 'mt-0');
+
+            // 3. 重置并显示列表
+            document.getElementById('extractBtn').disabled = false;
+            document.getElementById('extractBtn').classList.remove('opacity-50');
+            document.getElementById('resultSection').classList.add('hidden', 'opacity-0');
+            document.getElementById('aiBtn').classList.add('hidden');
+            
+            const iconContainer = document.getElementById('statusIconContainer');
+            iconContainer.innerHTML = '<div id="statusIcon" class="loading-ring"></div>';
+            
+            taskList = [...new Set(foundUrls)].map(url => ({
+                url, status: 'pending', title: '', markdown: '', summary: '', tags: []
+            }));
+
+            renderUrlList();
+
+            const listSection = document.getElementById('listSection');
+            listSection.classList.remove('hidden');
+            setTimeout(() => {
+                listSection.classList.remove('opacity-0', 'translate-y-8');
+            }, 100);
+            
+            lucide.createIcons();
+        }
+
+        function renderUrlList() {
+            const container = document.getElementById('urlList');
+            document.getElementById('urlCount').innerText = taskList.length;
+            container.innerHTML = taskList.map((item, i) => `
+                <div class="flex items-center gap-3 p-3 bg-slate-50 dark:bg-slate-800/50 rounded-lg border border-slate-100 dark:border-slate-800 hover:border-blue-500/40 transition-all">
+                    <span class="text-xs font-bold text-slate-400 w-6">${i + 1}</span>
+                    <input type="text" value="${item.url}" onchange="taskList[${i}].url=this.value" class="flex-1 bg-transparent text-sm truncate outline-none dark:text-slate-200" />
+                    <button onclick="taskList.splice(${i},1);renderUrlList()" class="text-slate-300 hover:text-red-500 transition-colors"><i data-lucide="x-circle" class="w-4 h-4"></i></button>
+                </div>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function clearAll() {
+            const container = document.getElementById('mainContainer');
+            const mainTitle = document.getElementById('mainTitle');
+            const subtitle = document.getElementById('heroSubtitle');
+            
+            container.classList.remove('is-active');
+            mainTitle.style.fontSize = ""; 
+            subtitle.classList.remove('opacity-0', 'h-0', 'overflow-hidden', 'mt-0');
+
+            document.getElementById('rawInput').value = '';
+            document.getElementById('listSection').classList.add('hidden', 'opacity-0', 'translate-y-8');
+            document.getElementById('resultSection').classList.add('hidden', 'opacity-0', 'translate-y-8');
+            taskList = [];
+        }
+
+        async function fetchWithTimeout(url, timeout = 25000) {
+            const controller = new AbortController();
+            const id = setTimeout(() => controller.abort(), timeout);
+            const response = await fetch(url, { signal: controller.signal });
+            clearTimeout(id);
+            return response;
+        }
+
+        async function startExtraction() {
+            const log = document.getElementById('logOutput');
+            const bar = document.getElementById('progressBar');
+            const statusText = document.getElementById('globalStatus');
+            const proxyBase = document.getElementById('proxySelect').value;
+            const iconContainer = document.getElementById('statusIconContainer');
+
+            const resultSection = document.getElementById('resultSection');
+            resultSection.classList.remove('hidden');
+            setTimeout(() => {
+                resultSection.classList.remove('opacity-0', 'translate-y-8');
+            }, 10);
+
+            document.getElementById('extractBtn').disabled = true;
+            document.getElementById('extractBtn').classList.add('opacity-50');
+            
+            log.innerHTML = '';
+            iconContainer.innerHTML = '<div id="statusIcon" class="loading-ring"></div>';
+            
+            let completed = 0;
+            for (let i = 0; i < taskList.length; i++) {
+                const task = taskList[i];
+                addLog(`获取 [${i+1}/${taskList.length}]: ${task.url}`);
+                statusText.innerText = `处理中 (${i+1}/${taskList.length})...`;
+                
+                try {
+                    const response = await fetchWithTimeout(proxyBase + encodeURIComponent(task.url));
+                    const html = await response.text();
+                    const doc = new DOMParser().parseFromString(html, 'text/html');
+                    const base = new URL(task.url);
+                    doc.querySelectorAll('img, a').forEach(el => {
+                        if (el.src) try { el.src = new URL(el.getAttribute('src'), base).href; } catch(e){}
+                        if (el.href) try { el.href = new URL(el.getAttribute('href'), base).href; } catch(e){}
+                    });
+
+                    const reader = new Readability(doc);
+                    const article = reader.parse();
+                    if (article) {
+                        task.title = article.title || `article-${i+1}`;
+                        task.rawContent = article.textContent.slice(0, 5000);
+                        const mdBody = turndownService.turndown(article.content);
+                        task.markdownBody = mdBody;
+                        updateTaskMarkdown(task);
+                        task.status = 'success';
+                        addLog(`✅ 成功: ${task.title}`, 'text-emerald-500');
+                    } else { throw new Error("正文提取失败"); }
+                } catch (err) {
+                    task.status = 'error';
+                    addLog(`❌ 失败: ${task.url} (${err.message})`, 'text-red-500');
+                }
+                completed++;
+                bar.style.width = `${(completed / taskList.length) * 100}%`;
+            }
+
+            statusText.innerText = "提取完成";
+            iconContainer.innerHTML = '<i data-lucide="check-circle-2" class="text-emerald-500 w-5 h-5"></i>';
+            document.getElementById('downloadZipBtn').disabled = false;
+            document.getElementById('aiBtn').classList.remove('hidden');
+            document.getElementById('aiBtn').disabled = false;
+            lucide.createIcons();
+        }
+
+        function updateTaskMarkdown(task) {
+            const frontMatter = [
+                '---',
+                `title: "${task.title.replace(/"/g, '\\"')}"`,
+                `url: ${task.url}`,
+                `date: ${new Date().toLocaleString()}`,
+                task.summary ? `summary: "${task.summary.replace(/"/g, '\\"')}"` : '',
+                task.tags && task.tags.length ? `tags: [${task.tags.join(', ')}]` : '',
+                '---',
+                ''
+            ].filter(Boolean).join('\n');
+            task.markdown = `${frontMatter}\n${task.markdownBody}`;
+        }
+
+        async function callGemini(prompt, retries = 5) {
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
+            for (let i = 0; i <= retries; i++) {
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            contents: [{ parts: [{ text: prompt }] }],
+                            generationConfig: {
+                                responseMimeType: "application/json",
+                                responseSchema: {
+                                    type: "OBJECT",
+                                    properties: {
+                                        summary: { type: "STRING" },
+                                        tags: { type: "ARRAY", items: { type: "STRING" } }
+                                    }
+                                }
+                            }
+                        })
+                    });
+                    if (!response.ok) throw new Error('API Error');
+                    const data = await response.json();
+                    return JSON.parse(data.candidates[0].content.parts[0].text);
+                } catch (err) {
+                    if (i === retries) throw err;
+                    await new Promise(r => setTimeout(r, Math.pow(2, i) * 1000));
+                }
+            }
+        }
+
+        async function runAIEnhancement() {
+            const aiBtn = document.getElementById('aiBtn');
+            const statusText = document.getElementById('globalStatus');
+            const bar = document.getElementById('progressBar');
+            const iconContainer = document.getElementById('statusIconContainer');
+            
+            aiBtn.disabled = true;
+            bar.style.width = '0%';
+            iconContainer.innerHTML = '<div id="statusIcon" class="loading-ring"></div>';
+            addLog("✨ 开始 AI 总结...", "text-purple-500 font-bold");
+
+            const successTasks = taskList.filter(t => t.status === 'success');
+            for (let i = 0; i < successTasks.length; i++) {
+                const task = successTasks[i];
+                statusText.innerText = `AI 处理中 (${i+1}/${successTasks.length})`;
+                addLog(`✨ 正在分析: ${task.title}`);
+                
+                try {
+                    const prompt = `请分析文章生成50字内摘要和3-5个标签：\n\n${task.rawContent}`;
+                    const result = await callGemini(prompt);
+                    task.summary = result.summary;
+                    task.tags = result.tags;
+                    updateTaskMarkdown(task);
+                    addLog(`✨ 总结完成: ${task.title}`, "text-purple-400");
+                } catch (err) {
+                    addLog(`⚠️ 失败: ${task.title}`, "text-orange-400");
+                }
+                bar.style.width = `${((i + 1) / successTasks.length) * 100}%`;
+            }
+
+            statusText.innerText = "AI 总结完成";
+            iconContainer.innerHTML = '<i data-lucide="check-circle-2" class="text-purple-500 w-5 h-5"></i>';
+            lucide.createIcons();
+        }
+
+        function downloadZip() {
+            const zip = new JSZip();
+            const folder = zip.folder("markdown_clips");
+            let count = 0;
+            taskList.forEach(task => {
+                if (task.status === 'success') {
+                    const safeTitle = (task.title || 'untitled').replace(/[\\/:*?"<>|]/g, '_');
+                    folder.file(`${safeTitle}.md`, task.markdown);
+                    count++;
+                }
+            });
+            zip.generateAsync({type:"blob"}).then(content => {
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `snippy_clips_${new Date().getTime()}.zip`;
+                a.click();
+            });
+        }
+
+        function addLog(msg, colorClass = '') {
+            const log = document.getElementById('logOutput');
+            const item = document.createElement('div');
+            item.className = colorClass;
+            item.innerText = `> ${msg}`;
+            log.appendChild(item);
+            log.scrollTop = log.scrollHeight;
+        }
+    </script>
+</body>
+</html>
