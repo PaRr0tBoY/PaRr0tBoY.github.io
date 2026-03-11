@@ -161,15 +161,24 @@
             gap: 5px;
             align-items: baseline;
             margin-bottom: 40px;
+            justify-content: center;
         }
 
         .time-picker input {
             width: 90px;
-            /* 进一步增加宽度，确保 999 也能显示 */
             font-size: 48px;
             font-weight: 200;
-            text-align: right;
+            text-align: center;
             padding: 0;
+            /* 隐藏所有浏览器/iOS 的数字 spinner */
+            -moz-appearance: textfield;
+            appearance: textfield;
+        }
+
+        .time-picker input::-webkit-inner-spin-button,
+        .time-picker input::-webkit-outer-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
         }
 
         .unit {
@@ -243,24 +252,45 @@
             color: var(--text-dim);
         }
 
-        /* Efficiency 极致居中对齐 */
+        /* Efficiency 行 — 与计时数字的 HH:MM 冒号精确居中对齐 */
         .eff-row {
-            margin-top: 1px;
-            margin-left: 20px;
-            display: flex;
+            display: grid;
+            grid-template-columns: var(--label-width) 1fr;
+            column-gap: var(--timer-gap);
             align-items: center;
         }
 
-        .eff-tag {
-            font-size: 10px;
-            color: var(--text-dim);
-            letter-spacing: 1px;
-            /* 起始位置：标签宽 + 间距 */
-            margin-left: calc(var(--label-width) + var(--timer-gap));
-            /* 宽度：精确对应 HH:MM 的 5 个等宽字符宽度 */
-            width: 5ch;
-            text-align: center;
+        /* 继承 timer-val 的字体属性，确保 ch 单位与大数字一致 */
+        .eff-val {
+            display: flex;
+            align-items: center;
+            font-size: 12vw;
+            font-weight: 200;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -2px;
             white-space: nowrap;
+            overflow: visible;
+        }
+
+        @media (min-width: 600px) {
+            .eff-val { font-size: 60px; }
+        }
+
+        /* 2 字符(HH) + 0.5 字符(冒号宽的一半) = 冒号几何中心 */
+        .eff-colon-offset {
+            width: 2.5ch;
+            flex-shrink: 0;
+        }
+
+        /* Efficiency 文字：translateX(-50%) 令其水平中心对准冒号中心 */
+        .eff-content {
+            transform: translateX(-50%);
+            font-size: 10px;
+            font-weight: 400;
+            letter-spacing: 1px;
+            color: var(--text-dim);
+            white-space: nowrap;
+            font-variant-numeric: normal;
         }
 
         /* 数据中心 */
@@ -432,9 +462,13 @@
                     <div class="timer-label"><span>预</span><span>测</span></div>
                     <div class="timer-val" id="display-prediction">00:00<span class="sec-part">:00</span></div>
                 </div>
-                <!-- 效率行：通过 Margin 和宽度精确对齐 HH:MM 的几何中心 -->
+                <!-- 效率行：冒号居中对齐，垂直间距 = 标签-数值水平间距 -->
                 <div class="eff-row">
-                    <div class="eff-tag" id="display-efficiency">EFFICIENCY 100.0%</div>
+                    <div></div><!-- 空标签格，保持 grid 对齐 -->
+                    <div class="eff-val">
+                        <div class="eff-colon-offset"></div><!-- 推到 HH:MM 冒号中心 -->
+                        <div class="eff-content" id="display-efficiency">EFFICIENCY 100.0%</div>
+                    </div>
                 </div>
             </div>
         </div>
