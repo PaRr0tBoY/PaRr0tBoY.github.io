@@ -202,45 +202,6 @@ textarea.fta:focus{border-color:var(--gs)}
   .dp{display:none}
   .dp.mob{display:flex;position:fixed;inset:0;z-index:300}
 }
-/* ── AI Features ── */
-.bai{padding:5px 13px;border-radius:var(--r1);border:1.5px solid #7c3aed;background:#7c3aed;font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:5px}
-.bai:hover{background:#6d28d9;border-color:#6d28d9}
-.bai:disabled{opacity:.55;cursor:not-allowed}
-.bai.loading{background:#6d28d9;border-color:#6d28d9;animation:aiPulse 1.4s ease-in-out infinite}
-@keyframes aiPulse{0%,100%{opacity:1}50%{opacity:.6}}
-/* AI Drawer */
-.ai-ov{position:fixed;inset:0;background:rgba(15,20,40,.45);backdrop-filter:blur(3px);z-index:1500;opacity:0;pointer-events:none;transition:opacity .22s}
-.ai-ov.open{opacity:1;pointer-events:all}
-.ai-drawer{position:fixed;right:0;top:0;bottom:0;width:min(480px,100vw);background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:1501}
-.ai-ov.open .ai-drawer{transform:translateX(0)}
-.ai-dh{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,#4c1d95,#1e3a5f)}
-.ai-dh-title{font-family:'Lora',serif;font-size:15px;color:#fff;font-weight:600;display:flex;align-items:center;gap:8px}
-.ai-dc{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
-/* Think box */
-.think-wrap{border:1px solid #e9d5ff;border-radius:var(--r2);overflow:hidden;background:#faf5ff}
-.think-head{padding:8px 12px;background:#f3e8ff;font-size:11px;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-.think-body{max-height:160px;overflow-y:auto;padding:10px 12px;font-size:11.5px;line-height:1.65;color:#4c1d95;white-space:pre-wrap;font-family:monospace}
-/* Field stream */
-.ai-fields{display:flex;flex-direction:column;gap:8px}
-.af{border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;transition:border-color .2s}
-.af.active{border-color:#7c3aed}
-.af.done{border-color:var(--green)}
-.af-lbl{padding:5px 11px;background:var(--sidebar);font-size:10.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.4px}
-.af-lbl .af-ic{font-size:12px}
-.af-val{padding:9px 11px;font-size:12.5px;line-height:1.6;min-height:36px;color:var(--text);white-space:pre-wrap}
-.af-val.empty{color:var(--text3);font-style:italic}
-/* Progress bar */
-.ai-prog-bar{height:3px;background:#e9d5ff;border-radius:2px;overflow:hidden;margin-top:2px}
-.ai-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb);border-radius:2px;transition:width .3s;width:0%}
-/* Status row */
-.ai-status{font-size:12px;color:var(--text3);text-align:center;padding:4px 0}
-.ai-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
-/* Settings */
-.set-row{display:flex;align-items:center;gap:9px;margin-bottom:14px}
-.set-row label{font-size:12px;color:var(--text2);min-width:80px;font-weight:500}
-.set-inp{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none}
-.set-inp:focus{border-color:#7c3aed}
-.set-sel{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
 </style>
 </head>
 <body>
@@ -250,7 +211,6 @@ textarea.fta:focus{border-color:var(--gs)}
     <button class="btn-h" onclick="startPrac()">🎲 随机练习</button>
     <button class="btn-h" onclick="exportData()">⬆ 导出</button>
     <label class="btn-h" style="cursor:pointer">⬇ 导入<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
-    <button class="btn-h" onclick="openSettings()" style="border-color:rgba(167,139,250,.5)">⚙ API Key</button>
   </div>
 </header>
 <div class="app">
@@ -312,7 +272,6 @@ textarea.fta:focus{border-color:var(--gs)}
       <div class="dtc" id="DMeta"></div>
       <div class="dtr">
         <button class="bdel" id="DelBtn" style="display:none" onclick="delP()" title="删除">🗑</button>
-        <button class="bai" id="AIBtn" style="display:none" onclick="aiAnalyze()">✦ AI 分析</button>
         <button class="bedit" id="EditBtn" style="display:none" onclick="togEdit()">编辑</button>
       </div>
     </div>
@@ -390,56 +349,6 @@ textarea.fta:focus{border-color:var(--gs)}
     <button class="bpri" onclick="nxtPrac()">下一题 →</button>
   </div>
   <div class="pcard" id="PC"></div>
-</div>
-
-<!-- Settings Modal -->
-<div class="ov" id="SM">
-  <div class="modal" style="max-width:400px">
-    <div class="mh"><div class="mt">⚙ AI 设置</div><button class="mx" onclick="closeSettings()">×</button></div>
-    <div class="mb">
-      <p style="font-size:12.5px;color:var(--text2);margin-bottom:16px;line-height:1.6">配置智谱 AI 的 API Key 以启用 AI 自动分析功能。Key 仅存储在本地浏览器中，不会上传。</p>
-      <div class="set-row"><label>API Key</label><input class="set-inp" type="password" id="SETK" placeholder="请输入您的 API Key…"></div>
-      <div class="set-row"><label>模型</label>
-        <select class="set-sel" id="SETM">
-          <option value="glm-4.1v-thinking-flash">glm-4.1v-thinking-flash（免费）</option>
-          <option value="glm-4.1v-thinking-flashx">glm-4.1v-thinking-flashx（高并发）</option>
-        </select>
-      </div>
-      <p class="hint">前往 <a href="https://open.bigmodel.cn" target="_blank" style="color:var(--gs)">open.bigmodel.cn</a> 获取 API Key</p>
-    </div>
-    <div class="mf"><button class="bsec" onclick="closeSettings()">取消</button><button class="bpri" onclick="saveSettings()">保存</button></div>
-  </div>
-</div>
-
-<!-- AI Drawer -->
-<div class="ai-ov" id="AIOV">
-  <div class="ai-drawer" id="AID">
-    <div class="ai-dh">
-      <div class="ai-dh-title"><span id="AISpinner">✦</span> AI 分析中…</div>
-      <button class="mx" style="background:rgba(255,255,255,.15);color:#fff" onclick="closeAI()">×</button>
-    </div>
-    <div class="ai-dc" id="AIDC">
-      <div class="think-wrap" id="ThinkWrap">
-        <div class="think-head" onclick="togThink()"><span>💭 思考过程</span><span id="ThinkArr">▲</span></div>
-        <div class="think-body" id="ThinkBody"></div>
-      </div>
-      <div class="ai-prog-bar"><div class="ai-prog-fill" id="ProgFill"></div></div>
-      <div class="ai-status" id="AIStatus">正在启动分析…</div>
-      <div class="ai-fields" id="AIFields">
-        <div class="af" id="af_known"><div class="af-lbl"><span class="af-ic">📋</span>已知条件</div><div class="af-val empty" id="afv_known">等待中…</div></div>
-        <div class="af" id="af_hidden"><div class="af-lbl"><span class="af-ic">🔎</span>隐含条件</div><div class="af-val empty" id="afv_hidden">等待中…</div></div>
-        <div class="af" id="af_goal"><div class="af-lbl"><span class="af-ic">🎯</span>目标转化</div><div class="af-val empty" id="afv_goal">等待中…</div></div>
-        <div class="af" id="af_breakthrough"><div class="af-lbl"><span class="af-ic">💡</span>关键突破</div><div class="af-val empty" id="afv_breakthrough">等待中…</div></div>
-        <div class="af" id="af_warnings"><div class="af-lbl"><span class="af-ic">⚠️</span>易错警示</div><div class="af-val empty" id="afv_warnings">等待中…</div></div>
-        <div class="af" id="af_steps"><div class="af-lbl"><span class="af-ic">📝</span>解题步骤</div><div class="af-val empty" id="afv_steps">等待中…</div></div>
-        <div class="af" id="af_summary"><div class="af-lbl"><span class="af-ic">📌</span>方法总结</div><div class="af-val empty" id="afv_summary">等待中…</div></div>
-      </div>
-    </div>
-    <div class="ai-actions">
-      <button class="bsec" onclick="closeAI()">关闭</button>
-      <button class="bpri" id="AIApplyBtn" style="display:none" onclick="applyAI()">✅ 应用到题目</button>
-    </div>
-  </div>
 </div>
 
 <div class="toast" id="TST"></div>
@@ -529,9 +438,6 @@ function renderDetail(id){
   document.getElementById('DStat').innerHTML=`<span class="sdot s-${sc}">${st}</span>`;
   document.getElementById('DMeta').innerHTML=`<span class="badge b-${sj}">${p.subject}</span> · ${p.type}题 · <span class="badge b-${dc}">${p.difficulty}</span>`;
   document.getElementById('EditBtn').style.display='';document.getElementById('DelBtn').style.display='';
-  // Show AI button (always visible when a problem is selected)
-  const aib=document.getElementById('AIBtn');
-  if(aib){aib.style.display='';}
   document.getElementById('DC').innerHTML=`
     <div class="dsect">
       <div class="sh" onclick="togS(this)"><span>📝 题目</span><span class="sarr">▼</span></div>
@@ -620,7 +526,6 @@ function delP(){
     document.getElementById('DC').innerHTML=`<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
     document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
     document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
-    const aib2=document.getElementById('AIBtn');if(aib2)aib2.style.display='none';
     toast('🗑 题目已删除');
   });
 }
@@ -759,201 +664,6 @@ function loadSample(){
   ];
   save();
 }
-
-// ── AI Analysis ──────────────────────────────────
-let aiResult = null; // parsed result pending apply
-
-function getKey(){return localStorage.getItem('glm_key')||'';}
-function getModel(){return localStorage.getItem('glm_model')||'glm-4.1v-thinking-flash';}
-
-function openSettings(){
-  document.getElementById('SETK').value=getKey();
-  document.getElementById('SETM').value=getModel();
-  document.getElementById('SM').classList.add('open');
-}
-function closeSettings(){document.getElementById('SM').classList.remove('open');}
-function saveSettings(){
-  const k=document.getElementById('SETK').value.trim();
-  const m=document.getElementById('SETM').value;
-  localStorage.setItem('glm_key',k);
-  localStorage.setItem('glm_model',m);
-  closeSettings();toast('✅ 设置已保存');
-}
-
-function togThink(){
-  const b=document.getElementById('ThinkBody'),a=document.getElementById('ThinkArr');
-  const hidden=b.style.display==='none';
-  b.style.display=hidden?'block':'none';
-  a.textContent=hidden?'▲':'▼';
-}
-
-function aiAnalyze(){
-  if(!selId)return;
-  const k=getKey();
-  if(!k){toast('⚠️ 请先设置 API Key（右上角 ⚙）');return;}
-  const p=probs.find(x=>x.id===selId);
-  if(!p){return;}
-  // Build messages
-  const content=[];
-  if(p.imageData){
-    // base64 image
-    const b64=p.imageData.includes(',')? p.imageData.split(',')[1] : p.imageData;
-    const mime=p.imageData.startsWith('data:')?p.imageData.split(';')[0].split(':')[1]:'image/jpeg';
-    content.push({type:'image_url',image_url:{url:`data:${mime};base64,${b64}`}});
-  }
-  const textPart=p.text?`题目内容：\n${p.text}\n\n`:'';
-  const sysPrompt=`你是一位专业的数学教学助手，专注于高等数学和线性代数解题分析。
-${textPart}请对${p.imageData?'图片中的':'以上'}数学题目进行完整的教学分析，严格按照以下JSON格式输出，不要输出任何其他内容：
-{
-  "known": "已知条件：题目中给出的所有显性条件（用LaTeX公式表达数学内容，行内用$...$，块级用$$...$$）",
-  "hidden": "隐含条件：需要挖掘的隐藏信息，如特殊性质、约束条件等",
-  "goal": "目标转化：最终需要证明或求解的内容，以及如何将原问题转化为可处理的形式",
-  "breakthrough": "关键突破：解题的核心切入点和主要思路，方法选择的依据",
-  "warnings": "易错警示：常见错误、易混淆点、需要特别注意的细节",
-  "steps": "解题步骤，每步占一行，用换行符\\n分隔，每步都要有完整的推导和说明，使用LaTeX公式",
-  "summary": "方法总结：从这道题提炼的通用解题方法论，便于迁移应用"
-}
-输出要求：只输出JSON对象，不要Markdown代码块标记，不要任何前后文字。LaTeX公式必须正确，行内公式用$符号，显示公式用$$符号。`;
-  content.push({type:'text',text:sysPrompt});
-  runAIStream({role:'user',content},p.id);
-}
-
-async function runAIStream(userMsg, probId){
-  // Open drawer
-  aiResult=null;
-  document.getElementById('AIOV').classList.add('open');
-  document.getElementById('AIApplyBtn').style.display='none';
-  document.getElementById('ThinkBody').textContent='';
-  document.getElementById('ThinkBody').style.display='block';
-  document.getElementById('ThinkArr').textContent='▲';
-  document.getElementById('ProgFill').style.width='0%';
-  document.getElementById('AIStatus').textContent='正在连接 AI…';
-  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
-  fields.forEach(k=>{
-    const v=document.getElementById(`afv_${k}`);v.textContent='等待中…';v.className='af-val empty';
-    document.getElementById(`af_${k}`).className='af';
-  });
-  // spinner
-  let spinI=0,spinF=['✦','✧','✦','✧'];
-  const spinT=setInterval(()=>{document.getElementById('AISpinner').textContent=spinF[spinI++%spinF.length];},400);
-
-  const key=getKey(), model=getModel();
-  let thinking='', answer='', done=false;
-
-  try{
-    const resp=await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-      body:JSON.stringify({model,messages:[userMsg],stream:true,max_tokens:4096,temperature:0.1})
-    });
-    if(!resp.ok){
-      const e=await resp.text();throw new Error(`HTTP ${resp.status}: ${e}`);
-    }
-    const reader=resp.body.getReader(), decoder=new TextDecoder();
-    let buf='';
-    document.getElementById('AIStatus').textContent='AI 正在思考…';
-    document.getElementById('ProgFill').style.width='15%';
-
-    while(true){
-      const {done:d,value}=await reader.read();
-      if(d)break;
-      buf+=decoder.decode(value,{stream:true});
-      const lines=buf.split('\n');
-      buf=lines.pop();
-      for(const line of lines){
-        if(!line.startsWith('data:'))continue;
-        const raw=line.slice(5).trim();
-        if(raw==='[DONE]'){done=true;break;}
-        try{
-          const chunk=JSON.parse(raw);
-          const delta=chunk.choices?.[0]?.delta;
-          if(!delta)continue;
-          if(delta.reasoning_content){
-            thinking+=delta.reasoning_content;
-            const tb=document.getElementById('ThinkBody');
-            tb.textContent=thinking;
-            tb.scrollTop=tb.scrollHeight;
-          }
-          if(delta.content){
-            if(!answer&&thinking){
-              document.getElementById('AIStatus').textContent='AI 正在撰写分析…';
-              document.getElementById('ProgFill').style.width='60%';
-            }
-            answer+=delta.content;
-          }
-        }catch{}
-      }
-      if(done)break;
-    }
-    clearInterval(spinT);
-    document.getElementById('AISpinner').textContent='✦';
-    document.getElementById('ProgFill').style.width='90%';
-    document.getElementById('AIStatus').textContent='正在解析结果…';
-    // parse JSON
-    const parsed=parseAIJSON(answer);
-    if(!parsed)throw new Error('无法解析 AI 返回的 JSON，请重试');
-    aiResult={...parsed, _probId: probId};
-    // fill fields
-    fields.forEach((k,i)=>{
-      setTimeout(()=>{
-        const val=parsed[k]||'';
-        const vEl=document.getElementById(`afv_${k}`);
-        const wEl=document.getElementById(`af_${k}`);
-        vEl.textContent=val||'（AI 未提供）';
-        vEl.className='af-val'+(val?'':' empty');
-        wEl.className='af'+(val?' done':'');
-      }, i*80);
-    });
-    setTimeout(()=>{
-      document.getElementById('ProgFill').style.width='100%';
-      document.getElementById('AIStatus').textContent='✅ 分析完成！请检查后点击"应用到题目"。';
-      document.getElementById('AIApplyBtn').style.display='';
-    }, fields.length*80+100);
-  }catch(e){
-    clearInterval(spinT);
-    document.getElementById('AISpinner').textContent='✦';
-    document.getElementById('AIStatus').textContent='❌ 出错：'+e.message;
-    document.getElementById('ProgFill').style.width='0%';
-    toast('❌ AI 分析失败：'+e.message.slice(0,60));
-  }
-}
-
-function parseAIJSON(text){
-  if(!text) return null;
-  // strip possible markdown fences
-  let t=text.trim();
-  t=t.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
-  // find first { and last }
-  const s=t.indexOf('{'), e=t.lastIndexOf('}');
-  if(s<0||e<0)return null;
-  try{return JSON.parse(t.slice(s,e+1));}catch{return null;}
-}
-
-function applyAI(){
-  if(!aiResult)return;
-  const p=probs.find(x=>x.id===aiResult._probId);
-  if(!p)return;
-  p.analysis={
-    known: aiResult.known||'',
-    hidden: aiResult.hidden||'',
-    goal: aiResult.goal||'',
-    breakthrough: aiResult.breakthrough||'',
-    warnings: aiResult.warnings||''
-  };
-  if(aiResult.steps) p.steps=aiResult.steps;
-  if(aiResult.summary) p.summary=aiResult.summary;
-  save(); renderList(); renderDetail(p.id);
-  closeAI();
-  // Enter edit mode to see fields populated
-  editing=false;
-  toast('✅ AI 分析已应用到题目！');
-}
-
-function closeAI(){document.getElementById('AIOV').classList.remove('open');}
-
-// Patch renderDetail to show AI button
-const _origRenderDetail=renderDetail;
-// ─────────────────────────────────────────────────
 
 // Init
 document.addEventListener('DOMContentLoaded',()=>{
