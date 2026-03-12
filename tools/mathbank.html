@@ -196,42 +196,75 @@ textarea.fta:focus{border-color:var(--gs)}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
+/* Collapse restore button — same style as .bic, lives in detail toolbar left side */
+.col-float{
+  width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--border);
+  background:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;
+  font-size:12px;color:var(--gs);border-color:var(--gs);transition:all .15s;flex-shrink:0;font-weight:600}
+.col-float:hover{background:var(--gs-bg)}
+/* Detail panel needs relative positioning */
+.dp{position:relative}
+/* Undo button */
+.bundo{padding:5px 11px;border-radius:var(--r1);border:1.5px solid var(--amber);background:var(--amber-bg);
+  font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;
+  font-weight:500;color:var(--amber);display:none}
+.bundo:hover{background:var(--amber);color:#fff}
+/* Mobile-only elements: hidden on desktop, shown only at narrow widths */
+.mob-only{display:none!important}
+/* Mobile filter action buttons */
+.mob-filter-btns{display:none;gap:8px;padding:14px 0 4px;justify-content:center}
+/* ── Mobile (≤700px) ── */
 @media(max-width:700px){
-  .fp{display:none}
-  .lp{width:100%!important;max-width:100%}
-  .dp{display:none}
-  .dp.mob{display:flex;position:fixed;inset:0;z-index:300}
+  /* Hide desktop panels by default */
+  .fp,.lp,.dp{display:none!important}
+  /* Mobile view states — body class drives which panel is visible */
+  body.mob-filter .fp{display:flex!important;position:fixed;inset:0;z-index:200;width:100%!important;max-width:100%!important}
+  body.mob-list   .lp{display:flex!important;position:fixed;inset:0;z-index:200;width:100%!important;max-width:100%!important;min-width:0!important}
+  body.mob-detail .dp{display:flex!important;position:fixed;inset:0;z-index:200}
+  /* Show mobile-only elements */
+  .mob-only{display:flex!important}
+  /* Show filter action buttons */
+  .mob-filter-btns{display:flex}
+  /* Desktop collapse float not needed on mobile */
+  .col-float{display:none!important}
+  /* Desktop collapse button hidden on mobile */
+  #colBtn{display:none!important}
+  /* Resize handles hidden */
+  .rh{display:none!important}
+  /* Header tweaks */
+  .h-logo span{display:none}
+  .btn-h{padding:5px 8px;font-size:11.5px}
 }
 /* ── AI Features ── */
-.bai{padding:5px 13px;border-radius:var(--r1);border:1.5px solid #7c3aed;background:#7c3aed;font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:5px}
-.bai:hover{background:#6d28d9;border-color:#6d28d9}
+.bai{padding:5px 13px;border-radius:var(--r1);border:1.5px solid var(--gs);background:var(--gs);font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:5px}
+.bai:hover{background:var(--navy2);border-color:var(--navy2)}
 .bai:disabled{opacity:.55;cursor:not-allowed}
-.bai.loading{background:#6d28d9;border-color:#6d28d9;animation:aiPulse 1.4s ease-in-out infinite}
+.bai.loading{background:var(--navy2);border-color:var(--navy2);animation:aiPulse 1.4s ease-in-out infinite}
 @keyframes aiPulse{0%,100%{opacity:1}50%{opacity:.6}}
 /* AI Drawer */
 .ai-ov{position:fixed;inset:0;background:rgba(15,20,40,.45);backdrop-filter:blur(3px);z-index:1500;opacity:0;pointer-events:none;transition:opacity .22s}
 .ai-ov.open{opacity:1;pointer-events:all}
 .ai-drawer{position:fixed;right:0;top:0;bottom:0;width:min(480px,100vw);background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:1501}
 .ai-ov.open .ai-drawer{transform:translateX(0)}
-.ai-dh{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,#4c1d95,#1e3a5f)}
+.ai-dh{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--navy2))}
 .ai-dh-title{font-family:'Lora',serif;font-size:15px;color:#fff;font-weight:600;display:flex;align-items:center;gap:8px}
 .ai-dc{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
 /* Think box */
-.think-wrap{border:1px solid #e9d5ff;border-radius:var(--r2);overflow:hidden;background:#faf5ff}
-.think-head{padding:8px 12px;background:#f3e8ff;font-size:11px;font-weight:600;color:#7c3aed;text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none}
-.think-body{max-height:160px;overflow-y:auto;padding:10px 12px;font-size:11.5px;line-height:1.65;color:#4c1d95;white-space:pre-wrap;font-family:monospace}
+.think-wrap{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:var(--sidebar)}
+.think-head{padding:8px 12px;background:var(--bg);font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
+.think-body{max-height:160px;overflow-y:auto;padding:10px 12px;font-size:11.5px;line-height:1.65;color:var(--text2);white-space:pre-wrap;font-family:monospace}
 /* Field stream */
 .ai-fields{display:flex;flex-direction:column;gap:8px}
 .af{border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;transition:border-color .2s}
-.af.active{border-color:#7c3aed}
+.af.active{border-color:var(--gs)}
 .af.done{border-color:var(--green)}
 .af-lbl{padding:5px 11px;background:var(--sidebar);font-size:10.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.4px}
 .af-lbl .af-ic{font-size:12px}
-.af-val{padding:9px 11px;font-size:12.5px;line-height:1.6;min-height:36px;color:var(--text);white-space:pre-wrap}
+.af-val{padding:9px 11px;font-size:12.5px;line-height:1.7;min-height:36px;color:var(--text)}
 .af-val.empty{color:var(--text3);font-style:italic}
 /* Progress bar */
-.ai-prog-bar{height:3px;background:#e9d5ff;border-radius:2px;overflow:hidden;margin-top:2px}
-.ai-prog-fill{height:100%;background:linear-gradient(90deg,#7c3aed,#2563eb);border-radius:2px;transition:width .3s;width:0%}
+.ai-prog-bar{height:3px;background:var(--gs-bg);border-radius:2px;overflow:hidden;margin-top:2px}
+.ai-prog-fill{height:100%;background:linear-gradient(90deg,var(--gs),var(--navy));border-radius:2px;transition:width .3s;width:0%}
 /* Status row */
 .ai-status{font-size:12px;color:var(--text3);text-align:center;padding:4px 0}
 .ai-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
@@ -239,7 +272,7 @@ textarea.fta:focus{border-color:var(--gs)}
 .set-row{display:flex;align-items:center;gap:9px;margin-bottom:14px}
 .set-row label{font-size:12px;color:var(--text2);min-width:80px;font-weight:500}
 .set-inp{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none}
-.set-inp:focus{border-color:#7c3aed}
+.set-inp:focus{border-color:var(--gs)}
 .set-sel{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
 </style>
 </head>
@@ -250,12 +283,16 @@ textarea.fta:focus{border-color:var(--gs)}
     <button class="btn-h" onclick="startPrac()">🎲 随机练习</button>
     <button class="btn-h" onclick="exportData()">⬆ 导出</button>
     <label class="btn-h" style="cursor:pointer">⬇ 导入<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
-    <button class="btn-h" onclick="openSettings()" style="border-color:rgba(167,139,250,.5)">⚙ API Key</button>
+    <button class="btn-h" onclick="openSettings()" style="border-color:rgba(100,160,255,.5)">⚙ API Key</button>
   </div>
 </header>
 <div class="app">
   <!-- Filter Panel -->
   <div class="fp" id="FP">
+    <!-- Mobile filter header (mob-only = hidden on desktop) -->
+    <div id="MobFilterHead" class="mob-only" style="padding:11px 14px;border-bottom:1px solid var(--border);background:var(--navy);color:#fff;gap:9px;flex-shrink:0;align-items:center">
+      <span style="font-family:'Lora',serif;font-size:15px;font-weight:600">🔍 筛选题目</span>
+    </div>
     <div class="fp-inner">
       <div class="fl-s"><div class="fl-l">搜索</div><input class="sbox" type="text" id="SI" placeholder="搜索题目、知识点…" oninput="applyF()"></div>
       <div class="fl-s"><div class="fl-l">学科</div>
@@ -290,12 +327,19 @@ textarea.fta:focus{border-color:var(--gs)}
         </div>
       </div>
       <div class="fl-s"><div class="fl-l">知识点</div><div class="ktags" id="kF"></div></div>
+      <!-- Mobile-only action buttons, appear after filter options -->
+      <div class="mob-filter-btns">
+        <button class="bsec" onclick="resetFilters()" style="min-width:90px">重置</button>
+        <button class="bpri" onclick="mobGo('list')" style="min-width:90px">提交</button>
+      </div>
     </div>
     <div class="rh" id="FPR"></div>
   </div>
   <!-- List Panel -->
   <div class="lp" id="LP">
     <div class="lt">
+      <!-- Mobile back button: only visible on narrow screens -->
+      <button class="bic mob-only" onclick="mobBack('filter')" title="返回筛选" style="color:var(--gs);border-color:var(--gs);margin-right:4px">←</button>
       <span class="lc" id="LC">0 道题目</span>
       <div class="tacts">
         <button class="bic" id="colBtn" onclick="togList()" title="收起">◀</button>
@@ -308,9 +352,16 @@ textarea.fta:focus{border-color:var(--gs)}
   <!-- Detail Panel -->
   <div class="dp" id="DP">
     <div class="dt">
-      <div class="dtl"><span id="DStat"></span></div>
+      <div class="dtl" style="gap:5px">
+        <!-- Desktop: restore-list button (shown only when list panel is collapsed) -->
+        <button class="col-float" id="colFloat" onclick="togList()" title="展开列表">▶</button>
+        <!-- Mobile: back button (mobile-only) -->
+        <button class="bic mob-only" onclick="mobBack('list')" title="返回列表" style="color:var(--gs);border-color:var(--gs)">←</button>
+        <span id="DStat"></span>
+      </div>
       <div class="dtc" id="DMeta"></div>
       <div class="dtr">
+        <button class="bundo" id="UndoBtn" onclick="undoAI()">↩ 撤回</button>
         <button class="bdel" id="DelBtn" style="display:none" onclick="delP()" title="删除">🗑</button>
         <button class="bai" id="AIBtn" style="display:none" onclick="aiAnalyze()">✦ AI 分析</button>
         <button class="bedit" id="EditBtn" style="display:none" onclick="togEdit()">编辑</button>
@@ -434,6 +485,10 @@ textarea.fta:focus{border-color:var(--gs)}
         <div class="af" id="af_steps"><div class="af-lbl"><span class="af-ic">📝</span>解题步骤</div><div class="af-val empty" id="afv_steps">等待中…</div></div>
         <div class="af" id="af_summary"><div class="af-lbl"><span class="af-ic">📌</span>方法总结</div><div class="af-val empty" id="afv_summary">等待中…</div></div>
       </div>
+      <div class="think-wrap" style="border-color:#e5e2dc;background:#fafafa;margin-top:4px">
+        <div class="think-head" style="background:#f2f0ec;color:var(--text2)" onclick="togRaw()"><span>🗒 原始响应（调试用）</span><span id="RawArr">▼</span></div>
+        <div class="think-body" id="RawBody" style="display:none;color:var(--text2);font-size:11px"></div>
+      </div>
     </div>
     <div class="ai-actions">
       <button class="bsec" onclick="closeAI()">关闭</button>
@@ -528,6 +583,7 @@ function renderDetail(id){
   const pills=(p.knowledge||[]).map(t=>`<span class="kpill">${t}</span>`).join('');
   document.getElementById('DStat').innerHTML=`<span class="sdot s-${sc}">${st}</span>`;
   document.getElementById('DMeta').innerHTML=`<span class="badge b-${sj}">${p.subject}</span> · ${p.type}题 · <span class="badge b-${dc}">${p.difficulty}</span>`;
+
   document.getElementById('EditBtn').style.display='';document.getElementById('DelBtn').style.display='';
   // Show AI button (always visible when a problem is selected)
   const aib=document.getElementById('AIBtn');
@@ -595,7 +651,15 @@ function renderSteps(txt){
 function togS(h){h.closest('.dsect').classList.toggle('scoll');}
 
 // Interactions
-function selP(id){selId=id;editing=false;const eb=document.getElementById('EditBtn');eb.textContent='编辑';eb.classList.remove('on');renderList();renderDetail(id);}
+function selP(id){
+  selId=id;editing=false;
+  const eb=document.getElementById('EditBtn');eb.textContent='编辑';eb.classList.remove('on');
+  // Clear undo when switching problems
+  undoSnap=null;const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='none';
+  renderList();renderDetail(id);
+  // Mobile: navigate to detail
+  if(isMob())mobGo('detail');
+}
 function togEdit(){
   editing=!editing;const eb=document.getElementById('EditBtn');
   if(editing){eb.textContent='保存';eb.classList.add('on');}
@@ -621,21 +685,45 @@ function delP(){
     document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
     document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
     const aib2=document.getElementById('AIBtn');if(aib2)aib2.style.display='none';
+    undoSnap=null;const ub2=document.getElementById('UndoBtn');if(ub2)ub2.style.display='none';
     toast('🗑 题目已删除');
   });
 }
 
 // Panel
-function togList(){listColl=!listColl;const lp=document.getElementById('LP'),cb=document.getElementById('colBtn');lp.classList.toggle('coll',listColl);cb.textContent=listColl?'▶':'◀';cb.title=listColl?'展开列表':'收起列表';}
+function togList(){
+  listColl=!listColl;
+  const lp=document.getElementById('LP');
+  const cf=document.getElementById('colFloat');
+  if(listColl){
+    // Save current inline width then clear it so .coll CSS (width:0) can take effect
+    const cur=lp.style.width;
+    if(cur)lp.dataset.savedW=cur;
+    lp.style.width='';
+    lp.style.minWidth='';
+    lp.classList.add('coll');
+    if(cf)cf.style.display='flex';
+  } else {
+    lp.classList.remove('coll');
+    // Restore saved inline width (from resize drag)
+    if(lp.dataset.savedW){lp.style.width=lp.dataset.savedW;}
+    const lsSaved=localStorage.getItem('mb_lp_w');
+    if(!lp.dataset.savedW&&lsSaved)lp.style.width=lsSaved;
+    if(cf)cf.style.display='none';
+  }
+}
 
 // Resize
-function setupRH(hid,pid){
+function setupRH(hid,pid,lsKey){
   const h=document.getElementById(hid),p=document.getElementById(pid);let sx,sw;
   h.addEventListener('mousedown',e=>{sx=e.clientX;sw=p.offsetWidth;h.classList.add('drag');
     const mv=e=>{const nw=sw+(e.clientX-sx),mn=parseInt(getComputedStyle(p).minWidth)||150,mx=parseInt(getComputedStyle(p).maxWidth)||500;p.style.width=Math.min(mx,Math.max(mn,nw))+'px';};
-    const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);h.classList.remove('drag');};
+    const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);h.classList.remove('drag');
+      if(lsKey)localStorage.setItem(lsKey,p.style.width);};
     document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);e.preventDefault();
   });
+  // Restore saved width
+  if(lsKey){const saved=localStorage.getItem(lsKey);if(saved)p.style.width=saved;}
 }
 
 // Modal
@@ -761,7 +849,7 @@ function loadSample(){
 }
 
 // ── AI Analysis ──────────────────────────────────
-let aiResult = null; // parsed result pending apply
+let aiResult = null;
 
 function getKey(){return localStorage.getItem('glm_key')||'';}
 function getModel(){return localStorage.getItem('glm_model')||'glm-4.1v-thinking-flash';}
@@ -786,180 +874,323 @@ function togThink(){
   b.style.display=hidden?'block':'none';
   a.textContent=hidden?'▲':'▼';
 }
+function togRaw(){
+  const b=document.getElementById('RawBody'),a=document.getElementById('RawArr');
+  const hidden=b.style.display==='none';
+  b.style.display=hidden?'block':'none';
+  a.textContent=hidden?'▲':'▼';
+}
 
 function aiAnalyze(){
   if(!selId)return;
   const k=getKey();
   if(!k){toast('⚠️ 请先设置 API Key（右上角 ⚙）');return;}
-  const p=probs.find(x=>x.id===selId);
-  if(!p){return;}
-  // Build messages
+  const p=probs.find(x=>x.id===selId);if(!p)return;
+  // Fix 3: confirmation before starting
+  const hasContent = p.analysis && Object.values(p.analysis).some(v=>v&&v.trim());
+  const msg = hasContent
+    ? '该题目已有分析内容，AI 分析将生成新内容供你选择是否应用，不会立即覆盖。继续？'
+    : '将使用智谱 AI 对该题目进行自动分析，生成思路分析和解题步骤，完成后可选择是否应用。继续？';
+  cfm('✦ AI 自动分析', msg, ()=>_doAIAnalyze(p));
+}
+
+function _doAIAnalyze(p){
   const content=[];
   if(p.imageData){
-    // base64 image
-    const b64=p.imageData.includes(',')? p.imageData.split(',')[1] : p.imageData;
+    const b64=p.imageData.includes(',')? p.imageData.split(',')[1]:p.imageData;
     const mime=p.imageData.startsWith('data:')?p.imageData.split(';')[0].split(':')[1]:'image/jpeg';
     content.push({type:'image_url',image_url:{url:`data:${mime};base64,${b64}`}});
   }
-  const textPart=p.text?`题目内容：\n${p.text}\n\n`:'';
-  const sysPrompt=`你是一位专业的数学教学助手，专注于高等数学和线性代数解题分析。
-${textPart}请对${p.imageData?'图片中的':'以上'}数学题目进行完整的教学分析，严格按照以下JSON格式输出，不要输出任何其他内容：
-{
-  "known": "已知条件：题目中给出的所有显性条件（用LaTeX公式表达数学内容，行内用$...$，块级用$$...$$）",
-  "hidden": "隐含条件：需要挖掘的隐藏信息，如特殊性质、约束条件等",
-  "goal": "目标转化：最终需要证明或求解的内容，以及如何将原问题转化为可处理的形式",
-  "breakthrough": "关键突破：解题的核心切入点和主要思路，方法选择的依据",
-  "warnings": "易错警示：常见错误、易混淆点、需要特别注意的细节",
-  "steps": "解题步骤，每步占一行，用换行符\\n分隔，每步都要有完整的推导和说明，使用LaTeX公式",
-  "summary": "方法总结：从这道题提炼的通用解题方法论，便于迁移应用"
-}
-输出要求：只输出JSON对象，不要Markdown代码块标记，不要任何前后文字。LaTeX公式必须正确，行内公式用$符号，显示公式用$$符号。`;
-  content.push({type:'text',text:sysPrompt});
-  runAIStream({role:'user',content},p.id);
+
+  // Fix 4: Clean prompt - instructions clearly separated from output template
+  // The key insight: put instructions BEFORE the template, make it clear the template
+  // shows the FORMAT not the content to copy.
+  const subjectHint = p.subject==='高数' ? '高等数学' : '线性代数';
+  const questionText = p.text ? `\n\n题目文字内容：\n${p.text}` : '';
+  const prompt = `你是${subjectHint}解题专家。请分析${p.imageData?'图片中的':'以下'}数学题目，给出完整的教学分析。${questionText}
+
+重要要求：
+1. 数学公式全部用LaTeX格式：行内公式用 $公式$，独立公式换行用 $$公式$$
+2. 严格按照以下XML格式输出，每个标签内只写该字段的实际内容
+3. 不要在输出中包含任何格式说明、字段解释或其他文字
+
+<known>
+（在此写出题目给出的全部已知条件，包括显性和可直接读出的信息）
+</known>
+
+<hidden>
+（在此写出需要挖掘的隐含条件，例如定义域约束、连续性、可微性等隐含信息）
+</hidden>
+
+<goal>
+（在此写出最终目标，以及将原问题转化为可操作形式的思路）
+</goal>
+
+<breakthrough>
+（在此写出核心切入点和主要解题思路，说明方法选择的理由）
+</breakthrough>
+
+<warnings>
+（在此写出常见错误、易混淆点和注意事项）
+</warnings>
+
+<steps>
+（在此写出完整的逐步解题过程，每步单独一行，包含推导说明和LaTeX公式）
+</steps>
+
+<summary>
+（在此写出从本题提炼的通用解题方法论，便于迁移到同类题目）
+</summary>`;
+
+  content.push({type:'text',text:prompt});
+  runAIStream({role:'user',content}, p.id);
 }
 
 async function runAIStream(userMsg, probId){
-  // Open drawer
   aiResult=null;
   document.getElementById('AIOV').classList.add('open');
   document.getElementById('AIApplyBtn').style.display='none';
   document.getElementById('ThinkBody').textContent='';
   document.getElementById('ThinkBody').style.display='block';
   document.getElementById('ThinkArr').textContent='▲';
+  const rawB=document.getElementById('RawBody');
+  if(rawB){rawB.textContent='';rawB.style.display='none';document.getElementById('RawArr').textContent='▼';}
   document.getElementById('ProgFill').style.width='0%';
   document.getElementById('AIStatus').textContent='正在连接 AI…';
   const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
   fields.forEach(k=>{
-    const v=document.getElementById(`afv_${k}`);v.textContent='等待中…';v.className='af-val empty';
-    document.getElementById(`af_${k}`).className='af';
+    const v=document.getElementById(`afv_${k}`);if(v){v.textContent='等待中…';v.className='af-val empty';}
+    const w=document.getElementById(`af_${k}`);if(w)w.className='af';
   });
-  // spinner
-  let spinI=0,spinF=['✦','✧','✦','✧'];
-  const spinT=setInterval(()=>{document.getElementById('AISpinner').textContent=spinF[spinI++%spinF.length];},400);
+
+  let spinI=0;
+  const spinT=setInterval(()=>{
+    const s=document.getElementById('AISpinner');
+    if(s)s.textContent=['✦','✧','⋆','✧'][spinI++%4];
+  },380);
 
   const key=getKey(), model=getModel();
-  let thinking='', answer='', done=false;
+  let thinking='', answer='';
 
   try{
     const resp=await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions',{
       method:'POST',
       headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-      body:JSON.stringify({model,messages:[userMsg],stream:true,max_tokens:4096,temperature:0.1})
+      body:JSON.stringify({model,messages:[userMsg],stream:true,max_tokens:4096,temperature:0.05})
     });
-    if(!resp.ok){
-      const e=await resp.text();throw new Error(`HTTP ${resp.status}: ${e}`);
-    }
-    const reader=resp.body.getReader(), decoder=new TextDecoder();
-    let buf='';
-    document.getElementById('AIStatus').textContent='AI 正在思考…';
-    document.getElementById('ProgFill').style.width='15%';
+    if(!resp.ok){const e=await resp.text();throw new Error(`HTTP ${resp.status}: ${e.slice(0,200)}`);}
 
-    while(true){
-      const {done:d,value}=await reader.read();
-      if(d)break;
-      buf+=decoder.decode(value,{stream:true});
-      const lines=buf.split('\n');
-      buf=lines.pop();
+    const reader=resp.body.getReader(), dec=new TextDecoder();
+    let buf='', streamDone=false;
+    document.getElementById('AIStatus').textContent='AI 正在思考…';
+    document.getElementById('ProgFill').style.width='10%';
+
+    while(!streamDone){
+      const {done,value}=await reader.read();if(done)break;
+      buf+=dec.decode(value,{stream:true});
+      const lines=buf.split('\n');buf=lines.pop();
       for(const line of lines){
         if(!line.startsWith('data:'))continue;
         const raw=line.slice(5).trim();
-        if(raw==='[DONE]'){done=true;break;}
-        try{
-          const chunk=JSON.parse(raw);
-          const delta=chunk.choices?.[0]?.delta;
-          if(!delta)continue;
-          if(delta.reasoning_content){
-            thinking+=delta.reasoning_content;
-            const tb=document.getElementById('ThinkBody');
-            tb.textContent=thinking;
-            tb.scrollTop=tb.scrollHeight;
+        if(raw==='[DONE]'){streamDone=true;break;}
+        let chunk;try{chunk=JSON.parse(raw);}catch{continue;}
+        const delta=chunk.choices?.[0]?.delta;if(!delta)continue;
+        if(delta.reasoning_content!=null&&delta.reasoning_content!==''){
+          thinking+=delta.reasoning_content;
+          const tb=document.getElementById('ThinkBody');
+          if(tb){tb.textContent=thinking;tb.scrollTop=tb.scrollHeight;}
+        }
+        if(delta.content!=null&&delta.content!==''){
+          if(!answer){
+            document.getElementById('AIStatus').textContent='AI 正在撰写分析…';
+            document.getElementById('ProgFill').style.width='60%';
           }
-          if(delta.content){
-            if(!answer&&thinking){
-              document.getElementById('AIStatus').textContent='AI 正在撰写分析…';
-              document.getElementById('ProgFill').style.width='60%';
-            }
-            answer+=delta.content;
-          }
-        }catch{}
+          answer+=delta.content;
+          // live-stream each field as it appears
+          streamFillFields(answer);
+        }
       }
-      if(done)break;
     }
+
     clearInterval(spinT);
-    document.getElementById('AISpinner').textContent='✦';
+    const sp=document.getElementById('AISpinner');if(sp)sp.textContent='✦';
     document.getElementById('ProgFill').style.width='90%';
     document.getElementById('AIStatus').textContent='正在解析结果…';
-    // parse JSON
-    const parsed=parseAIJSON(answer);
-    if(!parsed)throw new Error('无法解析 AI 返回的 JSON，请重试');
-    aiResult={...parsed, _probId: probId};
-    // fill fields
+
+    // Show raw for debug
+    if(rawB)rawB.textContent=answer;
+
+    const parsed=parseXMLFields(answer);
+    const filledCount=fields.filter(k=>parsed[k]&&parsed[k].trim()).length;
+
+    if(filledCount===0){
+      // last resort: show raw + error
+      if(rawB){rawB.style.display='block';document.getElementById('RawArr').textContent='▲';}
+      throw new Error(`解析失败，已显示原始响应供参考（共 ${answer.length} 字符）`);
+    }
+
+    aiResult={...parsed, _probId:probId};
     fields.forEach((k,i)=>{
       setTimeout(()=>{
         const val=parsed[k]||'';
         const vEl=document.getElementById(`afv_${k}`);
         const wEl=document.getElementById(`af_${k}`);
-        vEl.textContent=val||'（AI 未提供）';
-        vEl.className='af-val'+(val?'':' empty');
-        wEl.className='af'+(val?' done':'');
-      }, i*80);
+        if(vEl){
+          // Set as text so MathJax processes $...$ in text nodes
+          vEl.textContent=val||'（AI 未提供）';
+          vEl.className='af-val'+(val?'':' empty');
+        }
+        if(wEl)wEl.className='af'+(val?' done':'');
+      },i*90);
     });
     setTimeout(()=>{
       document.getElementById('ProgFill').style.width='100%';
-      document.getElementById('AIStatus').textContent='✅ 分析完成！请检查后点击"应用到题目"。';
+      document.getElementById('AIStatus').textContent=`✅ 分析完成（解析 ${filledCount}/7 个字段）`;
       document.getElementById('AIApplyBtn').style.display='';
-    }, fields.length*80+100);
+      // Fix 4: Render LaTeX in the AI drawer fields
+      if(window.MathJax){
+        MathJax.typesetPromise([document.getElementById('AIFields')]).catch(()=>{});
+      }
+    },fields.length*90+100);
+
   }catch(e){
     clearInterval(spinT);
-    document.getElementById('AISpinner').textContent='✦';
-    document.getElementById('AIStatus').textContent='❌ 出错：'+e.message;
+    const sp=document.getElementById('AISpinner');if(sp)sp.textContent='✦';
     document.getElementById('ProgFill').style.width='0%';
-    toast('❌ AI 分析失败：'+e.message.slice(0,60));
+    document.getElementById('AIStatus').textContent='❌ '+e.message;
+    toast('❌ AI 分析失败：'+e.message.slice(0,80));
   }
 }
 
-function parseAIJSON(text){
-  if(!text) return null;
-  // strip possible markdown fences
-  let t=text.trim();
-  t=t.replace(/^```(?:json)?\s*/i,'').replace(/```\s*$/,'').trim();
-  // find first { and last }
-  const s=t.indexOf('{'), e=t.lastIndexOf('}');
-  if(s<0||e<0)return null;
-  try{return JSON.parse(t.slice(s,e+1));}catch{return null;}
+// Live stream: extract whatever fields are complete so far
+function streamFillFields(text){
+  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
+  fields.forEach(k=>{
+    const m=text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`,'i'));
+    if(m){
+      const vEl=document.getElementById(`afv_${k}`);
+      const wEl=document.getElementById(`af_${k}`);
+      if(vEl&&vEl.className.includes('empty')){
+        // Use textContent first; MathJax will process text nodes
+        vEl.textContent=m[1].trim();
+        vEl.className='af-val';
+        if(wEl)wEl.className='af active';
+      }
+    }
+  });
 }
+
+// Main parser — tries XML tags first, then multiple fallbacks
+function parseXMLFields(text){
+  const result={};
+  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
+
+  // Strategy 1: XML tags (primary)
+  fields.forEach(k=>{
+    const m=text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`,'i'));
+    if(m)result[k]=m[1].trim();
+  });
+  if(fields.some(k=>result[k]))return result;
+
+  // Strategy 2: JSON (strip fences, find outermost braces)
+  try{
+    let t=text.replace(/^```(?:json)?\s*/im,'').replace(/```\s*$/m,'').trim();
+    // strip <|begin_of_box|>...<|end_of_box|> wrappers
+    t=t.replace(/<\|begin_of_box\|>/g,'').replace(/<\|end_of_box\|>/g,'');
+    const s=t.indexOf('{'), e=t.lastIndexOf('}');
+    if(s>=0&&e>s){
+      const obj=JSON.parse(t.slice(s,e+1));
+      fields.forEach(k=>{if(obj[k])result[k]=String(obj[k]).trim();});
+      if(fields.some(k=>result[k]))return result;
+    }
+  }catch{}
+
+  // Strategy 3: Chinese-label pattern  "已知条件：xxx\n隐含条件：yyy"
+  const labelMap={known:['已知条件','已知'],hidden:['隐含条件','隐含'],goal:['目标转化','求解目标','证明目标'],
+    breakthrough:['关键突破','切入点','解题思路'],warnings:['易错警示','注意事项','易错点'],
+    steps:['解题步骤','解题过程','详细步骤'],summary:['方法总结','总结']};
+  const allLabels=Object.entries(labelMap).flatMap(([k,lbls])=>lbls.map(l=>({k,l})));
+  // build pattern to split on labels
+  const splits=allLabels.map(x=>x.l).sort((a,b)=>b.length-a.length);
+  const pat=new RegExp(`(${splits.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')})[：:]\s*`,'g');
+  const parts=text.split(pat);
+  for(let i=1;i<parts.length-1;i+=2){
+    const lbl=parts[i],val=parts[i+1]?.split(/(?=已知条件|隐含条件|目标转化|关键突破|易错警示|解题步骤|方法总结)/)[0]?.trim();
+    if(!lbl||!val)continue;
+    const found=allLabels.find(x=>x.l===lbl);
+    if(found&&!result[found.k])result[found.k]=val;
+  }
+
+  return result;
+}
+
+// Undo snapshot
+let undoSnap = null;
 
 function applyAI(){
   if(!aiResult)return;
-  const p=probs.find(x=>x.id===aiResult._probId);
-  if(!p)return;
+  const p=probs.find(x=>x.id===aiResult._probId);if(!p)return;
+  // Save snapshot for undo
+  undoSnap={id:p.id, analysis:JSON.parse(JSON.stringify(p.analysis||{})),
+    steps:p.steps||'', summary:p.summary||''};
   p.analysis={
-    known: aiResult.known||'',
-    hidden: aiResult.hidden||'',
-    goal: aiResult.goal||'',
-    breakthrough: aiResult.breakthrough||'',
-    warnings: aiResult.warnings||''
+    known:aiResult.known||'',hidden:aiResult.hidden||'',goal:aiResult.goal||'',
+    breakthrough:aiResult.breakthrough||'',warnings:aiResult.warnings||''
   };
-  if(aiResult.steps) p.steps=aiResult.steps;
-  if(aiResult.summary) p.summary=aiResult.summary;
-  save(); renderList(); renderDetail(p.id);
-  closeAI();
-  // Enter edit mode to see fields populated
-  editing=false;
-  toast('✅ AI 分析已应用到题目！');
+  if(aiResult.steps)p.steps=aiResult.steps;
+  if(aiResult.summary)p.summary=aiResult.summary;
+  save();renderList();renderDetail(p.id);
+  closeAI();editing=false;
+  // Show undo button
+  const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='';
+  toast('✅ AI 分析已应用！可点击「↩ 撤回」还原');
+}
+
+function undoAI(){
+  if(!undoSnap)return;
+  const p=probs.find(x=>x.id===undoSnap.id);if(!p)return;
+  p.analysis=undoSnap.analysis;
+  p.steps=undoSnap.steps;
+  p.summary=undoSnap.summary;
+  undoSnap=null;
+  save();renderList();renderDetail(p.id);
+  const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='none';
+  toast('↩ 已撤回 AI 分析');
 }
 
 function closeAI(){document.getElementById('AIOV').classList.remove('open');}
 
-// Patch renderDetail to show AI button
-const _origRenderDetail=renderDetail;
-// ─────────────────────────────────────────────────
+// ── Mobile navigation ──
+let mobView='filter'; // 'filter' | 'list' | 'detail'
+function isMob(){return window.innerWidth<=700;}
+function mobGo(view){
+  if(!isMob())return;
+  mobView=view;
+  document.body.className='mob-'+view;
+  if(view==='list')renderList();
+}
+function mobBack(view){mobGo(view);}
+function resetFilters(){
+  fl={q:'',subj:'all',types:[],diff:'all',stat:'all',know:[]};
+  document.getElementById('SI').value='';
+  document.querySelectorAll('#sF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
+  document.querySelectorAll('#tF .chip').forEach(c=>c.classList.remove('on'));
+  document.querySelectorAll('#dF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
+  document.querySelectorAll('#stF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
+  renderKF();renderList();toast('✅ 筛选条件已重置');
+}
 
 // Init
 document.addEventListener('DOMContentLoaded',()=>{
   load();loadSample();renderKF();renderList();
-  setupRH('FPR','FP');setupRH('LPR','LP');
+  setupRH('FPR','FP','mb_fp_w');setupRH('LPR','LP','mb_lp_w');
   if(window.MathJax)setTimeout(()=>MathJax.typesetPromise(),500);
+  // Init mobile view
+  if(isMob()){document.body.classList.add('mob-filter');}
+  window.addEventListener('resize',()=>{
+    if(!isMob()){document.body.className='';}
+    else if(!document.body.className){document.body.classList.add('mob-filter');}
+  });
 });
 </script>
 </body>

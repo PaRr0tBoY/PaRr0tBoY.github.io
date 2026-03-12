@@ -294,6 +294,35 @@
         }
 
         /* 数据中心 */
+        #dashboard-view {
+            overflow-y: auto;
+        }
+
+        .dash-footer {
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 20px;
+            padding-top: 30px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
+        }
+
+        /* Session 删除按钮 */
+        .session-del {
+            background: none;
+            border: none;
+            color: #2a2a2a;
+            font-size: 18px;
+            padding: 4px 8px;
+            cursor: pointer;
+            font-family: inherit;
+            line-height: 1;
+            flex-shrink: 0;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .session-del:active { color: var(--color-danger); }
+
         .tab-nav {
             display: flex;
             gap: 20px;
@@ -491,8 +520,11 @@
                 <div id="chart-list-view"></div>
             </div>
 
-            <div style="margin-top: auto; display: flex; flex-direction: column; align-items: flex-start; gap: 20px;">
+            <div class="dash-footer">
                 <button class="text-btn" onclick="handleBackFromDash()">返回</button>
+                <button class="text-btn" onclick="exportProject()">导出项目数据</button>
+                <button class="text-btn" onclick="document.getElementById('import-input').click()">导入项目数据</button>
+                <input type="file" id="import-input" accept=".json" style="display:none" onchange="importProject(this)">
                 <button class="text-btn danger" onclick="resetAllData()">清除全部历史</button>
             </div>
         </div>
@@ -549,18 +581,66 @@
         const timerText = document.getElementById('timer-text');
         let myChart = null;
 
+        // ── 计时器持久化 ────────────────────────────────────────────────
+        function saveTimerState() {
+            if (!state.timer.isRunning) {
+                localStorage.removeItem('chronos_timer');
+                return;
+            }
+            const elapsed = state.timer.isPaused
+                ? state.timer.elapsedBeforePause
+                : Math.floor((Date.now() - state.timer.startTime) / 1000) + state.timer.elapsedBeforePause;
+            localStorage.setItem('chronos_timer', JSON.stringify({
+                goalSeconds: state.timer.goalSeconds,
+                currentTitle: state.timer.currentTitle,
+                elapsedSeconds: elapsed
+            }));
+        }
+
+        function restoreTimer() {
+            const raw = localStorage.getItem('chronos_timer');
+            if (!raw) return false;
+            let t;
+            try { t = JSON.parse(raw); } catch (e) { return false; }
+            if (!t || !t.goalSeconds) return false;
+
+            state.timer.goalSeconds = t.goalSeconds;
+            state.timer.currentTitle = t.currentTitle || "";
+            state.timer.elapsedBeforePause = t.elapsedSeconds || 0;
+            state.timer.isPaused = true;   // 恢复后以暂停状态呈现
+            state.timer.isRunning = true;
+            state.timer.startTime = Date.now();
+
+            document.getElementById('session-title-display').innerText = t.currentTitle ? " / " + t.currentTitle : "";
+            document.getElementById('display-goal').innerHTML = formatTimeHTML(t.goalSeconds);
+            timerText.innerHTML = formatTimeHTML(t.elapsedSeconds || 0);
+            timerText.style.opacity = '0.2';
+
+            showView('timer-view');
+            if (state.timer.instance) clearInterval(state.timer.instance);
+            state.timer.instance = setInterval(updateTimer, 100);
+            return true;
+        }
+
+        // 页面隐藏/卸载时保存
+        document.addEventListener('visibilitychange', () => {
+            if (document.hidden) saveTimerState();
+        });
+        window.addEventListener('pagehide', saveTimerState);
+        window.addEventListener('beforeunload', saveTimerState);
+
+        // ── 启动 ─────────────────────────────────────────────────────────
         window.onload = () => {
-            if (!state.activeProject) showView('onboarding');
-            else showSetup();
+            if (!state.activeProject) { showView('onboarding'); return; }
+            if (!restoreTimer()) showSetup();
         };
 
+        // ── 视图 ─────────────────────────────────────────────────────────
         function showView(id) {
             document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
             document.getElementById('global-header').classList.toggle('hidden', id === 'onboarding');
-
             const target = document.getElementById(id);
             if (target) target.classList.add('active');
-
             if (id === 'dashboard-view') {
                 document.getElementById('nav-btn').innerText = '关闭数据中心';
                 renderDashboard();
@@ -583,6 +663,7 @@
         function showModal(id) { document.getElementById(id).style.display = 'flex'; }
         function closeModal(id) { document.getElementById(id).style.display = 'none'; }
 
+        // ── 项目 ─────────────────────────────────────────────────────────
         function handleCreateProject() {
             const name = document.getElementById('new-project-input').value.trim();
             if (!name) return;
@@ -609,13 +690,14 @@
 
             const listContainer = document.getElementById('project-list-container');
             listContainer.innerHTML = Object.keys(state.projects).map(name => `
-                <div style="padding:15px 0; border-bottom:1px solid #111; cursor:pointer; color:${name === state.activeProject ? '#fff' : '#444'}" 
+                <div style="padding:15px 0; border-bottom:1px solid #111; cursor:pointer; color:${name === state.activeProject ? '#fff' : '#444'}"
                      onclick="switchProject('${name}')">${name}</div>
             `).join('');
 
             showView('setup');
         }
 
+        // ── 计时器 ───────────────────────────────────────────────────────
         function startTimer() {
             const h = parseInt(document.getElementById('input-h').value) || 0;
             const m = parseInt(document.getElementById('input-m').value) || 0;
@@ -633,6 +715,7 @@
             showView('timer-view');
             if (state.timer.instance) clearInterval(state.timer.instance);
             state.timer.instance = setInterval(updateTimer, 100);
+            localStorage.removeItem('chronos_timer');
         }
 
         function updateTimer() {
@@ -683,7 +766,10 @@
         function stopTimer() {
             clearInterval(state.timer.instance);
             state.timer.isRunning = false;
-            const elapsed = Math.floor((Date.now() - state.timer.startTime) / 1000) + state.timer.elapsedBeforePause;
+            localStorage.removeItem('chronos_timer');
+            const elapsed = state.timer.isPaused
+                ? state.timer.elapsedBeforePause
+                : Math.floor((Date.now() - state.timer.startTime) / 1000) + state.timer.elapsedBeforePause;
             const goal = state.timer.goalSeconds;
             const session = {
                 title: state.timer.currentTitle,
@@ -693,14 +779,70 @@
             };
             const p = state.projects[state.activeProject];
             p.sessions.push(session);
-            p.avgCost = p.sessions.reduce((a, b) => a + b.cost, 0) / p.sessions.length;
-            p.debt += (elapsed - goal) / 60;
+            recalcProject(p);
             save();
             renderSettlement(session, p);
             document.body.style.backgroundColor = '#000';
             document.getElementById('session-title-display').innerText = "";
         }
 
+        // ── 数据操作 ─────────────────────────────────────────────────────
+        function recalcProject(p) {
+            if (p.sessions.length === 0) {
+                p.avgCost = 1.0; p.debt = 0; return;
+            }
+            p.avgCost = p.sessions.reduce((a, b) => a + b.cost, 0) / p.sessions.length;
+            p.debt = p.sessions.reduce((a, b) => a + (b.actual - b.goal) / 60, 0);
+        }
+
+        function deleteSession(realIdx) {
+            if (!confirm('确定删除此记录？此操作不可撤销。')) return;
+            const p = state.projects[state.activeProject];
+            p.sessions.splice(realIdx, 1);
+            recalcProject(p);
+            save();
+            showHistoryList();
+            renderDashboard();
+        }
+
+        // ── 导出 / 导入 ──────────────────────────────────────────────────
+        function exportProject() {
+            const name = state.activeProject;
+            const data = { project: name, data: state.projects[name] };
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `chronos_${name}_${new Date().toISOString().slice(0, 10)}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function importProject(input) {
+            const file = input.files[0];
+            if (!file) return;
+            const reader = new FileReader();
+            reader.onload = e => {
+                try {
+                    const parsed = JSON.parse(e.target.result);
+                    if (!parsed.project || !parsed.data) { alert('文件格式不正确'); return; }
+                    const name = parsed.project;
+                    const exists = !!state.projects[name];
+                    if (exists && !confirm(`项目"${name}"已存在，导入将覆盖现有数据。继续？`)) return;
+                    state.projects[name] = parsed.data;
+                    state.activeProject = name;
+                    save();
+                    showSetup();
+                    alert(`项目"${name}"导入成功，共 ${parsed.data.sessions.length} 条记录。`);
+                } catch (err) {
+                    alert('解析失败，请确认文件为 Chronos 导出的 JSON。');
+                }
+            };
+            reader.readAsText(file);
+            input.value = '';
+        }
+
+        // ── 结算 ─────────────────────────────────────────────────────────
         function renderSettlement(curr, p) {
             const avgEff = (1 / p.avgCost) * 100;
             const diff = curr.eff - avgEff;
@@ -714,6 +856,7 @@
             showModal('settlement-modal');
         }
 
+        // ── 数据中心 ─────────────────────────────────────────────────────
         function setDashMode(m) {
             state.dashMode = m;
             document.getElementById('mode-num').classList.toggle('active', m === 'num');
@@ -758,15 +901,20 @@
         function showHistoryList() {
             const p = state.projects[state.activeProject];
             const container = document.getElementById('session-history-container');
-            container.innerHTML = p.sessions.length > 0 ? p.sessions.slice().reverse().map((s, idx) => `
-                <div class="session-item">
-                    <div class="session-info">
-                        <span class="title">${s.title || '任务 ' + (p.sessions.length - idx)}</span>
-                        <span class="meta">${new Date(s.date).toLocaleDateString()} · ${formatTimeSimple(s.actual)}</span>
-                    </div>
-                    <div class="session-eff">${s.eff.toFixed(0)}%</div>
-                </div>
-            `).join('') : "<div style='color:#333; padding:20px; font-size:10px;'>NO DATA</div>";
+            container.innerHTML = p.sessions.length > 0
+                ? p.sessions.slice().reverse().map((s, idx) => {
+                    const realIdx = p.sessions.length - 1 - idx;
+                    return `
+                    <div class="session-item">
+                        <div class="session-info">
+                            <span class="title">${s.title || '任务 ' + (p.sessions.length - idx)}</span>
+                            <span class="meta">${new Date(s.date).toLocaleDateString()} · ${formatTimeSimple(s.actual)}</span>
+                        </div>
+                        <div class="session-eff">${s.eff.toFixed(0)}%</div>
+                        <button class="session-del" onclick="deleteSession(${realIdx})" title="删除">×</button>
+                    </div>`;
+                }).join('')
+                : "<div style='color:#333; padding:20px; font-size:10px;'>NO DATA</div>";
             showModal('history-list-modal');
         }
 
@@ -794,12 +942,12 @@
             `).join('');
         }
 
+        // ── 工具 ─────────────────────────────────────────────────────────
         function pad(n) { return n.toString().padStart(2, '0'); }
         function formatTimeHTML(s) {
             const h = Math.floor(s / 3600);
             const m = Math.floor((s % 3600) / 60);
             const sec = s % 60;
-            // 等宽字体：2位 + 1位冒号 + 2位 = 5字符
             return `${pad(h)}:${pad(m)}<span class="sec-part">:${pad(sec)}</span>`;
         }
         function formatTimeSimple(s) {
@@ -813,8 +961,12 @@
             localStorage.setItem('chronos_active', state.activeProject);
         }
         function haptic(ms) { if (window.navigator && window.navigator.vibrate) window.navigator.vibrate(ms); }
-        function resetAllData() { if (confirm("确定永久清除所有历史？")) { localStorage.clear(); location.reload(); } }
+        function resetAllData() {
+            if (confirm("确定永久清除所有历史？")) { localStorage.clear(); location.reload(); }
+        }
     </script>
+
+
 </body>
 
 </html>
