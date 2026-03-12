@@ -99,7 +99,7 @@ header{background:var(--navy);color:#fff;height:50px;padding:0 16px;display:flex
 .s-pend{background:var(--red-bg);color:var(--red)}.s-pend::before{background:var(--red)}
 .s-prog{background:var(--amber-bg);color:var(--amber)}.s-prog::before{background:var(--amber)}
 .s-done{background:var(--green-bg);color:var(--green)}.s-done::before{background:var(--green)}
-.bedit{width:28px;height:28px;border-radius:var(--r1);border:1.5px solid var(--border);background:#fff;font-size:14px;cursor:pointer;transition:all .15s;color:var(--text2);display:flex;align-items:center;justify-content:center}
+.bedit{padding:5px 13px;border-radius:var(--r1);border:1.5px solid var(--border);background:#fff;font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--text)}
 .bedit:hover{border-color:var(--gs);color:var(--gs)}
 .bedit.on{background:var(--gs);color:#fff;border-color:var(--gs)}
 .bdel{width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;color:var(--text2)}
@@ -133,34 +133,7 @@ textarea.ste:focus{border-color:var(--gs)}
 textarea.nota{width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:65px;outline:none;line-height:1.6}
 textarea.nota:focus{border-color:var(--gs)}
 .fv{display:block}.fe{display:none}
-/* Edit mode: show both side-by-side */
-.em .fv{display:block}
-.em .fe{display:block}
-/* Side-by-side wrapper in edit mode */
-.an-pair{display:flex;flex-direction:column}
-.em .an-pair{flex-direction:row;min-height:60px}
-.em .an-pair .anval{flex:1;border-right:1px solid var(--border)}
-.em .an-pair .aned{flex:1;min-height:60px;border-top:none;border-left:none;border-right:none;border-bottom:none;resize:none}
-.em .an-pair .aned:focus{outline:2px solid var(--gs);outline-offset:-2px}
-/* Steps split */
-.split-edit{display:flex;flex-direction:column;gap:0}
-.em .split-edit{flex-direction:row;gap:0;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden}
-.em .split-edit .fv{flex:1;padding:10px;border-right:1px solid var(--border);overflow-y:auto;max-height:280px}
-.em .split-edit .fe{flex:1}
-.em .split-edit textarea{border:none;border-radius:0;min-height:160px;height:100%}
-.em .split-edit textarea:focus{outline:2px solid var(--gs);outline-offset:-2px}
-/* Summary split */
-.sum-pair{display:flex;flex-direction:column}
-.em .sum-pair{flex-direction:row;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;margin-top:12px}
-.em .sum-pair .fv{flex:1;padding:10px;font-size:13px;line-height:1.6;border-right:1px solid var(--border)}
-.em .sum-pair .fe{flex:1}
-.em .sum-pair textarea{border:none;border-radius:0;min-height:80px;height:100%}
-/* Notes pair */
-.notes-pair{display:flex;flex-direction:column}
-.em .notes-pair{flex-direction:row;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden}
-.em .notes-pair .fv{flex:1;padding:10px;font-size:13px;line-height:1.6;border-right:1px solid var(--border)}
-.em .notes-pair .fe{flex:1}
-.em .notes-pair textarea{border:none;border-radius:0;min-height:65px;height:100%}
+.em .fv{display:none}.em .fe{display:block}
 .taginput{display:flex;flex-wrap:wrap;gap:5px;padding:7px;border:1px solid var(--border);border-radius:var(--r1);min-height:38px;cursor:text;background:#fff}
 .taginput:focus-within{border-color:var(--gs)}
 .ti{padding:3px 7px 3px 9px;background:var(--sidebar);border-radius:20px;font-size:11.5px;display:flex;align-items:center;gap:3px;color:var(--text)}
@@ -246,56 +219,34 @@ textarea.fta:focus{border-color:var(--gs)}
   font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;
   font-weight:500;color:var(--amber);display:none}
 .bundo:hover{background:var(--amber);color:#fff}
-/* Mobile-only elements: hidden on desktop */
+/* Mobile-only elements: hidden on desktop, shown only at narrow widths */
 .mob-only{display:none!important}
-/* Filter drawer slide-in (mobile) */
-.fp-backdrop{display:none;position:fixed;inset:0;background:rgba(15,20,40,.4);z-index:300;opacity:0;transition:opacity .22s}
-.fp-backdrop.open{opacity:1}
-.fp.drawer{position:fixed;left:0;top:0;bottom:0;width:280px;z-index:301;
-  transform:translateX(-100%);transition:transform .25s ease;
-  box-shadow:4px 0 20px rgba(0,0,0,.18);display:flex!important}
-.fp.drawer.open{transform:translateX(0)}
-/* Mobile bottom action bar */
-.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;
-  background:var(--navy);border-top:1px solid rgba(255,255,255,.1);
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
-  z-index:250;gap:0}
-.mob-bar-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:5px 2px;color:rgba(255,255,255,.8);cursor:pointer;
-  font-size:10px;background:none;border:none;font-family:'DM Sans',sans-serif;
-  border-radius:var(--r1);transition:background .15s}
-.mob-bar-btn:hover,.mob-bar-btn:active{background:rgba(255,255,255,.12);color:#fff}
-.mob-bar-btn .mbi{font-size:17px;line-height:1}
 /* Mobile filter action buttons */
 .mob-filter-btns{display:none;gap:8px;padding:14px 0 4px;justify-content:center}
 /* ── Mobile (≤700px) ── */
 @media(max-width:700px){
-  /* Hide desktop panels by default, leave room for bottom bar */
-  .fp,.dp{display:none!important}
-  body{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
-  /* List panel takes full screen */
-  .lp{display:flex!important;position:fixed;inset:0;width:100%!important;max-width:100%!important;min-width:0!important;
-      bottom:calc(58px + env(safe-area-inset-bottom));z-index:100}
-  /* Detail panel slides up over everything */
-  body.mob-detail .dp{display:flex!important;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200}
-  /* Hide header on mobile (replaced by bottom bar) */
-  header{display:none}
-  /* Show filter drawer backdrop */
-  .fp-backdrop{display:block}
+  /* Hide desktop panels by default */
+  .fp,.lp,.dp{display:none!important}
+  /* Mobile view states — body class drives which panel is visible */
+  body.mob-filter .fp{display:flex!important;position:fixed;inset:0;z-index:200;width:100%!important;max-width:100%!important}
+  body.mob-list   .lp{display:flex!important;position:fixed;inset:0;z-index:200;width:100%!important;max-width:100%!important;min-width:0!important}
+  body.mob-detail .dp{display:flex!important;position:fixed;inset:0;z-index:200}
   /* Show mobile-only elements */
   .mob-only{display:flex!important}
   /* Show filter action buttons */
   .mob-filter-btns{display:flex}
-  /* Show mobile bottom bar */
-  .mob-bar{display:flex}
-  /* Desktop collapse elements hidden */
+  /* Desktop collapse float not needed on mobile */
   .app[data-lp-coll="1"] .col-float{display:none!important}
+  /* Desktop collapse button hidden on mobile */
   #colBtn{display:none!important}
+  /* Resize handles hidden */
   .rh{display:none!important}
-  /* Hide filter header on desktop (mob-only hidden) */
+  /* Header tweaks */
+  .h-logo span{display:none}
+  .btn-h{padding:5px 8px;font-size:11.5px}
 }
 /* ── AI Features ── */
-.bai{width:28px;height:28px;border-radius:var(--r1);border:1.5px solid var(--gs);background:var(--gs);font-size:13px;cursor:pointer;transition:all .15s;font-weight:700;color:#fff;display:inline-flex;align-items:center;justify-content:center}
+.bai{padding:5px 13px;border-radius:var(--r1);border:1.5px solid var(--gs);background:var(--gs);font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:5px}
 .bai:hover{background:var(--navy2);border-color:var(--navy2)}
 .bai:disabled{opacity:.55;cursor:not-allowed}
 .bai.loading{background:var(--navy2);border-color:var(--navy2);animation:aiPulse 1.4s ease-in-out infinite}
@@ -339,7 +290,11 @@ textarea.fta:focus{border-color:var(--gs)}
 <script>
 // Run synchronously before first paint so CSS sees the right class immediately
 (function(){
-  // No initial body class needed — list is always visible on mobile via CSS
+  try{
+    if(window.matchMedia('(max-width:700px)').matches){
+      document.body.className='mob-filter';
+    }
+  }catch(e){}
 })();
 </script>
 <header>
@@ -354,10 +309,9 @@ textarea.fta:focus{border-color:var(--gs)}
 <div class="app" id="APP">
   <!-- Filter Panel -->
   <div class="fp" id="FP">
-    <!-- Filter drawer header with close button (mobile only) -->
-    <div id="MobFilterHead" class="mob-only" style="padding:11px 14px;border-bottom:1px solid var(--border);background:var(--navy);color:#fff;gap:9px;flex-shrink:0;align-items:center;justify-content:space-between">
-      <span style="font-family:'Lora',serif;font-size:15px;font-weight:600">🔍 筛选</span>
-      <button onclick="closeFPDrawer()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1">×</button>
+    <!-- Mobile filter header (mob-only = hidden on desktop) -->
+    <div id="MobFilterHead" class="mob-only" style="padding:11px 14px;border-bottom:1px solid var(--border);background:var(--navy);color:#fff;gap:9px;flex-shrink:0;align-items:center">
+      <span style="font-family:'Lora',serif;font-size:15px;font-weight:600">🔍 筛选题目</span>
     </div>
     <div class="fp-inner">
       <div class="fl-s"><div class="fl-l">搜索</div><input class="sbox" type="text" id="SI" placeholder="搜索题目、知识点…" oninput="applyF()"></div>
@@ -401,7 +355,7 @@ textarea.fta:focus{border-color:var(--gs)}
       <!-- Mobile-only action buttons, appear after filter options -->
       <div class="mob-filter-btns">
         <button class="bsec" onclick="resetFilters()" style="min-width:90px">重置</button>
-        <button class="bpri" onclick="closeFPDrawer()" style="min-width:90px">完成</button>
+        <button class="bpri" onclick="mobGo('list')" style="min-width:90px">提交</button>
       </div>
     </div>
     <div class="rh" id="FPR"></div>
@@ -409,12 +363,12 @@ textarea.fta:focus{border-color:var(--gs)}
   <!-- List Panel -->
   <div class="lp" id="LP">
     <div class="lt">
-      <!-- Hamburger: opens filter drawer on mobile -->
-      <button class="bic mob-only" onclick="openFPDrawer()" title="筛选" style="margin-right:4px;font-size:15px">☰</button>
+      <!-- Mobile back button: only visible on narrow screens -->
+      <button class="bic mob-only" onclick="mobBack('filter')" title="返回筛选" style="color:var(--gs);border-color:var(--gs);margin-right:4px">←</button>
       <span class="lc" id="LC">0 道题目</span>
       <div class="tacts">
         <button class="bic" id="colBtn" onclick="togList()" title="收起">◀</button>
-        <button class="bic badd" onclick="openM()" title="添加" id="DeskAddBtn">＋</button>
+        <button class="bic badd" onclick="openM()" title="添加">＋</button>
       </div>
     </div>
     <div id="PL" class="pl"></div>
@@ -426,16 +380,16 @@ textarea.fta:focus{border-color:var(--gs)}
       <div class="dtl" style="gap:5px">
         <!-- Desktop: restore-list button (shown only when list panel is collapsed) -->
         <button class="col-float" id="colFloat" onclick="togList()" title="展开列表">▶</button>
-        <!-- Mobile: back to list -->
-        <button class="bic mob-only" onclick="mobGoList()" title="返回列表" style="color:var(--gs);border-color:var(--gs)">←</button>
+        <!-- Mobile: back button (mobile-only) -->
+        <button class="bic mob-only" onclick="mobBack('list')" title="返回列表" style="color:var(--gs);border-color:var(--gs)">←</button>
         <span id="DStat"></span>
       </div>
       <div class="dtc" id="DMeta"></div>
       <div class="dtr">
-        <button class="bundo" id="UndoBtn" onclick="undoAI()" title="撤回AI分析">↩</button>
-        <button class="bai" id="AIBtn" style="display:none" onclick="aiAnalyze()" title="AI 分析">✦</button>
-        <button class="bedit" id="EditBtn" style="display:none" onclick="togEdit()" title="编辑 / 保存">✏</button>
+        <button class="bundo" id="UndoBtn" onclick="undoAI()">↩ 撤回</button>
         <button class="bdel" id="DelBtn" style="display:none" onclick="delP()" title="删除">🗑</button>
+        <button class="bai" id="AIBtn" style="display:none" onclick="aiAnalyze()">✦ AI 分析</button>
+        <button class="bedit" id="EditBtn" style="display:none" onclick="togEdit()">编辑</button>
       </div>
     </div>
     <div class="dc" id="DC"><div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div></div>
@@ -569,16 +523,6 @@ textarea.fta:focus{border-color:var(--gs)}
 </div>
 
 <div class="toast" id="TST"><span id="TSTMsg"></span></div>
-<!-- Filter drawer backdrop (mobile) -->
-<div class="fp-backdrop" id="FPBackdrop" onclick="closeFPDrawer()"></div>
-<!-- Mobile bottom action bar -->
-<div class="mob-bar">
-  <button class="mob-bar-btn" onclick="startPrac()"><span class="mbi">🎲</span>练习</button>
-  <button class="mob-bar-btn" onclick="openM()"><span class="mbi">＋</span>添加</button>
-  <button class="mob-bar-btn" onclick="exportData()"><span class="mbi">⬆</span>导出</button>
-  <label class="mob-bar-btn" style="cursor:pointer"><span class="mbi">⬇</span>导入<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
-  <button class="mob-bar-btn" onclick="openSettings()"><span class="mbi">⚙</span>设置</button>
-</div>
 
 <script>
 let probs=[], selId=null, editing=false, listColl=false, cfmCb=null;
@@ -694,16 +638,12 @@ function renderDetail(id){
     <div class="dsect ${em}" id="SS">
       <div class="sh" onclick="togS(this)"><span>📋 解题过程</span><span class="sarr">▼</span></div>
       <div class="sb">
-        <div class="split-edit">
-          <div class="fv">${renderSteps(p.steps)}</div>
-          <div class="fe"><textarea class="ste" id="SE" placeholder="每行一步，支持 $LaTeX$">${esc(p.steps||'')}</textarea><p class="hint" style="padding:4px 9px;font-size:11px;color:var(--text3)">每行一步</p></div>
-        </div>
+        <div class="fv">${renderSteps(p.steps)}</div>
+        <div class="fe"><textarea class="ste" id="SE" placeholder="每行一步，支持 $LaTeX$">${esc(p.steps||'')}</textarea><p class="hint">每行为一个解题步骤</p></div>
         <div style="margin-top:12px">
           <div style="font-size:10.5px;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px">方法总结</div>
-          <div class="sum-pair">
-            <div class="fv" style="font-size:13px;line-height:1.6">${p.summary?esc(p.summary):'<span style="color:var(--text3)">暂无总结</span>'}</div>
-            <div class="fe"><textarea class="ste" id="SUM" placeholder="可选：方法总结">${esc(p.summary||'')}</textarea></div>
-          </div>
+          <div class="fv" style="font-size:13px;line-height:1.6">${p.summary?esc(p.summary):'<span style="color:var(--text3)">暂无总结</span>'}</div>
+          <div class="fe"><textarea class="ste" id="SUM" placeholder="可选：方法总结">${esc(p.summary||'')}</textarea></div>
         </div>
       </div>
     </div>
@@ -711,10 +651,8 @@ function renderDetail(id){
       <div class="sh" onclick="togS(this)"><span>ℹ️ 其他信息</span><span class="sarr">▼</span></div>
       <div class="sb"><div class="ogrid">
         <div class="orow"><div class="olbl">备注</div>
-          <div class="notes-pair">
-            <div class="fv" style="font-size:13px;line-height:1.6">${p.notes?esc(p.notes):'<span style="color:var(--text3)">暂无备注</span>'}</div>
-            <div class="fe"><textarea class="nota" id="NE" placeholder="可选备注">${esc(p.notes||'')}</textarea></div>
-          </div>
+          <div class="fv" style="font-size:13px;line-height:1.6">${p.notes?esc(p.notes):'<span style="color:var(--text3)">暂无备注</span>'}</div>
+          <div class="fe"><textarea class="nota" id="NE" placeholder="可选备注">${esc(p.notes||'')}</textarea></div>
         </div>
         <div class="orow"><div class="olbl">知识点</div>
           <div class="fv"><div class="kpills">${pills||'<span style="color:var(--text3);font-size:12px">暂无</span>'}</div></div>
@@ -733,10 +671,8 @@ function renderDetail(id){
 
 function anIt(lbl,key,val){
   return`<div class="anit"><div class="anlbl">${lbl}</div>
-    <div class="an-pair">
-      <div class="anval fv${!val?' ev':''}">${val?esc(val):'待填写…'}</div>
-      <textarea class="aned fe" id="A_${key}" placeholder="${lbl}…">${esc(val||'')}</textarea>
-    </div>
+    <div class="anval fv${!val?' ev':''}">${val?esc(val):'待填写…'}</div>
+    <textarea class="aned fe" id="A_${key}" placeholder="${lbl}…">${esc(val||'')}</textarea>
   </div>`;
 }
 function renderSteps(txt){
@@ -748,17 +684,17 @@ function togS(h){h.closest('.dsect').classList.toggle('scoll');}
 // Interactions
 function selP(id){
   selId=id;editing=false;
-  const eb=document.getElementById('EditBtn');eb.textContent='✏';eb.classList.remove('on');
+  const eb=document.getElementById('EditBtn');eb.textContent='编辑';eb.classList.remove('on');
   // Clear undo when switching problems
   undoSnap=null;const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='none';
   renderList();renderDetail(id);
   // Mobile: navigate to detail
-  if(isMob()){mobGo('detail');}
+  if(isMob())mobGo('detail');
 }
 function togEdit(){
   editing=!editing;const eb=document.getElementById('EditBtn');
-  if(editing){eb.textContent='💾';eb.classList.add('on');}
-  else{saveEdits();eb.textContent='✏';eb.classList.remove('on');}
+  if(editing){eb.textContent='保存';eb.classList.add('on');}
+  else{saveEdits();eb.textContent='编辑';eb.classList.remove('on');}
   if(selId)renderDetail(selId);
 }
 function saveEdits(){
@@ -774,22 +710,14 @@ function saveEdits(){
 }
 function delP(){
   if(!selId)return;
-  const idx=probs.findIndex(x=>x.id===selId);
-  if(idx<0)return;
-  const removed=probs[idx];
-  cfm('删除题目','确定删除这道题目吗？',()=>{
-    deletedSnap={prob:removed,idx};
-    probs.splice(idx,1);
-    selId=null;editing=false;
-    save();renderKF();renderList();
+  cfm('删除题目','确定要删除这道题目吗？此操作不可撤销。',()=>{
+    probs=probs.filter(p=>p.id!==selId);selId=null;editing=false;save();renderKF();renderList();
     document.getElementById('DC').innerHTML=`<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
     document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
     document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
     const aib2=document.getElementById('AIBtn');if(aib2)aib2.style.display='none';
     undoSnap=null;const ub2=document.getElementById('UndoBtn');if(ub2)ub2.style.display='none';
-    toast('🗑 已删除',()=>{
-      if(deletedSnap){probs.splice(deletedSnap.idx,0,deletedSnap.prob);deletedSnap=null;save();renderKF();renderList();toast('↩ 已撤销删除');}
-    },5000);
+    toast('🗑 题目已删除');
   });
 }
 
@@ -1297,36 +1225,14 @@ function undoAI(){
 function closeAI(){document.getElementById('AIOV').classList.remove('open');}
 
 // ── Mobile navigation ──
-let mobView='list'; // 'list' | 'detail'
+let mobView='filter'; // 'filter' | 'list' | 'detail'
 function isMob(){try{return window.matchMedia('(max-width:700px)').matches;}catch(e){return window.innerWidth<=700;}}
-
-// Filter drawer (slide-in from left on mobile)
-function openFPDrawer(){
-  const fp=document.getElementById('FP');
-  const bd=document.getElementById('FPBackdrop');
-  if(fp){fp.classList.add('drawer','open');}
-  if(bd){bd.classList.add('open');}
-}
-function closeFPDrawer(){
-  const fp=document.getElementById('FP');
-  const bd=document.getElementById('FPBackdrop');
-  if(fp)fp.classList.remove('open');
-  if(bd)bd.classList.remove('open');
-  setTimeout(()=>{if(fp)fp.classList.remove('drawer');},250);
-}
-
 function mobGo(view){
   if(!isMob())return;
   mobView=view;
-  if(view==='detail'){
-    document.body.classList.add('mob-detail');
-  } else {
-    document.body.classList.remove('mob-detail');
-    closeFPDrawer();
-  }
+  document.body.className='mob-'+view;
   if(view==='list')renderList();
 }
-function mobGoList(){mobGo('list');}
 function mobBack(view){mobGo(view);}
 function resetFilters(){
   fl={q:'',subj:'all',types:[],diff:'all',stat:'all',know:[]};
@@ -1335,9 +1241,7 @@ function resetFilters(){
   document.querySelectorAll('#tF .chip').forEach(c=>c.classList.remove('on'));
   document.querySelectorAll('#dF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
   document.querySelectorAll('#stF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
-  renderKF();renderList();
-  if(isMob())closeFPDrawer();
-  toast('✅ 筛选条件已重置');
+  renderKF();renderList();toast('✅ 筛选条件已重置');
 }
 
 // Init
@@ -1345,10 +1249,13 @@ document.addEventListener('DOMContentLoaded',()=>{
   load();loadSample();renderKF();renderList();
   setupRH('FPR','FP','mb_fp_w');setupRH('LPR','LP','mb_lp_w');
   if(window.MathJax)setTimeout(()=>MathJax.typesetPromise(),500);
-  // Mobile: list is default view (detail layer slides on top)
-  if(!isMob())document.body.className=''; // clear any stale class on desktop
+  // Init mobile view (body class set early via inline script before paint)
+  // Just ensure consistency after JS loads
+  if(isMob()&&!document.body.className){document.body.classList.add('mob-filter');}
+  else if(!isMob()&&document.body.className){document.body.className='';}
   window.addEventListener('resize',()=>{
-    if(!isMob()){document.body.className='';closeFPDrawer();}
+    if(!isMob()){document.body.className='';}
+    else if(!document.body.className){document.body.classList.add('mob-filter');}
   });
 });
 </script>
