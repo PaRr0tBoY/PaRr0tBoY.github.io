@@ -190,18 +190,28 @@ textarea.fta:focus{border-color:var(--gs)}
 .pprog{font-size:13px;color:var(--text2)}
 .pcard{background:#fff;border-radius:var(--r3);width:100%;max-width:680px;padding:28px;box-shadow:var(--sh2)}
 /* Toast */
-.toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r1);font-size:12.5px;z-index:9999;transform:translateY(50px);opacity:0;transition:all .22s;pointer-events:none}
-.toast.show{transform:translateY(0);opacity:1}
+.toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r1);font-size:12.5px;z-index:9999;transform:translateY(50px);opacity:0;transition:all .22s;pointer-events:none;display:flex;align-items:center;gap:10px}
+.toast.show{transform:translateY(0);opacity:1;pointer-events:all}
+.toast-undo{background:none;border:1px solid rgba(255,255,255,.5);border-radius:4px;color:#fff;padding:3px 9px;font-size:11.5px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
+.toast-undo:hover{background:rgba(255,255,255,.15)}
+/* Card delete button */
+.card-del{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.9);border:1px solid var(--border);color:var(--text3);font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;line-height:1;padding:0;z-index:5}
+.card-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
+.card:hover .card-del{display:flex}
+.card{position:relative}
 ::-webkit-scrollbar{width:5px;height:5px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:var(--text3)}
-/* Collapse restore button — same style as .bic, lives in detail toolbar left side */
+/* Collapse restore button — square, in detail toolbar left, CSS-driven visibility */
 .col-float{
-  width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--border);
+  width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--gs);
   background:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;
-  font-size:12px;color:var(--gs);border-color:var(--gs);transition:all .15s;flex-shrink:0;font-weight:600}
+  font-size:12px;color:var(--gs);transition:all .15s;flex-shrink:0;font-weight:600}
 .col-float:hover{background:var(--gs-bg)}
+/* Show col-float when list panel is collapsed — CSS data attribute approach */
+.app[data-lp-coll="1"] .col-float{display:flex}
+/* Hide col-float inside mobile media (not needed) */
 /* Detail panel needs relative positioning */
 .dp{position:relative}
 /* Undo button */
@@ -226,7 +236,7 @@ textarea.fta:focus{border-color:var(--gs)}
   /* Show filter action buttons */
   .mob-filter-btns{display:flex}
   /* Desktop collapse float not needed on mobile */
-  .col-float{display:none!important}
+  .app[data-lp-coll="1"] .col-float{display:none!important}
   /* Desktop collapse button hidden on mobile */
   #colBtn{display:none!important}
   /* Resize handles hidden */
@@ -277,6 +287,16 @@ textarea.fta:focus{border-color:var(--gs)}
 </style>
 </head>
 <body>
+<script>
+// Run synchronously before first paint so CSS sees the right class immediately
+(function(){
+  try{
+    if(window.matchMedia('(max-width:700px)').matches){
+      document.body.className='mob-filter';
+    }
+  }catch(e){}
+})();
+</script>
 <header>
   <div class="h-logo"><em>📐</em><span>数学题库</span> MathBank</div>
   <div class="h-acts">
@@ -286,7 +306,7 @@ textarea.fta:focus{border-color:var(--gs)}
     <button class="btn-h" onclick="openSettings()" style="border-color:rgba(100,160,255,.5)">⚙ API Key</button>
   </div>
 </header>
-<div class="app">
+<div class="app" id="APP">
   <!-- Filter Panel -->
   <div class="fp" id="FP">
     <!-- Mobile filter header (mob-only = hidden on desktop) -->
@@ -295,6 +315,11 @@ textarea.fta:focus{border-color:var(--gs)}
     </div>
     <div class="fp-inner">
       <div class="fl-s"><div class="fl-l">搜索</div><input class="sbox" type="text" id="SI" placeholder="搜索题目、知识点…" oninput="applyF()"></div>
+      <div id="FCtWrap" style="margin-bottom:14px;display:none">
+        <div style="padding:7px 10px;background:var(--gs-bg);border:1px solid rgba(37,99,235,.2);border-radius:var(--r1);font-size:12px;color:var(--gs);font-weight:500;display:flex;align-items:center;gap:6px">
+          <span>🔍</span><span id="FCt">筛选中：0 条结果</span>
+        </div>
+      </div>
       <div class="fl-s"><div class="fl-l">学科</div>
         <div class="chips" id="sF">
           <div class="chip gs on" data-v="all" onclick="setSubj('all')">全部</div>
@@ -497,7 +522,7 @@ textarea.fta:focus{border-color:var(--gs)}
   </div>
 </div>
 
-<div class="toast" id="TST"></div>
+<div class="toast" id="TST"><span id="TSTMsg"></span></div>
 
 <script>
 let probs=[], selId=null, editing=false, listColl=false, cfmCb=null;
@@ -550,7 +575,12 @@ function filtered(){
 
 // Render List
 function renderList(){
-  const f=filtered();document.getElementById('LC').textContent=`${f.length} 道题目`;
+  const f=filtered();
+  document.getElementById('LC').textContent=`${f.length} 道题目`;
+  // Update live filter count in filter panel
+  const hasFilter=fl.subj!=='all'||fl.types.length||fl.diff!=='all'||fl.stat!=='all'||fl.know.length||fl.q;
+  const wrap=document.getElementById('FCtWrap');
+  if(wrap){wrap.style.display=hasFilter?'':'none';const ct=document.getElementById('FCt');if(ct)ct.textContent=`筛选中：${f.length} 条结果`;}
   const c=document.getElementById('PL');
   if(!f.length){c.innerHTML=`<div class="empty"><div class="ico">🔍</div><p>这里什么都没有～</p></div>`;return;}
   c.innerHTML=f.map(p=>{
@@ -562,6 +592,7 @@ function renderList(){
     const img=p.imageData?`<img class="cimg" src="${p.imageData}" alt="">`:`<div class="cph">${p.subject==='高数'?'∫':'∑'}</div>`;
     const pv=p.text?`<div class="cprev">${esc(p.text.slice(0,80))}${p.text.length>80?'…':''}</div>`:'';
     return`<div class="card${p.id===selId?' sel':''}" onclick="selP('${p.id}')">
+      <button class="card-del" onclick="cardDel(event,'${p.id}')" title="删除">×</button>
       <div class="ctop">${img}<div class="cinfo">
         <div class="cmeta"><span class="badge b-${sj}">${p.subject}</span><span class="badge b-${dc}">${p.difficulty}</span><span class="badge b-${sc}">${st}</span></div>
         <div class="ctype">${p.type}题</div>${pv}
@@ -694,22 +725,18 @@ function delP(){
 function togList(){
   listColl=!listColl;
   const lp=document.getElementById('LP');
-  const cf=document.getElementById('colFloat');
+  const app=document.getElementById('APP');
   if(listColl){
-    // Save current inline width then clear it so .coll CSS (width:0) can take effect
-    const cur=lp.style.width;
-    if(cur)lp.dataset.savedW=cur;
-    lp.style.width='';
-    lp.style.minWidth='';
+    // Clear inline width so .coll CSS (width:0) wins
+    if(lp.style.width)lp.dataset.savedW=lp.style.width;
+    lp.style.width='';lp.style.minWidth='';
     lp.classList.add('coll');
-    if(cf)cf.style.display='flex';
+    if(app)app.dataset.lpColl='1';   // CSS selector shows col-float
   } else {
     lp.classList.remove('coll');
-    // Restore saved inline width (from resize drag)
-    if(lp.dataset.savedW){lp.style.width=lp.dataset.savedW;}
-    const lsSaved=localStorage.getItem('mb_lp_w');
-    if(!lp.dataset.savedW&&lsSaved)lp.style.width=lsSaved;
-    if(cf)cf.style.display='none';
+    if(lp.dataset.savedW)lp.style.width=lp.dataset.savedW;
+    else{const s=localStorage.getItem('mb_lp_w');if(s)lp.style.width=s;}
+    if(app)app.removeAttribute('data-lp-coll');
   }
 }
 
@@ -811,8 +838,45 @@ function doCfm(){closeCfm();if(cfmCb)cfmCb();}
 function closeCfm(){document.getElementById('CFM').classList.remove('open');}
 
 // Toast
-let tt;
-function toast(msg){const el=document.getElementById('TST');el.textContent=msg;el.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>el.classList.remove('show'),2500);}
+let tt, ttUndo=null;
+let deletedSnap=null;
+function toast(msg,undoFn,dur){
+  const el=document.getElementById('TST');
+  const msgEl=document.getElementById('TSTMsg');
+  if(msgEl)msgEl.textContent=msg; else el.textContent=msg;
+  // Remove old undo button if any
+  const old=el.querySelector('.toast-undo');if(old)old.remove();
+  if(undoFn){
+    const btn=document.createElement('button');btn.className='toast-undo';btn.textContent='撤销';
+    btn.onclick=()=>{el.classList.remove('show');clearTimeout(tt);undoFn();};
+    el.appendChild(btn);
+  }
+  el.classList.add('show');
+  clearTimeout(tt);
+  tt=setTimeout(()=>{el.classList.remove('show');const b=el.querySelector('.toast-undo');if(b)b.remove();},dur||2500);
+}
+// Card-level delete
+function cardDel(e,id){
+  e.stopPropagation(); // don't trigger card click
+  cfm('删除题目','确定删除这道题目吗？',()=>{
+    const idx=probs.findIndex(x=>x.id===id);
+    if(idx<0)return;
+    const removed=probs[idx];
+    deletedSnap={prob:removed,idx};
+    probs.splice(idx,1);
+    if(selId===id){
+      selId=null;editing=false;
+      document.getElementById('DC').innerHTML=`<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
+      document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
+      document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
+      const aib=document.getElementById('AIBtn');if(aib)aib.style.display='none';
+    }
+    save();renderKF();renderList();
+    toast('🗑 已删除',()=>{
+      if(deletedSnap){probs.splice(deletedSnap.idx,0,deletedSnap.prob);deletedSnap=null;save();renderKF();renderList();toast('↩ 已撤销删除');}
+    },5000);
+  });
+}
 
 // Utils
 function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
@@ -1162,7 +1226,7 @@ function closeAI(){document.getElementById('AIOV').classList.remove('open');}
 
 // ── Mobile navigation ──
 let mobView='filter'; // 'filter' | 'list' | 'detail'
-function isMob(){return window.innerWidth<=700;}
+function isMob(){try{return window.matchMedia('(max-width:700px)').matches;}catch(e){return window.innerWidth<=700;}}
 function mobGo(view){
   if(!isMob())return;
   mobView=view;
@@ -1185,8 +1249,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   load();loadSample();renderKF();renderList();
   setupRH('FPR','FP','mb_fp_w');setupRH('LPR','LP','mb_lp_w');
   if(window.MathJax)setTimeout(()=>MathJax.typesetPromise(),500);
-  // Init mobile view
-  if(isMob()){document.body.classList.add('mob-filter');}
+  // Init mobile view (body class set early via inline script before paint)
+  // Just ensure consistency after JS loads
+  if(isMob()&&!document.body.className){document.body.classList.add('mob-filter');}
+  else if(!isMob()&&document.body.className){document.body.className='';}
   window.addEventListener('resize',()=>{
     if(!isMob()){document.body.className='';}
     else if(!document.body.className){document.body.classList.add('mob-filter');}
