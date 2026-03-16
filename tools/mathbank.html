@@ -1,695 +1,2645 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>数学题库 · MathBank</title>
-<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap" rel="stylesheet">
-<script>
-MathJax = {
-  tex: { inlineMath: [['$','$'],['\\(','\\)']], displayMath: [['$$','$$'],['\\[','\\]']] },
-  svg: { fontCache: 'global' }
-};
-</script>
-<script src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js" async></script>
-<style>
-:root {
-  --bg: #f8f7f4; --surface: #ffffff; --sidebar: #f2f0ec; --border: #e5e2dc;
-  --text: #1c1917; --text2: #6b6560; --text3: #a8a29e;
-  --navy: #1e3a5f; --navy2: #2d5a8e;
-  --gs: #2563eb; --gs-bg: #eff6ff;
-  --la: #d97706; --la-bg: #fffbeb;
-  --red: #ef4444; --red-bg: #fef2f2;
-  --amber: #f59e0b; --amber-bg: #fffbeb;
-  --green: #22c55e; --green-bg: #f0fdf4;
-  --sh1: 0 1px 3px rgba(0,0,0,.06); --sh2: 0 4px 12px rgba(0,0,0,.08); --sh3: 0 12px 36px rgba(0,0,0,.14);
-  --r1:5px; --r2:9px; --r3:14px;
-}
-*{box-sizing:border-box;margin:0;padding:0}
-body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);height:100vh;overflow:hidden;display:flex;flex-direction:column;font-size:14px}
-header{background:var(--navy);color:#fff;height:50px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.25)}
-.h-logo{font-family:'Lora',serif;font-size:17px;font-weight:600;display:flex;align-items:center;gap:9px;letter-spacing:-.2px}
-.h-logo em{font-style:normal;font-size:20px}
-.h-acts{display:flex;gap:6px}
-.btn-h{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);border-radius:var(--r1);padding:5px 11px;font-size:12.5px;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif}
-.btn-h:hover{background:rgba(255,255,255,.22)}
-.app{display:flex;flex:1;overflow:hidden}
-/* Filter Panel */
-.fp{width:220px;min-width:150px;max-width:300px;background:var(--sidebar);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;position:relative}
-.fp-inner{padding:13px 12px;overflow-y:auto;flex:1}
-.fl-s{margin-bottom:18px}
-.fl-l{font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:var(--text3);margin-bottom:7px}
-.sbox{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);background:#fff;font-size:13px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color .15s}
-.sbox:focus{border-color:var(--gs)}
-.chips{display:flex;flex-wrap:wrap;gap:5px}
-.chip{padding:4px 10px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:11.5px;cursor:pointer;transition:all .15s;user-select:none;color:var(--text2)}
-.chip:hover{border-color:var(--navy2);color:var(--navy2)}
-.chip.on{background:var(--navy);border-color:var(--navy);color:#fff}
-.chip.gs.on{background:var(--gs);border-color:var(--gs)}
-.chip.la.on{background:var(--la);border-color:var(--la)}
-.ktags{display:flex;flex-wrap:wrap;gap:4px}
-.ktag{padding:3px 9px;border-radius:4px;border:1px solid var(--border);background:#fff;font-size:11px;cursor:pointer;transition:all .15s;color:var(--text2)}
-.ktag:hover{border-color:var(--navy2)}
-.ktag.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.rh{position:absolute;right:0;top:0;width:4px;height:100%;cursor:col-resize;z-index:10;transition:background .15s}
-.rh:hover,.rh.drag{background:rgba(37,99,235,.35)}
-/* List Panel */
-.lp{width:320px;min-width:230px;max-width:460px;background:var(--surface);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;position:relative;transition:width .25s,min-width .25s}
-.lp.coll{width:0;min-width:0;overflow:hidden}
-.lt{padding:9px 11px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:#fff;height:46px}
-.lc{font-size:11.5px;color:var(--text3)}
-.tacts{display:flex;gap:5px}
-.bic{width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--border);background:#fff;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:13px;transition:all .15s;color:var(--text2)}
-.bic:hover{background:var(--bg);border-color:var(--navy2);color:var(--navy)}
-.badd{background:var(--navy);color:#fff;border-color:var(--navy)}
-.badd:hover{background:var(--navy2);border-color:var(--navy2);color:#fff}
-.pl{overflow-y:auto;flex:1;padding:8px}
-.card{border:1.5px solid var(--border);border-radius:var(--r2);padding:11px;margin-bottom:7px;cursor:pointer;transition:all .15s;background:#fff}
-.card:hover{border-color:var(--navy2);box-shadow:var(--sh1);transform:translateY(-1px)}
-.card.sel{border-color:var(--gs);background:var(--gs-bg)}
-.ctop{display:flex;gap:9px;align-items:flex-start}
-.cimg{width:58px;height:48px;border-radius:var(--r1);object-fit:cover;flex-shrink:0;border:1px solid var(--border)}
-.cph{width:58px;height:48px;border-radius:var(--r1);background:var(--sidebar);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:20px;color:var(--text3)}
-.cinfo{flex:1;min-width:0}
-.cmeta{display:flex;gap:4px;flex-wrap:wrap;margin-bottom:4px}
-.badge{padding:2px 7px;border-radius:20px;font-size:10.5px;font-weight:500;line-height:1.4}
-.b-gs{background:var(--gs-bg);color:var(--gs)}
-.b-la{background:var(--la-bg);color:var(--la)}
-.b-easy{background:var(--green-bg);color:var(--green)}
-.b-med{background:var(--amber-bg);color:var(--amber)}
-.b-hard{background:var(--red-bg);color:var(--red)}
-.b-pend{background:var(--red-bg);color:var(--red)}
-.b-prog{background:var(--amber-bg);color:var(--amber)}
-.b-done{background:var(--green-bg);color:var(--green)}
-.ctype{font-size:11.5px;color:var(--text2);font-weight:500;margin-bottom:3px}
-.cprev{font-size:11.5px;color:var(--text2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;line-height:1.5}
-.ctags{display:flex;flex-wrap:wrap;gap:3px;margin-top:6px}
-.ctag{padding:2px 7px;background:var(--sidebar);border-radius:3px;font-size:10.5px;color:var(--text2)}
-.cdate{font-size:10.5px;color:var(--text3);margin-top:5px}
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;flex:1;padding:40px 16px;color:var(--text3);text-align:center}
-.empty .ico{font-size:32px;margin-bottom:10px;opacity:.45}
-.empty p{font-size:13.5px}
-/* Detail Panel */
-.dp{flex:1;display:flex;flex-direction:column;background:#fff;overflow:hidden;min-width:0}
-.dt{padding:9px 10px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0;min-height:46px;background:#fff;flex-wrap:nowrap}
-.dtl{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.dtr{display:flex;align-items:center;gap:5px;flex-shrink:0}
-.dtc{font-size:12px;color:var(--text2);font-weight:500;flex:1;min-width:0;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;text-align:center}
-.sdot{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;border-radius:20px;font-size:11.5px;font-weight:500}
-.sdot::before{content:'';width:6px;height:6px;border-radius:50%}
-.s-pend{background:var(--red-bg);color:var(--red)}.s-pend::before{background:var(--red)}
-.s-prog{background:var(--amber-bg);color:var(--amber)}.s-prog::before{background:var(--amber)}
-.s-done{background:var(--green-bg);color:var(--green)}.s-done::before{background:var(--green)}
-.bedit{padding:5px 11px;border-radius:var(--r1);border:1.5px solid var(--border);background:#fff;font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:500;color:var(--text);display:inline-flex;align-items:center;white-space:nowrap}
-.bedit:hover{border-color:var(--gs);color:var(--gs)}
-.bedit.on{background:var(--gs);color:#fff;border-color:var(--gs)}
-.bdel{padding:5px 11px;border-radius:var(--r1);border:1px solid var(--border);background:#fff;cursor:pointer;display:inline-flex;align-items:center;font-size:12.5px;font-family:'DM Sans',sans-serif;transition:all .15s;color:var(--text2);white-space:nowrap}
-.bdel:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.dc{flex:1;overflow-y:auto;padding:16px}
-.dsect{background:#fff;border:1px solid var(--border);border-radius:var(--r2);margin-bottom:13px;overflow:hidden}
-.sh{padding:10px 14px;border-bottom:1px solid var(--border);font-weight:600;font-size:12.5px;color:var(--navy);display:flex;align-items:center;justify-content:space-between;background:linear-gradient(to bottom,#fafafa,#fff);cursor:pointer;user-select:none}
-.sarr{transition:transform .2s;font-size:11px;color:var(--text3)}
-.scoll .sarr{transform:rotate(-90deg)}
-.scoll .sb{display:none}
-.sb{padding:14px}
-.pimg{max-width:100%;border-radius:var(--r1);margin-bottom:10px;border:1px solid var(--border)}
-.ptxt{font-size:13.5px;line-height:1.75;color:var(--text)}
-.angrid{display:grid;gap:10px}
-.anit{border:1px solid var(--border);border-radius:var(--r1);overflow:hidden}
-.anlbl{padding:5px 11px;background:var(--sidebar);font-size:11px;font-weight:600;color:var(--text2);border-bottom:1px solid var(--border);text-transform:uppercase;letter-spacing:.4px}
-.anval{padding:9px 11px;font-size:13px;line-height:1.6;color:var(--text)}
-.anval.ev{color:var(--text3);font-style:italic}
-textarea.aned{width:100%;padding:9px 11px;border:none;border-top:1px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.6;resize:vertical;min-height:58px;outline:none;background:#fff}
-textarea.aned:focus{background:#f8fbff}
-.step{display:flex;gap:10px;margin-bottom:12px;align-items:flex-start}
-.snum{width:22px;height:22px;border-radius:50%;background:var(--navy);color:#fff;font-size:10.5px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-weight:600}
-.scon{flex:1;font-size:13.5px;line-height:1.7}
-textarea.ste{width:100%;min-height:110px;padding:9px;border:1px solid var(--border);border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;line-height:1.7;resize:vertical;outline:none}
-textarea.ste:focus{border-color:var(--gs)}
-.ogrid{display:flex;flex-direction:column;gap:11px}
-.orow{display:flex;flex-direction:column;gap:5px}
-.olbl{font-size:10.5px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px}
-.kpills{display:flex;flex-wrap:wrap;gap:5px}
-.kpill{padding:4px 11px;background:var(--sidebar);border:1px solid var(--border);border-radius:20px;font-size:12px;color:var(--text2)}
-textarea.nota{width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:65px;outline:none;line-height:1.6}
-textarea.nota:focus{border-color:var(--gs)}
-.fv{display:block}.fe{display:none}
-/* Edit mode: show both side-by-side */
-.em .fv{display:block}
-.em .fe{display:block}
-/* Side-by-side wrapper in edit mode */
-.an-pair{display:flex;flex-direction:column}
-.em .an-pair{flex-direction:row;min-height:60px}
-.em .an-pair .anval{flex:1;border-right:1px solid var(--border)}
-.em .an-pair .aned{flex:1;min-height:60px;border-top:none;border-left:none;border-right:none;border-bottom:none;resize:none}
-.em .an-pair .aned:focus{outline:2px solid var(--gs);outline-offset:-2px}
-/* Steps split */
-.split-edit{display:flex;flex-direction:column;gap:0}
-.em .split-edit{flex-direction:row;gap:0;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden}
-.em .split-edit .fv{flex:1;padding:10px;border-right:1px solid var(--border);overflow-y:auto;max-height:280px}
-.em .split-edit .fe{flex:1}
-.em .split-edit textarea{border:none;border-radius:0;min-height:160px;height:100%}
-.em .split-edit textarea:focus{outline:2px solid var(--gs);outline-offset:-2px}
-/* Summary split */
-.sum-pair{display:flex;flex-direction:column}
-.em .sum-pair{flex-direction:row;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;margin-top:12px}
-.em .sum-pair .fv{flex:1;padding:10px;font-size:13px;line-height:1.6;border-right:1px solid var(--border)}
-.em .sum-pair .fe{flex:1}
-.em .sum-pair textarea{border:none;border-radius:0;min-height:80px;height:100%}
-/* Notes pair */
-.notes-pair{display:flex;flex-direction:column}
-.em .notes-pair{flex-direction:row;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden}
-.em .notes-pair .fv{flex:1;padding:10px;font-size:13px;line-height:1.6;border-right:1px solid var(--border)}
-.em .notes-pair .fe{flex:1}
-.em .notes-pair textarea{border:none;border-radius:0;min-height:65px;height:100%}
-.taginput{display:flex;flex-wrap:wrap;gap:5px;padding:7px;border:1px solid var(--border);border-radius:var(--r1);min-height:38px;cursor:text;background:#fff}
-.taginput:focus-within{border-color:var(--gs)}
-.ti{padding:3px 7px 3px 9px;background:var(--sidebar);border-radius:20px;font-size:11.5px;display:flex;align-items:center;gap:3px;color:var(--text)}
-.tix{cursor:pointer;color:var(--text3);font-size:11px;line-height:1}
-.tix:hover{color:var(--red)}
-.tfield{border:none;outline:none;font-size:12.5px;font-family:'DM Sans',sans-serif;flex:1;min-width:80px;background:transparent}
-/* Modal */
-.ov{position:fixed;inset:0;background:rgba(15,20,40,.55);backdrop-filter:blur(4px);z-index:1000;display:flex;align-items:center;justify-content:center;padding:20px;opacity:0;pointer-events:none;transition:opacity .2s}
-.ov.open{opacity:1;pointer-events:all}
-.modal{background:#fff;border-radius:var(--r3);width:100%;max-width:520px;max-height:90vh;overflow-y:auto;box-shadow:var(--sh3);transform:translateY(18px);transition:transform .2s}
-.ov.open .modal{transform:translateY(0)}
-.mh{padding:16px 18px 13px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between}
-.mt{font-family:'Lora',serif;font-size:16px;font-weight:600;color:var(--navy)}
-.mx{width:26px;height:26px;border-radius:50%;border:none;background:var(--sidebar);cursor:pointer;font-size:14px;display:flex;align-items:center;justify-content:center;color:var(--text2);transition:background .15s}
-.mx:hover{background:var(--border)}
-.mb{padding:16px 18px}
-.fg{margin-bottom:16px}
-.flbl{font-size:11px;font-weight:600;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;display:block}
-.rg{display:flex;gap:7px;flex-wrap:wrap}
-.rb{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:#fff;font-size:12.5px;cursor:pointer;transition:all .15s;user-select:none;color:var(--text2);font-family:'DM Sans',sans-serif}
-.rb:hover{border-color:var(--navy2)}
-.rb.on{background:var(--navy);color:#fff;border-color:var(--navy)}
-.tabrow{display:flex;border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;margin-bottom:8px}
-.tabbtn{flex:1;padding:7px;border:none;background:#fff;font-size:12.5px;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif;color:var(--text2)}
-.tabbtn.on{background:var(--navy);color:#fff}
-.upl{border:2px dashed var(--border);border-radius:var(--r2);padding:18px;text-align:center;cursor:pointer;transition:all .15s;color:var(--text3);display:flex;flex-direction:column;align-items:center}
-.upl:hover{border-color:var(--gs);color:var(--gs)}
-.upl .ico{font-size:26px;margin-bottom:5px}
-.upl p{font-size:12.5px}
-.ipw{position:relative;display:inline-block;margin-top:8px}
-.ipr{max-width:100%;max-height:180px;border-radius:var(--r1);border:1px solid var(--border)}
-.irm{position:absolute;top:-8px;right:-8px;width:22px;height:22px;border-radius:50%;background:var(--red);color:#fff;border:none;cursor:pointer;font-size:12px;display:flex;align-items:center;justify-content:center}
-textarea.fta{width:100%;padding:9px;border:1px solid var(--border);border-radius:var(--r1);font-family:'DM Sans',sans-serif;font-size:13px;resize:vertical;min-height:85px;outline:none;line-height:1.6}
-textarea.fta:focus{border-color:var(--gs)}
-.hint{font-size:11px;color:var(--text3);margin-top:4px}
-.mf{padding:12px 18px;border-top:1px solid var(--border);display:flex;justify-content:flex-end;gap:7px}
-.bpri{padding:7px 18px;background:var(--navy);color:#fff;border:none;border-radius:var(--r1);font-size:13px;font-weight:600;cursor:pointer;transition:background .15s;font-family:'DM Sans',sans-serif}
-.bpri:hover{background:var(--navy2)}
-.bsec{padding:7px 14px;background:#fff;color:var(--text2);border:1.5px solid var(--border);border-radius:var(--r1);font-size:13px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif}
-.bsec:hover{border-color:var(--text2)}
-.bgh{padding:7px 12px;background:transparent;color:var(--text3);border:none;border-radius:var(--r1);font-size:12.5px;cursor:pointer;font-family:'DM Sans',sans-serif}
-.bgh:hover{color:var(--text)}
-/* Confirm */
-.cfmov{position:fixed;inset:0;background:rgba(15,20,40,.4);z-index:2000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .15s}
-.cfmov.open{opacity:1;pointer-events:all}
-.cfmbox{background:#fff;border-radius:var(--r2);padding:22px;max-width:320px;width:90%;box-shadow:var(--sh3)}
-.cfmt{font-weight:600;font-size:15px;margin-bottom:8px}
-.cfmm{font-size:13px;color:var(--text2);margin-bottom:16px;line-height:1.5}
-.cfmacts{display:flex;justify-content:flex-end;gap:7px}
-/* Practice */
-.prac{position:fixed;inset:0;background:var(--bg);z-index:500;display:flex;flex-direction:column;align-items:center;padding:32px 20px;overflow-y:auto;transform:translateY(100%);transition:transform .3s ease}
-.prac.open{transform:translateY(0)}
-.phead{display:flex;align-items:center;justify-content:space-between;width:100%;max-width:680px;margin-bottom:24px}
-.pprog{font-size:13px;color:var(--text2)}
-.pcard{background:#fff;border-radius:var(--r3);width:100%;max-width:680px;padding:28px;box-shadow:var(--sh2)}
-/* Toast */
-.toast{position:fixed;bottom:18px;right:18px;background:var(--navy);color:#fff;padding:9px 16px;border-radius:var(--r1);font-size:12.5px;z-index:9999;transform:translateY(50px);opacity:0;transition:all .22s;pointer-events:none;display:flex;align-items:center;gap:10px}
-.toast.show{transform:translateY(0);opacity:1;pointer-events:all}
-.toast-undo{background:none;border:1px solid rgba(255,255,255,.5);border-radius:4px;color:#fff;padding:3px 9px;font-size:11.5px;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap}
-.toast-undo:hover{background:rgba(255,255,255,.15)}
-/* Card delete button */
-.card-del{position:absolute;top:7px;right:7px;width:20px;height:20px;border-radius:50%;background:rgba(255,255,255,.9);border:1px solid var(--border);color:var(--text3);font-size:11px;cursor:pointer;display:none;align-items:center;justify-content:center;transition:all .15s;line-height:1;padding:0;z-index:5}
-.card-del:hover{background:var(--red-bg);border-color:var(--red);color:var(--red)}
-.card:hover .card-del{display:flex}
-.card{position:relative}
-::-webkit-scrollbar{width:5px;height:5px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:var(--text3)}
-/* Collapse restore button — square, in detail toolbar left, CSS-driven visibility */
-.col-float{
-  width:28px;height:28px;border-radius:var(--r1);border:1px solid var(--gs);
-  background:#fff;cursor:pointer;display:none;align-items:center;justify-content:center;
-  font-size:12px;color:var(--gs);transition:all .15s;flex-shrink:0;font-weight:600}
-.col-float:hover{background:var(--gs-bg)}
-/* Show col-float when list panel is collapsed — CSS data attribute approach */
-.app[data-lp-coll="1"] .col-float{display:flex}
-/* Hide col-float inside mobile media (not needed) */
-/* Detail panel needs relative positioning */
-.dp{position:relative}
-/* Undo button */
-.bundo{padding:5px 11px;border-radius:var(--r1);border:1.5px solid var(--amber);background:var(--amber-bg);
-  font-size:12px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;
-  font-weight:500;color:var(--amber);display:none}
-.bundo:hover{background:var(--amber);color:#fff}
-/* Mobile-only elements: hidden on desktop */
-.mob-only{display:none!important}
-/* Filter drawer slide-in (mobile) */
-.fp-backdrop{display:none;position:fixed;inset:0;background:rgba(15,20,40,.4);z-index:300;opacity:0;pointer-events:none;transition:opacity .22s}
-.fp-backdrop.open{opacity:1;pointer-events:all}
-.fp.drawer{position:fixed;left:0;top:0;bottom:0;width:280px;z-index:301;
-  transform:translateX(-100%);transition:transform .25s ease;
-  box-shadow:4px 0 20px rgba(0,0,0,.18);display:flex!important}
-.fp.drawer.open{transform:translateX(0)}
-/* Mobile bottom action bar */
-.mob-bar{display:none;position:fixed;bottom:0;left:0;right:0;
-  background:var(--navy);border-top:1px solid rgba(255,255,255,.1);
-  padding:8px 6px calc(8px + env(safe-area-inset-bottom));
-  z-index:250;gap:0}
-.mob-bar-btn{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
-  gap:3px;padding:5px 2px;color:rgba(255,255,255,.8);cursor:pointer;
-  font-size:10px;background:none;border:none;font-family:'DM Sans',sans-serif;
-  border-radius:var(--r1);transition:background .15s}
-.mob-bar-btn:hover,.mob-bar-btn:active{background:rgba(255,255,255,.12);color:#fff}
-.mob-bar-btn .mbi{font-size:17px;line-height:1}
-/* Mobile filter action buttons */
-.mob-filter-btns{display:none;gap:8px;padding:14px 0 4px;justify-content:center}
-/* ── Mobile (≤700px) ── */
-@media(max-width:700px){
-  /* Hide desktop panels by default, leave room for bottom bar */
-  .fp,.dp{display:none!important}
-  body{padding-bottom:calc(58px + env(safe-area-inset-bottom))}
-  /* List panel takes full screen */
-  .lp{display:flex!important;position:fixed;inset:0;width:100%!important;max-width:100%!important;min-width:0!important;
-      bottom:calc(58px + env(safe-area-inset-bottom));z-index:100}
-  /* Detail panel slides up over everything */
-  body.mob-detail .dp{display:flex!important;position:fixed;top:0;left:0;right:0;bottom:0;z-index:200}
-  /* Hide header on mobile (replaced by bottom bar) */
-  header{display:none}
-  /* Show filter drawer backdrop */
-  .fp-backdrop{display:block}
-  /* Show mobile-only elements */
-  .mob-only{display:flex!important}
-  /* Show filter action buttons */
-  .mob-filter-btns{display:flex}
-  /* Show mobile bottom bar */
-  .mob-bar{display:flex}
-  /* Desktop collapse elements hidden */
-  .app[data-lp-coll="1"] .col-float{display:none!important}
-  #colBtn{display:none!important}
-  .rh{display:none!important}
-  /* Hide filter header on desktop (mob-only hidden) */
-}
-/* ── AI Features ── */
-.bai{padding:5px 11px;border-radius:var(--r1);border:1.5px solid var(--gs);background:var(--gs);font-size:12.5px;cursor:pointer;transition:all .15s;font-family:'DM Sans',sans-serif;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:4px;white-space:nowrap}
-.bai:hover{background:var(--navy2);border-color:var(--navy2)}
-.bai:disabled{opacity:.55;cursor:not-allowed}
-.bai.loading{background:var(--navy2);border-color:var(--navy2);animation:aiPulse 1.4s ease-in-out infinite}
-@keyframes aiPulse{0%,100%{opacity:1}50%{opacity:.6}}
-/* AI Drawer */
-.ai-ov{position:fixed;inset:0;background:rgba(15,20,40,.45);backdrop-filter:blur(3px);z-index:1500;opacity:0;pointer-events:none;transition:opacity .22s}
-.ai-ov.open{opacity:1;pointer-events:all}
-.ai-drawer{position:fixed;right:0;top:0;bottom:0;width:min(480px,100vw);background:#fff;box-shadow:-4px 0 24px rgba(0,0,0,.14);display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s ease;z-index:1501}
-.ai-ov.open .ai-drawer{transform:translateX(0)}
-.ai-dh{padding:14px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-shrink:0;background:linear-gradient(135deg,var(--navy),var(--navy2))}
-.ai-dh-title{font-family:'Lora',serif;font-size:15px;color:#fff;font-weight:600;display:flex;align-items:center;gap:8px}
-.ai-dc{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:12px}
-/* Think box */
-.think-wrap{border:1px solid var(--border);border-radius:var(--r2);overflow:hidden;background:var(--sidebar)}
-.think-head{padding:8px 12px;background:var(--bg);font-size:11px;font-weight:600;color:var(--navy);text-transform:uppercase;letter-spacing:.5px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;user-select:none;border-bottom:1px solid var(--border)}
-.think-body{max-height:160px;overflow-y:auto;padding:10px 12px;font-size:11.5px;line-height:1.65;color:var(--text2);white-space:pre-wrap;font-family:monospace}
-/* Field stream */
-.ai-fields{display:flex;flex-direction:column;gap:8px}
-.af{border:1px solid var(--border);border-radius:var(--r1);overflow:hidden;transition:border-color .2s}
-.af.active{border-color:var(--gs)}
-.af.done{border-color:var(--green)}
-.af-lbl{padding:5px 11px;background:var(--sidebar);font-size:10.5px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:6px;text-transform:uppercase;letter-spacing:.4px}
-.af-lbl .af-ic{font-size:12px}
-.af-val{padding:9px 11px;font-size:12.5px;line-height:1.7;min-height:36px;color:var(--text)}
-.af-val.empty{color:var(--text3);font-style:italic}
-/* Progress bar */
-.ai-prog-bar{height:3px;background:var(--gs-bg);border-radius:2px;overflow:hidden;margin-top:2px}
-.ai-prog-fill{height:100%;background:linear-gradient(90deg,var(--gs),var(--navy));border-radius:2px;transition:width .3s;width:0%}
-/* Status row */
-.ai-status{font-size:12px;color:var(--text3);text-align:center;padding:4px 0}
-.ai-actions{padding:12px 16px;border-top:1px solid var(--border);display:flex;gap:8px;justify-content:flex-end;flex-shrink:0}
-/* Settings */
-.set-row{display:flex;align-items:center;gap:9px;margin-bottom:14px}
-.set-row label{font-size:12px;color:var(--text2);min-width:80px;font-weight:500}
-.set-inp{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none}
-.set-inp:focus{border-color:var(--gs)}
-.set-sel{flex:1;padding:7px 10px;border:1px solid var(--border);border-radius:var(--r1);font-size:13px;font-family:'DM Sans',sans-serif;outline:none;background:#fff}
-</style>
-</head>
-<body>
-<script>
-// Run synchronously before first paint so CSS sees the right class immediately
-(function(){
-  // No initial body class needed — list is always visible on mobile via CSS
-})();
-</script>
-<header>
-  <div class="h-logo"><em>📐</em><span>数学题库</span> MathBank</div>
-  <div class="h-acts">
-    <button class="btn-h" onclick="startPrac()">🎲 随机练习</button>
-    <button class="btn-h" onclick="exportData()">⬆ 导出</button>
-    <label class="btn-h" style="cursor:pointer">⬇ 导入<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
-    <button class="btn-h" onclick="openSettings()" style="border-color:rgba(100,160,255,.5)">⚙ API Key</button>
-  </div>
-</header>
-<div class="app" id="APP">
-  <!-- Filter Panel -->
-  <div class="fp" id="FP">
-    <!-- Filter drawer header with close button (mobile only) -->
-    <div id="MobFilterHead" class="mob-only" style="padding:11px 14px;border-bottom:1px solid var(--border);background:var(--navy);color:#fff;gap:9px;flex-shrink:0;align-items:center;justify-content:space-between">
-      <span style="font-family:'Lora',serif;font-size:15px;font-weight:600">🔍 筛选</span>
-      <button onclick="closeFPDrawer()" style="background:none;border:none;color:rgba(255,255,255,.7);font-size:18px;cursor:pointer;padding:2px 6px;line-height:1">×</button>
-    </div>
-    <div class="fp-inner">
-      <div class="fl-s"><div class="fl-l">搜索</div><input class="sbox" type="text" id="SI" placeholder="搜索题目、知识点…" oninput="applyF()"></div>
-      <div id="FCtWrap" style="margin-bottom:14px;display:none">
-        <div style="padding:7px 10px;background:var(--gs-bg);border:1px solid rgba(37,99,235,.2);border-radius:var(--r1);font-size:12px;color:var(--gs);font-weight:500;display:flex;align-items:center;gap:6px">
-          <span>🔍</span><span id="FCt">筛选中：0 条结果</span>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>数学题库 · MathBank</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
+      rel="stylesheet"
+    />
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+          displayMath: [
+            ["$$", "$$"],
+            ["\\[", "\\]"],
+          ],
+        },
+        svg: { fontCache: "global" },
+      };
+    </script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js"
+      async
+    ></script>
+    <style>
+      :root {
+        --bg: #f8f7f4;
+        --surface: #ffffff;
+        --sidebar: #f2f0ec;
+        --border: #e5e2dc;
+        --text: #1c1917;
+        --text2: #6b6560;
+        --text3: #a8a29e;
+        --navy: #1e3a5f;
+        --navy2: #2d5a8e;
+        --gs: #2563eb;
+        --gs-bg: #eff6ff;
+        --la: #d97706;
+        --la-bg: #fffbeb;
+        --red: #ef4444;
+        --red-bg: #fef2f2;
+        --amber: #f59e0b;
+        --amber-bg: #fffbeb;
+        --green: #22c55e;
+        --green-bg: #f0fdf4;
+        --sh1: 0 1px 3px rgba(0, 0, 0, 0.06);
+        --sh2: 0 4px 12px rgba(0, 0, 0, 0.08);
+        --sh3: 0 12px 36px rgba(0, 0, 0, 0.14);
+        --r1: 5px;
+        --r2: 9px;
+        --r3: 14px;
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        height: 100vh;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        font-size: 14px;
+      }
+      header {
+        background: var(--navy);
+        color: #fff;
+        height: 50px;
+        padding: 0 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      }
+      .h-logo {
+        font-family: "Lora", serif;
+        font-size: 17px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        letter-spacing: -0.2px;
+      }
+      .h-logo em {
+        font-style: normal;
+        font-size: 20px;
+      }
+      .h-acts {
+        display: flex;
+        gap: 6px;
+      }
+      .btn-h {
+        background: rgba(255, 255, 255, 0.1);
+        color: #fff;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        border-radius: var(--r1);
+        padding: 5px 11px;
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: background 0.15s;
+        font-family: "DM Sans", sans-serif;
+      }
+      .btn-h:hover {
+        background: rgba(255, 255, 255, 0.22);
+      }
+      .app {
+        display: flex;
+        flex: 1;
+        overflow: hidden;
+      }
+      /* Filter Panel */
+      .fp {
+        width: 220px;
+        min-width: 150px;
+        max-width: 300px;
+        background: var(--sidebar);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+        flex-shrink: 0;
+        position: relative;
+      }
+      .fp-inner {
+        padding: 13px 12px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .fl-s {
+        margin-bottom: 18px;
+      }
+      .fl-l {
+        font-size: 10px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: var(--text3);
+        margin-bottom: 7px;
+      }
+      .sbox {
+        width: 100%;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        background: #fff;
+        font-size: 13px;
+        font-family: "DM Sans", sans-serif;
+        color: var(--text);
+        outline: none;
+        transition: border-color 0.15s;
+      }
+      .sbox:focus {
+        border-color: var(--gs);
+      }
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .chip {
+        padding: 4px 10px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        font-size: 11.5px;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+        color: var(--text2);
+      }
+      .chip:hover {
+        border-color: var(--navy2);
+        color: var(--navy2);
+      }
+      .chip.on {
+        background: var(--navy);
+        border-color: var(--navy);
+        color: #fff;
+      }
+      .chip.gs.on {
+        background: var(--gs);
+        border-color: var(--gs);
+      }
+      .chip.la.on {
+        background: var(--la);
+        border-color: var(--la);
+      }
+      .ktags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 4px;
+      }
+      .ktag {
+        padding: 3px 9px;
+        border-radius: 4px;
+        border: 1px solid var(--border);
+        background: #fff;
+        font-size: 11px;
+        cursor: pointer;
+        transition: all 0.15s;
+        color: var(--text2);
+      }
+      .ktag:hover {
+        border-color: var(--navy2);
+      }
+      .ktag.on {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .rh {
+        position: absolute;
+        right: 0;
+        top: 0;
+        width: 4px;
+        height: 100%;
+        cursor: col-resize;
+        z-index: 10;
+        transition: background 0.15s;
+      }
+      .rh:hover,
+      .rh.drag {
+        background: rgba(37, 99, 235, 0.35);
+      }
+      /* List Panel */
+      .lp {
+        width: 320px;
+        min-width: 230px;
+        max-width: 460px;
+        background: var(--surface);
+        border-right: 1px solid var(--border);
+        display: flex;
+        flex-direction: column;
+        flex-shrink: 0;
+        position: relative;
+        transition:
+          width 0.25s,
+          min-width 0.25s;
+      }
+      .lp.coll {
+        width: 0;
+        min-width: 0;
+        overflow: hidden;
+      }
+      .lt {
+        padding: 9px 11px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        background: #fff;
+        height: 46px;
+      }
+      .lc {
+        font-size: 11.5px;
+        color: var(--text3);
+      }
+      .tacts {
+        display: flex;
+        gap: 5px;
+      }
+      .bic {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r1);
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 13px;
+        transition: all 0.15s;
+        color: var(--text2);
+      }
+      .bic:hover {
+        background: var(--bg);
+        border-color: var(--navy2);
+        color: var(--navy);
+      }
+      .badd {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .badd:hover {
+        background: var(--navy2);
+        border-color: var(--navy2);
+        color: #fff;
+      }
+      .pl {
+        overflow-y: auto;
+        flex: 1;
+        padding: 8px;
+      }
+      .card {
+        border: 1.5px solid var(--border);
+        border-radius: var(--r2);
+        padding: 11px;
+        margin-bottom: 7px;
+        cursor: pointer;
+        transition: all 0.15s;
+        background: #fff;
+      }
+      .card:hover {
+        border-color: var(--navy2);
+        box-shadow: var(--sh1);
+        transform: translateY(-1px);
+      }
+      .card.sel {
+        border-color: var(--gs);
+        background: var(--gs-bg);
+      }
+      .ctop {
+        display: flex;
+        gap: 9px;
+        align-items: flex-start;
+      }
+      .cimg {
+        width: 58px;
+        height: 48px;
+        border-radius: var(--r1);
+        object-fit: cover;
+        flex-shrink: 0;
+        border: 1px solid var(--border);
+      }
+      .cph {
+        width: 58px;
+        height: 48px;
+        border-radius: var(--r1);
+        background: var(--sidebar);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-size: 20px;
+        color: var(--text3);
+      }
+      .cinfo {
+        flex: 1;
+        min-width: 0;
+      }
+      .cmeta {
+        display: flex;
+        gap: 4px;
+        flex-wrap: wrap;
+        margin-bottom: 4px;
+      }
+      .badge {
+        padding: 2px 7px;
+        border-radius: 20px;
+        font-size: 10.5px;
+        font-weight: 500;
+        line-height: 1.4;
+      }
+      .b-gs {
+        background: var(--gs-bg);
+        color: var(--gs);
+      }
+      .b-la {
+        background: var(--la-bg);
+        color: var(--la);
+      }
+      .b-easy {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .b-med {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .b-hard {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .b-pend {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .b-prog {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .b-done {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .ctype {
+        font-size: 11.5px;
+        color: var(--text2);
+        font-weight: 500;
+        margin-bottom: 3px;
+      }
+      .cprev {
+        font-size: 11.5px;
+        color: var(--text2);
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        line-height: 1.5;
+      }
+      .ctags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 3px;
+        margin-top: 6px;
+      }
+      .ctag {
+        padding: 2px 7px;
+        background: var(--sidebar);
+        border-radius: 3px;
+        font-size: 10.5px;
+        color: var(--text2);
+      }
+      .cdate {
+        font-size: 10.5px;
+        color: var(--text3);
+        margin-top: 5px;
+      }
+      .empty {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        flex: 1;
+        padding: 40px 16px;
+        color: var(--text3);
+        text-align: center;
+      }
+      .empty .ico {
+        font-size: 32px;
+        margin-bottom: 10px;
+        opacity: 0.45;
+      }
+      .empty p {
+        font-size: 13.5px;
+      }
+      /* Detail Panel */
+      .dp {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        background: #fff;
+        overflow: hidden;
+        min-width: 0;
+      }
+      .dt {
+        padding: 9px 10px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-shrink: 0;
+        min-height: 46px;
+        background: #fff;
+        flex-wrap: nowrap;
+      }
+      .dtl {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .dtr {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex-shrink: 0;
+      }
+      .dtc {
+        font-size: 12px;
+        color: var(--text2);
+        font-weight: 500;
+        flex: 1;
+        min-width: 0;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        text-align: center;
+      }
+      .sdot {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        padding: 3px 9px;
+        border-radius: 20px;
+        font-size: 11.5px;
+        font-weight: 500;
+      }
+      .sdot::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+      }
+      .s-pend {
+        background: var(--red-bg);
+        color: var(--red);
+      }
+      .s-pend::before {
+        background: var(--red);
+      }
+      .s-prog {
+        background: var(--amber-bg);
+        color: var(--amber);
+      }
+      .s-prog::before {
+        background: var(--amber);
+      }
+      .s-done {
+        background: var(--green-bg);
+        color: var(--green);
+      }
+      .s-done::before {
+        background: var(--green);
+      }
+      .bedit {
+        padding: 5px 11px;
+        border-radius: var(--r1);
+        border: 1.5px solid var(--border);
+        background: #fff;
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        color: var(--text);
+        display: inline-flex;
+        align-items: center;
+        white-space: nowrap;
+      }
+      .bedit:hover {
+        border-color: var(--gs);
+        color: var(--gs);
+      }
+      .bedit.on {
+        background: var(--gs);
+        color: #fff;
+        border-color: var(--gs);
+      }
+      .bdel {
+        padding: 5px 11px;
+        border-radius: var(--r1);
+        border: 1px solid var(--border);
+        background: #fff;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        font-size: 12.5px;
+        font-family: "DM Sans", sans-serif;
+        transition: all 0.15s;
+        color: var(--text2);
+        white-space: nowrap;
+      }
+      .bdel:hover {
+        background: var(--red-bg);
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .dc {
+        flex: 1;
+        overflow-y: auto;
+        padding: 16px;
+      }
+      .dsect {
+        background: #fff;
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        margin-bottom: 13px;
+        overflow: hidden;
+      }
+      .sh {
+        padding: 10px 14px;
+        border-bottom: 1px solid var(--border);
+        font-weight: 600;
+        font-size: 12.5px;
+        color: var(--navy);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: linear-gradient(to bottom, #fafafa, #fff);
+        cursor: pointer;
+        user-select: none;
+      }
+      .sarr {
+        transition: transform 0.2s;
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .scoll .sarr {
+        transform: rotate(-90deg);
+      }
+      .scoll .sb {
+        display: none;
+      }
+      .sb {
+        padding: 14px;
+      }
+      .pimg {
+        max-width: 100%;
+        border-radius: var(--r1);
+        margin-bottom: 10px;
+        border: 1px solid var(--border);
+      }
+      .ptxt {
+        font-size: 13.5px;
+        line-height: 1.75;
+        color: var(--text);
+      }
+      .angrid {
+        display: grid;
+        gap: 10px;
+      }
+      .anit {
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+      }
+      .anlbl {
+        padding: 5px 11px;
+        background: var(--sidebar);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text2);
+        border-bottom: 1px solid var(--border);
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .anval {
+        padding: 9px 11px;
+        font-size: 13px;
+        line-height: 1.6;
+        color: var(--text);
+      }
+      .anval.ev {
+        color: var(--text3);
+        font-style: italic;
+      }
+      textarea.aned {
+        width: 100%;
+        padding: 9px 11px;
+        border: none;
+        border-top: 1px solid var(--border);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        line-height: 1.6;
+        resize: vertical;
+        min-height: 58px;
+        outline: none;
+        background: #fff;
+      }
+      textarea.aned:focus {
+        background: #f8fbff;
+      }
+      .step {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 12px;
+        align-items: flex-start;
+      }
+      .snum {
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--navy);
+        color: #fff;
+        font-size: 10.5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+      .scon {
+        flex: 1;
+        font-size: 13.5px;
+        line-height: 1.7;
+      }
+      textarea.ste {
+        width: 100%;
+        min-height: 110px;
+        padding: 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        line-height: 1.7;
+        resize: vertical;
+        outline: none;
+      }
+      textarea.ste:focus {
+        border-color: var(--gs);
+      }
+      .ogrid {
+        display: flex;
+        flex-direction: column;
+        gap: 11px;
+      }
+      .orow {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .olbl {
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+      .kpills {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .kpill {
+        padding: 4px 11px;
+        background: var(--sidebar);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        font-size: 12px;
+        color: var(--text2);
+      }
+      textarea.nota {
+        width: 100%;
+        padding: 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        resize: vertical;
+        min-height: 65px;
+        outline: none;
+        line-height: 1.6;
+      }
+      textarea.nota:focus {
+        border-color: var(--gs);
+      }
+      .fv {
+        display: block;
+      }
+      .fe {
+        display: none;
+      }
+      /* Edit mode: show both side-by-side */
+      .em .fv {
+        display: block;
+      }
+      .em .fe {
+        display: block;
+      }
+      /* Side-by-side wrapper in edit mode */
+      .an-pair {
+        display: flex;
+        flex-direction: column;
+      }
+      .em .an-pair {
+        flex-direction: row;
+        min-height: 60px;
+      }
+      .em .an-pair .anval {
+        flex: 1;
+        border-right: 1px solid var(--border);
+      }
+      .em .an-pair .aned {
+        flex: 1;
+        min-height: 60px;
+        border-top: none;
+        border-left: none;
+        border-right: none;
+        border-bottom: none;
+        resize: none;
+      }
+      .em .an-pair .aned:focus {
+        outline: 2px solid var(--gs);
+        outline-offset: -2px;
+      }
+      /* Steps split */
+      .split-edit {
+        display: flex;
+        flex-direction: column;
+        gap: 0;
+      }
+      .em .split-edit {
+        flex-direction: row;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+      }
+      .em .split-edit .fv {
+        flex: 1;
+        padding: 10px;
+        border-right: 1px solid var(--border);
+        overflow-y: auto;
+        max-height: 280px;
+      }
+      .em .split-edit .fe {
+        flex: 1;
+      }
+      .em .split-edit textarea {
+        border: none;
+        border-radius: 0;
+        min-height: 160px;
+        height: 100%;
+      }
+      .em .split-edit textarea:focus {
+        outline: 2px solid var(--gs);
+        outline-offset: -2px;
+      }
+      /* Summary split */
+      .sum-pair {
+        display: flex;
+        flex-direction: column;
+      }
+      .em .sum-pair {
+        flex-direction: row;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+        margin-top: 12px;
+      }
+      .em .sum-pair .fv {
+        flex: 1;
+        padding: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+        border-right: 1px solid var(--border);
+      }
+      .em .sum-pair .fe {
+        flex: 1;
+      }
+      .em .sum-pair textarea {
+        border: none;
+        border-radius: 0;
+        min-height: 80px;
+        height: 100%;
+      }
+      /* Notes pair */
+      .notes-pair {
+        display: flex;
+        flex-direction: column;
+      }
+      .em .notes-pair {
+        flex-direction: row;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+      }
+      .em .notes-pair .fv {
+        flex: 1;
+        padding: 10px;
+        font-size: 13px;
+        line-height: 1.6;
+        border-right: 1px solid var(--border);
+      }
+      .em .notes-pair .fe {
+        flex: 1;
+      }
+      .em .notes-pair textarea {
+        border: none;
+        border-radius: 0;
+        min-height: 65px;
+        height: 100%;
+      }
+      .taginput {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        padding: 7px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        min-height: 38px;
+        cursor: text;
+        background: #fff;
+      }
+      .taginput:focus-within {
+        border-color: var(--gs);
+      }
+      .ti {
+        padding: 3px 7px 3px 9px;
+        background: var(--sidebar);
+        border-radius: 20px;
+        font-size: 11.5px;
+        display: flex;
+        align-items: center;
+        gap: 3px;
+        color: var(--text);
+      }
+      .tix {
+        cursor: pointer;
+        color: var(--text3);
+        font-size: 11px;
+        line-height: 1;
+      }
+      .tix:hover {
+        color: var(--red);
+      }
+      .tfield {
+        border: none;
+        outline: none;
+        font-size: 12.5px;
+        font-family: "DM Sans", sans-serif;
+        flex: 1;
+        min-width: 80px;
+        background: transparent;
+      }
+      /* Modal */
+      .ov {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 20, 40, 0.55);
+        backdrop-filter: blur(4px);
+        z-index: 1000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+      }
+      .ov.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .modal {
+        background: #fff;
+        border-radius: var(--r3);
+        width: 100%;
+        max-width: 520px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--sh3);
+        transform: translateY(18px);
+        transition: transform 0.2s;
+      }
+      .ov.open .modal {
+        transform: translateY(0);
+      }
+      .mh {
+        padding: 16px 18px 13px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .mt {
+        font-family: "Lora", serif;
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--navy);
+      }
+      .mx {
+        width: 26px;
+        height: 26px;
+        border-radius: 50%;
+        border: none;
+        background: var(--sidebar);
+        cursor: pointer;
+        font-size: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text2);
+        transition: background 0.15s;
+      }
+      .mx:hover {
+        background: var(--border);
+      }
+      .mb {
+        padding: 16px 18px;
+      }
+      .fg {
+        margin-bottom: 16px;
+      }
+      .flbl {
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--text2);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        margin-bottom: 7px;
+        display: block;
+      }
+      .rg {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .rb {
+        padding: 6px 14px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: #fff;
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+        color: var(--text2);
+        font-family: "DM Sans", sans-serif;
+      }
+      .rb:hover {
+        border-color: var(--navy2);
+      }
+      .rb.on {
+        background: var(--navy);
+        color: #fff;
+        border-color: var(--navy);
+      }
+      .tabrow {
+        display: flex;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+        margin-bottom: 8px;
+      }
+      .tabbtn {
+        flex: 1;
+        padding: 7px;
+        border: none;
+        background: #fff;
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: background 0.15s;
+        font-family: "DM Sans", sans-serif;
+        color: var(--text2);
+      }
+      .tabbtn.on {
+        background: var(--navy);
+        color: #fff;
+      }
+      .upl {
+        border: 2px dashed var(--border);
+        border-radius: var(--r2);
+        padding: 18px;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.15s;
+        color: var(--text3);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
+      .upl:hover {
+        border-color: var(--gs);
+        color: var(--gs);
+      }
+      .upl .ico {
+        font-size: 26px;
+        margin-bottom: 5px;
+      }
+      .upl p {
+        font-size: 12.5px;
+      }
+      .ipw {
+        position: relative;
+        display: inline-block;
+        margin-top: 8px;
+      }
+      .ipr {
+        max-width: 100%;
+        max-height: 180px;
+        border-radius: var(--r1);
+        border: 1px solid var(--border);
+      }
+      .irm {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--red);
+        color: #fff;
+        border: none;
+        cursor: pointer;
+        font-size: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      textarea.fta {
+        width: 100%;
+        padding: 9px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        font-family: "DM Sans", sans-serif;
+        font-size: 13px;
+        resize: vertical;
+        min-height: 85px;
+        outline: none;
+        line-height: 1.6;
+      }
+      textarea.fta:focus {
+        border-color: var(--gs);
+      }
+      .hint {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+      .mf {
+        padding: 12px 18px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        justify-content: flex-end;
+        gap: 7px;
+      }
+      .bpri {
+        padding: 7px 18px;
+        background: var(--navy);
+        color: #fff;
+        border: none;
+        border-radius: var(--r1);
+        font-size: 13px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.15s;
+        font-family: "DM Sans", sans-serif;
+      }
+      .bpri:hover {
+        background: var(--navy2);
+      }
+      .bsec {
+        padding: 7px 14px;
+        background: #fff;
+        color: var(--text2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r1);
+        font-size: 13px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: "DM Sans", sans-serif;
+      }
+      .bsec:hover {
+        border-color: var(--text2);
+      }
+      .bgh {
+        padding: 7px 12px;
+        background: transparent;
+        color: var(--text3);
+        border: none;
+        border-radius: var(--r1);
+        font-size: 12.5px;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+      }
+      .bgh:hover {
+        color: var(--text);
+      }
+      /* Confirm */
+      .cfmov {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 20, 40, 0.4);
+        z-index: 2000;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.15s;
+      }
+      .cfmov.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .cfmbox {
+        background: #fff;
+        border-radius: var(--r2);
+        padding: 22px;
+        max-width: 320px;
+        width: 90%;
+        box-shadow: var(--sh3);
+      }
+      .cfmt {
+        font-weight: 600;
+        font-size: 15px;
+        margin-bottom: 8px;
+      }
+      .cfmm {
+        font-size: 13px;
+        color: var(--text2);
+        margin-bottom: 16px;
+        line-height: 1.5;
+      }
+      .cfmacts {
+        display: flex;
+        justify-content: flex-end;
+        gap: 7px;
+      }
+      /* Practice */
+      .prac {
+        position: fixed;
+        inset: 0;
+        background: var(--bg);
+        z-index: 500;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 32px 20px;
+        overflow-y: auto;
+        transform: translateY(100%);
+        transition: transform 0.3s ease;
+      }
+      .prac.open {
+        transform: translateY(0);
+      }
+      .phead {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        max-width: 680px;
+        margin-bottom: 24px;
+      }
+      .pprog {
+        font-size: 13px;
+        color: var(--text2);
+      }
+      .pcard {
+        background: #fff;
+        border-radius: var(--r3);
+        width: 100%;
+        max-width: 680px;
+        padding: 28px;
+        box-shadow: var(--sh2);
+      }
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 18px;
+        right: 18px;
+        background: var(--navy);
+        color: #fff;
+        padding: 9px 16px;
+        border-radius: var(--r1);
+        font-size: 12.5px;
+        z-index: 9999;
+        transform: translateY(50px);
+        opacity: 0;
+        transition: all 0.22s;
+        pointer-events: none;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+        pointer-events: all;
+      }
+      .toast-undo {
+        background: none;
+        border: 1px solid rgba(255, 255, 255, 0.5);
+        border-radius: 4px;
+        color: #fff;
+        padding: 3px 9px;
+        font-size: 11.5px;
+        cursor: pointer;
+        font-family: "DM Sans", sans-serif;
+        white-space: nowrap;
+      }
+      .toast-undo:hover {
+        background: rgba(255, 255, 255, 0.15);
+      }
+      /* Card delete button */
+      .card-del {
+        position: absolute;
+        top: 7px;
+        right: 7px;
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        background: rgba(255, 255, 255, 0.9);
+        border: 1px solid var(--border);
+        color: var(--text3);
+        font-size: 11px;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+        line-height: 1;
+        padding: 0;
+        z-index: 5;
+      }
+      .card-del:hover {
+        background: var(--red-bg);
+        border-color: var(--red);
+        color: var(--red);
+      }
+      .card:hover .card-del {
+        display: flex;
+      }
+      .card {
+        position: relative;
+      }
+      ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+      }
+      ::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 3px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--text3);
+      }
+      /* Collapse restore button — square, in detail toolbar left, CSS-driven visibility */
+      .col-float {
+        width: 28px;
+        height: 28px;
+        border-radius: var(--r1);
+        border: 1px solid var(--gs);
+        background: #fff;
+        cursor: pointer;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        color: var(--gs);
+        transition: all 0.15s;
+        flex-shrink: 0;
+        font-weight: 600;
+      }
+      .col-float:hover {
+        background: var(--gs-bg);
+      }
+      /* Show col-float when list panel is collapsed — CSS data attribute approach */
+      .app[data-lp-coll="1"] .col-float {
+        display: flex;
+      }
+      /* Hide col-float inside mobile media (not needed) */
+      /* Detail panel needs relative positioning */
+      .dp {
+        position: relative;
+      }
+      /* Undo button */
+      .bundo {
+        padding: 5px 11px;
+        border-radius: var(--r1);
+        border: 1.5px solid var(--amber);
+        background: var(--amber-bg);
+        font-size: 12px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 500;
+        color: var(--amber);
+        display: none;
+      }
+      .bundo:hover {
+        background: var(--amber);
+        color: #fff;
+      }
+      /* Mobile-only elements: hidden on desktop */
+      .mob-only {
+        display: none !important;
+      }
+      /* Filter drawer slide-in (mobile) */
+      .fp-backdrop {
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 20, 40, 0.4);
+        z-index: 300;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .fp-backdrop.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .fp.drawer {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        width: 280px;
+        z-index: 301;
+        transform: translateX(-100%);
+        transition: transform 0.25s ease;
+        box-shadow: 4px 0 20px rgba(0, 0, 0, 0.18);
+        display: flex !important;
+      }
+      .fp.drawer.open {
+        transform: translateX(0);
+      }
+      /* Mobile bottom action bar */
+      .mob-bar {
+        display: none;
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        background: var(--navy);
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        padding: 8px 6px calc(8px + env(safe-area-inset-bottom));
+        z-index: 250;
+        gap: 0;
+      }
+      .mob-bar-btn {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 3px;
+        padding: 5px 2px;
+        color: rgba(255, 255, 255, 0.8);
+        cursor: pointer;
+        font-size: 10px;
+        background: none;
+        border: none;
+        font-family: "DM Sans", sans-serif;
+        border-radius: var(--r1);
+        transition: background 0.15s;
+      }
+      .mob-bar-btn:hover,
+      .mob-bar-btn:active {
+        background: rgba(255, 255, 255, 0.12);
+        color: #fff;
+      }
+      .mob-bar-btn .mbi {
+        font-size: 17px;
+        line-height: 1;
+      }
+      /* Mobile filter action buttons */
+      .mob-filter-btns {
+        display: none;
+        gap: 8px;
+        padding: 14px 0 4px;
+        justify-content: center;
+      }
+      /* ── Mobile (≤700px) ── */
+      @media (max-width: 700px) {
+        /* Hide desktop panels by default, leave room for bottom bar */
+        .fp,
+        .dp {
+          display: none !important;
+        }
+        body {
+          padding-bottom: calc(58px + env(safe-area-inset-bottom));
+        }
+        /* List panel takes full screen */
+        .lp {
+          display: flex !important;
+          position: fixed;
+          inset: 0;
+          width: 100% !important;
+          max-width: 100% !important;
+          min-width: 0 !important;
+          bottom: calc(58px + env(safe-area-inset-bottom));
+          z-index: 100;
+        }
+        /* Detail panel slides up over everything */
+        body.mob-detail .dp {
+          display: flex !important;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 200;
+        }
+        /* Hide header on mobile (replaced by bottom bar) */
+        header {
+          display: none;
+        }
+        /* Show filter drawer backdrop */
+        .fp-backdrop {
+          display: block;
+        }
+        /* Show mobile-only elements */
+        .mob-only {
+          display: flex !important;
+        }
+        /* Show filter action buttons */
+        .mob-filter-btns {
+          display: flex;
+        }
+        /* Show mobile bottom bar */
+        .mob-bar {
+          display: flex;
+        }
+        /* Desktop collapse elements hidden */
+        .app[data-lp-coll="1"] .col-float {
+          display: none !important;
+        }
+        #colBtn {
+          display: none !important;
+        }
+        .rh {
+          display: none !important;
+        }
+        /* Hide filter header on desktop (mob-only hidden) */
+      }
+      /* ── AI Features ── */
+      .bai {
+        padding: 5px 11px;
+        border-radius: var(--r1);
+        border: 1.5px solid var(--gs);
+        background: var(--gs);
+        font-size: 12.5px;
+        cursor: pointer;
+        transition: all 0.15s;
+        font-family: "DM Sans", sans-serif;
+        font-weight: 600;
+        color: #fff;
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        white-space: nowrap;
+      }
+      .bai:hover {
+        background: var(--navy2);
+        border-color: var(--navy2);
+      }
+      .bai:disabled {
+        opacity: 0.55;
+        cursor: not-allowed;
+      }
+      .bai.loading {
+        background: var(--navy2);
+        border-color: var(--navy2);
+        animation: aiPulse 1.4s ease-in-out infinite;
+      }
+      @keyframes aiPulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.6;
+        }
+      }
+      /* AI Drawer */
+      .ai-ov {
+        position: fixed;
+        inset: 0;
+        background: rgba(15, 20, 40, 0.45);
+        backdrop-filter: blur(3px);
+        z-index: 1500;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s;
+      }
+      .ai-ov.open {
+        opacity: 1;
+        pointer-events: all;
+      }
+      .ai-drawer {
+        position: fixed;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        width: min(480px, 100vw);
+        background: #fff;
+        box-shadow: -4px 0 24px rgba(0, 0, 0, 0.14);
+        display: flex;
+        flex-direction: column;
+        transform: translateX(100%);
+        transition: transform 0.25s ease;
+        z-index: 1501;
+      }
+      .ai-ov.open .ai-drawer {
+        transform: translateX(0);
+      }
+      .ai-dh {
+        padding: 14px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-shrink: 0;
+        background: linear-gradient(135deg, var(--navy), var(--navy2));
+      }
+      .ai-dh-title {
+        font-family: "Lora", serif;
+        font-size: 15px;
+        color: #fff;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .ai-dc {
+        flex: 1;
+        overflow-y: auto;
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+      }
+      /* Think box */
+      .think-wrap {
+        border: 1px solid var(--border);
+        border-radius: var(--r2);
+        overflow: hidden;
+        background: var(--sidebar);
+      }
+      .think-head {
+        padding: 8px 12px;
+        background: var(--bg);
+        font-size: 11px;
+        font-weight: 600;
+        color: var(--navy);
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        cursor: pointer;
+        user-select: none;
+        border-bottom: 1px solid var(--border);
+      }
+      .think-body {
+        max-height: 160px;
+        overflow-y: auto;
+        padding: 10px 12px;
+        font-size: 11.5px;
+        line-height: 1.65;
+        color: var(--text2);
+        white-space: pre-wrap;
+        font-family: monospace;
+      }
+      /* Field stream */
+      .ai-fields {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .af {
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        overflow: hidden;
+        transition: border-color 0.2s;
+      }
+      .af.active {
+        border-color: var(--gs);
+      }
+      .af.done {
+        border-color: var(--green);
+      }
+      .af-lbl {
+        padding: 5px 11px;
+        background: var(--sidebar);
+        font-size: 10.5px;
+        font-weight: 600;
+        color: var(--text2);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        text-transform: uppercase;
+        letter-spacing: 0.4px;
+      }
+      .af-lbl .af-ic {
+        font-size: 12px;
+      }
+      .af-val {
+        padding: 9px 11px;
+        font-size: 12.5px;
+        line-height: 1.7;
+        min-height: 36px;
+        color: var(--text);
+      }
+      .af-val.empty {
+        color: var(--text3);
+        font-style: italic;
+      }
+      /* Progress bar */
+      .ai-prog-bar {
+        height: 3px;
+        background: var(--gs-bg);
+        border-radius: 2px;
+        overflow: hidden;
+        margin-top: 2px;
+      }
+      .ai-prog-fill {
+        height: 100%;
+        background: linear-gradient(90deg, var(--gs), var(--navy));
+        border-radius: 2px;
+        transition: width 0.3s;
+        width: 0%;
+      }
+      /* Status row */
+      .ai-status {
+        font-size: 12px;
+        color: var(--text3);
+        text-align: center;
+        padding: 4px 0;
+      }
+      .ai-actions {
+        padding: 12px 16px;
+        border-top: 1px solid var(--border);
+        display: flex;
+        gap: 8px;
+        justify-content: flex-end;
+        flex-shrink: 0;
+      }
+      /* Settings */
+      .set-row {
+        display: flex;
+        align-items: center;
+        gap: 9px;
+        margin-bottom: 14px;
+      }
+      .set-row label {
+        font-size: 12px;
+        color: var(--text2);
+        min-width: 80px;
+        font-weight: 500;
+      }
+      .set-inp {
+        flex: 1;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        font-size: 13px;
+        font-family: "DM Sans", sans-serif;
+        outline: none;
+      }
+      .set-inp:focus {
+        border-color: var(--gs);
+      }
+      .set-sel {
+        flex: 1;
+        padding: 7px 10px;
+        border: 1px solid var(--border);
+        border-radius: var(--r1);
+        font-size: 13px;
+        font-family: "DM Sans", sans-serif;
+        outline: none;
+        background: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      // Run synchronously before first paint so CSS sees the right class immediately
+      (function () {
+        // No initial body class needed — list is always visible on mobile via CSS
+      })();
+    </script>
+    <header>
+      <div class="h-logo"><em>📐</em><span>数学题库</span> MathBank</div>
+      <div class="h-acts">
+        <button class="btn-h" onclick="startPrac()">🎲 随机练习</button>
+        <button class="btn-h" onclick="exportData()">⬆ 导出</button>
+        <label class="btn-h" style="cursor: pointer"
+          >⬇ 导入<input
+            type="file"
+            accept=".json"
+            style="display: none"
+            onchange="importData(event)"
+        /></label>
+        <button
+          class="btn-h"
+          onclick="openSettings()"
+          style="border-color: rgba(100, 160, 255, 0.5)"
+        >
+          ⚙ API Key
+        </button>
+      </div>
+    </header>
+    <div class="app" id="APP">
+      <!-- Filter Panel -->
+      <div class="fp" id="FP">
+        <!-- Filter drawer header with close button (mobile only) -->
+        <div
+          id="MobFilterHead"
+          class="mob-only"
+          style="
+            padding: 11px 14px;
+            border-bottom: 1px solid var(--border);
+            background: var(--navy);
+            color: #fff;
+            gap: 9px;
+            flex-shrink: 0;
+            align-items: center;
+            justify-content: space-between;
+          "
+        >
+          <span
+            style="
+              font-family: &quot;Lora&quot;, serif;
+              font-size: 15px;
+              font-weight: 600;
+            "
+            >🔍 筛选</span
+          >
+          <button
+            onclick="closeFPDrawer()"
+            style="
+              background: none;
+              border: none;
+              color: rgba(255, 255, 255, 0.7);
+              font-size: 18px;
+              cursor: pointer;
+              padding: 2px 6px;
+              line-height: 1;
+            "
+          >
+            ×
+          </button>
         </div>
-      </div>
-      <div class="fl-s"><div class="fl-l">学科</div>
-        <div class="chips" id="sF">
-          <div class="chip gs on" data-v="all" onclick="setSubj('all')">全部</div>
-          <div class="chip gs" data-v="高数" onclick="setSubj('高数')">高数</div>
-          <div class="chip la" data-v="线代" onclick="setSubj('线代')">线代</div>
-        </div>
-      </div>
-      <div class="fl-s"><div class="fl-l">题目类型</div>
-        <div class="chips" id="tF">
-          <div class="chip" data-v="选择" onclick="togType('选择')">选择</div>
-          <div class="chip" data-v="填空" onclick="togType('填空')">填空</div>
-          <div class="chip" data-v="解答" onclick="togType('解答')">解答</div>
-          <div class="chip" data-v="证明" onclick="togType('证明')">证明</div>
-        </div>
-      </div>
-      <div class="fl-s"><div class="fl-l">难度</div>
-        <div class="chips" id="dF">
-          <div class="chip on" data-v="all" onclick="setDiff('all')">全部</div>
-          <div class="chip" data-v="简单" onclick="setDiff('简单')">简单</div>
-          <div class="chip" data-v="适中" onclick="setDiff('适中')">适中</div>
-          <div class="chip" data-v="复杂" onclick="setDiff('复杂')">复杂</div>
-        </div>
-      </div>
-      <div class="fl-s"><div class="fl-l">整理状态</div>
-        <div class="chips" id="stF">
-          <div class="chip on" data-v="all" onclick="setStat('all')">全部</div>
-          <div class="chip" data-v="待整理" onclick="setStat('待整理')">待整理</div>
-          <div class="chip" data-v="整理中" onclick="setStat('整理中')">整理中</div>
-          <div class="chip" data-v="已整理" onclick="setStat('已整理')">已整理</div>
-        </div>
-      </div>
-      <div class="fl-s"><div class="fl-l">知识点</div><div class="ktags" id="kF"></div></div>
-      <!-- Mobile-only action buttons, appear after filter options -->
-      <div class="mob-filter-btns">
-        <button class="bsec" onclick="resetFilters()" style="min-width:90px">重置</button>
-        <button class="bpri" onclick="closeFPDrawer()" style="min-width:90px">完成</button>
-      </div>
-    </div>
-    <div class="rh" id="FPR"></div>
-  </div>
-  <!-- List Panel -->
-  <div class="lp" id="LP">
-    <div class="lt">
-      <!-- Hamburger: opens filter drawer on mobile -->
-      <button class="bic mob-only" onclick="openFPDrawer()" title="筛选" style="margin-right:4px;font-size:15px">☰</button>
-      <span class="lc" id="LC">0 道题目</span>
-      <div class="tacts">
-        <button class="bic" id="colBtn" onclick="togList()" title="收起">◀</button>
-        <button class="bic badd" onclick="openM()" title="添加" id="DeskAddBtn">＋</button>
-      </div>
-    </div>
-    <div id="PL" class="pl"></div>
-    <div class="rh" id="LPR"></div>
-  </div>
-  <!-- Detail Panel -->
-  <div class="dp" id="DP">
-    <div class="dt">
-      <div class="dtl" style="gap:5px">
-        <!-- Desktop: restore-list button (shown only when list panel is collapsed) -->
-        <button class="col-float" id="colFloat" onclick="togList()" title="展开列表">▶</button>
-        <!-- Mobile: back to list -->
-        <button class="bic mob-only" onclick="mobGoList()" title="返回列表" style="color:var(--gs);border-color:var(--gs)">←</button>
-        <span id="DStat"></span>
-      </div>
-      <div class="dtc" id="DMeta"></div>
-      <div class="dtr">
-        <button class="bundo" id="UndoBtn" onclick="undoAI()" title="撤回AI分析">↩ 撤回</button>
-        <button class="bai" id="AIBtn" style="display:none" onclick="aiAnalyze()">✦ AI 分析</button>
-        <button class="bedit" id="EditBtn" style="display:none" onclick="togEdit()">编辑</button>
-        <button class="bdel" id="DelBtn" style="display:none" onclick="delP()">删除</button>
-      </div>
-    </div>
-    <div class="dc" id="DC"><div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div></div>
-  </div>
-</div>
-
-<!-- Add Modal -->
-<div class="ov" id="AM">
-  <div class="modal">
-    <div class="mh"><div class="mt">✚ 添加新题目</div><button class="mx" onclick="closeM()">×</button></div>
-    <div class="mb">
-      <div class="fg">
-        <label class="flbl">题目内容</label>
-        <div class="tabrow">
-          <button class="tabbtn on" id="tabI" onclick="swTab('img')">📷 图片</button>
-          <button class="tabbtn" id="tabT" onclick="swTab('txt')">✏️ 文本</button>
-        </div>
-        <div id="imgA">
-          <div class="upl" id="uplZ" onclick="document.getElementById('FI').click()" ondragover="dov(event)" ondragleave="dlv()" ondrop="drp(event)">
-            <div class="ico">🖼</div><p>点击上传或拖拽图片</p><p style="font-size:11px;margin-top:3px">支持 JPG、PNG</p>
+        <div class="fp-inner">
+          <div class="fl-s">
+            <div class="fl-l">搜索</div>
+            <input
+              class="sbox"
+              type="text"
+              id="SI"
+              placeholder="搜索题目、知识点…"
+              oninput="applyF()"
+            />
           </div>
-          <input type="file" id="FI" accept="image/*" style="display:none" onchange="hImg(event)">
-          <div id="IPW" style="display:none;margin-top:8px">
-            <div class="ipw"><img id="IP" class="ipr" src="" alt=""><button class="irm" onclick="rmImg()">×</button></div>
+          <div id="FCtWrap" style="margin-bottom: 14px; display: none">
+            <div
+              style="
+                padding: 7px 10px;
+                background: var(--gs-bg);
+                border: 1px solid rgba(37, 99, 235, 0.2);
+                border-radius: var(--r1);
+                font-size: 12px;
+                color: var(--gs);
+                font-weight: 500;
+                display: flex;
+                align-items: center;
+                gap: 6px;
+              "
+            >
+              <span>🔍</span><span id="FCt">筛选中：0 条结果</span>
+            </div>
+          </div>
+          <div class="fl-s">
+            <div class="fl-l">学科</div>
+            <div class="chips" id="sF">
+              <div class="chip gs on" data-v="all" onclick="setSubj('all')">
+                全部
+              </div>
+              <div class="chip gs" data-v="高数" onclick="setSubj('高数')">
+                高数
+              </div>
+              <div class="chip la" data-v="线代" onclick="setSubj('线代')">
+                线代
+              </div>
+            </div>
+          </div>
+          <div class="fl-s">
+            <div class="fl-l">题目类型</div>
+            <div class="chips" id="tF">
+              <div class="chip" data-v="选择" onclick="togType('选择')">
+                选择
+              </div>
+              <div class="chip" data-v="填空" onclick="togType('填空')">
+                填空
+              </div>
+              <div class="chip" data-v="解答" onclick="togType('解答')">
+                解答
+              </div>
+              <div class="chip" data-v="证明" onclick="togType('证明')">
+                证明
+              </div>
+            </div>
+          </div>
+          <div class="fl-s">
+            <div class="fl-l">难度</div>
+            <div class="chips" id="dF">
+              <div class="chip on" data-v="all" onclick="setDiff('all')">
+                全部
+              </div>
+              <div class="chip" data-v="简单" onclick="setDiff('简单')">
+                简单
+              </div>
+              <div class="chip" data-v="适中" onclick="setDiff('适中')">
+                适中
+              </div>
+              <div class="chip" data-v="复杂" onclick="setDiff('复杂')">
+                复杂
+              </div>
+            </div>
+          </div>
+          <div class="fl-s">
+            <div class="fl-l">整理状态</div>
+            <div class="chips" id="stF">
+              <div class="chip on" data-v="all" onclick="setStat('all')">
+                全部
+              </div>
+              <div class="chip" data-v="待整理" onclick="setStat('待整理')">
+                待整理
+              </div>
+              <div class="chip" data-v="整理中" onclick="setStat('整理中')">
+                整理中
+              </div>
+              <div class="chip" data-v="已整理" onclick="setStat('已整理')">
+                已整理
+              </div>
+            </div>
+          </div>
+          <div class="fl-s">
+            <div class="fl-l">知识点</div>
+            <div class="ktags" id="kF"></div>
+          </div>
+          <!-- Mobile-only action buttons, appear after filter options -->
+          <div class="mob-filter-btns">
+            <button
+              class="bsec"
+              onclick="resetFilters()"
+              style="min-width: 90px"
+            >
+              重置
+            </button>
+            <button
+              class="bpri"
+              onclick="closeFPDrawer()"
+              style="min-width: 90px"
+            >
+              完成
+            </button>
           </div>
         </div>
-        <div id="txtA" style="display:none">
-          <textarea class="fta" id="TI" placeholder="输入题目，支持 $LaTeX$ 公式"></textarea>
-          <p class="hint">行内公式 $…$，块级公式 $$…$$</p>
+        <div class="rh" id="FPR"></div>
+      </div>
+      <!-- List Panel -->
+      <div class="lp" id="LP">
+        <div class="lt">
+          <!-- Hamburger: opens filter drawer on mobile -->
+          <button
+            class="bic mob-only"
+            onclick="openFPDrawer()"
+            title="筛选"
+            style="margin-right: 4px; font-size: 15px"
+          >
+            ☰
+          </button>
+          <span class="lc" id="LC">0 道题目</span>
+          <div class="tacts">
+            <button class="bic" id="colBtn" onclick="togList()" title="收起">
+              ◀
+            </button>
+            <button
+              class="bic badd"
+              onclick="openM()"
+              title="添加"
+              id="DeskAddBtn"
+            >
+              ＋
+            </button>
+          </div>
+        </div>
+        <div id="PL" class="pl"></div>
+        <div class="rh" id="LPR"></div>
+      </div>
+      <!-- Detail Panel -->
+      <div class="dp" id="DP">
+        <div class="dt">
+          <div class="dtl" style="gap: 5px">
+            <!-- Desktop: restore-list button (shown only when list panel is collapsed) -->
+            <button
+              class="col-float"
+              id="colFloat"
+              onclick="togList()"
+              title="展开列表"
+            >
+              ▶
+            </button>
+            <!-- Mobile: back to list -->
+            <button
+              class="bic mob-only"
+              onclick="mobGoList()"
+              title="返回列表"
+              style="color: var(--gs); border-color: var(--gs)"
+            >
+              ←
+            </button>
+            <span id="DStat"></span>
+          </div>
+          <div class="dtc" id="DMeta"></div>
+          <div class="dtr">
+            <button
+              class="bundo"
+              id="UndoBtn"
+              onclick="undoAI()"
+              title="撤回AI分析"
+            >
+              ↩ 撤回
+            </button>
+            <button
+              class="bai"
+              id="AIBtn"
+              style="display: none"
+              onclick="aiAnalyze()"
+            >
+              ✦ AI 分析
+            </button>
+            <button
+              class="bedit"
+              id="EditBtn"
+              style="display: none"
+              onclick="togEdit()"
+            >
+              编辑
+            </button>
+            <button
+              class="bdel"
+              id="DelBtn"
+              style="display: none"
+              onclick="delP()"
+            >
+              删除
+            </button>
+          </div>
+        </div>
+        <div class="dc" id="DC">
+          <div class="empty">
+            <div class="ico">🧮</div>
+            <p>选择一道题目来分析吧～</p>
+          </div>
         </div>
       </div>
-      <div class="fg"><label class="flbl">学科</label><div class="rg" id="mSubj">
-        <button class="rb on" data-v="高数" onclick="selRb('mSubj',this,'高数')">高数</button>
-        <button class="rb" data-v="线代" onclick="selRb('mSubj',this,'线代')">线代</button>
-      </div></div>
-      <div class="fg"><label class="flbl">题目类型</label><div class="rg" id="mType">
-        <button class="rb on" data-v="选择" onclick="selRb('mType',this,'选择')">选择</button>
-        <button class="rb" data-v="填空" onclick="selRb('mType',this,'填空')">填空</button>
-        <button class="rb" data-v="解答" onclick="selRb('mType',this,'解答')">解答</button>
-        <button class="rb" data-v="证明" onclick="selRb('mType',this,'证明')">证明</button>
-      </div></div>
-      <div class="fg"><label class="flbl">难度</label><div class="rg" id="mDiff">
-        <button class="rb" data-v="简单" onclick="selRb('mDiff',this,'简单')">简单</button>
-        <button class="rb on" data-v="适中" onclick="selRb('mDiff',this,'适中')">适中</button>
-        <button class="rb" data-v="复杂" onclick="selRb('mDiff',this,'复杂')">复杂</button>
-      </div></div>
-      <div class="fg"><label class="flbl">知识点</label>
-        <div class="taginput" onclick="document.getElementById('MTI').focus()">
-          <div id="MTL"></div><input class="tfield" id="MTI" placeholder="输入标签，回车添加…" onkeydown="mTK(event)">
-        </div><p class="hint">回车或逗号添加标签</p>
+    </div>
+
+    <!-- Add Modal -->
+    <div class="ov" id="AM">
+      <div class="modal">
+        <div class="mh">
+          <div class="mt">✚ 添加新题目</div>
+          <button class="mx" onclick="closeM()">×</button>
+        </div>
+        <div class="mb">
+          <div class="fg">
+            <label class="flbl">题目内容</label>
+            <div class="tabrow">
+              <button class="tabbtn on" id="tabI" onclick="swTab('img')">
+                📷 图片
+              </button>
+              <button class="tabbtn" id="tabT" onclick="swTab('txt')">
+                ✏️ 文本
+              </button>
+            </div>
+            <div id="imgA">
+              <div
+                class="upl"
+                id="uplZ"
+                onclick="document.getElementById('FI').click()"
+                ondragover="dov(event)"
+                ondragleave="dlv()"
+                ondrop="drp(event)"
+              >
+                <div class="ico">🖼</div>
+                <p>点击上传或拖拽图片</p>
+                <p style="font-size: 11px; margin-top: 3px">支持 JPG、PNG</p>
+              </div>
+              <input
+                type="file"
+                id="FI"
+                accept="image/*"
+                style="display: none"
+                onchange="hImg(event)"
+              />
+              <div id="IPW" style="display: none; margin-top: 8px">
+                <div class="ipw">
+                  <img id="IP" class="ipr" src="" alt="" /><button
+                    class="irm"
+                    onclick="rmImg()"
+                  >
+                    ×
+                  </button>
+                </div>
+              </div>
+            </div>
+            <div id="txtA" style="display: none">
+              <textarea
+                class="fta"
+                id="TI"
+                placeholder="输入题目，支持 $LaTeX$ 公式"
+              ></textarea>
+              <p class="hint">行内公式 $…$，块级公式 $$…$$</p>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="flbl">学科</label>
+            <div class="rg" id="mSubj">
+              <button
+                class="rb on"
+                data-v="高数"
+                onclick="selRb('mSubj', this, '高数')"
+              >
+                高数
+              </button>
+              <button
+                class="rb"
+                data-v="线代"
+                onclick="selRb('mSubj', this, '线代')"
+              >
+                线代
+              </button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="flbl">题目类型</label>
+            <div class="rg" id="mType">
+              <button
+                class="rb on"
+                data-v="选择"
+                onclick="selRb('mType', this, '选择')"
+              >
+                选择
+              </button>
+              <button
+                class="rb"
+                data-v="填空"
+                onclick="selRb('mType', this, '填空')"
+              >
+                填空
+              </button>
+              <button
+                class="rb"
+                data-v="解答"
+                onclick="selRb('mType', this, '解答')"
+              >
+                解答
+              </button>
+              <button
+                class="rb"
+                data-v="证明"
+                onclick="selRb('mType', this, '证明')"
+              >
+                证明
+              </button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="flbl">难度</label>
+            <div class="rg" id="mDiff">
+              <button
+                class="rb"
+                data-v="简单"
+                onclick="selRb('mDiff', this, '简单')"
+              >
+                简单
+              </button>
+              <button
+                class="rb on"
+                data-v="适中"
+                onclick="selRb('mDiff', this, '适中')"
+              >
+                适中
+              </button>
+              <button
+                class="rb"
+                data-v="复杂"
+                onclick="selRb('mDiff', this, '复杂')"
+              >
+                复杂
+              </button>
+            </div>
+          </div>
+          <div class="fg">
+            <label class="flbl">知识点</label>
+            <div
+              class="taginput"
+              onclick="document.getElementById('MTI').focus()"
+            >
+              <div id="MTL"></div>
+              <input
+                class="tfield"
+                id="MTI"
+                placeholder="输入标签，回车添加…"
+                onkeydown="mTK(event)"
+              />
+            </div>
+            <p class="hint">回车或逗号添加标签</p>
+          </div>
+        </div>
+        <div class="mf">
+          <button class="bgh" onclick="saveDraft()">存草稿</button>
+          <button class="bsec" onclick="cancelAdd()">取消</button>
+          <button class="bpri" onclick="saveP()">确认添加</button>
+        </div>
       </div>
     </div>
-    <div class="mf">
-      <button class="bgh" onclick="saveDraft()">存草稿</button>
-      <button class="bsec" onclick="cancelAdd()">取消</button>
-      <button class="bpri" onclick="saveP()">确认添加</button>
-    </div>
-  </div>
-</div>
 
-<!-- Confirm -->
-<div class="cfmov" id="CFM">
-  <div class="cfmbox">
-    <div class="cfmt" id="CFMT"></div><div class="cfmm" id="CFMM"></div>
-    <div class="cfmacts"><button class="bsec" onclick="closeCfm()">取消</button><button class="bpri" onclick="doCfm()">确定</button></div>
-  </div>
-</div>
-
-<!-- Practice -->
-<div class="prac" id="PR">
-  <div class="phead">
-    <button class="bsec" onclick="closePracView()">← 返回</button>
-    <div class="pprog" id="PPG"></div>
-    <button class="bpri" onclick="nxtPrac()">下一题 →</button>
-  </div>
-  <div class="pcard" id="PC"></div>
-</div>
-
-<!-- Settings Modal -->
-<div class="ov" id="SM">
-  <div class="modal" style="max-width:400px">
-    <div class="mh"><div class="mt">⚙ AI 设置</div><button class="mx" onclick="closeSettings()">×</button></div>
-    <div class="mb">
-      <p style="font-size:12.5px;color:var(--text2);margin-bottom:16px;line-height:1.6">配置智谱 AI 的 API Key 以启用 AI 自动分析功能。Key 仅存储在本地浏览器中，不会上传。</p>
-      <div class="set-row"><label>API Key</label><input class="set-inp" type="password" id="SETK" placeholder="请输入您的 API Key…"></div>
-      <div class="set-row"><label>模型</label>
-        <select class="set-sel" id="SETM">
-          <option value="glm-4.1v-thinking-flash">glm-4.1v-thinking-flash（免费）</option>
-          <option value="glm-4.1v-thinking-flashx">glm-4.1v-thinking-flashx（高并发）</option>
-        </select>
-      </div>
-      <p class="hint">前往 <a href="https://open.bigmodel.cn" target="_blank" style="color:var(--gs)">open.bigmodel.cn</a> 获取 API Key</p>
-    </div>
-    <div class="mf"><button class="bsec" onclick="closeSettings()">取消</button><button class="bpri" onclick="saveSettings()">保存</button></div>
-  </div>
-</div>
-
-<!-- AI Drawer -->
-<div class="ai-ov" id="AIOV">
-  <div class="ai-drawer" id="AID">
-    <div class="ai-dh">
-      <div class="ai-dh-title"><span id="AISpinner">✦</span> AI 分析中…</div>
-      <button class="mx" style="background:rgba(255,255,255,.15);color:#fff" onclick="closeAI()">×</button>
-    </div>
-    <div class="ai-dc" id="AIDC">
-      <div class="think-wrap" id="ThinkWrap">
-        <div class="think-head" onclick="togThink()"><span>💭 思考过程</span><span id="ThinkArr">▲</span></div>
-        <div class="think-body" id="ThinkBody"></div>
-      </div>
-      <div class="ai-prog-bar"><div class="ai-prog-fill" id="ProgFill"></div></div>
-      <div class="ai-status" id="AIStatus">正在启动分析…</div>
-      <div class="ai-fields" id="AIFields">
-        <div class="af" id="af_known"><div class="af-lbl"><span class="af-ic">📋</span>已知条件</div><div class="af-val empty" id="afv_known">等待中…</div></div>
-        <div class="af" id="af_hidden"><div class="af-lbl"><span class="af-ic">🔎</span>隐含条件</div><div class="af-val empty" id="afv_hidden">等待中…</div></div>
-        <div class="af" id="af_goal"><div class="af-lbl"><span class="af-ic">🎯</span>目标转化</div><div class="af-val empty" id="afv_goal">等待中…</div></div>
-        <div class="af" id="af_breakthrough"><div class="af-lbl"><span class="af-ic">💡</span>关键突破</div><div class="af-val empty" id="afv_breakthrough">等待中…</div></div>
-        <div class="af" id="af_warnings"><div class="af-lbl"><span class="af-ic">⚠️</span>易错警示</div><div class="af-val empty" id="afv_warnings">等待中…</div></div>
-        <div class="af" id="af_steps"><div class="af-lbl"><span class="af-ic">📝</span>解题步骤</div><div class="af-val empty" id="afv_steps">等待中…</div></div>
-        <div class="af" id="af_summary"><div class="af-lbl"><span class="af-ic">📌</span>方法总结</div><div class="af-val empty" id="afv_summary">等待中…</div></div>
-      </div>
-      <div class="think-wrap" style="border-color:#e5e2dc;background:#fafafa;margin-top:4px">
-        <div class="think-head" style="background:#f2f0ec;color:var(--text2)" onclick="togRaw()"><span>🗒 原始响应（调试用）</span><span id="RawArr">▼</span></div>
-        <div class="think-body" id="RawBody" style="display:none;color:var(--text2);font-size:11px"></div>
+    <!-- Confirm -->
+    <div class="cfmov" id="CFM">
+      <div class="cfmbox">
+        <div class="cfmt" id="CFMT"></div>
+        <div class="cfmm" id="CFMM"></div>
+        <div class="cfmacts">
+          <button class="bsec" onclick="closeCfm()">取消</button
+          ><button class="bpri" onclick="doCfm()">确定</button>
+        </div>
       </div>
     </div>
-    <div class="ai-actions">
-      <button class="bsec" onclick="closeAI()">关闭</button>
-      <button class="bpri" id="AIApplyBtn" style="display:none" onclick="applyAI()">✅ 应用到题目</button>
+
+    <!-- Practice -->
+    <div class="prac" id="PR">
+      <div class="phead">
+        <button class="bsec" onclick="closePracView()">← 返回</button>
+        <div class="pprog" id="PPG"></div>
+        <button class="bpri" onclick="nxtPrac()">下一题 →</button>
+      </div>
+      <div class="pcard" id="PC"></div>
     </div>
-  </div>
-</div>
 
-<div class="toast" id="TST"><span id="TSTMsg"></span></div>
-<!-- Filter drawer backdrop (mobile) -->
-<div class="fp-backdrop" id="FPBackdrop" onclick="closeFPDrawer()"></div>
-<!-- Mobile bottom action bar -->
-<div class="mob-bar">
-  <button class="mob-bar-btn" onclick="startPrac()"><span class="mbi">🎲</span>练习</button>
-  <button class="mob-bar-btn" onclick="openM()"><span class="mbi">＋</span>添加</button>
-  <button class="mob-bar-btn" onclick="exportData()"><span class="mbi">⬆</span>导出</button>
-  <label class="mob-bar-btn" style="cursor:pointer"><span class="mbi">⬇</span>导入<input type="file" accept=".json" style="display:none" onchange="importData(event)"></label>
-  <button class="mob-bar-btn" onclick="openSettings()"><span class="mbi">⚙</span>设置</button>
-</div>
+    <!-- Settings Modal -->
+    <div class="ov" id="SM">
+      <div class="modal" style="max-width: 400px">
+        <div class="mh">
+          <div class="mt">⚙ AI 设置</div>
+          <button class="mx" onclick="closeSettings()">×</button>
+        </div>
+        <div class="mb">
+          <p
+            style="
+              font-size: 12.5px;
+              color: var(--text2);
+              margin-bottom: 16px;
+              line-height: 1.6;
+            "
+          >
+            配置智谱 AI 的 API Key 以启用 AI 自动分析功能。Key
+            仅存储在本地浏览器中，不会上传。
+          </p>
+          <div class="set-row">
+            <label>API Key</label
+            ><input
+              class="set-inp"
+              type="password"
+              id="SETK"
+              placeholder="请输入您的 API Key…"
+            />
+          </div>
+          <div class="set-row">
+            <label>模型</label>
+            <select class="set-sel" id="SETM">
+              <option value="glm-4.1v-thinking-flash">
+                glm-4.1v-thinking-flash（免费）
+              </option>
+              <option value="glm-4.1v-thinking-flashx">
+                glm-4.1v-thinking-flashx（高并发）
+              </option>
+            </select>
+          </div>
+          <p class="hint">
+            前往
+            <a
+              href="https://open.bigmodel.cn"
+              target="_blank"
+              style="color: var(--gs)"
+              >open.bigmodel.cn</a
+            >
+            获取 API Key
+          </p>
+        </div>
+        <div class="mf">
+          <button class="bsec" onclick="closeSettings()">取消</button
+          ><button class="bpri" onclick="saveSettings()">保存</button>
+        </div>
+      </div>
+    </div>
 
-<script>
-let probs=[], selId=null, editing=false, listColl=false, cfmCb=null;
-let pracQ=[], pracI=0, pracAns=false;
-let mD={subj:'高数',type:'选择',diff:'适中',tags:[],img:null,mode:'img'};
-let fl={q:'',subj:'all',types:[],diff:'all',stat:'all',know:[]};
+    <!-- AI Drawer -->
+    <div class="ai-ov" id="AIOV">
+      <div class="ai-drawer" id="AID">
+        <div class="ai-dh">
+          <div class="ai-dh-title">
+            <span id="AISpinner">✦</span> AI 分析中…
+          </div>
+          <button
+            class="mx"
+            style="background: rgba(255, 255, 255, 0.15); color: #fff"
+            onclick="closeAI()"
+          >
+            ×
+          </button>
+        </div>
+        <div class="ai-dc" id="AIDC">
+          <div class="think-wrap" id="ThinkWrap">
+            <div class="think-head" onclick="togThink()">
+              <span>💭 思考过程</span><span id="ThinkArr">▲</span>
+            </div>
+            <div class="think-body" id="ThinkBody"></div>
+          </div>
+          <div class="ai-prog-bar">
+            <div class="ai-prog-fill" id="ProgFill"></div>
+          </div>
+          <div class="ai-status" id="AIStatus">正在启动分析…</div>
+          <div class="ai-fields" id="AIFields">
+            <div class="af" id="af_known">
+              <div class="af-lbl"><span class="af-ic">📋</span>已知条件</div>
+              <div class="af-val empty" id="afv_known">等待中…</div>
+            </div>
+            <div class="af" id="af_hidden">
+              <div class="af-lbl"><span class="af-ic">🔎</span>隐含条件</div>
+              <div class="af-val empty" id="afv_hidden">等待中…</div>
+            </div>
+            <div class="af" id="af_goal">
+              <div class="af-lbl"><span class="af-ic">🎯</span>目标转化</div>
+              <div class="af-val empty" id="afv_goal">等待中…</div>
+            </div>
+            <div class="af" id="af_breakthrough">
+              <div class="af-lbl"><span class="af-ic">💡</span>关键突破</div>
+              <div class="af-val empty" id="afv_breakthrough">等待中…</div>
+            </div>
+            <div class="af" id="af_warnings">
+              <div class="af-lbl"><span class="af-ic">⚠️</span>易错警示</div>
+              <div class="af-val empty" id="afv_warnings">等待中…</div>
+            </div>
+            <div class="af" id="af_steps">
+              <div class="af-lbl"><span class="af-ic">📝</span>解题步骤</div>
+              <div class="af-val empty" id="afv_steps">等待中…</div>
+            </div>
+            <div class="af" id="af_summary">
+              <div class="af-lbl"><span class="af-ic">📌</span>方法总结</div>
+              <div class="af-val empty" id="afv_summary">等待中…</div>
+            </div>
+          </div>
+          <div
+            class="think-wrap"
+            style="border-color: #e5e2dc; background: #fafafa; margin-top: 4px"
+          >
+            <div
+              class="think-head"
+              style="background: #f2f0ec; color: var(--text2)"
+              onclick="togRaw()"
+            >
+              <span>🗒 原始响应（调试用）</span><span id="RawArr">▼</span>
+            </div>
+            <div
+              class="think-body"
+              id="RawBody"
+              style="display: none; color: var(--text2); font-size: 11px"
+            ></div>
+          </div>
+        </div>
+        <div class="ai-actions">
+          <button class="bsec" onclick="closeAI()">关闭</button>
+          <button
+            class="bpri"
+            id="AIApplyBtn"
+            style="display: none"
+            onclick="applyAI()"
+          >
+            ✅ 应用到题目
+          </button>
+        </div>
+      </div>
+    </div>
 
-// Storage
-function save(){try{localStorage.setItem('mb3',JSON.stringify(probs));}catch(e){toast('⚠️ 存储不足');}}
-function load(){try{const d=localStorage.getItem('mb3');if(d)probs=JSON.parse(d);}catch(e){probs=[];}}
+    <div class="toast" id="TST"><span id="TSTMsg"></span></div>
+    <!-- Filter drawer backdrop (mobile) -->
+    <div class="fp-backdrop" id="FPBackdrop" onclick="closeFPDrawer()"></div>
+    <!-- Mobile bottom action bar -->
+    <div class="mob-bar">
+      <button class="mob-bar-btn" onclick="startPrac()">
+        <span class="mbi">🎲</span>练习
+      </button>
+      <button class="mob-bar-btn" onclick="openM()">
+        <span class="mbi">＋</span>添加
+      </button>
+      <button class="mob-bar-btn" onclick="exportData()">
+        <span class="mbi">⬆</span>导出
+      </button>
+      <label class="mob-bar-btn" style="cursor: pointer"
+        ><span class="mbi">⬇</span>导入<input
+          type="file"
+          accept=".json"
+          style="display: none"
+          onchange="importData(event)"
+      /></label>
+      <button class="mob-bar-btn" onclick="openSettings()">
+        <span class="mbi">⚙</span>设置
+      </button>
+    </div>
 
-// Status
-function calcStat(p){
-  const a=p.analysis;
-  if(!a)return'待整理';
-  const k=['known','hidden','goal','breakthrough','warnings'];
-  const n=k.filter(x=>a[x]&&a[x].trim()).length;
-  if(n===0)return'待整理';
-  if(n===k.length&&p.steps&&p.steps.trim())return'已整理';
-  return'整理中';
-}
+    <script>
+      let probs = [],
+        selId = null,
+        editing = false,
+        listColl = false,
+        cfmCb = null;
+      let pracQ = [],
+        pracI = 0,
+        pracAns = false;
+      let mD = {
+        subj: "高数",
+        type: "选择",
+        diff: "适中",
+        tags: [],
+        img: null,
+        mode: "img",
+      };
+      let fl = {
+        q: "",
+        subj: "all",
+        types: [],
+        diff: "all",
+        stat: "all",
+        know: [],
+      };
 
-// Tags
-function allTags(){const s=new Set();probs.forEach(p=>(p.knowledge||[]).forEach(t=>s.add(t)));return[...s];}
-function renderKF(){
-  const tags=allTags(),c=document.getElementById('kF');
-  if(!tags.length){c.innerHTML='<span style="font-size:11.5px;color:var(--text3)">暂无知识点</span>';return;}
-  c.innerHTML=tags.map(t=>`<div class="ktag${fl.know.includes(t)?' on':''}" onclick="togKnow('${escA(t)}')">${t}</div>`).join('');
-}
+      // Storage
+      function save() {
+        try {
+          localStorage.setItem("mb3", JSON.stringify(probs));
+        } catch (e) {
+          toast("⚠️ 存储不足");
+        }
+      }
+      function load() {
+        try {
+          const d = localStorage.getItem("mb3");
+          if (d) probs = JSON.parse(d);
+        } catch (e) {
+          probs = [];
+        }
+      }
 
-// Filters
-function setSubj(v){fl.subj=v;document.querySelectorAll('#sF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===v));applyF();}
-function togType(v){const i=fl.types.indexOf(v);i>=0?fl.types.splice(i,1):fl.types.push(v);document.querySelectorAll('#tF .chip').forEach(c=>c.classList.toggle('on',fl.types.includes(c.dataset.v)));applyF();}
-function setDiff(v){fl.diff=v;document.querySelectorAll('#dF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===v));applyF();}
-function setStat(v){fl.stat=v;document.querySelectorAll('#stF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v===v));applyF();}
-function togKnow(t){const i=fl.know.indexOf(t);i>=0?fl.know.splice(i,1):fl.know.push(t);renderKF();applyF();}
-function applyF(){fl.q=document.getElementById('SI').value.toLowerCase();renderList();}
-function filtered(){
-  return probs.filter(p=>{
-    if(fl.subj!=='all'&&p.subject!==fl.subj)return false;
-    if(fl.types.length&&!fl.types.includes(p.type))return false;
-    if(fl.diff!=='all'&&p.difficulty!==fl.diff)return false;
-    const st=calcStat(p);if(fl.stat!=='all'&&st!==fl.stat)return false;
-    if(fl.know.length&&!fl.know.every(k=>(p.knowledge||[]).includes(k)))return false;
-    if(fl.q){const h=[p.text||'',(p.knowledge||[]).join(' '),p.subject,p.type,p.difficulty,p.notes||'',
-      p.analysis?Object.values(p.analysis).join(' '):'',p.steps||''].join(' ').toLowerCase();if(!h.includes(fl.q))return false;}
-    return true;
-  });
-}
+      // Status
+      function calcStat(p) {
+        const a = p.analysis;
+        if (!a) return "待整理";
+        const k = ["known", "hidden", "goal", "breakthrough", "warnings"];
+        const n = k.filter((x) => a[x] && a[x].trim()).length;
+        if (n === 0) return "待整理";
+        if (n === k.length && p.steps && p.steps.trim()) return "已整理";
+        return "整理中";
+      }
 
-// Render List
-function renderList(){
-  const f=filtered();
-  document.getElementById('LC').textContent=`${f.length} 道题目`;
-  // Update live filter count in filter panel
-  const hasFilter=fl.subj!=='all'||fl.types.length||fl.diff!=='all'||fl.stat!=='all'||fl.know.length||fl.q;
-  const wrap=document.getElementById('FCtWrap');
-  if(wrap){wrap.style.display=hasFilter?'':'none';const ct=document.getElementById('FCt');if(ct)ct.textContent=`筛选中：${f.length} 条结果`;}
-  const c=document.getElementById('PL');
-  if(!f.length){c.innerHTML=`<div class="empty"><div class="ico">🔍</div><p>这里什么都没有～</p></div>`;return;}
-  c.innerHTML=f.map(p=>{
-    const st=calcStat(p),sc={'待整理':'pend','整理中':'prog','已整理':'done'}[st];
-    const dc={'简单':'easy','适中':'med','复杂':'hard'}[p.difficulty];
-    const sj=p.subject==='高数'?'gs':'la';
-    const dt=new Date(p.createdAt).toLocaleDateString('zh-CN');
-    const tgs=(p.knowledge||[]).slice(0,3).map(t=>`<span class="ctag">${t}</span>`).join('');
-    const img=p.imageData?`<img class="cimg" src="${p.imageData}" alt="">`:`<div class="cph">${p.subject==='高数'?'∫':'∑'}</div>`;
-    const pv=p.text?`<div class="cprev">${esc(p.text.slice(0,80))}${p.text.length>80?'…':''}</div>`:'';
-    return`<div class="card${p.id===selId?' sel':''}" onclick="selP('${p.id}')">
+      // Tags
+      function allTags() {
+        const s = new Set();
+        probs.forEach((p) => (p.knowledge || []).forEach((t) => s.add(t)));
+        return [...s];
+      }
+      function renderKF() {
+        const tags = allTags(),
+          c = document.getElementById("kF");
+        if (!tags.length) {
+          c.innerHTML =
+            '<span style="font-size:11.5px;color:var(--text3)">暂无知识点</span>';
+          return;
+        }
+        c.innerHTML = tags
+          .map(
+            (t) =>
+              `<div class="ktag${fl.know.includes(t) ? " on" : ""}" onclick="togKnow('${escA(t)}')">${t}</div>`,
+          )
+          .join("");
+      }
+
+      // Filters
+      function setSubj(v) {
+        fl.subj = v;
+        document
+          .querySelectorAll("#sF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === v));
+        applyF();
+      }
+      function togType(v) {
+        const i = fl.types.indexOf(v);
+        i >= 0 ? fl.types.splice(i, 1) : fl.types.push(v);
+        document
+          .querySelectorAll("#tF .chip")
+          .forEach((c) =>
+            c.classList.toggle("on", fl.types.includes(c.dataset.v)),
+          );
+        applyF();
+      }
+      function setDiff(v) {
+        fl.diff = v;
+        document
+          .querySelectorAll("#dF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === v));
+        applyF();
+      }
+      function setStat(v) {
+        fl.stat = v;
+        document
+          .querySelectorAll("#stF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === v));
+        applyF();
+      }
+      function togKnow(t) {
+        const i = fl.know.indexOf(t);
+        i >= 0 ? fl.know.splice(i, 1) : fl.know.push(t);
+        renderKF();
+        applyF();
+      }
+      function applyF() {
+        fl.q = document.getElementById("SI").value.toLowerCase();
+        renderList();
+      }
+      function filtered() {
+        return probs.filter((p) => {
+          if (fl.subj !== "all" && p.subject !== fl.subj) return false;
+          if (fl.types.length && !fl.types.includes(p.type)) return false;
+          if (fl.diff !== "all" && p.difficulty !== fl.diff) return false;
+          const st = calcStat(p);
+          if (fl.stat !== "all" && st !== fl.stat) return false;
+          if (
+            fl.know.length &&
+            !fl.know.every((k) => (p.knowledge || []).includes(k))
+          )
+            return false;
+          if (fl.q) {
+            const h = [
+              p.text || "",
+              (p.knowledge || []).join(" "),
+              p.subject,
+              p.type,
+              p.difficulty,
+              p.notes || "",
+              p.analysis ? Object.values(p.analysis).join(" ") : "",
+              p.steps || "",
+            ]
+              .join(" ")
+              .toLowerCase();
+            if (!h.includes(fl.q)) return false;
+          }
+          return true;
+        });
+      }
+
+      // Render List
+      function renderList() {
+        const f = filtered();
+        document.getElementById("LC").textContent = `${f.length} 道题目`;
+        // Update live filter count in filter panel
+        const hasFilter =
+          fl.subj !== "all" ||
+          fl.types.length ||
+          fl.diff !== "all" ||
+          fl.stat !== "all" ||
+          fl.know.length ||
+          fl.q;
+        const wrap = document.getElementById("FCtWrap");
+        if (wrap) {
+          wrap.style.display = hasFilter ? "" : "none";
+          const ct = document.getElementById("FCt");
+          if (ct) ct.textContent = `筛选中：${f.length} 条结果`;
+        }
+        const c = document.getElementById("PL");
+        if (!f.length) {
+          c.innerHTML = `<div class="empty"><div class="ico">🔍</div><p>这里什么都没有～</p></div>`;
+          return;
+        }
+        c.innerHTML = f
+          .map((p) => {
+            const st = calcStat(p),
+              sc = { 待整理: "pend", 整理中: "prog", 已整理: "done" }[st];
+            const dc = { 简单: "easy", 适中: "med", 复杂: "hard" }[
+              p.difficulty
+            ];
+            const sj = p.subject === "高数" ? "gs" : "la";
+            const dt = new Date(p.createdAt).toLocaleDateString("zh-CN");
+            const tgs = (p.knowledge || [])
+              .slice(0, 3)
+              .map((t) => `<span class="ctag">${t}</span>`)
+              .join("");
+            const img = p.imageData
+              ? `<img class="cimg" src="${p.imageData}" alt="">`
+              : `<div class="cph">${p.subject === "高数" ? "∫" : "∑"}</div>`;
+            const pv = p.text
+              ? `<div class="cprev">${esc(p.text.slice(0, 80))}${p.text.length > 80 ? "…" : ""}</div>`
+              : "";
+            return `<div class="card${p.id === selId ? " sel" : ""}" onclick="selP('${p.id}')">
       <button class="card-del" onclick="cardDel(event,'${p.id}')" title="删除">×</button>
       <div class="ctop">${img}<div class="cinfo">
         <div class="cmeta"><span class="badge b-${sj}">${p.subject}</span><span class="badge b-${dc}">${p.difficulty}</span><span class="badge b-${sc}">${st}</span></div>
         <div class="ctype">${p.type}题</div>${pv}
       </div></div>
-      ${tgs?`<div class="ctags">${tgs}</div>`:''}
+      ${tgs ? `<div class="ctags">${tgs}</div>` : ""}
       <div class="cdate">${dt}</div>
     </div>`;
-  }).join('');
-}
+          })
+          .join("");
+      }
 
-// Render Detail
-function renderDetail(id){
-  const p=probs.find(x=>x.id===id);if(!p)return;
-  const st=calcStat(p),sc={'待整理':'pend','整理中':'prog','已整理':'done'}[st];
-  const dc={'简单':'easy','适中':'med','复杂':'hard'}[p.difficulty];
-  const sj=p.subject==='高数'?'gs':'la';
-  const a=p.analysis||{},em=editing?'em':'';
-  const dt=new Date(p.createdAt).toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric'});
-  const pills=(p.knowledge||[]).map(t=>`<span class="kpill">${t}</span>`).join('');
-  document.getElementById('DStat').innerHTML=`<span class="sdot s-${sc}">${st}</span>`;
-  document.getElementById('DMeta').innerHTML=`<span class="badge b-${sj}">${p.subject}</span> · ${p.type}题 · <span class="badge b-${dc}">${p.difficulty}</span>`;
+      // Render Detail
+      function renderDetail(id) {
+        const p = probs.find((x) => x.id === id);
+        if (!p) return;
+        const st = calcStat(p),
+          sc = { 待整理: "pend", 整理中: "prog", 已整理: "done" }[st];
+        const dc = { 简单: "easy", 适中: "med", 复杂: "hard" }[p.difficulty];
+        const sj = p.subject === "高数" ? "gs" : "la";
+        const a = p.analysis || {},
+          em = editing ? "em" : "";
+        const dt = new Date(p.createdAt).toLocaleDateString("zh-CN", {
+          year: "numeric",
+          month: "long",
+          day: "numeric",
+        });
+        const pills = (p.knowledge || [])
+          .map((t) => `<span class="kpill">${t}</span>`)
+          .join("");
+        document.getElementById("DStat").innerHTML =
+          `<span class="sdot s-${sc}">${st}</span>`;
+        document.getElementById("DMeta").innerHTML =
+          `<span class="badge b-${sj}">${p.subject}</span> · ${p.type}题 · <span class="badge b-${dc}">${p.difficulty}</span>`;
 
-  document.getElementById('EditBtn').style.display='';document.getElementById('DelBtn').style.display='';
-  // Show AI button (always visible when a problem is selected)
-  const aib=document.getElementById('AIBtn');
-  if(aib){aib.style.display='';}
-  document.getElementById('DC').innerHTML=`
+        document.getElementById("EditBtn").style.display = "";
+        document.getElementById("DelBtn").style.display = "";
+        // Show AI button (always visible when a problem is selected)
+        const aib = document.getElementById("AIBtn");
+        if (aib) {
+          aib.style.display = "";
+        }
+        document.getElementById("DC").innerHTML = `
     <div class="dsect">
       <div class="sh" onclick="togS(this)"><span>📝 题目</span><span class="sarr">▼</span></div>
       <div class="sb">
-        ${p.imageData?`<img src="${p.imageData}" class="pimg" alt="">`:''}
-        ${p.text?`<div class="ptxt" id="PT">${esc(p.text)}</div>`:(!p.imageData?'<span style="color:var(--text3);font-size:13px">暂无内容</span>':'')}
+        ${p.imageData ? `<img src="${p.imageData}" class="pimg" alt="">` : ""}
+        ${p.text ? `<div class="ptxt" id="PT">${esc(p.text)}</div>` : !p.imageData ? '<span style="color:var(--text3);font-size:13px">暂无内容</span>' : ""}
       </div>
     </div>
     <div class="dsect ${em}" id="AS">
       <div class="sh" onclick="togS(this)"><span>🔍 思路分析</span><span class="sarr">▼</span></div>
       <div class="sb"><div class="angrid">
-        ${anIt('已知条件','known',a.known)}${anIt('隐含条件','hidden',a.hidden)}
-        ${anIt('目标转化','goal',a.goal)}${anIt('关键突破','breakthrough',a.breakthrough)}
-        ${anIt('易错警示','warnings',a.warnings)}
+        ${anIt("已知条件", "known", a.known)}${anIt("隐含条件", "hidden", a.hidden)}
+        ${anIt("目标转化", "goal", a.goal)}${anIt("关键突破", "breakthrough", a.breakthrough)}
+        ${anIt("易错警示", "warnings", a.warnings)}
       </div></div>
     </div>
     <div class="dsect ${em}" id="SS">
@@ -697,13 +2647,13 @@ function renderDetail(id){
       <div class="sb">
         <div class="split-edit">
           <div class="fv">${renderSteps(p.steps)}</div>
-          <div class="fe"><textarea class="ste" id="SE" placeholder="每行一步，支持 $LaTeX$">${esc(p.steps||'')}</textarea><p class="hint" style="padding:4px 9px;font-size:11px;color:var(--text3)">每行一步</p></div>
+          <div class="fe"><textarea class="ste" id="SE" placeholder="每行一步，支持 $LaTeX$">${esc(p.steps || "")}</textarea><p class="hint" style="padding:4px 9px;font-size:11px;color:var(--text3)">每行一步</p></div>
         </div>
         <div style="margin-top:12px">
           <div style="font-size:10.5px;font-weight:600;color:var(--text2);margin-bottom:7px;text-transform:uppercase;letter-spacing:.5px">方法总结</div>
           <div class="sum-pair">
-            <div class="fv" style="font-size:13px;line-height:1.6">${p.summary?esc(p.summary):'<span style="color:var(--text3)">暂无总结</span>'}</div>
-            <div class="fe"><textarea class="ste" id="SUM" placeholder="可选：方法总结">${esc(p.summary||'')}</textarea></div>
+            <div class="fv" style="font-size:13px;line-height:1.6">${p.summary ? esc(p.summary) : '<span style="color:var(--text3)">暂无总结</span>'}</div>
+            <div class="fe"><textarea class="ste" id="SUM" placeholder="可选：方法总结">${esc(p.summary || "")}</textarea></div>
           </div>
         </div>
       </div>
@@ -713,15 +2663,15 @@ function renderDetail(id){
       <div class="sb"><div class="ogrid">
         <div class="orow"><div class="olbl">备注</div>
           <div class="notes-pair">
-            <div class="fv" style="font-size:13px;line-height:1.6">${p.notes?esc(p.notes):'<span style="color:var(--text3)">暂无备注</span>'}</div>
-            <div class="fe"><textarea class="nota" id="NE" placeholder="可选备注">${esc(p.notes||'')}</textarea></div>
+            <div class="fv" style="font-size:13px;line-height:1.6">${p.notes ? esc(p.notes) : '<span style="color:var(--text3)">暂无备注</span>'}</div>
+            <div class="fe"><textarea class="nota" id="NE" placeholder="可选备注">${esc(p.notes || "")}</textarea></div>
           </div>
         </div>
         <div class="orow"><div class="olbl">知识点</div>
-          <div class="fv"><div class="kpills">${pills||'<span style="color:var(--text3);font-size:12px">暂无</span>'}</div></div>
+          <div class="fv"><div class="kpills">${pills || '<span style="color:var(--text3);font-size:12px">暂无</span>'}</div></div>
           <div class="fe">
             <div class="taginput" onclick="document.getElementById('DTI').focus()">
-              <div id="DTL">${(p.knowledge||[]).map(t=>`<span class="ti">${t}<span class="tix" onclick="rmDT('${escA(t)}')">×</span></span>`).join('')}</div>
+              <div id="DTL">${(p.knowledge || []).map((t) => `<span class="ti">${t}<span class="tix" onclick="rmDT('${escA(t)}')">×</span></span>`).join("")}</div>
               <input class="tfield" id="DTI" placeholder="添加知识点…" onkeydown="dTK(event)">
             </div>
           </div>
@@ -729,322 +2679,730 @@ function renderDetail(id){
         <div class="orow"><div class="olbl">创建日期</div><div style="font-size:13px;color:var(--text2)">${dt}</div></div>
       </div></div>
     </div>`;
-  if(window.MathJax)setTimeout(()=>MathJax.typesetPromise([document.getElementById('DC')]),80);
-}
+        if (window.MathJax)
+          setTimeout(
+            () => MathJax.typesetPromise([document.getElementById("DC")]),
+            80,
+          );
+      }
 
-function anIt(lbl,key,val){
-  return`<div class="anit"><div class="anlbl">${lbl}</div>
+      function anIt(lbl, key, val) {
+        return `<div class="anit"><div class="anlbl">${lbl}</div>
     <div class="an-pair">
-      <div class="anval fv${!val?' ev':''}">${val?esc(val):'待填写…'}</div>
-      <textarea class="aned fe" id="A_${key}" placeholder="${lbl}…">${esc(val||'')}</textarea>
+      <div class="anval fv${!val ? " ev" : ""}">${val ? esc(val) : "待填写…"}</div>
+      <textarea class="aned fe" id="A_${key}" placeholder="${lbl}…">${esc(val || "")}</textarea>
     </div>
   </div>`;
-}
-function renderSteps(txt){
-  if(!txt||!txt.trim())return'<span style="color:var(--text3);font-size:13px">暂无解题步骤</span>';
-  return txt.split('\n').filter(l=>l.trim()).map((l,i)=>`<div class="step"><div class="snum">${i+1}</div><div class="scon">${esc(l)}</div></div>`).join('');
-}
-function togS(h){h.closest('.dsect').classList.toggle('scoll');}
+      }
+      function renderSteps(txt) {
+        if (!txt || !txt.trim())
+          return '<span style="color:var(--text3);font-size:13px">暂无解题步骤</span>';
+        return txt
+          .split("\n")
+          .filter((l) => l.trim())
+          .map(
+            (l, i) =>
+              `<div class="step"><div class="snum">${i + 1}</div><div class="scon">${esc(l)}</div></div>`,
+          )
+          .join("");
+      }
+      function togS(h) {
+        h.closest(".dsect").classList.toggle("scoll");
+      }
 
-// Interactions
-function selP(id){
-  selId=id;editing=false;
-  const eb=document.getElementById('EditBtn');eb.textContent='编辑';eb.classList.remove('on');
-  // Clear undo when switching problems
-  undoSnap=null;const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='none';
-  renderList();renderDetail(id);
-  // Mobile: navigate to detail
-  if(isMob()){mobGo('detail');}
-}
-function togEdit(){
-  editing=!editing;const eb=document.getElementById('EditBtn');
-  if(editing){eb.textContent='保存';eb.classList.add('on');}
-  else{saveEdits();eb.textContent='编辑';eb.classList.remove('on');}
-  if(selId)renderDetail(selId);
-}
-function saveEdits(){
-  if(!selId)return;const p=probs.find(x=>x.id===selId);if(!p)return;
-  p.analysis=p.analysis||{};
-  ['known','hidden','goal','breakthrough','warnings'].forEach(k=>{const el=document.getElementById(`A_${k}`);if(el)p.analysis[k]=el.value;});
-  const se=document.getElementById('SE');if(se)p.steps=se.value;
-  const sm=document.getElementById('SUM');if(sm)p.summary=sm.value;
-  const ne=document.getElementById('NE');if(ne)p.notes=ne.value;
-  const dtl=document.getElementById('DTL');
-  if(dtl)p.knowledge=[...dtl.querySelectorAll('.ti')].map(s=>s.childNodes[0].textContent.trim());
-  save();renderKF();renderList();toast('✅ 已保存');
-}
-function delP(){
-  if(!selId)return;
-  const idx=probs.findIndex(x=>x.id===selId);
-  if(idx<0)return;
-  const removed=probs[idx];
-  cfm('删除题目','确定删除这道题目吗？',()=>{
-    deletedSnap={prob:removed,idx};
-    probs.splice(idx,1);
-    selId=null;editing=false;
-    save();renderKF();renderList();
-    document.getElementById('DC').innerHTML=`<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
-    document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
-    document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
-    const aib2=document.getElementById('AIBtn');if(aib2)aib2.style.display='none';
-    undoSnap=null;const ub2=document.getElementById('UndoBtn');if(ub2)ub2.style.display='none';
-    toast('🗑 已删除',()=>{
-      if(deletedSnap){probs.splice(deletedSnap.idx,0,deletedSnap.prob);deletedSnap=null;save();renderKF();renderList();toast('↩ 已撤销删除');}
-    },5000);
-  });
-}
+      // Interactions
+      function selP(id) {
+        selId = id;
+        editing = false;
+        const eb = document.getElementById("EditBtn");
+        eb.textContent = "编辑";
+        eb.classList.remove("on");
+        // Clear undo when switching problems
+        undoSnap = null;
+        const ub = document.getElementById("UndoBtn");
+        if (ub) ub.style.display = "none";
+        renderList();
+        renderDetail(id);
+        // Mobile: navigate to detail
+        if (isMob()) {
+          mobGo("detail");
+        }
+      }
+      function togEdit() {
+        editing = !editing;
+        const eb = document.getElementById("EditBtn");
+        if (editing) {
+          eb.textContent = "保存";
+          eb.classList.add("on");
+        } else {
+          saveEdits();
+          eb.textContent = "编辑";
+          eb.classList.remove("on");
+        }
+        if (selId) renderDetail(selId);
+      }
+      function saveEdits() {
+        if (!selId) return;
+        const p = probs.find((x) => x.id === selId);
+        if (!p) return;
+        p.analysis = p.analysis || {};
+        ["known", "hidden", "goal", "breakthrough", "warnings"].forEach((k) => {
+          const el = document.getElementById(`A_${k}`);
+          if (el) p.analysis[k] = el.value;
+        });
+        const se = document.getElementById("SE");
+        if (se) p.steps = se.value;
+        const sm = document.getElementById("SUM");
+        if (sm) p.summary = sm.value;
+        const ne = document.getElementById("NE");
+        if (ne) p.notes = ne.value;
+        const dtl = document.getElementById("DTL");
+        if (dtl)
+          p.knowledge = [...dtl.querySelectorAll(".ti")].map((s) =>
+            s.childNodes[0].textContent.trim(),
+          );
+        save();
+        renderKF();
+        renderList();
+        toast("✅ 已保存");
+      }
+      function delP() {
+        if (!selId) return;
+        const idx = probs.findIndex((x) => x.id === selId);
+        if (idx < 0) return;
+        const removed = probs[idx];
+        cfm("删除题目", "确定删除这道题目吗？", () => {
+          deletedSnap = { prob: removed, idx };
+          probs.splice(idx, 1);
+          selId = null;
+          editing = false;
+          save();
+          renderKF();
+          renderList();
+          document.getElementById("DC").innerHTML =
+            `<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
+          document.getElementById("DStat").innerHTML = "";
+          document.getElementById("DMeta").innerHTML = "";
+          document.getElementById("EditBtn").style.display = "none";
+          document.getElementById("DelBtn").style.display = "none";
+          const aib2 = document.getElementById("AIBtn");
+          if (aib2) aib2.style.display = "none";
+          undoSnap = null;
+          const ub2 = document.getElementById("UndoBtn");
+          if (ub2) ub2.style.display = "none";
+          toast(
+            "🗑 已删除",
+            () => {
+              if (deletedSnap) {
+                probs.splice(deletedSnap.idx, 0, deletedSnap.prob);
+                deletedSnap = null;
+                save();
+                renderKF();
+                renderList();
+                toast("↩ 已撤销删除");
+              }
+            },
+            5000,
+          );
+        });
+      }
 
-// Panel
-function togList(){
-  listColl=!listColl;
-  const lp=document.getElementById('LP');
-  const app=document.getElementById('APP');
-  if(listColl){
-    // Clear inline width so .coll CSS (width:0) wins
-    if(lp.style.width)lp.dataset.savedW=lp.style.width;
-    lp.style.width='';lp.style.minWidth='';
-    lp.classList.add('coll');
-    if(app)app.dataset.lpColl='1';   // CSS selector shows col-float
-  } else {
-    lp.classList.remove('coll');
-    if(lp.dataset.savedW)lp.style.width=lp.dataset.savedW;
-    else{const s=localStorage.getItem('mb_lp_w');if(s)lp.style.width=s;}
-    if(app)app.removeAttribute('data-lp-coll');
-  }
-}
+      // Panel
+      function togList() {
+        listColl = !listColl;
+        const lp = document.getElementById("LP");
+        const app = document.getElementById("APP");
+        if (listColl) {
+          // Clear inline width so .coll CSS (width:0) wins
+          if (lp.style.width) lp.dataset.savedW = lp.style.width;
+          lp.style.width = "";
+          lp.style.minWidth = "";
+          lp.classList.add("coll");
+          if (app) app.dataset.lpColl = "1"; // CSS selector shows col-float
+        } else {
+          lp.classList.remove("coll");
+          if (lp.dataset.savedW) lp.style.width = lp.dataset.savedW;
+          else {
+            const s = localStorage.getItem("mb_lp_w");
+            if (s) lp.style.width = s;
+          }
+          if (app) app.removeAttribute("data-lp-coll");
+        }
+      }
 
-// Resize
-function setupRH(hid,pid,lsKey){
-  const h=document.getElementById(hid),p=document.getElementById(pid);let sx,sw;
-  h.addEventListener('mousedown',e=>{sx=e.clientX;sw=p.offsetWidth;h.classList.add('drag');
-    const mv=e=>{const nw=sw+(e.clientX-sx),mn=parseInt(getComputedStyle(p).minWidth)||150,mx=parseInt(getComputedStyle(p).maxWidth)||500;p.style.width=Math.min(mx,Math.max(mn,nw))+'px';};
-    const up=()=>{document.removeEventListener('mousemove',mv);document.removeEventListener('mouseup',up);h.classList.remove('drag');
-      if(lsKey)localStorage.setItem(lsKey,p.style.width);};
-    document.addEventListener('mousemove',mv);document.addEventListener('mouseup',up);e.preventDefault();
-  });
-  // Restore saved width
-  if(lsKey){const saved=localStorage.getItem(lsKey);if(saved)p.style.width=saved;}
-}
+      // Resize
+      function setupRH(hid, pid, lsKey) {
+        const h = document.getElementById(hid),
+          p = document.getElementById(pid);
+        let sx, sw;
+        h.addEventListener("mousedown", (e) => {
+          sx = e.clientX;
+          sw = p.offsetWidth;
+          h.classList.add("drag");
+          const mv = (e) => {
+            const nw = sw + (e.clientX - sx),
+              mn = parseInt(getComputedStyle(p).minWidth) || 150,
+              mx = parseInt(getComputedStyle(p).maxWidth) || 500;
+            p.style.width = Math.min(mx, Math.max(mn, nw)) + "px";
+          };
+          const up = () => {
+            document.removeEventListener("mousemove", mv);
+            document.removeEventListener("mouseup", up);
+            h.classList.remove("drag");
+            if (lsKey) localStorage.setItem(lsKey, p.style.width);
+          };
+          document.addEventListener("mousemove", mv);
+          document.addEventListener("mouseup", up);
+          e.preventDefault();
+        });
+        // Restore saved width
+        if (lsKey) {
+          const saved = localStorage.getItem(lsKey);
+          if (saved) p.style.width = saved;
+        }
+      }
 
-// Modal
-function openM(){
-  mD={subj:'高数',type:'选择',diff:'适中',tags:[],img:null,mode:'img'};
-  if(fl.subj!=='all')mD.subj=fl.subj;if(fl.types.length===1)mD.type=fl.types[0];if(fl.diff!=='all')mD.diff=fl.diff;
-  document.getElementById('TI').value='';document.getElementById('FI').value='';
-  document.getElementById('IPW').style.display='none';document.getElementById('uplZ').style.display='flex';
-  document.getElementById('MTL').innerHTML='';document.getElementById('MTI').value='';
-  ['mSubj','mType','mDiff'].forEach(id=>document.querySelectorAll(`#${id} .rb`).forEach(b=>b.classList.remove('on')));
-  document.querySelector(`#mSubj [data-v="${mD.subj}"]`).classList.add('on');
-  document.querySelector(`#mType [data-v="${mD.type}"]`).classList.add('on');
-  document.querySelector(`#mDiff [data-v="${mD.diff}"]`).classList.add('on');
-  swTab('img');document.getElementById('AM').classList.add('open');
-}
-function closeM(){document.getElementById('AM').classList.remove('open');}
-function cancelAdd(){cfm('取消添加','是否取消？内容将不被保存。',()=>closeM());}
-function saveDraft(){const p=buildP();p.isDraft=true;probs.unshift(p);save();renderKF();renderList();closeM();toast('📌 已保存草稿');}
-function saveP(){
-  const p=buildP();
-  if(!p.imageData&&!p.text.trim()){toast('⚠️ 请上传图片或输入内容');return;}
-  probs.unshift(p);save();renderKF();renderList();closeM();selP(p.id);toast('✅ 题目已添加');
-}
-function buildP(){
-  return{id:'p_'+Date.now()+'_'+Math.random().toString(36).slice(2),subject:mD.subj,type:mD.type,
-    difficulty:mD.diff,knowledge:[...mD.tags],imageData:mD.img||null,
-    text:document.getElementById('TI').value,analysis:null,steps:'',summary:'',notes:'',createdAt:Date.now()};
-}
-function swTab(m){mD.mode=m;document.getElementById('imgA').style.display=m==='img'?'block':'none';document.getElementById('txtA').style.display=m==='txt'?'block':'none';document.getElementById('tabI').classList.toggle('on',m==='img');document.getElementById('tabT').classList.toggle('on',m==='txt');}
-function selRb(gid,el,v){document.querySelectorAll(`#${gid} .rb`).forEach(b=>b.classList.remove('on'));el.classList.add('on');if(gid==='mSubj')mD.subj=v;if(gid==='mType')mD.type=v;if(gid==='mDiff')mD.diff=v;}
-function hImg(e){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=ev=>{mD.img=ev.target.result;showIP(ev.target.result);};r.readAsDataURL(f);}
-function showIP(src){document.getElementById('IP').src=src;document.getElementById('IPW').style.display='block';document.getElementById('uplZ').style.display='none';}
-function rmImg(){mD.img=null;document.getElementById('IPW').style.display='none';document.getElementById('uplZ').style.display='flex';document.getElementById('FI').value='';}
-function dov(e){e.preventDefault();document.getElementById('uplZ').style.borderColor='var(--gs)';}
-function dlv(){document.getElementById('uplZ').style.borderColor='var(--border)';}
-function drp(e){e.preventDefault();dlv();const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/')){const r=new FileReader();r.onload=ev=>{mD.img=ev.target.result;showIP(ev.target.result);};r.readAsDataURL(f);}}
-function mTK(e){if(e.key==='Enter'||e.key===','){e.preventDefault();const v=e.target.value.trim();if(v&&!mD.tags.includes(v)){mD.tags.push(v);renderMT();}e.target.value='';}}
-function renderMT(){document.getElementById('MTL').innerHTML=mD.tags.map(t=>`<span class="ti">${t}<span class="tix" onclick="rmMT('${escA(t)}')">×</span></span>`).join('');}
-function rmMT(t){mD.tags=mD.tags.filter(x=>x!==t);renderMT();}
-function dTK(e){if(e.key==='Enter'||e.key===','){e.preventDefault();const v=e.target.value.trim();if(v){const dtl=document.getElementById('DTL');const ex=[...dtl.querySelectorAll('.ti')].map(s=>s.childNodes[0].textContent.trim());if(!ex.includes(v)){const sp=document.createElement('span');sp.className='ti';sp.innerHTML=`${v}<span class="tix" onclick="this.parentElement.remove()">×</span>`;dtl.appendChild(sp);}}e.target.value='';}}
-function rmDT(t){const dtl=document.getElementById('DTL');if(!dtl)return;dtl.querySelectorAll('.ti').forEach(s=>{if(s.childNodes[0].textContent.trim()===t)s.remove();});}
+      // Modal
+      function openM() {
+        mD = {
+          subj: "高数",
+          type: "选择",
+          diff: "适中",
+          tags: [],
+          img: null,
+          mode: "img",
+        };
+        if (fl.subj !== "all") mD.subj = fl.subj;
+        if (fl.types.length === 1) mD.type = fl.types[0];
+        if (fl.diff !== "all") mD.diff = fl.diff;
+        document.getElementById("TI").value = "";
+        document.getElementById("FI").value = "";
+        document.getElementById("IPW").style.display = "none";
+        document.getElementById("uplZ").style.display = "flex";
+        document.getElementById("MTL").innerHTML = "";
+        document.getElementById("MTI").value = "";
+        ["mSubj", "mType", "mDiff"].forEach((id) =>
+          document
+            .querySelectorAll(`#${id} .rb`)
+            .forEach((b) => b.classList.remove("on")),
+        );
+        document
+          .querySelector(`#mSubj [data-v="${mD.subj}"]`)
+          .classList.add("on");
+        document
+          .querySelector(`#mType [data-v="${mD.type}"]`)
+          .classList.add("on");
+        document
+          .querySelector(`#mDiff [data-v="${mD.diff}"]`)
+          .classList.add("on");
+        swTab("img");
+        document.getElementById("AM").classList.add("open");
+      }
+      function closeM() {
+        document.getElementById("AM").classList.remove("open");
+      }
+      function cancelAdd() {
+        cfm("取消添加", "是否取消？内容将不被保存。", () => closeM());
+      }
+      function saveDraft() {
+        const p = buildP();
+        p.isDraft = true;
+        probs.unshift(p);
+        save();
+        renderKF();
+        renderList();
+        closeM();
+        toast("📌 已保存草稿");
+      }
+      function saveP() {
+        const p = buildP();
+        if (!p.imageData && !p.text.trim()) {
+          toast("⚠️ 请上传图片或输入内容");
+          return;
+        }
+        probs.unshift(p);
+        save();
+        renderKF();
+        renderList();
+        closeM();
+        selP(p.id);
+        toast("✅ 题目已添加");
+      }
+      function buildP() {
+        return {
+          id: "p_" + Date.now() + "_" + Math.random().toString(36).slice(2),
+          subject: mD.subj,
+          type: mD.type,
+          difficulty: mD.diff,
+          knowledge: [...mD.tags],
+          imageData: mD.img || null,
+          text: document.getElementById("TI").value,
+          analysis: null,
+          steps: "",
+          summary: "",
+          notes: "",
+          createdAt: Date.now(),
+        };
+      }
+      function swTab(m) {
+        mD.mode = m;
+        document.getElementById("imgA").style.display =
+          m === "img" ? "block" : "none";
+        document.getElementById("txtA").style.display =
+          m === "txt" ? "block" : "none";
+        document.getElementById("tabI").classList.toggle("on", m === "img");
+        document.getElementById("tabT").classList.toggle("on", m === "txt");
+      }
+      function selRb(gid, el, v) {
+        document
+          .querySelectorAll(`#${gid} .rb`)
+          .forEach((b) => b.classList.remove("on"));
+        el.classList.add("on");
+        if (gid === "mSubj") mD.subj = v;
+        if (gid === "mType") mD.type = v;
+        if (gid === "mDiff") mD.diff = v;
+      }
+      function hImg(e) {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          mD.img = ev.target.result;
+          showIP(ev.target.result);
+        };
+        r.readAsDataURL(f);
+      }
+      function showIP(src) {
+        document.getElementById("IP").src = src;
+        document.getElementById("IPW").style.display = "block";
+        document.getElementById("uplZ").style.display = "none";
+      }
+      function rmImg() {
+        mD.img = null;
+        document.getElementById("IPW").style.display = "none";
+        document.getElementById("uplZ").style.display = "flex";
+        document.getElementById("FI").value = "";
+      }
+      function dov(e) {
+        e.preventDefault();
+        document.getElementById("uplZ").style.borderColor = "var(--gs)";
+      }
+      function dlv() {
+        document.getElementById("uplZ").style.borderColor = "var(--border)";
+      }
+      function drp(e) {
+        e.preventDefault();
+        dlv();
+        const f = e.dataTransfer.files[0];
+        if (f && f.type.startsWith("image/")) {
+          const r = new FileReader();
+          r.onload = (ev) => {
+            mD.img = ev.target.result;
+            showIP(ev.target.result);
+          };
+          r.readAsDataURL(f);
+        }
+      }
+      function mTK(e) {
+        if (e.key === "Enter" || e.key === ",") {
+          e.preventDefault();
+          const v = e.target.value.trim();
+          if (v && !mD.tags.includes(v)) {
+            mD.tags.push(v);
+            renderMT();
+          }
+          e.target.value = "";
+        }
+      }
+      function renderMT() {
+        document.getElementById("MTL").innerHTML = mD.tags
+          .map(
+            (t) =>
+              `<span class="ti">${t}<span class="tix" onclick="rmMT('${escA(t)}')">×</span></span>`,
+          )
+          .join("");
+      }
+      function rmMT(t) {
+        mD.tags = mD.tags.filter((x) => x !== t);
+        renderMT();
+      }
+      function dTK(e) {
+        if (e.key === "Enter" || e.key === ",") {
+          e.preventDefault();
+          const v = e.target.value.trim();
+          if (v) {
+            const dtl = document.getElementById("DTL");
+            const ex = [...dtl.querySelectorAll(".ti")].map((s) =>
+              s.childNodes[0].textContent.trim(),
+            );
+            if (!ex.includes(v)) {
+              const sp = document.createElement("span");
+              sp.className = "ti";
+              sp.innerHTML = `${v}<span class="tix" onclick="this.parentElement.remove()">×</span>`;
+              dtl.appendChild(sp);
+            }
+          }
+          e.target.value = "";
+        }
+      }
+      function rmDT(t) {
+        const dtl = document.getElementById("DTL");
+        if (!dtl) return;
+        dtl.querySelectorAll(".ti").forEach((s) => {
+          if (s.childNodes[0].textContent.trim() === t) s.remove();
+        });
+      }
 
-// Export/Import
-function exportData(){const bl=new Blob([JSON.stringify(probs,null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(bl);a.download=`mathbank_${new Date().toISOString().slice(0,10)}.json`;a.click();toast('✅ 导出成功');}
-function importData(e){
-  const f=e.target.files[0];if(!f)return;const r=new FileReader();
-  r.onload=ev=>{try{const d=JSON.parse(ev.target.result);if(!Array.isArray(d))throw 0;cfm('导入题目',`将导入 ${d.length} 道题目，覆盖现有数据？`,()=>{probs=d;save();renderKF();renderList();toast(`✅ 已导入 ${d.length} 道`);});}catch{toast('❌ 导入失败');}};
-  r.readAsText(f);e.target.value='';
-}
+      // Export/Import
+      function exportData() {
+        const bl = new Blob([JSON.stringify(probs, null, 2)], {
+          type: "application/json",
+        });
+        const a = document.createElement("a");
+        a.href = URL.createObjectURL(bl);
+        a.download = `mathbank_${new Date().toISOString().slice(0, 10)}.json`;
+        a.click();
+        toast("✅ 导出成功");
+      }
+      function importData(e) {
+        const f = e.target.files[0];
+        if (!f) return;
+        const r = new FileReader();
+        r.onload = (ev) => {
+          try {
+            const d = JSON.parse(ev.target.result);
+            if (!Array.isArray(d)) throw 0;
+            cfm("导入题目", `将导入 ${d.length} 道题目，覆盖现有数据？`, () => {
+              probs = d;
+              save();
+              renderKF();
+              renderList();
+              toast(`✅ 已导入 ${d.length} 道`);
+            });
+          } catch {
+            toast("❌ 导入失败");
+          }
+        };
+        r.readAsText(f);
+        e.target.value = "";
+      }
 
-// Practice
-function startPrac(){
-  const f=filtered();if(!f.length){toast('⚠️ 请先筛选出要练习的题目');return;}
-  pracQ=[...f].sort(()=>Math.random()-.5);pracI=0;pracAns=false;
-  document.getElementById('PR').classList.add('open');renderPrac();
-}
-function renderPrac(){
-  const p=pracQ[pracI];document.getElementById('PPG').textContent=`${pracI+1} / ${pracQ.length}`;
-  const sj=p.subject==='高数'?'gs':'la',dc={'简单':'easy','适中':'med','复杂':'hard'}[p.difficulty];
-  const kps=(p.knowledge||[]).map(t=>`<span class="kpill">${t}</span>`).join('');
-  document.getElementById('PC').innerHTML=`
+      // Practice
+      function startPrac() {
+        const f = filtered();
+        if (!f.length) {
+          toast("⚠️ 请先筛选出要练习的题目");
+          return;
+        }
+        pracQ = [...f].sort(() => Math.random() - 0.5);
+        pracI = 0;
+        pracAns = false;
+        document.getElementById("PR").classList.add("open");
+        renderPrac();
+      }
+      function renderPrac() {
+        const p = pracQ[pracI];
+        document.getElementById("PPG").textContent =
+          `${pracI + 1} / ${pracQ.length}`;
+        const sj = p.subject === "高数" ? "gs" : "la",
+          dc = { 简单: "easy", 适中: "med", 复杂: "hard" }[p.difficulty];
+        const kps = (p.knowledge || [])
+          .map((t) => `<span class="kpill">${t}</span>`)
+          .join("");
+        document.getElementById("PC").innerHTML = `
     <div style="display:flex;gap:7px;margin-bottom:14px;flex-wrap:wrap">
       <span class="badge b-${sj}">${p.subject}</span><span class="badge b-${dc}">${p.difficulty}</span><span style="font-size:13px;color:var(--text2)">${p.type}题</span>
     </div>
-    ${kps?`<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">${kps}</div>`:''}
-    ${p.imageData?`<img src="${p.imageData}" style="max-width:100%;border-radius:8px;margin-bottom:14px;border:1px solid var(--border)">`:''}
-    ${p.text?`<div style="font-size:15px;line-height:1.75;margin-bottom:20px">${esc(p.text)}</div>`:''}
-    ${pracAns?renderPAns(p):`<button class="bpri" onclick="showAns()" style="width:100%;padding:10px">查看解题过程</button>`}`;
-  if(window.MathJax)setTimeout(()=>MathJax.typesetPromise([document.getElementById('PC')]),80);
-}
-function renderPAns(p){
-  return`<div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px">
+    ${kps ? `<div style="display:flex;gap:5px;flex-wrap:wrap;margin-bottom:14px">${kps}</div>` : ""}
+    ${p.imageData ? `<img src="${p.imageData}" style="max-width:100%;border-radius:8px;margin-bottom:14px;border:1px solid var(--border)">` : ""}
+    ${p.text ? `<div style="font-size:15px;line-height:1.75;margin-bottom:20px">${esc(p.text)}</div>` : ""}
+    ${pracAns ? renderPAns(p) : `<button class="bpri" onclick="showAns()" style="width:100%;padding:10px">查看解题过程</button>`}`;
+        if (window.MathJax)
+          setTimeout(
+            () => MathJax.typesetPromise([document.getElementById("PC")]),
+            80,
+          );
+      }
+      function renderPAns(p) {
+        return `<div style="border-top:1px solid var(--border);padding-top:16px;margin-top:8px">
     <div style="font-weight:600;font-size:13px;color:var(--navy);margin-bottom:12px">解题步骤</div>
-    ${p.steps?renderSteps(p.steps):'<span style="color:var(--text3);font-size:13px">暂无步骤</span>'}
-    ${p.summary?`<div style="margin-top:14px;padding:11px;background:var(--sidebar);border-radius:8px;font-size:13px;line-height:1.6">${esc(p.summary)}</div>`:''}
+    ${p.steps ? renderSteps(p.steps) : '<span style="color:var(--text3);font-size:13px">暂无步骤</span>'}
+    ${p.summary ? `<div style="margin-top:14px;padding:11px;background:var(--sidebar);border-radius:8px;font-size:13px;line-height:1.6">${esc(p.summary)}</div>` : ""}
   </div>`;
-}
-function showAns(){pracAns=true;renderPrac();}
-function nxtPrac(){pracI++;if(pracI>=pracQ.length){closePracView();toast('🎉 练习完成！');return;}pracAns=false;renderPrac();}
-function closePracView(){document.getElementById('PR').classList.remove('open');}
+      }
+      function showAns() {
+        pracAns = true;
+        renderPrac();
+      }
+      function nxtPrac() {
+        pracI++;
+        if (pracI >= pracQ.length) {
+          closePracView();
+          toast("🎉 练习完成！");
+          return;
+        }
+        pracAns = false;
+        renderPrac();
+      }
+      function closePracView() {
+        document.getElementById("PR").classList.remove("open");
+      }
 
-// Confirm
-function cfm(title,msg,cb){document.getElementById('CFMT').textContent=title;document.getElementById('CFMM').textContent=msg;cfmCb=cb;document.getElementById('CFM').classList.add('open');}
-function doCfm(){closeCfm();if(cfmCb)cfmCb();}
-function closeCfm(){document.getElementById('CFM').classList.remove('open');}
+      // Confirm
+      function cfm(title, msg, cb) {
+        document.getElementById("CFMT").textContent = title;
+        document.getElementById("CFMM").textContent = msg;
+        cfmCb = cb;
+        document.getElementById("CFM").classList.add("open");
+      }
+      function doCfm() {
+        closeCfm();
+        if (cfmCb) cfmCb();
+      }
+      function closeCfm() {
+        document.getElementById("CFM").classList.remove("open");
+      }
 
-// Toast
-let tt, ttUndo=null;
-let deletedSnap=null;
-function toast(msg,undoFn,dur){
-  const el=document.getElementById('TST');
-  const msgEl=document.getElementById('TSTMsg');
-  if(msgEl)msgEl.textContent=msg; else el.textContent=msg;
-  // Remove old undo button if any
-  const old=el.querySelector('.toast-undo');if(old)old.remove();
-  if(undoFn){
-    const btn=document.createElement('button');btn.className='toast-undo';btn.textContent='撤销';
-    btn.onclick=()=>{el.classList.remove('show');clearTimeout(tt);undoFn();};
-    el.appendChild(btn);
-  }
-  el.classList.add('show');
-  clearTimeout(tt);
-  tt=setTimeout(()=>{el.classList.remove('show');const b=el.querySelector('.toast-undo');if(b)b.remove();},dur||2500);
-}
-// Card-level delete
-function cardDel(e,id){
-  e.stopPropagation(); // don't trigger card click
-  cfm('删除题目','确定删除这道题目吗？',()=>{
-    const idx=probs.findIndex(x=>x.id===id);
-    if(idx<0)return;
-    const removed=probs[idx];
-    deletedSnap={prob:removed,idx};
-    probs.splice(idx,1);
-    if(selId===id){
-      selId=null;editing=false;
-      document.getElementById('DC').innerHTML=`<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
-      document.getElementById('DStat').innerHTML='';document.getElementById('DMeta').innerHTML='';
-      document.getElementById('EditBtn').style.display='none';document.getElementById('DelBtn').style.display='none';
-      const aib=document.getElementById('AIBtn');if(aib)aib.style.display='none';
-    }
-    save();renderKF();renderList();
-    toast('🗑 已删除',()=>{
-      if(deletedSnap){probs.splice(deletedSnap.idx,0,deletedSnap.prob);deletedSnap=null;save();renderKF();renderList();toast('↩ 已撤销删除');}
-    },5000);
-  });
-}
+      // Toast
+      let tt,
+        ttUndo = null;
+      let deletedSnap = null;
+      function toast(msg, undoFn, dur) {
+        const el = document.getElementById("TST");
+        const msgEl = document.getElementById("TSTMsg");
+        if (msgEl) msgEl.textContent = msg;
+        else el.textContent = msg;
+        // Remove old undo button if any
+        const old = el.querySelector(".toast-undo");
+        if (old) old.remove();
+        if (undoFn) {
+          const btn = document.createElement("button");
+          btn.className = "toast-undo";
+          btn.textContent = "撤销";
+          btn.onclick = () => {
+            el.classList.remove("show");
+            clearTimeout(tt);
+            undoFn();
+          };
+          el.appendChild(btn);
+        }
+        el.classList.add("show");
+        clearTimeout(tt);
+        tt = setTimeout(() => {
+          el.classList.remove("show");
+          const b = el.querySelector(".toast-undo");
+          if (b) b.remove();
+        }, dur || 2500);
+      }
+      // Card-level delete
+      function cardDel(e, id) {
+        e.stopPropagation(); // don't trigger card click
+        cfm("删除题目", "确定删除这道题目吗？", () => {
+          const idx = probs.findIndex((x) => x.id === id);
+          if (idx < 0) return;
+          const removed = probs[idx];
+          deletedSnap = { prob: removed, idx };
+          probs.splice(idx, 1);
+          if (selId === id) {
+            selId = null;
+            editing = false;
+            document.getElementById("DC").innerHTML =
+              `<div class="empty"><div class="ico">🧮</div><p>选择一道题目来分析吧～</p></div>`;
+            document.getElementById("DStat").innerHTML = "";
+            document.getElementById("DMeta").innerHTML = "";
+            document.getElementById("EditBtn").style.display = "none";
+            document.getElementById("DelBtn").style.display = "none";
+            const aib = document.getElementById("AIBtn");
+            if (aib) aib.style.display = "none";
+          }
+          save();
+          renderKF();
+          renderList();
+          toast(
+            "🗑 已删除",
+            () => {
+              if (deletedSnap) {
+                probs.splice(deletedSnap.idx, 0, deletedSnap.prob);
+                deletedSnap = null;
+                save();
+                renderKF();
+                renderList();
+                toast("↩ 已撤销删除");
+              }
+            },
+            5000,
+          );
+        });
+      }
 
-// Utils
-function esc(s){if(!s)return'';return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
-function escA(s){return s.replace(/'/g,"\\'");}
-function uid(){return'p_'+Date.now()+'_'+Math.random().toString(36).slice(2,8);}
+      // Utils
+      function esc(s) {
+        if (!s) return "";
+        return s
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function escA(s) {
+        return s.replace(/'/g, "\\'");
+      }
+      function uid() {
+        return "p_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
+      }
 
-// Sample data
-function loadSample(){
-  if(probs.length)return;
-  probs=[
-    {id:uid(),subject:'高数',type:'解答',difficulty:'适中',knowledge:['导数','极值','单调性'],imageData:null,
-      text:'设函数 $f(x) = x^3 - 3x^2 + 2$，求 $f(x)$ 的极值，并判断极大值还是极小值。',
-      analysis:{known:'函数 $f(x) = x^3 - 3x^2 + 2$ 在 $\\mathbb{R}$ 上处处可导',
-        hidden:'驻点不一定是极值点，需验证两侧导数变号；二阶导判断法更直接',
-        goal:'求出所有极大值点和极小值点，及对应的函数值',
-        breakthrough:'对 $f(x)$ 求导，令 $f\'(x)=0$，解方程找驻点，再用 $f\'\'$ 判断符号',
-        warnings:'注意 $f\'(x_0)=0$ 是极值点的必要非充分条件，必须确认导数变号'},
-      steps:"求导：$f'(x) = 3x^2 - 6x = 3x(x-2)$\n令 $f'(x)=0$，得驻点 $x=0$ 和 $x=2$\n$f''(x)=6x-6$，$f''(0)=-6<0$，故 $x=0$ 为极大值点，极大值 $f(0)=2$\n$f''(2)=6>0$，故 $x=2$ 为极小值点，极小值 $f(2)=-2$",
-      summary:'三次多项式极值标准流程：求导 → 驻点 → 二阶导判断极大/极小',notes:'',createdAt:Date.now()-864e5*3},
-    {id:uid(),subject:'线代',type:'证明',difficulty:'复杂',knowledge:['逆矩阵','矩阵乘法','唯一性'],imageData:null,
-      text:'设 $A,B$ 为 $n$ 阶可逆矩阵，证明 $(AB)^{-1}=B^{-1}A^{-1}$。',
-      analysis:{known:'$A,B$ 均为 $n$ 阶可逆矩阵，即行列式不为零',
-        hidden:'逆矩阵定义：$M^{-1}$ 满足 $MM^{-1}=M^{-1}M=I$；由此可验证候选逆矩阵',
-        goal:'证明 $B^{-1}A^{-1}$ 恰好是 $AB$ 的逆矩阵',
-        breakthrough:'构造 $B^{-1}A^{-1}$，直接验证与 $AB$ 的乘积为单位矩阵，再引用唯一性',
-        warnings:'矩阵乘法不满足交换律，顺序绝不能颠倒！'},
-      steps:'$(AB)(B^{-1}A^{-1})=A(BB^{-1})A^{-1}=AIA^{-1}=AA^{-1}=I$\n$(B^{-1}A^{-1})(AB)=B^{-1}(A^{-1}A)B=B^{-1}IB=B^{-1}B=I$\n由逆矩阵的唯一性，$(AB)^{-1}=B^{-1}A^{-1}$ 得证 $\\blacksquare$',
-      summary:'验证逆矩阵的标准方法：构造候选矩阵，两侧验证乘积为 $I$，引用唯一性',notes:'',createdAt:Date.now()-864e5},
-    {id:uid(),subject:'高数',type:'填空',difficulty:'简单',knowledge:['极限','等价无穷小'],imageData:null,
-      text:'求极限 $\\lim_{x \\to 0} \\dfrac{\\sin 3x}{x} = $ ___',
-      analysis:null,steps:'',summary:'',notes:'',createdAt:Date.now()-864e5*7}
-  ];
-  save();
-}
+      // Sample data
+      function loadSample() {
+        if (probs.length) return;
+        probs = [
+          {
+            id: uid(),
+            subject: "高数",
+            type: "解答",
+            difficulty: "适中",
+            knowledge: ["导数", "极值", "单调性"],
+            imageData: null,
+            text: "设函数 $f(x) = x^3 - 3x^2 + 2$，求 $f(x)$ 的极值，并判断极大值还是极小值。",
+            analysis: {
+              known: "函数 $f(x) = x^3 - 3x^2 + 2$ 在 $\\mathbb{R}$ 上处处可导",
+              hidden:
+                "驻点不一定是极值点，需验证两侧导数变号；二阶导判断法更直接",
+              goal: "求出所有极大值点和极小值点，及对应的函数值",
+              breakthrough:
+                "对 $f(x)$ 求导，令 $f'(x)=0$，解方程找驻点，再用 $f''$ 判断符号",
+              warnings:
+                "注意 $f'(x_0)=0$ 是极值点的必要非充分条件，必须确认导数变号",
+            },
+            steps:
+              "求导：$f'(x) = 3x^2 - 6x = 3x(x-2)$\n令 $f'(x)=0$，得驻点 $x=0$ 和 $x=2$\n$f''(x)=6x-6$，$f''(0)=-6<0$，故 $x=0$ 为极大值点，极大值 $f(0)=2$\n$f''(2)=6>0$，故 $x=2$ 为极小值点，极小值 $f(2)=-2$",
+            summary:
+              "三次多项式极值标准流程：求导 → 驻点 → 二阶导判断极大/极小",
+            notes: "",
+            createdAt: Date.now() - 864e5 * 3,
+          },
+          {
+            id: uid(),
+            subject: "线代",
+            type: "证明",
+            difficulty: "复杂",
+            knowledge: ["逆矩阵", "矩阵乘法", "唯一性"],
+            imageData: null,
+            text: "设 $A,B$ 为 $n$ 阶可逆矩阵，证明 $(AB)^{-1}=B^{-1}A^{-1}$。",
+            analysis: {
+              known: "$A,B$ 均为 $n$ 阶可逆矩阵，即行列式不为零",
+              hidden:
+                "逆矩阵定义：$M^{-1}$ 满足 $MM^{-1}=M^{-1}M=I$；由此可验证候选逆矩阵",
+              goal: "证明 $B^{-1}A^{-1}$ 恰好是 $AB$ 的逆矩阵",
+              breakthrough:
+                "构造 $B^{-1}A^{-1}$，直接验证与 $AB$ 的乘积为单位矩阵，再引用唯一性",
+              warnings: "矩阵乘法不满足交换律，顺序绝不能颠倒！",
+            },
+            steps:
+              "$(AB)(B^{-1}A^{-1})=A(BB^{-1})A^{-1}=AIA^{-1}=AA^{-1}=I$\n$(B^{-1}A^{-1})(AB)=B^{-1}(A^{-1}A)B=B^{-1}IB=B^{-1}B=I$\n由逆矩阵的唯一性，$(AB)^{-1}=B^{-1}A^{-1}$ 得证 $\\blacksquare$",
+            summary:
+              "验证逆矩阵的标准方法：构造候选矩阵，两侧验证乘积为 $I$，引用唯一性",
+            notes: "",
+            createdAt: Date.now() - 864e5,
+          },
+          {
+            id: uid(),
+            subject: "高数",
+            type: "填空",
+            difficulty: "简单",
+            knowledge: ["极限", "等价无穷小"],
+            imageData: null,
+            text: "求极限 $\\lim_{x \\to 0} \\dfrac{\\sin 3x}{x} = $ ___",
+            analysis: null,
+            steps: "",
+            summary: "",
+            notes: "",
+            createdAt: Date.now() - 864e5 * 7,
+          },
+        ];
+        save();
+      }
 
-// ── AI Analysis ──────────────────────────────────
-let aiResult = null;
+      // ── AI Analysis ──────────────────────────────────
+      let aiResult = null;
 
-function getKey(){return localStorage.getItem('glm_key')||'';}
-function getModel(){return localStorage.getItem('glm_model')||'glm-4.1v-thinking-flash';}
+      function getKey() {
+        return localStorage.getItem("glm_key") || "";
+      }
+      function getModel() {
+        return localStorage.getItem("glm_model") || "glm-4.1v-thinking-flash";
+      }
 
-function openSettings(){
-  document.getElementById('SETK').value=getKey();
-  document.getElementById('SETM').value=getModel();
-  document.getElementById('SM').classList.add('open');
-}
-function closeSettings(){document.getElementById('SM').classList.remove('open');}
-function saveSettings(){
-  const k=document.getElementById('SETK').value.trim();
-  const m=document.getElementById('SETM').value;
-  localStorage.setItem('glm_key',k);
-  localStorage.setItem('glm_model',m);
-  closeSettings();toast('✅ 设置已保存');
-}
+      function openSettings() {
+        document.getElementById("SETK").value = getKey();
+        document.getElementById("SETM").value = getModel();
+        document.getElementById("SM").classList.add("open");
+      }
+      function closeSettings() {
+        document.getElementById("SM").classList.remove("open");
+      }
+      function saveSettings() {
+        const k = document.getElementById("SETK").value.trim();
+        const m = document.getElementById("SETM").value;
+        localStorage.setItem("glm_key", k);
+        localStorage.setItem("glm_model", m);
+        closeSettings();
+        toast("✅ 设置已保存");
+      }
 
-function togThink(){
-  const b=document.getElementById('ThinkBody'),a=document.getElementById('ThinkArr');
-  const hidden=b.style.display==='none';
-  b.style.display=hidden?'block':'none';
-  a.textContent=hidden?'▲':'▼';
-}
-function togRaw(){
-  const b=document.getElementById('RawBody'),a=document.getElementById('RawArr');
-  const hidden=b.style.display==='none';
-  b.style.display=hidden?'block':'none';
-  a.textContent=hidden?'▲':'▼';
-}
+      function togThink() {
+        const b = document.getElementById("ThinkBody"),
+          a = document.getElementById("ThinkArr");
+        const hidden = b.style.display === "none";
+        b.style.display = hidden ? "block" : "none";
+        a.textContent = hidden ? "▲" : "▼";
+      }
+      function togRaw() {
+        const b = document.getElementById("RawBody"),
+          a = document.getElementById("RawArr");
+        const hidden = b.style.display === "none";
+        b.style.display = hidden ? "block" : "none";
+        a.textContent = hidden ? "▲" : "▼";
+      }
 
-function aiAnalyze(){
-  if(!selId)return;
-  const k=getKey();
-  if(!k){toast('⚠️ 请先设置 API Key（右上角 ⚙）');return;}
-  const p=probs.find(x=>x.id===selId);if(!p)return;
-  // Fix 3: confirmation before starting
-  const hasContent = p.analysis && Object.values(p.analysis).some(v=>v&&v.trim());
-  const msg = hasContent
-    ? '该题目已有分析内容，AI 分析将生成新内容供你选择是否应用，不会立即覆盖。继续？'
-    : '将使用智谱 AI 对该题目进行自动分析，生成思路分析和解题步骤，完成后可选择是否应用。继续？';
-  cfm('✦ AI 自动分析', msg, ()=>_doAIAnalyze(p));
-}
+      function aiAnalyze() {
+        if (!selId) return;
+        const k = getKey();
+        if (!k) {
+          toast("⚠️ 请先设置 API Key（右上角 ⚙）");
+          return;
+        }
+        const p = probs.find((x) => x.id === selId);
+        if (!p) return;
+        // Fix 3: confirmation before starting
+        const hasContent =
+          p.analysis && Object.values(p.analysis).some((v) => v && v.trim());
+        const msg = hasContent
+          ? "该题目已有分析内容，AI 分析将生成新内容供你选择是否应用，不会立即覆盖。继续？"
+          : "将使用智谱 AI 对该题目进行自动分析，生成思路分析和解题步骤，完成后可选择是否应用。继续？";
+        cfm("✦ AI 自动分析", msg, () => _doAIAnalyze(p));
+      }
 
-function _doAIAnalyze(p){
-  const content=[];
-  if(p.imageData){
-    const b64=p.imageData.includes(',')? p.imageData.split(',')[1]:p.imageData;
-    const mime=p.imageData.startsWith('data:')?p.imageData.split(';')[0].split(':')[1]:'image/jpeg';
-    content.push({type:'image_url',image_url:{url:`data:${mime};base64,${b64}`}});
-  }
+      function _doAIAnalyze(p) {
+        const content = [];
+        if (p.imageData) {
+          const b64 = p.imageData.includes(",")
+            ? p.imageData.split(",")[1]
+            : p.imageData;
+          const mime = p.imageData.startsWith("data:")
+            ? p.imageData.split(";")[0].split(":")[1]
+            : "image/jpeg";
+          content.push({
+            type: "image_url",
+            image_url: { url: `data:${mime};base64,${b64}` },
+          });
+        }
 
-  // Fix 4: Clean prompt - instructions clearly separated from output template
-  // The key insight: put instructions BEFORE the template, make it clear the template
-  // shows the FORMAT not the content to copy.
-  const subjectHint = p.subject==='高数' ? '高等数学' : '线性代数';
-  const questionText = p.text ? `\n\n题目文字内容：\n${p.text}` : '';
-  const prompt = `你是${subjectHint}解题专家。请分析${p.imageData?'图片中的':'以下'}数学题目，给出完整的教学分析。${questionText}
+        // Fix 4: Clean prompt - instructions clearly separated from output template
+        // The key insight: put instructions BEFORE the template, make it clear the template
+        // shows the FORMAT not the content to copy.
+        const subjectHint = p.subject === "高数" ? "高等数学" : "线性代数";
+        const questionText = p.text ? `\n\n题目文字内容：\n${p.text}` : "";
+        const prompt = `你是${subjectHint}解题专家。请分析${p.imageData ? "图片中的" : "以下"}数学题目，给出完整的教学分析。${questionText}
 
 重要要求：
 1. 数学公式全部用LaTeX格式：行内公式用 $公式$，独立公式换行用 $$公式$$
@@ -1079,279 +3437,446 @@ function _doAIAnalyze(p){
 （在此写出从本题提炼的通用解题方法论，便于迁移到同类题目）
 </summary>`;
 
-  content.push({type:'text',text:prompt});
-  runAIStream({role:'user',content}, p.id);
-}
+        content.push({ type: "text", text: prompt });
+        runAIStream({ role: "user", content }, p.id);
+      }
 
-async function runAIStream(userMsg, probId){
-  aiResult=null;
-  document.getElementById('AIOV').classList.add('open');
-  document.getElementById('AIApplyBtn').style.display='none';
-  document.getElementById('ThinkBody').textContent='';
-  document.getElementById('ThinkBody').style.display='block';
-  document.getElementById('ThinkArr').textContent='▲';
-  const rawB=document.getElementById('RawBody');
-  if(rawB){rawB.textContent='';rawB.style.display='none';document.getElementById('RawArr').textContent='▼';}
-  document.getElementById('ProgFill').style.width='0%';
-  document.getElementById('AIStatus').textContent='正在连接 AI…';
-  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
-  fields.forEach(k=>{
-    const v=document.getElementById(`afv_${k}`);if(v){v.textContent='等待中…';v.className='af-val empty';}
-    const w=document.getElementById(`af_${k}`);if(w)w.className='af';
-  });
-
-  let spinI=0;
-  const spinT=setInterval(()=>{
-    const s=document.getElementById('AISpinner');
-    if(s)s.textContent=['✦','✧','⋆','✧'][spinI++%4];
-  },380);
-
-  const key=getKey(), model=getModel();
-  let thinking='', answer='';
-
-  try{
-    const resp=await fetch('https://open.bigmodel.cn/api/paas/v4/chat/completions',{
-      method:'POST',
-      headers:{'Content-Type':'application/json','Authorization':`Bearer ${key}`},
-      body:JSON.stringify({model,messages:[userMsg],stream:true,max_tokens:4096,temperature:0.05})
-    });
-    if(!resp.ok){const e=await resp.text();throw new Error(`HTTP ${resp.status}: ${e.slice(0,200)}`);}
-
-    const reader=resp.body.getReader(), dec=new TextDecoder();
-    let buf='', streamDone=false;
-    document.getElementById('AIStatus').textContent='AI 正在思考…';
-    document.getElementById('ProgFill').style.width='10%';
-
-    while(!streamDone){
-      const {done,value}=await reader.read();if(done)break;
-      buf+=dec.decode(value,{stream:true});
-      const lines=buf.split('\n');buf=lines.pop();
-      for(const line of lines){
-        if(!line.startsWith('data:'))continue;
-        const raw=line.slice(5).trim();
-        if(raw==='[DONE]'){streamDone=true;break;}
-        let chunk;try{chunk=JSON.parse(raw);}catch{continue;}
-        const delta=chunk.choices?.[0]?.delta;if(!delta)continue;
-        if(delta.reasoning_content!=null&&delta.reasoning_content!==''){
-          thinking+=delta.reasoning_content;
-          const tb=document.getElementById('ThinkBody');
-          if(tb){tb.textContent=thinking;tb.scrollTop=tb.scrollHeight;}
+      async function runAIStream(userMsg, probId) {
+        aiResult = null;
+        document.getElementById("AIOV").classList.add("open");
+        document.getElementById("AIApplyBtn").style.display = "none";
+        document.getElementById("ThinkBody").textContent = "";
+        document.getElementById("ThinkBody").style.display = "block";
+        document.getElementById("ThinkArr").textContent = "▲";
+        const rawB = document.getElementById("RawBody");
+        if (rawB) {
+          rawB.textContent = "";
+          rawB.style.display = "none";
+          document.getElementById("RawArr").textContent = "▼";
         }
-        if(delta.content!=null&&delta.content!==''){
-          if(!answer){
-            document.getElementById('AIStatus').textContent='AI 正在撰写分析…';
-            document.getElementById('ProgFill').style.width='60%';
+        document.getElementById("ProgFill").style.width = "0%";
+        document.getElementById("AIStatus").textContent = "正在连接 AI…";
+        const fields = [
+          "known",
+          "hidden",
+          "goal",
+          "breakthrough",
+          "warnings",
+          "steps",
+          "summary",
+        ];
+        fields.forEach((k) => {
+          const v = document.getElementById(`afv_${k}`);
+          if (v) {
+            v.textContent = "等待中…";
+            v.className = "af-val empty";
           }
-          answer+=delta.content;
-          // live-stream each field as it appears
-          streamFillFields(answer);
+          const w = document.getElementById(`af_${k}`);
+          if (w) w.className = "af";
+        });
+
+        let spinI = 0;
+        const spinT = setInterval(() => {
+          const s = document.getElementById("AISpinner");
+          if (s) s.textContent = ["✦", "✧", "⋆", "✧"][spinI++ % 4];
+        }, 380);
+
+        const key = getKey(),
+          model = getModel();
+        let thinking = "",
+          answer = "";
+
+        try {
+          const resp = await fetch(
+            "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+            {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${key}`,
+              },
+              body: JSON.stringify({
+                model,
+                messages: [userMsg],
+                stream: true,
+                max_tokens: 4096,
+                temperature: 0.05,
+              }),
+            },
+          );
+          if (!resp.ok) {
+            const e = await resp.text();
+            throw new Error(`HTTP ${resp.status}: ${e.slice(0, 200)}`);
+          }
+
+          const reader = resp.body.getReader(),
+            dec = new TextDecoder();
+          let buf = "",
+            streamDone = false;
+          document.getElementById("AIStatus").textContent = "AI 正在思考…";
+          document.getElementById("ProgFill").style.width = "10%";
+
+          while (!streamDone) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            buf += dec.decode(value, { stream: true });
+            const lines = buf.split("\n");
+            buf = lines.pop();
+            for (const line of lines) {
+              if (!line.startsWith("data:")) continue;
+              const raw = line.slice(5).trim();
+              if (raw === "[DONE]") {
+                streamDone = true;
+                break;
+              }
+              let chunk;
+              try {
+                chunk = JSON.parse(raw);
+              } catch {
+                continue;
+              }
+              const delta = chunk.choices?.[0]?.delta;
+              if (!delta) continue;
+              if (
+                delta.reasoning_content != null &&
+                delta.reasoning_content !== ""
+              ) {
+                thinking += delta.reasoning_content;
+                const tb = document.getElementById("ThinkBody");
+                if (tb) {
+                  tb.textContent = thinking;
+                  tb.scrollTop = tb.scrollHeight;
+                }
+              }
+              if (delta.content != null && delta.content !== "") {
+                if (!answer) {
+                  document.getElementById("AIStatus").textContent =
+                    "AI 正在撰写分析…";
+                  document.getElementById("ProgFill").style.width = "60%";
+                }
+                answer += delta.content;
+                // live-stream each field as it appears
+                streamFillFields(answer);
+              }
+            }
+          }
+
+          clearInterval(spinT);
+          const sp = document.getElementById("AISpinner");
+          if (sp) sp.textContent = "✦";
+          document.getElementById("ProgFill").style.width = "90%";
+          document.getElementById("AIStatus").textContent = "正在解析结果…";
+
+          // Show raw for debug
+          if (rawB) rawB.textContent = answer;
+
+          const parsed = parseXMLFields(answer);
+          const filledCount = fields.filter(
+            (k) => parsed[k] && parsed[k].trim(),
+          ).length;
+
+          if (filledCount === 0) {
+            // last resort: show raw + error
+            if (rawB) {
+              rawB.style.display = "block";
+              document.getElementById("RawArr").textContent = "▲";
+            }
+            throw new Error(
+              `解析失败，已显示原始响应供参考（共 ${answer.length} 字符）`,
+            );
+          }
+
+          aiResult = { ...parsed, _probId: probId };
+          fields.forEach((k, i) => {
+            setTimeout(() => {
+              const val = parsed[k] || "";
+              const vEl = document.getElementById(`afv_${k}`);
+              const wEl = document.getElementById(`af_${k}`);
+              if (vEl) {
+                // Set as text so MathJax processes $...$ in text nodes
+                vEl.textContent = val || "（AI 未提供）";
+                vEl.className = "af-val" + (val ? "" : " empty");
+              }
+              if (wEl) wEl.className = "af" + (val ? " done" : "");
+            }, i * 90);
+          });
+          setTimeout(
+            () => {
+              document.getElementById("ProgFill").style.width = "100%";
+              document.getElementById("AIStatus").textContent =
+                `✅ 分析完成（解析 ${filledCount}/7 个字段）`;
+              document.getElementById("AIApplyBtn").style.display = "";
+              // Fix 4: Render LaTeX in the AI drawer fields
+              if (window.MathJax) {
+                MathJax.typesetPromise([
+                  document.getElementById("AIFields"),
+                ]).catch(() => {});
+              }
+            },
+            fields.length * 90 + 100,
+          );
+        } catch (e) {
+          clearInterval(spinT);
+          const sp = document.getElementById("AISpinner");
+          if (sp) sp.textContent = "✦";
+          document.getElementById("ProgFill").style.width = "0%";
+          document.getElementById("AIStatus").textContent = "❌ " + e.message;
+          toast("❌ AI 分析失败：" + e.message.slice(0, 80));
         }
       }
-    }
 
-    clearInterval(spinT);
-    const sp=document.getElementById('AISpinner');if(sp)sp.textContent='✦';
-    document.getElementById('ProgFill').style.width='90%';
-    document.getElementById('AIStatus').textContent='正在解析结果…';
+      // Live stream: extract whatever fields are complete so far
+      function streamFillFields(text) {
+        const fields = [
+          "known",
+          "hidden",
+          "goal",
+          "breakthrough",
+          "warnings",
+          "steps",
+          "summary",
+        ];
+        fields.forEach((k) => {
+          const m = text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`, "i"));
+          if (m) {
+            const vEl = document.getElementById(`afv_${k}`);
+            const wEl = document.getElementById(`af_${k}`);
+            if (vEl && vEl.className.includes("empty")) {
+              // Use textContent first; MathJax will process text nodes
+              vEl.textContent = m[1].trim();
+              vEl.className = "af-val";
+              if (wEl) wEl.className = "af active";
+            }
+          }
+        });
+      }
 
-    // Show raw for debug
-    if(rawB)rawB.textContent=answer;
+      // Main parser — tries XML tags first, then multiple fallbacks
+      function parseXMLFields(text) {
+        const result = {};
+        const fields = [
+          "known",
+          "hidden",
+          "goal",
+          "breakthrough",
+          "warnings",
+          "steps",
+          "summary",
+        ];
 
-    const parsed=parseXMLFields(answer);
-    const filledCount=fields.filter(k=>parsed[k]&&parsed[k].trim()).length;
+        // Strategy 1: XML tags (primary)
+        fields.forEach((k) => {
+          const m = text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`, "i"));
+          if (m) result[k] = m[1].trim();
+        });
+        if (fields.some((k) => result[k])) return result;
 
-    if(filledCount===0){
-      // last resort: show raw + error
-      if(rawB){rawB.style.display='block';document.getElementById('RawArr').textContent='▲';}
-      throw new Error(`解析失败，已显示原始响应供参考（共 ${answer.length} 字符）`);
-    }
+        // Strategy 2: JSON (strip fences, find outermost braces)
+        try {
+          let t = text
+            .replace(/^```(?:json)?\s*/im, "")
+            .replace(/```\s*$/m, "")
+            .trim();
+          // strip <|begin_of_box|>...<|end_of_box|> wrappers
+          t = t
+            .replace(/<\|begin_of_box\|>/g, "")
+            .replace(/<\|end_of_box\|>/g, "");
+          const s = t.indexOf("{"),
+            e = t.lastIndexOf("}");
+          if (s >= 0 && e > s) {
+            const obj = JSON.parse(t.slice(s, e + 1));
+            fields.forEach((k) => {
+              if (obj[k]) result[k] = String(obj[k]).trim();
+            });
+            if (fields.some((k) => result[k])) return result;
+          }
+        } catch {}
 
-    aiResult={...parsed, _probId:probId};
-    fields.forEach((k,i)=>{
-      setTimeout(()=>{
-        const val=parsed[k]||'';
-        const vEl=document.getElementById(`afv_${k}`);
-        const wEl=document.getElementById(`af_${k}`);
-        if(vEl){
-          // Set as text so MathJax processes $...$ in text nodes
-          vEl.textContent=val||'（AI 未提供）';
-          vEl.className='af-val'+(val?'':' empty');
+        // Strategy 3: Chinese-label pattern  "已知条件：xxx\n隐含条件：yyy"
+        const labelMap = {
+          known: ["已知条件", "已知"],
+          hidden: ["隐含条件", "隐含"],
+          goal: ["目标转化", "求解目标", "证明目标"],
+          breakthrough: ["关键突破", "切入点", "解题思路"],
+          warnings: ["易错警示", "注意事项", "易错点"],
+          steps: ["解题步骤", "解题过程", "详细步骤"],
+          summary: ["方法总结", "总结"],
+        };
+        const allLabels = Object.entries(labelMap).flatMap(([k, lbls]) =>
+          lbls.map((l) => ({ k, l })),
+        );
+        // build pattern to split on labels
+        const splits = allLabels
+          .map((x) => x.l)
+          .sort((a, b) => b.length - a.length);
+        const pat = new RegExp(
+          `(${splits.map((s) => s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")).join("|")})[：:]\s*`,
+          "g",
+        );
+        const parts = text.split(pat);
+        for (let i = 1; i < parts.length - 1; i += 2) {
+          const lbl = parts[i],
+            val = parts[i + 1]
+              ?.split(
+                /(?=已知条件|隐含条件|目标转化|关键突破|易错警示|解题步骤|方法总结)/,
+              )[0]
+              ?.trim();
+          if (!lbl || !val) continue;
+          const found = allLabels.find((x) => x.l === lbl);
+          if (found && !result[found.k]) result[found.k] = val;
         }
-        if(wEl)wEl.className='af'+(val?' done':'');
-      },i*90);
-    });
-    setTimeout(()=>{
-      document.getElementById('ProgFill').style.width='100%';
-      document.getElementById('AIStatus').textContent=`✅ 分析完成（解析 ${filledCount}/7 个字段）`;
-      document.getElementById('AIApplyBtn').style.display='';
-      // Fix 4: Render LaTeX in the AI drawer fields
-      if(window.MathJax){
-        MathJax.typesetPromise([document.getElementById('AIFields')]).catch(()=>{});
+
+        return result;
       }
-    },fields.length*90+100);
 
-  }catch(e){
-    clearInterval(spinT);
-    const sp=document.getElementById('AISpinner');if(sp)sp.textContent='✦';
-    document.getElementById('ProgFill').style.width='0%';
-    document.getElementById('AIStatus').textContent='❌ '+e.message;
-    toast('❌ AI 分析失败：'+e.message.slice(0,80));
-  }
-}
+      // Undo snapshot
+      let undoSnap = null;
 
-// Live stream: extract whatever fields are complete so far
-function streamFillFields(text){
-  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
-  fields.forEach(k=>{
-    const m=text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`,'i'));
-    if(m){
-      const vEl=document.getElementById(`afv_${k}`);
-      const wEl=document.getElementById(`af_${k}`);
-      if(vEl&&vEl.className.includes('empty')){
-        // Use textContent first; MathJax will process text nodes
-        vEl.textContent=m[1].trim();
-        vEl.className='af-val';
-        if(wEl)wEl.className='af active';
+      function applyAI() {
+        if (!aiResult) return;
+        const p = probs.find((x) => x.id === aiResult._probId);
+        if (!p) return;
+        // Save snapshot for undo
+        undoSnap = {
+          id: p.id,
+          analysis: JSON.parse(JSON.stringify(p.analysis || {})),
+          steps: p.steps || "",
+          summary: p.summary || "",
+        };
+        p.analysis = {
+          known: aiResult.known || "",
+          hidden: aiResult.hidden || "",
+          goal: aiResult.goal || "",
+          breakthrough: aiResult.breakthrough || "",
+          warnings: aiResult.warnings || "",
+        };
+        if (aiResult.steps) p.steps = aiResult.steps;
+        if (aiResult.summary) p.summary = aiResult.summary;
+        save();
+        renderList();
+        renderDetail(p.id);
+        closeAI();
+        editing = false;
+        // Show undo button
+        const ub = document.getElementById("UndoBtn");
+        if (ub) ub.style.display = "";
+        toast("✅ AI 分析已应用！可点击「↩ 撤回」还原");
       }
-    }
-  });
-}
 
-// Main parser — tries XML tags first, then multiple fallbacks
-function parseXMLFields(text){
-  const result={};
-  const fields=['known','hidden','goal','breakthrough','warnings','steps','summary'];
+      function undoAI() {
+        if (!undoSnap) return;
+        const p = probs.find((x) => x.id === undoSnap.id);
+        if (!p) return;
+        p.analysis = undoSnap.analysis;
+        p.steps = undoSnap.steps;
+        p.summary = undoSnap.summary;
+        undoSnap = null;
+        save();
+        renderList();
+        renderDetail(p.id);
+        const ub = document.getElementById("UndoBtn");
+        if (ub) ub.style.display = "none";
+        toast("↩ 已撤回 AI 分析");
+      }
 
-  // Strategy 1: XML tags (primary)
-  fields.forEach(k=>{
-    const m=text.match(new RegExp(`<${k}>([\\s\\S]*?)<\\/${k}>`,'i'));
-    if(m)result[k]=m[1].trim();
-  });
-  if(fields.some(k=>result[k]))return result;
+      function closeAI() {
+        document.getElementById("AIOV").classList.remove("open");
+      }
 
-  // Strategy 2: JSON (strip fences, find outermost braces)
-  try{
-    let t=text.replace(/^```(?:json)?\s*/im,'').replace(/```\s*$/m,'').trim();
-    // strip <|begin_of_box|>...<|end_of_box|> wrappers
-    t=t.replace(/<\|begin_of_box\|>/g,'').replace(/<\|end_of_box\|>/g,'');
-    const s=t.indexOf('{'), e=t.lastIndexOf('}');
-    if(s>=0&&e>s){
-      const obj=JSON.parse(t.slice(s,e+1));
-      fields.forEach(k=>{if(obj[k])result[k]=String(obj[k]).trim();});
-      if(fields.some(k=>result[k]))return result;
-    }
-  }catch{}
+      // ── Mobile navigation ──
+      let mobView = "list"; // 'list' | 'detail'
+      function isMob() {
+        try {
+          return window.matchMedia("(max-width:700px)").matches;
+        } catch (e) {
+          return window.innerWidth <= 700;
+        }
+      }
 
-  // Strategy 3: Chinese-label pattern  "已知条件：xxx\n隐含条件：yyy"
-  const labelMap={known:['已知条件','已知'],hidden:['隐含条件','隐含'],goal:['目标转化','求解目标','证明目标'],
-    breakthrough:['关键突破','切入点','解题思路'],warnings:['易错警示','注意事项','易错点'],
-    steps:['解题步骤','解题过程','详细步骤'],summary:['方法总结','总结']};
-  const allLabels=Object.entries(labelMap).flatMap(([k,lbls])=>lbls.map(l=>({k,l})));
-  // build pattern to split on labels
-  const splits=allLabels.map(x=>x.l).sort((a,b)=>b.length-a.length);
-  const pat=new RegExp(`(${splits.map(s=>s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&')).join('|')})[：:]\s*`,'g');
-  const parts=text.split(pat);
-  for(let i=1;i<parts.length-1;i+=2){
-    const lbl=parts[i],val=parts[i+1]?.split(/(?=已知条件|隐含条件|目标转化|关键突破|易错警示|解题步骤|方法总结)/)[0]?.trim();
-    if(!lbl||!val)continue;
-    const found=allLabels.find(x=>x.l===lbl);
-    if(found&&!result[found.k])result[found.k]=val;
-  }
+      // Filter drawer (slide-in from left on mobile)
+      function openFPDrawer() {
+        const fp = document.getElementById("FP");
+        const bd = document.getElementById("FPBackdrop");
+        if (fp) {
+          fp.classList.add("drawer", "open");
+        }
+        if (bd) {
+          bd.classList.add("open");
+        }
+      }
+      function closeFPDrawer() {
+        const fp = document.getElementById("FP");
+        const bd = document.getElementById("FPBackdrop");
+        if (fp) fp.classList.remove("open");
+        if (bd) bd.classList.remove("open");
+        setTimeout(() => {
+          if (fp) fp.classList.remove("drawer");
+        }, 250);
+      }
 
-  return result;
-}
+      function mobGo(view) {
+        if (!isMob()) return;
+        mobView = view;
+        if (view === "detail") {
+          document.body.classList.add("mob-detail");
+        } else {
+          document.body.classList.remove("mob-detail");
+          closeFPDrawer();
+        }
+        if (view === "list") renderList();
+      }
+      function mobGoList() {
+        mobGo("list");
+      }
+      function mobBack(view) {
+        mobGo(view);
+      }
+      function resetFilters() {
+        fl = {
+          q: "",
+          subj: "all",
+          types: [],
+          diff: "all",
+          stat: "all",
+          know: [],
+        };
+        document.getElementById("SI").value = "";
+        document
+          .querySelectorAll("#sF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === "all"));
+        document
+          .querySelectorAll("#tF .chip")
+          .forEach((c) => c.classList.remove("on"));
+        document
+          .querySelectorAll("#dF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === "all"));
+        document
+          .querySelectorAll("#stF .chip")
+          .forEach((c) => c.classList.toggle("on", c.dataset.v === "all"));
+        renderKF();
+        renderList();
+        if (isMob()) closeFPDrawer();
+        toast("✅ 筛选条件已重置");
+      }
 
-// Undo snapshot
-let undoSnap = null;
-
-function applyAI(){
-  if(!aiResult)return;
-  const p=probs.find(x=>x.id===aiResult._probId);if(!p)return;
-  // Save snapshot for undo
-  undoSnap={id:p.id, analysis:JSON.parse(JSON.stringify(p.analysis||{})),
-    steps:p.steps||'', summary:p.summary||''};
-  p.analysis={
-    known:aiResult.known||'',hidden:aiResult.hidden||'',goal:aiResult.goal||'',
-    breakthrough:aiResult.breakthrough||'',warnings:aiResult.warnings||''
-  };
-  if(aiResult.steps)p.steps=aiResult.steps;
-  if(aiResult.summary)p.summary=aiResult.summary;
-  save();renderList();renderDetail(p.id);
-  closeAI();editing=false;
-  // Show undo button
-  const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='';
-  toast('✅ AI 分析已应用！可点击「↩ 撤回」还原');
-}
-
-function undoAI(){
-  if(!undoSnap)return;
-  const p=probs.find(x=>x.id===undoSnap.id);if(!p)return;
-  p.analysis=undoSnap.analysis;
-  p.steps=undoSnap.steps;
-  p.summary=undoSnap.summary;
-  undoSnap=null;
-  save();renderList();renderDetail(p.id);
-  const ub=document.getElementById('UndoBtn');if(ub)ub.style.display='none';
-  toast('↩ 已撤回 AI 分析');
-}
-
-function closeAI(){document.getElementById('AIOV').classList.remove('open');}
-
-// ── Mobile navigation ──
-let mobView='list'; // 'list' | 'detail'
-function isMob(){try{return window.matchMedia('(max-width:700px)').matches;}catch(e){return window.innerWidth<=700;}}
-
-// Filter drawer (slide-in from left on mobile)
-function openFPDrawer(){
-  const fp=document.getElementById('FP');
-  const bd=document.getElementById('FPBackdrop');
-  if(fp){fp.classList.add('drawer','open');}
-  if(bd){bd.classList.add('open');}
-}
-function closeFPDrawer(){
-  const fp=document.getElementById('FP');
-  const bd=document.getElementById('FPBackdrop');
-  if(fp)fp.classList.remove('open');
-  if(bd)bd.classList.remove('open');
-  setTimeout(()=>{if(fp)fp.classList.remove('drawer');},250);
-}
-
-function mobGo(view){
-  if(!isMob())return;
-  mobView=view;
-  if(view==='detail'){
-    document.body.classList.add('mob-detail');
-  } else {
-    document.body.classList.remove('mob-detail');
-    closeFPDrawer();
-  }
-  if(view==='list')renderList();
-}
-function mobGoList(){mobGo('list');}
-function mobBack(view){mobGo(view);}
-function resetFilters(){
-  fl={q:'',subj:'all',types:[],diff:'all',stat:'all',know:[]};
-  document.getElementById('SI').value='';
-  document.querySelectorAll('#sF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
-  document.querySelectorAll('#tF .chip').forEach(c=>c.classList.remove('on'));
-  document.querySelectorAll('#dF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
-  document.querySelectorAll('#stF .chip').forEach(c=>c.classList.toggle('on',c.dataset.v==='all'));
-  renderKF();renderList();
-  if(isMob())closeFPDrawer();
-  toast('✅ 筛选条件已重置');
-}
-
-// Init
-document.addEventListener('DOMContentLoaded',()=>{
-  load();loadSample();renderKF();renderList();
-  setupRH('FPR','FP','mb_fp_w');setupRH('LPR','LP','mb_lp_w');
-  if(window.MathJax)setTimeout(()=>MathJax.typesetPromise(),500);
-  // Mobile: list is default view (detail layer slides on top)
-  if(!isMob())document.body.className=''; // clear any stale class on desktop
-  window.addEventListener('resize',()=>{
-    if(!isMob()){document.body.className='';closeFPDrawer();}
-  });
-});
-</script>
-</body>
+      // Init
+      document.addEventListener("DOMContentLoaded", () => {
+        load();
+        loadSample();
+        renderKF();
+        renderList();
+        setupRH("FPR", "FP", "mb_fp_w");
+        setupRH("LPR", "LP", "mb_lp_w");
+        if (window.MathJax) setTimeout(() => MathJax.typesetPromise(), 500);
+        // Mobile: list is default view (detail layer slides on top)
+        if (!isMob()) document.body.className = ""; // clear any stale class on desktop
+        window.addEventListener("resize", () => {
+          if (!isMob()) {
+            document.body.className = "";
+            closeFPDrawer();
+          }
+        });
+      });
+    </script>
+  </body>
 </html>

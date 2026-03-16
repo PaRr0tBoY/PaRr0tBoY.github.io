@@ -1,916 +1,2033 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="zh-CN">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>THE FEED</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:15px}
-:root{
-  --bg:#0e0e0e;--surface:#161616;--surface2:#1e1e1e;--surface3:#252525;
-  --border:#272727;--border2:#333;
-  --text:#f0f0f0;--text2:#a0a0a0;--text3:#565656;
-  --red:#e5173f;--amber:#d4911a;--teal:#0fb8a0;--orange:#e8721a;--green:#1daa55;--purple:#8b5cf6;
-  --font:'DM Sans',system-ui,sans-serif;--mono:'DM Mono',monospace;
-}
-body{background:var(--bg);color:var(--text);font-family:var(--font);line-height:1.5;-webkit-font-smoothing:antialiased}
-a{color:inherit;text-decoration:none}
-button{font-family:var(--font);cursor:pointer}
-
-/* ── HEADER ── */
-header{position:sticky;top:0;z-index:200;background:rgba(14,14,14,0.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border)}
-.hdr{max-width:1380px;margin:0 auto;padding:0 24px;height:50px;display:flex;align-items:center;gap:20px}
-.logo{font-size:20px;font-weight:800;letter-spacing:-0.5px;color:#fff;flex-shrink:0}
-.logo em{color:var(--red);font-style:normal}
-.nav{display:flex;gap:2px;flex:1}
-.np{font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;padding:4px 10px;border-radius:3px;color:var(--text3);cursor:default}
-.np.on{color:var(--text2);background:var(--surface2)}
-.hdr-r{display:flex;align-items:center;gap:10px;margin-left:auto;flex-shrink:0}
-.ts{font-family:var(--mono);font-size:11px;color:var(--text3)}
-.hbtn{display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:5px 12px;border-radius:3px;transition:all .15s}
-.hbtn:hover{background:var(--surface);color:#fff;border-color:#444}
-.hbtn .ico{display:inline-block;font-size:14px}
-.hbtn.spin .ico{animation:spin .7s linear infinite}
-@keyframes spin{to{transform:rotate(360deg)}}
-.settings-btn{background:transparent;border:1px solid var(--border);color:var(--text3);padding:5px 10px;border-radius:3px;font-size:13px;transition:all .15s}
-.settings-btn:hover{color:#fff;border-color:var(--border2)}
-
-/* ── SETTINGS OVERLAY ── */
-.overlay{position:fixed;inset:0;z-index:500;background:rgba(0,0,0,.7);backdrop-filter:blur(6px);display:none;align-items:flex-start;justify-content:center;padding:60px 20px;overflow-y:auto}
-.overlay.open{display:flex}
-.settings-panel{background:var(--surface);border:1px solid var(--border2);border-radius:6px;width:100%;max-width:680px;padding:28px;position:relative}
-.sp-title{font-size:16px;font-weight:800;letter-spacing:-0.3px;color:#fff;margin-bottom:6px}
-.sp-sub{font-size:12px;color:var(--text3);margin-bottom:24px}
-.sp-close{position:absolute;top:18px;right:18px;background:none;border:none;color:var(--text3);font-size:20px;cursor:pointer;line-height:1;padding:4px}
-.sp-close:hover{color:#fff}
-.sp-section{margin-bottom:24px}
-.sp-section-title{font-size:10px;font-weight:700;letter-spacing:0.1em;text-transform:uppercase;color:var(--text3);margin-bottom:12px;padding-bottom:8px;border-bottom:1px solid var(--border)}
-.feed-row{display:grid;grid-template-columns:120px 1fr 70px;gap:8px;align-items:center;margin-bottom:8px}
-.feed-label{font-size:12px;font-weight:600;color:var(--text2)}
-.sp-input{background:var(--surface2);border:1px solid var(--border2);color:var(--text);padding:6px 10px;border-radius:3px;font-family:var(--mono);font-size:11px;width:100%;transition:border .15s}
-.sp-input:focus{outline:none;border-color:var(--text3)}
-.sp-num{width:100%;text-align:center}
-.sp-deepl{display:grid;grid-template-columns:120px 1fr;gap:8px;align-items:center;margin-bottom:8px}
-.deepl-status{font-size:11px;color:var(--text3);margin-top:6px}
-.deepl-status.ok{color:var(--green)}
-.test-btn{background:var(--surface2);border:1px solid var(--border2);color:var(--text2);padding:6px 12px;border-radius:3px;font-size:11px;font-weight:600;letter-spacing:0.04em;text-transform:uppercase;white-space:nowrap;transition:all .15s}
-.test-btn:hover{color:#fff;border-color:#555}
-.deepl-status.err{color:var(--red)}
-.sp-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:24px;padding-top:20px;border-top:1px solid var(--border)}
-.sp-save{background:var(--red);border:none;color:#fff;padding:8px 20px;border-radius:3px;font-size:12px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;transition:opacity .15s}
-.sp-save:hover{opacity:.85}
-.sp-cancel{background:none;border:1px solid var(--border2);color:var(--text2);padding:8px 16px;border-radius:3px;font-size:12px;transition:all .15s}
-.sp-cancel:hover{color:#fff;border-color:#444}
-.trans-toggle{display:flex;align-items:center;gap:10px}
-.toggle{position:relative;width:36px;height:20px;flex-shrink:0}
-.toggle input{opacity:0;width:0;height:0}
-.toggle-slider{position:absolute;inset:0;background:var(--border2);border-radius:20px;cursor:pointer;transition:.2s}
-.toggle-slider::before{content:'';position:absolute;width:14px;height:14px;left:3px;top:3px;background:#fff;border-radius:50%;transition:.2s}
-.toggle input:checked+.toggle-slider{background:var(--teal)}
-.toggle input:checked+.toggle-slider::before{transform:translateX(16px)}
-.toggle-label{font-size:12px;color:var(--text2)}
-
-/* ── PAGE ── */
-.page{max-width:1380px;margin:0 auto;padding:0 24px 64px}
-
-/* ── SECTION HEAD ── */
-.sh{display:flex;align-items:center;gap:10px;padding:26px 0 13px;border-bottom:1px solid var(--border2)}
-.sh-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-.sh-label{font-size:10.5px;font-weight:700;letter-spacing:0.09em;text-transform:uppercase;color:var(--text3)}
-.tag{font-size:10.5px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;padding:2px 8px;border-radius:3px}
-.d-red{background:var(--red)}.d-amber{background:var(--amber)}.d-teal{background:var(--teal)}
-.d-orange{background:var(--orange)}.d-green{background:var(--green)}.d-purple{background:var(--purple)}
-.t-red{background:rgba(229,23,63,.1);color:var(--red)}
-.t-amber{background:rgba(212,145,26,.1);color:var(--amber)}
-.t-teal{background:rgba(15,184,160,.1);color:var(--teal)}
-.t-orange{background:rgba(232,114,26,.1);color:var(--orange)}
-.t-green{background:rgba(29,170,85,.1);color:var(--green)}
-.t-purple{background:rgba(139,92,246,.1);color:var(--purple)}
-
-/* ── TOP GRID ── */
-.tg{display:grid;grid-template-columns:1fr 350px;gap:0;border:1px solid var(--border);border-top:none}
-.tm-col{border-right:1px solid var(--border)}
-.sb{display:flex;flex-direction:column;background:var(--surface)}
-
-/* ── BLOCK HEADER ── */
-.bh{padding:11px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--surface2)}
-.bl{font-size:10.5px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);display:flex;align-items:center;gap:8px}
-
-/* ── TECHMEME HERO ── */
-.tm-hero{display:block;padding:22px 22px 18px;border-bottom:1px solid var(--border);transition:background .12s}
-.tm-hero:hover{background:var(--surface)}
-.tm-eyebrow{font-size:10.5px;font-weight:700;letter-spacing:0.07em;text-transform:uppercase;color:var(--red);margin-bottom:10px;display:flex;align-items:center;gap:7px}
-.tm-eyebrow::before{content:'';width:6px;height:6px;border-radius:50%;background:var(--red);display:inline-block;animation:pulse 2s infinite}
-@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.tm-hero h2{font-size:21px;font-weight:800;line-height:1.28;letter-spacing:-0.3px;color:#fff;margin-bottom:10px}
-.tm-hero:hover h2{color:var(--text2)}
-.meta{font-size:11px;color:var(--text3)}
-.meta .src{color:var(--text2);font-weight:600;margin-right:6px}
-
-/* ── TECHMEME ROW ── */
-.tm-row{display:grid;grid-template-columns:32px 1fr;align-items:start;gap:14px;padding:12px 22px;border-bottom:1px solid var(--border);transition:background .12s}
-.tm-row:last-child{border-bottom:none}
-.tm-row:hover{background:var(--surface)}
-.rn{font-family:var(--mono);font-size:12px;color:var(--text3);text-align:right;padding-top:2px;line-height:1.4}
-.rl{font-size:14px;font-weight:500;line-height:1.42;color:var(--text);display:block}
-.tm-row:hover .rl{color:#fff}
-.rm{font-size:10.5px;color:var(--text3);margin-top:3px}
-.rm .src{color:var(--text2);font-weight:600;margin-right:5px}
-
-/* ── HN ── */
-.hn-block{flex:1 1 auto;border-bottom:1px solid var(--border);overflow:hidden}
-.hi{padding:10px 18px;border-bottom:1px solid var(--border);transition:background .12s}
-.hi:last-child{border-bottom:none}
-.hi:hover{background:var(--surface2)}
-.hl{font-size:13px;font-weight:400;line-height:1.38;color:var(--text);font-style:italic;display:block}
-.hi:hover .hl{color:#fff;font-style:normal}
-.hm{font-size:10.5px;color:var(--text3);margin-top:3px}
-.hm .src{color:var(--amber);font-style:normal;font-weight:600;margin-right:5px}
-
-/* ── SOLIDOT ── */
-.solidot-block{}
-.si{padding:8px 18px;border-bottom:1px solid var(--border);transition:background .12s}
-.si:last-child{border-bottom:none}
-.si:hover{background:var(--surface2)}
-.sl{font-size:12.5px;color:var(--text2);display:block;line-height:1.35}
-.si:hover .sl{color:var(--text)}
-.sd{font-size:11px;color:var(--text3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-
-/* ── BOTTOM GRID (PH + GH) ── */
-.bg{display:grid;grid-template-columns:1fr 1fr;gap:0;border:1px solid var(--border);border-top:none}
-.ph-col{border-right:1px solid var(--border)}
-.pi{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .12s}
-.pi:last-child{border-bottom:none}
-.pi:hover{background:var(--surface)}
-.pl{font-size:13.5px;font-weight:600;line-height:1.32;color:var(--text);display:block}
-.pi:hover .pl{color:var(--orange)}
-.pd{font-size:11.5px;color:var(--text3);margin-top:3px;line-height:1.35}
-.pa{color:var(--text3);font-size:14px;padding-top:2px}
-.gi{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start;padding:12px 20px;border-bottom:1px solid var(--border);transition:background .12s}
-.gi:last-child{border-bottom:none}
-.gi:hover{background:var(--surface)}
-.gl{font-family:var(--mono);font-size:12px;font-weight:500;line-height:1.32;color:var(--text);display:block}
-.gi:hover .gl{color:var(--green)}
-.gd{font-size:11.5px;color:var(--text3);margin-top:3px;line-height:1.35}
-.glang{font-family:var(--mono);font-size:10px;color:var(--green);white-space:nowrap;padding-top:2px}
-
-/* ── PRODUCT UPDATES ── */
-.updates-row{display:flex;gap:0;border:1px solid var(--border);border-top:none;overflow:hidden}
-.upd-col{flex:1 1 0;min-width:0;border-right:1px solid var(--border)}
-.upd-col:last-child{border-right:none}
-.ui{padding:13px 20px;border-bottom:1px solid var(--border);transition:background .12s;display:grid;grid-template-columns:1fr auto;gap:10px;align-items:start}
-.ui:last-child{border-bottom:none}
-.ui:hover{background:var(--surface)}
-.ut{font-size:13.5px;font-weight:500;line-height:1.38;color:var(--text);display:block}
-.ui:hover .ut{color:#fff}
-.ud{font-size:12px;color:var(--text3);margin-top:4px;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-.um{font-size:10.5px;color:var(--text3);margin-top:4px}
-.um .src{color:var(--purple);font-weight:600;margin-right:5px}
-.u-arrow{color:var(--text3);font-size:13px;padding-top:3px;flex-shrink:0}
-
-/* translation badge */
-.trans-badge{display:inline-flex;align-items:center;gap:4px;font-family:var(--mono);font-size:9px;color:var(--teal);background:rgba(15,184,160,.08);padding:1px 5px;border-radius:2px;margin-left:6px;vertical-align:middle}
-
-/* ── SKELETON ── */
-.sk{padding:18px 22px}
-.skl{height:13px;border-radius:2px;margin-bottom:10px;background:linear-gradient(90deg,var(--surface) 25%,var(--surface2) 50%,var(--surface) 75%);background-size:200% 100%;animation:sk 1.4s ease infinite}
-.skl.w80{width:80%}.skl.w60{width:60%}.skl.w40{width:40%}.skl.h18{height:18px;margin-bottom:14px}
-@keyframes sk{to{background-position:-200% 0}}
-.err{padding:18px 22px;font-family:var(--mono);font-size:11px;color:var(--red);line-height:1.7}
-
-/* ── FADE ── */
-@keyframes fu{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.f{animation:fu .3s ease both}
-
-/* ── RESPONSIVE ── */
-@media(max-width:1024px){
-  .tg{grid-template-columns:1fr}
-  .tm-col{border-right:none;border-bottom:1px solid var(--border)}
-  .bg{grid-template-columns:1fr}
-  .ph-col{border-right:none;border-bottom:1px solid var(--border)}
-  .updates-row{flex-direction:column}
-  .upd-col{border-right:none;border-bottom:1px solid var(--border)}
-  .upd-col:last-child{border-bottom:none}
-}
-@media(max-width:600px){
-  .page{padding:0 13px 48px}
-  .hdr{padding:0 13px;gap:8px}
-  .nav,.ts{display:none}
-  .tm-hero h2{font-size:18px}
-  .feed-row{grid-template-columns:100px 1fr 60px}
-}
-</style>
-</head>
-<body>
-
-<!-- SETTINGS OVERLAY -->
-<div class="overlay" id="overlay">
-  <div class="settings-panel">
-    <div class="sp-title">⚙ 设置</div>
-    <div class="sp-sub">编辑 Feed 链接、条目数量，以及配置自动翻译</div>
-    <button class="sp-close" onclick="closeSettings()">×</button>
-
-    <!-- TRANSLATION -->
-    <div class="sp-section">
-      <div class="sp-section-title">🌐 自动翻译</div>
-
-      <!-- engine tabs -->
-      <div style="display:flex;gap:0;margin-bottom:14px;border:1px solid var(--border2);border-radius:4px;overflow:hidden">
-        <button id="tab-deepl" onclick="switchTransTab('deepl')" style="flex:1;padding:7px 0;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border:none;background:var(--red);color:#fff;transition:all .15s">DeepL</button>
-        <button id="tab-ai" onclick="switchTransTab('ai')" style="flex:1;padding:7px 0;font-size:11px;font-weight:700;letter-spacing:0.05em;text-transform:uppercase;border:none;background:var(--surface2);color:var(--text3);transition:all .15s">✦ AstrDark AI</button>
-      </div>
-
-      <!-- DeepL pane -->
-      <div id="pane-deepl">
-        <div class="trans-toggle" style="margin-bottom:10px">
-          <label class="toggle"><input type="checkbox" id="transEnabled"><span class="toggle-slider"></span></label>
-          <span class="toggle-label">启用 DeepL 翻译</span>
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">API Key</label>
-          <div style="display:flex;gap:8px">
-            <input class="sp-input" type="password" id="deeplKey" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx" style="flex:1">
-            <button onclick="testDeepL()" class="test-btn">测试</button>
-          </div>
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">目标语言</label>
-          <select class="sp-input" id="deeplLang" style="font-family:var(--font)">
-            <option value="ZH">中文（简体）</option>
-            <option value="ZH-HANT">中文（繁体）</option>
-            <option value="JA">日语</option>
-            <option value="KO">韩语</option>
-            <option value="FR">法语</option>
-            <option value="DE">德语</option>
-          </select>
-        </div>
-        <div class="deepl-status" id="deeplStatus"></div>
-      </div>
-
-      <!-- AstrDark AI pane -->
-      <div id="pane-ai" style="display:none">
-        <div class="trans-toggle" style="margin-bottom:10px">
-          <label class="toggle"><input type="checkbox" id="aiTransEnabled"><span class="toggle-slider"></span></label>
-          <span class="toggle-label">启用 AI 翻译（免费 · 无限额度）</span>
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">Endpoint</label>
-          <input class="sp-input" id="aiEndpoint" placeholder="https://api.astrdark.cyou" value="https://api.astrdark.cyou">
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">API Key</label>
-          <div style="display:flex;gap:8px">
-            <input class="sp-input" type="password" id="aiKey" placeholder="sk-..." style="flex:1">
-            <button onclick="testAI()" class="test-btn">测试</button>
-          </div>
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">模型</label>
-          <input class="sp-input" id="aiModel" placeholder="gpt-4o-mini" value="gpt-4o-mini">
-        </div>
-        <div class="sp-deepl">
-          <label class="feed-label">目标语言</label>
-          <select class="sp-input" id="aiLang" style="font-family:var(--font)">
-            <option value="Chinese">中文（简体）</option>
-            <option value="Traditional Chinese">中文（繁体）</option>
-            <option value="Japanese">日语</option>
-            <option value="Korean">韩语</option>
-            <option value="French">法语</option>
-            <option value="German">德语</option>
-          </select>
-        </div>
-        <div class="deepl-status" id="aiStatus"></div>
-      </div>
-    </div>
-
-    <!-- FEED SETTINGS -->
-    <div class="sp-section">
-      <div class="sp-section-title">📡 科技新闻</div>
-      <div class="feed-row"><span class="feed-label">Techmeme</span><input class="sp-input" id="f-techmeme" type="url"><input class="sp-input sp-num" id="n-techmeme" type="number" min="1" max="50"></div>
-      <div class="feed-row"><span class="feed-label">HN Classic</span><input class="sp-input" id="f-hn" type="url"><input class="sp-input sp-num" id="n-hn" type="number" min="1" max="50"></div>
-      <div class="feed-row"><span class="feed-label">Solidot</span><input class="sp-input" id="f-solidot" type="url"><input class="sp-input sp-num" id="n-solidot" type="number" min="1" max="30"></div>
-    </div>
-
-    <div class="sp-section">
-      <div class="sp-section-title">🪀 新玩意</div>
-      <div class="feed-row"><span class="feed-label">Product Hunt</span><input class="sp-input" id="f-ph" type="url"><input class="sp-input sp-num" id="n-ph" type="number" min="1" max="30"></div>
-      <div class="feed-row"><span class="feed-label">GitHub</span><input class="sp-input" id="f-gh" type="url"><input class="sp-input sp-num" id="n-gh" type="number" min="1" max="30"></div>
-    </div>
-
-    <div class="sp-section">
-      <div class="sp-section-title">🔔 产品更新</div>
-      <div id="updates-feed-rows"></div>
-      <button onclick="addUpdateFeedRow()" style="background:none;border:1px dashed var(--border2);color:var(--text3);padding:6px 14px;border-radius:3px;font-size:11px;margin-top:4px;width:100%;transition:all .15s" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='var(--text3)'">+ 添加 Feed</button>
-    </div>
-
-    <div class="sp-actions">
-      <button class="sp-cancel" onclick="closeSettings()">取消</button>
-      <button class="sp-save" onclick="saveSettings()">保存并刷新</button>
-    </div>
-  </div>
-</div>
-
-<!-- HEADER -->
-<header>
-  <div class="hdr">
-    <div class="logo">THE<em>FEED</em></div>
-    <nav class="nav">
-      <div class="np on">科技新闻</div>
-      <div class="np">荐读</div>
-      <div class="np">趣闻</div>
-      <div class="np">新玩意</div>
-      <div class="np">产品更新</div>
-    </nav>
-    <div class="hdr-r">
-      <span class="ts" id="ts"></span>
-      <button class="settings-btn" onclick="openSettings()" title="设置">⚙</button>
-      <button class="hbtn" id="rbtn" onclick="loadAll()">
-        <span class="ico">↻</span> Refresh
-      </button>
-    </div>
-  </div>
-</header>
-
-<!-- PAGE -->
-<div class="page">
-
-  <!-- § 科技新闻 -->
-  <div class="sh">
-    <div class="sh-dot d-red"></div>
-    <div class="sh-label">科技新闻 · Tech News</div>
-    <span class="tag t-red">Techmeme</span>
-    <span class="tag t-amber" style="margin-left:4px">HN Classic</span>
-    <span class="tag t-teal"  style="margin-left:4px">Solidot</span>
-  </div>
-
-  <div class="tg">
-    <div class="tm-col" id="tm-col"><div class="sk"><div class="skl h18 w80"></div><div class="skl w60"></div><div class="skl w40"></div><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div></div>
-    <div class="sb">
-      <div class="hn-block">
-        <div class="bh"><div class="bl"><div class="sh-dot d-amber"></div>Hacker News · 荐读</div><span class="tag t-amber">Classic</span></div>
-        <div id="hn-items"><div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div><div class="skl w80"></div></div></div>
-      </div>
-      <div class="solidot-block">
-        <div class="bh"><div class="bl"><div class="sh-dot d-teal"></div>Solidot · 趣闻</div><span class="tag t-teal">奇趣</span></div>
-        <div id="solidot-items"><div class="sk"><div class="skl w80"></div><div class="skl w60"></div></div></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- § 新玩意 -->
-  <div class="sh" style="padding-top:34px">
-    <div class="sh-dot d-orange"></div>
-    <div class="sh-label">新玩意 · New Things</div>
-    <span class="tag t-orange">Product Hunt</span>
-    <span class="tag t-green" style="margin-left:4px">GitHub Trending</span>
-  </div>
-  <div class="bg">
-    <div class="ph-col">
-      <div class="bh"><div class="bl"><div class="sh-dot d-orange"></div>Product Hunt</div><span class="tag t-orange">今日产品</span></div>
-      <div id="ph-items"><div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div></div>
-    </div>
-    <div>
-      <div class="bh"><div class="bl"><div class="sh-dot d-green"></div>GitHub Trending</div><span class="tag t-green">Daily</span></div>
-      <div id="gh-items"><div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div></div>
-    </div>
-  </div>
-
-  <!-- § 产品更新 -->
-  <div class="sh" style="padding-top:34px">
-    <div class="sh-dot d-purple"></div>
-    <div class="sh-label">产品更新 · Product Updates</div>
-    <span class="tag t-purple" id="update-feed-tags"></span>
-  </div>
-  <div class="updates-row" id="updates-grid">
-    <div class="sk" style="grid-column:1/-1"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div>
-  </div>
-
-</div>
-
-<script>
-// ═══════════════════════════════════════════════
-//  DEFAULT CONFIG  (persisted to localStorage)
-// ═══════════════════════════════════════════════
-const DEFAULTS = {
-  feeds: {
-    techmeme: { url:'https://www.techmeme.com/feed.xml',      count:26 },
-    hn:       { url:'https://hnrss.org/classic',              count:14 },
-    solidot:  { url:'https://www.solidot.org/index.rss',      count:7  },
-    ph:       { url:'https://www.producthunt.com/feed?category=undefined', count:10 },
-    gh:       { url:'https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml', count:12 },
-  },
-  updates: [
-    { name:'Vivaldi',  url:'https://vivaldi.com/category/desktop-snapshots/feed/', count:8 },
-    { name:'Claude',   url:'https://raw.githubusercontent.com/SebastianLavertheDe/blog-rss-feed/main/rss/claude_blog_rss.xml', count:8 },
-  ],
-  deepl:   { enabled:false, key:'', lang:'ZH' },
-  aiTrans: { enabled:false, endpoint:'https://api.astrdark.cyou', key:'', model:'gpt-4o-mini', lang:'Chinese' },
-};
-
-function loadConfig() {
-  try {
-    const s = localStorage.getItem('thefeed_cfg');
-    if (s) return JSON.parse(s);
-  } catch {}
-  return JSON.parse(JSON.stringify(DEFAULTS));
-}
-function saveConfig(cfg) {
-  localStorage.setItem('thefeed_cfg', JSON.stringify(cfg));
-}
-
-let CFG = loadConfig();
-
-// ═══════════════════════════════════════════════
-//  PROXY FALLBACK
-// ═══════════════════════════════════════════════
-const PROXIES = [
-  u => `https://corsproxy.io/?${encodeURIComponent(u)}`,
-  u => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
-  u => `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
-  u => `https://thingproxy.freeboard.io/fetch/${u}`,
-];
-
-async function proxyFetch(url) {
-  let lastErr;
-  for (const mk of PROXIES) {
-    try {
-      const r = await fetch(mk(url), { cache:'no-store' });
-      if (!r.ok) throw new Error(`HTTP ${r.status}`);
-      const t = await r.text();
-      if (t.length < 60) throw new Error('Empty');
-      if (t.trimStart().startsWith('{"contents"')) {
-        try { return JSON.parse(t).contents; } catch {}
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>THE FEED</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,700;0,9..40,800;1,9..40,400&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      return t;
-    } catch(e) { lastErr = e; }
-  }
-  throw new Error(lastErr?.message ?? 'All proxies failed');
-}
-
-// ═══════════════════════════════════════════════
-//  TRANSLATION ENGINE (DeepL  or  AstrDark AI)
-// ═══════════════════════════════════════════════
-const transCache = new Map();
-
-// ── DeepL ────────────────────────────────────────
-async function deeplFetch(key, texts, lang) {
-  const isFree  = key.endsWith(':fx');
-  const apiUrl  = isFree ? 'https://api-free.deepl.com/v2/translate'
-                         : 'https://api.deepl.com/v2/translate';
-  const proxy   = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
-  const res = await fetch(proxy, {
-    method:'POST',
-    headers:{ 'Authorization':`DeepL-Auth-Key ${key}`, 'Content-Type':'application/json' },
-    body: JSON.stringify({ text:texts, target_lang:lang }),
-  });
-  if (!res.ok) { const t=await res.text().catch(()=>''); throw new Error(`DeepL ${res.status}: ${t.slice(0,120)}`); }
-  return res.json();
-}
-
-// ── AstrDark AI (OpenAI-compatible) ─────────────
-async function aiFetch(endpoint, key, model, texts, lang) {
-  const url    = endpoint.replace(/\/+$/, '') + '/v1/chat/completions';
-  const joined = texts.map((t,i) => `[${i+1}] ${t}`).join('\n');
-  const res = await fetch(url, {
-    method:'POST',
-    headers:{ 'Authorization':`Bearer ${key}`, 'Content-Type':'application/json' },
-    body: JSON.stringify({
-      model,
-      max_tokens: 1024,
-      messages:[
-        { role:'system', content:`You are a professional translator. Translate each numbered item to ${lang}. Reply ONLY with the same numbered list format, no explanation.` },
-        { role:'user', content: joined },
-      ],
-    }),
-  });
-  if (!res.ok) { const t=await res.text().catch(()=>''); throw new Error(`AI ${res.status}: ${t.slice(0,200)}`); }
-  const data = await res.json();
-  const raw  = data.choices?.[0]?.message?.content ?? '';
-  // Parse "[1] text\n[2] text ..."
-  const results = [];
-  for (let i = 0; i < texts.length; i++) {
-    const m = raw.match(new RegExp(`\\[${i+1}\\]\\s*([\\s\\S]*?)(?=\\n\\[${i+2}\\]|$)`));
-    results.push(m ? m[1].trim() : texts[i]);
-  }
-  return results;
-}
-
-// ── Unified translate() ──────────────────────────
-async function translate(texts) {
-  if (!texts.length) return texts;
-
-  const useAI    = CFG.aiTrans?.enabled && CFG.aiTrans?.key;
-  const useDeepL = CFG.deepl?.enabled   && CFG.deepl?.key;
-  if (!useAI && !useDeepL) return texts;
-
-  const uncached = texts.filter(t => !transCache.has(t));
-  if (uncached.length) {
-    try {
-      if (useAI) {
-        const { endpoint, key, model, lang } = CFG.aiTrans;
-        const out = await aiFetch(endpoint, key, model, uncached, lang);
-        uncached.forEach((t, j) => transCache.set(t, out[j] ?? t));
-      } else {
-        const { key, lang } = CFG.deepl;
-        const data = await deeplFetch(key, uncached, lang);
-        data.translations.forEach((tr, j) => transCache.set(uncached[j], tr.text));
+      html {
+        font-size: 15px;
       }
-    } catch(e) {
-      console.warn('Translation error:', e.message);
-      return texts;
-    }
-  }
-  return texts.map(t => transCache.get(t) ?? t);
-}
+      :root {
+        --bg: #0e0e0e;
+        --surface: #161616;
+        --surface2: #1e1e1e;
+        --surface3: #252525;
+        --border: #272727;
+        --border2: #333;
+        --text: #f0f0f0;
+        --text2: #a0a0a0;
+        --text3: #565656;
+        --red: #e5173f;
+        --amber: #d4911a;
+        --teal: #0fb8a0;
+        --orange: #e8721a;
+        --green: #1daa55;
+        --purple: #8b5cf6;
+        --font: "DM Sans", system-ui, sans-serif;
+        --mono: "DM Mono", monospace;
+      }
+      body {
+        background: var(--bg);
+        color: var(--text);
+        font-family: var(--font);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+      button {
+        font-family: var(--font);
+        cursor: pointer;
+      }
 
-async function translateItem(item) {
-  const active = (CFG.aiTrans?.enabled && CFG.aiTrans?.key) ||
-                 (CFG.deepl?.enabled   && CFG.deepl?.key);
-  if (!active) return item;
-  const inputs = [item.title, item.desc].filter(Boolean);
-  const out    = await translate(inputs);
-  const hasTrans = out.some((o, i) => o !== inputs[i]);
-  return { ...item, title: out[0]??item.title, desc: item.desc?(out[1]??item.desc):'', translated:hasTrans };
-}
-
-// ── Test buttons ─────────────────────────────────
-async function testDeepL() {
-  const key = document.getElementById('deeplKey').value.trim();
-  const lang = document.getElementById('deeplLang').value;
-  const el  = document.getElementById('deeplStatus');
-  if (!key) { el.className='deepl-status err'; el.textContent='⚠ 请先填写 API Key'; return; }
-  el.className='deepl-status'; el.textContent='⏳ 测试中…';
-  try {
-    const data = await deeplFetch(key, ['Hello, world!'], lang);
-    const r = data?.translations?.[0]?.text;
-    if (!r) throw new Error('No result');
-    el.className='deepl-status ok'; el.textContent=`✓ 成功: "Hello, world!" → "${r}"`;
-  } catch(e) { el.className='deepl-status err'; el.textContent=`✗ ${e.message}`; }
-}
-
-async function testAI() {
-  const endpoint = document.getElementById('aiEndpoint').value.trim();
-  const key      = document.getElementById('aiKey').value.trim();
-  const model    = document.getElementById('aiModel').value.trim() || 'gpt-4o-mini';
-  const lang     = document.getElementById('aiLang').value;
-  const el       = document.getElementById('aiStatus');
-  if (!key) { el.className='deepl-status err'; el.textContent='⚠ 请先填写 API Key'; return; }
-  el.className='deepl-status'; el.textContent='⏳ 测试中…';
-  try {
-    const out = await aiFetch(endpoint, key, model, ['Hello, world!'], lang);
-    const r = out[0];
-    if (!r) throw new Error('No result');
-    el.className='deepl-status ok'; el.textContent=`✓ 成功: "Hello, world!" → "${r}"`;
-  } catch(e) { el.className='deepl-status err'; el.textContent=`✗ ${e.message}`; }
-}
-
-// ── Tab switcher ─────────────────────────────────
-function switchTransTab(tab) {
-  const isAI = tab === 'ai';
-  document.getElementById('pane-deepl').style.display = isAI ? 'none' : '';
-  document.getElementById('pane-ai').style.display    = isAI ? ''     : 'none';
-  document.getElementById('tab-deepl').style.background = isAI ? 'var(--surface2)' : 'var(--red)';
-  document.getElementById('tab-deepl').style.color      = isAI ? 'var(--text3)'    : '#fff';
-  document.getElementById('tab-ai').style.background    = isAI ? 'var(--purple)'   : 'var(--surface2)';
-  document.getElementById('tab-ai').style.color         = isAI ? '#fff'            : 'var(--text3)';
-}
-
-// ═══════════════════════════════════════════════
-//  XML PARSER
-// ═══════════════════════════════════════════════
-function parseXML(raw) {
-  const safe = raw.replace(/&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[\da-fA-F]+);)/g,'&amp;');
-  const doc = new DOMParser().parseFromString(safe,'text/xml');
-  const isAtom = !!doc.querySelector('feed');
-  if (isAtom) {
-    return [...doc.querySelectorAll('entry')].map(e => ({
-      title: e.querySelector('title')?.textContent?.trim() ?? '',
-      link:  e.querySelector('link[rel="alternate"]')?.getAttribute('href')
-          ?? e.querySelector('link:not([rel])')?.getAttribute('href')
-          ?? e.querySelector('link')?.textContent?.trim() ?? '',
-      date:  e.querySelector('published,updated')?.textContent?.trim() ?? '',
-      desc:  strip(e.querySelector('summary,content')?.textContent ?? ''),
-    }));
-  }
-  return [...doc.querySelectorAll('item')].map(e => {
-    let link = '';
-    const le = e.querySelector('link');
-    if (le) {
-      link = le.textContent.trim();
-      if (!link) {
-        let n = le.nextSibling;
-        while (n) {
-          const t = n.textContent?.trim();
-          if (t?.startsWith('http')) { link = t; break; }
-          n = n.nextSibling;
+      /* ── HEADER ── */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 200;
+        background: rgba(14, 14, 14, 0.96);
+        backdrop-filter: blur(14px);
+        border-bottom: 1px solid var(--border);
+      }
+      .hdr {
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 0 24px;
+        height: 50px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+      }
+      .logo {
+        font-size: 20px;
+        font-weight: 800;
+        letter-spacing: -0.5px;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .logo em {
+        color: var(--red);
+        font-style: normal;
+      }
+      .nav {
+        display: flex;
+        gap: 2px;
+        flex: 1;
+      }
+      .np {
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 4px 10px;
+        border-radius: 3px;
+        color: var(--text3);
+        cursor: default;
+      }
+      .np.on {
+        color: var(--text2);
+        background: var(--surface2);
+      }
+      .hdr-r {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      .ts {
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .hbtn {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 11.5px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--text2);
+        padding: 5px 12px;
+        border-radius: 3px;
+        transition: all 0.15s;
+      }
+      .hbtn:hover {
+        background: var(--surface);
+        color: #fff;
+        border-color: #444;
+      }
+      .hbtn .ico {
+        display: inline-block;
+        font-size: 14px;
+      }
+      .hbtn.spin .ico {
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
         }
       }
-    }
-    return {
-      title:    e.querySelector('title')?.textContent?.trim() ?? '',
-      link,
-      comments: e.querySelector('comments')?.textContent?.trim() ?? '',
-      date:     e.querySelector('pubDate')?.textContent?.trim() ?? '',
-      desc:     strip(e.querySelector('description')?.textContent ?? ''),
-    };
-  });
-}
+      .settings-btn {
+        background: transparent;
+        border: 1px solid var(--border);
+        color: var(--text3);
+        padding: 5px 10px;
+        border-radius: 3px;
+        font-size: 13px;
+        transition: all 0.15s;
+      }
+      .settings-btn:hover {
+        color: #fff;
+        border-color: var(--border2);
+      }
 
-// ═══════════════════════════════════════════════
-//  HELPERS
-// ═══════════════════════════════════════════════
-function strip(s) {
-  const d = document.createElement('div');
-  d.innerHTML = s;
-  return (d.textContent||'').replace(/\s+/g,' ').trim();
-}
-function host(u) { try { return new URL(u).hostname.replace(/^www\./,''); } catch { return ''; } }
-function ago(ds) {
-  if (!ds) return '';
-  const d = new Date(ds); if (isNaN(d)) return '';
-  const s = (Date.now()-d)/1000;
-  if (s<60) return '刚刚'; if (s<3600) return `${Math.floor(s/60)}m`;
-  if (s<86400) return `${Math.floor(s/3600)}h`; return `${Math.floor(s/86400)}d`;
-}
-function esc(s) { return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function tbadge(t) { return t.translated ? `<span class="trans-badge">译</span>` : ''; }
-const sk = `<div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div>`;
+      /* ── SETTINGS OVERLAY ── */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 500;
+        background: rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(6px);
+        display: none;
+        align-items: flex-start;
+        justify-content: center;
+        padding: 60px 20px;
+        overflow-y: auto;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      .settings-panel {
+        background: var(--surface);
+        border: 1px solid var(--border2);
+        border-radius: 6px;
+        width: 100%;
+        max-width: 680px;
+        padding: 28px;
+        position: relative;
+      }
+      .sp-title {
+        font-size: 16px;
+        font-weight: 800;
+        letter-spacing: -0.3px;
+        color: #fff;
+        margin-bottom: 6px;
+      }
+      .sp-sub {
+        font-size: 12px;
+        color: var(--text3);
+        margin-bottom: 24px;
+      }
+      .sp-close {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        background: none;
+        border: none;
+        color: var(--text3);
+        font-size: 20px;
+        cursor: pointer;
+        line-height: 1;
+        padding: 4px;
+      }
+      .sp-close:hover {
+        color: #fff;
+      }
+      .sp-section {
+        margin-bottom: 24px;
+      }
+      .sp-section-title {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text3);
+        margin-bottom: 12px;
+        padding-bottom: 8px;
+        border-bottom: 1px solid var(--border);
+      }
+      .feed-row {
+        display: grid;
+        grid-template-columns: 120px 1fr 70px;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .feed-label {
+        font-size: 12px;
+        font-weight: 600;
+        color: var(--text2);
+      }
+      .sp-input {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--text);
+        padding: 6px 10px;
+        border-radius: 3px;
+        font-family: var(--mono);
+        font-size: 11px;
+        width: 100%;
+        transition: border 0.15s;
+      }
+      .sp-input:focus {
+        outline: none;
+        border-color: var(--text3);
+      }
+      .sp-num {
+        width: 100%;
+        text-align: center;
+      }
+      .sp-deepl {
+        display: grid;
+        grid-template-columns: 120px 1fr;
+        gap: 8px;
+        align-items: center;
+        margin-bottom: 8px;
+      }
+      .deepl-status {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 6px;
+      }
+      .deepl-status.ok {
+        color: var(--green);
+      }
+      .test-btn {
+        background: var(--surface2);
+        border: 1px solid var(--border2);
+        color: var(--text2);
+        padding: 6px 12px;
+        border-radius: 3px;
+        font-size: 11px;
+        font-weight: 600;
+        letter-spacing: 0.04em;
+        text-transform: uppercase;
+        white-space: nowrap;
+        transition: all 0.15s;
+      }
+      .test-btn:hover {
+        color: #fff;
+        border-color: #555;
+      }
+      .deepl-status.err {
+        color: var(--red);
+      }
+      .sp-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 24px;
+        padding-top: 20px;
+        border-top: 1px solid var(--border);
+      }
+      .sp-save {
+        background: var(--red);
+        border: none;
+        color: #fff;
+        padding: 8px 20px;
+        border-radius: 3px;
+        font-size: 12px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        transition: opacity 0.15s;
+      }
+      .sp-save:hover {
+        opacity: 0.85;
+      }
+      .sp-cancel {
+        background: none;
+        border: 1px solid var(--border2);
+        color: var(--text2);
+        padding: 8px 16px;
+        border-radius: 3px;
+        font-size: 12px;
+        transition: all 0.15s;
+      }
+      .sp-cancel:hover {
+        color: #fff;
+        border-color: #444;
+      }
+      .trans-toggle {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .toggle {
+        position: relative;
+        width: 36px;
+        height: 20px;
+        flex-shrink: 0;
+      }
+      .toggle input {
+        opacity: 0;
+        width: 0;
+        height: 0;
+      }
+      .toggle-slider {
+        position: absolute;
+        inset: 0;
+        background: var(--border2);
+        border-radius: 20px;
+        cursor: pointer;
+        transition: 0.2s;
+      }
+      .toggle-slider::before {
+        content: "";
+        position: absolute;
+        width: 14px;
+        height: 14px;
+        left: 3px;
+        top: 3px;
+        background: #fff;
+        border-radius: 50%;
+        transition: 0.2s;
+      }
+      .toggle input:checked + .toggle-slider {
+        background: var(--teal);
+      }
+      .toggle input:checked + .toggle-slider::before {
+        transform: translateX(16px);
+      }
+      .toggle-label {
+        font-size: 12px;
+        color: var(--text2);
+      }
 
-// ═══════════════════════════════════════════════
-//  LOADERS
-// ═══════════════════════════════════════════════
-async function loadTechmeme() {
-  const col = document.getElementById('tm-col');
-  try {
-    const xml = await proxyFetch(CFG.feeds.techmeme.url);
-    let items = parseXML(xml).filter(i => i.title && i.link).slice(0, CFG.feeds.techmeme.count);
-    if (!items.length) throw new Error('No items');
-    items = await Promise.all(items.map(translateItem));
-    const [h, ...rest] = items;
-    let html = `<a class="tm-hero f" href="${esc(h.link)}" target="_blank" rel="noopener">
+      /* ── PAGE ── */
+      .page {
+        max-width: 1380px;
+        margin: 0 auto;
+        padding: 0 24px 64px;
+      }
+
+      /* ── SECTION HEAD ── */
+      .sh {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 26px 0 13px;
+        border-bottom: 1px solid var(--border2);
+      }
+      .sh-dot {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+        flex-shrink: 0;
+      }
+      .sh-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.09em;
+        text-transform: uppercase;
+        color: var(--text3);
+      }
+      .tag {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.05em;
+        text-transform: uppercase;
+        padding: 2px 8px;
+        border-radius: 3px;
+      }
+      .d-red {
+        background: var(--red);
+      }
+      .d-amber {
+        background: var(--amber);
+      }
+      .d-teal {
+        background: var(--teal);
+      }
+      .d-orange {
+        background: var(--orange);
+      }
+      .d-green {
+        background: var(--green);
+      }
+      .d-purple {
+        background: var(--purple);
+      }
+      .t-red {
+        background: rgba(229, 23, 63, 0.1);
+        color: var(--red);
+      }
+      .t-amber {
+        background: rgba(212, 145, 26, 0.1);
+        color: var(--amber);
+      }
+      .t-teal {
+        background: rgba(15, 184, 160, 0.1);
+        color: var(--teal);
+      }
+      .t-orange {
+        background: rgba(232, 114, 26, 0.1);
+        color: var(--orange);
+      }
+      .t-green {
+        background: rgba(29, 170, 85, 0.1);
+        color: var(--green);
+      }
+      .t-purple {
+        background: rgba(139, 92, 246, 0.1);
+        color: var(--purple);
+      }
+
+      /* ── TOP GRID ── */
+      .tg {
+        display: grid;
+        grid-template-columns: 1fr 350px;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-top: none;
+      }
+      .tm-col {
+        border-right: 1px solid var(--border);
+      }
+      .sb {
+        display: flex;
+        flex-direction: column;
+        background: var(--surface);
+      }
+
+      /* ── BLOCK HEADER ── */
+      .bh {
+        padding: 11px 18px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--surface2);
+      }
+      .bl {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--text3);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      /* ── TECHMEME HERO ── */
+      .tm-hero {
+        display: block;
+        padding: 22px 22px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .tm-hero:hover {
+        background: var(--surface);
+      }
+      .tm-eyebrow {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.07em;
+        text-transform: uppercase;
+        color: var(--red);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+      }
+      .tm-eyebrow::before {
+        content: "";
+        width: 6px;
+        height: 6px;
+        border-radius: 50%;
+        background: var(--red);
+        display: inline-block;
+        animation: pulse 2s infinite;
+      }
+      @keyframes pulse {
+        0%,
+        100% {
+          opacity: 1;
+        }
+        50% {
+          opacity: 0.4;
+        }
+      }
+      .tm-hero h2 {
+        font-size: 21px;
+        font-weight: 800;
+        line-height: 1.28;
+        letter-spacing: -0.3px;
+        color: #fff;
+        margin-bottom: 10px;
+      }
+      .tm-hero:hover h2 {
+        color: var(--text2);
+      }
+      .meta {
+        font-size: 11px;
+        color: var(--text3);
+      }
+      .meta .src {
+        color: var(--text2);
+        font-weight: 600;
+        margin-right: 6px;
+      }
+
+      /* ── TECHMEME ROW ── */
+      .tm-row {
+        display: grid;
+        grid-template-columns: 32px 1fr;
+        align-items: start;
+        gap: 14px;
+        padding: 12px 22px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .tm-row:last-child {
+        border-bottom: none;
+      }
+      .tm-row:hover {
+        background: var(--surface);
+      }
+      .rn {
+        font-family: var(--mono);
+        font-size: 12px;
+        color: var(--text3);
+        text-align: right;
+        padding-top: 2px;
+        line-height: 1.4;
+      }
+      .rl {
+        font-size: 14px;
+        font-weight: 500;
+        line-height: 1.42;
+        color: var(--text);
+        display: block;
+      }
+      .tm-row:hover .rl {
+        color: #fff;
+      }
+      .rm {
+        font-size: 10.5px;
+        color: var(--text3);
+        margin-top: 3px;
+      }
+      .rm .src {
+        color: var(--text2);
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      /* ── HN ── */
+      .hn-block {
+        flex: 1 1 auto;
+        border-bottom: 1px solid var(--border);
+        overflow: hidden;
+      }
+      .hi {
+        padding: 10px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .hi:last-child {
+        border-bottom: none;
+      }
+      .hi:hover {
+        background: var(--surface2);
+      }
+      .hl {
+        font-size: 13px;
+        font-weight: 400;
+        line-height: 1.38;
+        color: var(--text);
+        font-style: italic;
+        display: block;
+      }
+      .hi:hover .hl {
+        color: #fff;
+        font-style: normal;
+      }
+      .hm {
+        font-size: 10.5px;
+        color: var(--text3);
+        margin-top: 3px;
+      }
+      .hm .src {
+        color: var(--amber);
+        font-style: normal;
+        font-weight: 600;
+        margin-right: 5px;
+      }
+
+      /* ── SOLIDOT ── */
+      .solidot-block {
+      }
+      .si {
+        padding: 8px 18px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .si:last-child {
+        border-bottom: none;
+      }
+      .si:hover {
+        background: var(--surface2);
+      }
+      .sl {
+        font-size: 12.5px;
+        color: var(--text2);
+        display: block;
+        line-height: 1.35;
+      }
+      .si:hover .sl {
+        color: var(--text);
+      }
+      .sd {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 2px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      /* ── BOTTOM GRID (PH + GH) ── */
+      .bg {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-top: none;
+      }
+      .ph-col {
+        border-right: 1px solid var(--border);
+      }
+      .pi {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .pi:last-child {
+        border-bottom: none;
+      }
+      .pi:hover {
+        background: var(--surface);
+      }
+      .pl {
+        font-size: 13.5px;
+        font-weight: 600;
+        line-height: 1.32;
+        color: var(--text);
+        display: block;
+      }
+      .pi:hover .pl {
+        color: var(--orange);
+      }
+      .pd {
+        font-size: 11.5px;
+        color: var(--text3);
+        margin-top: 3px;
+        line-height: 1.35;
+      }
+      .pa {
+        color: var(--text3);
+        font-size: 14px;
+        padding-top: 2px;
+      }
+      .gi {
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+      }
+      .gi:last-child {
+        border-bottom: none;
+      }
+      .gi:hover {
+        background: var(--surface);
+      }
+      .gl {
+        font-family: var(--mono);
+        font-size: 12px;
+        font-weight: 500;
+        line-height: 1.32;
+        color: var(--text);
+        display: block;
+      }
+      .gi:hover .gl {
+        color: var(--green);
+      }
+      .gd {
+        font-size: 11.5px;
+        color: var(--text3);
+        margin-top: 3px;
+        line-height: 1.35;
+      }
+      .glang {
+        font-family: var(--mono);
+        font-size: 10px;
+        color: var(--green);
+        white-space: nowrap;
+        padding-top: 2px;
+      }
+
+      /* ── PRODUCT UPDATES ── */
+      .updates-row {
+        display: flex;
+        gap: 0;
+        border: 1px solid var(--border);
+        border-top: none;
+        overflow: hidden;
+      }
+      .upd-col {
+        flex: 1 1 0;
+        min-width: 0;
+        border-right: 1px solid var(--border);
+      }
+      .upd-col:last-child {
+        border-right: none;
+      }
+      .ui {
+        padding: 13px 20px;
+        border-bottom: 1px solid var(--border);
+        transition: background 0.12s;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        gap: 10px;
+        align-items: start;
+      }
+      .ui:last-child {
+        border-bottom: none;
+      }
+      .ui:hover {
+        background: var(--surface);
+      }
+      .ut {
+        font-size: 13.5px;
+        font-weight: 500;
+        line-height: 1.38;
+        color: var(--text);
+        display: block;
+      }
+      .ui:hover .ut {
+        color: #fff;
+      }
+      .ud {
+        font-size: 12px;
+        color: var(--text3);
+        margin-top: 4px;
+        line-height: 1.4;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+      }
+      .um {
+        font-size: 10.5px;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+      .um .src {
+        color: var(--purple);
+        font-weight: 600;
+        margin-right: 5px;
+      }
+      .u-arrow {
+        color: var(--text3);
+        font-size: 13px;
+        padding-top: 3px;
+        flex-shrink: 0;
+      }
+
+      /* translation badge */
+      .trans-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        font-family: var(--mono);
+        font-size: 9px;
+        color: var(--teal);
+        background: rgba(15, 184, 160, 0.08);
+        padding: 1px 5px;
+        border-radius: 2px;
+        margin-left: 6px;
+        vertical-align: middle;
+      }
+
+      /* ── SKELETON ── */
+      .sk {
+        padding: 18px 22px;
+      }
+      .skl {
+        height: 13px;
+        border-radius: 2px;
+        margin-bottom: 10px;
+        background: linear-gradient(
+          90deg,
+          var(--surface) 25%,
+          var(--surface2) 50%,
+          var(--surface) 75%
+        );
+        background-size: 200% 100%;
+        animation: sk 1.4s ease infinite;
+      }
+      .skl.w80 {
+        width: 80%;
+      }
+      .skl.w60 {
+        width: 60%;
+      }
+      .skl.w40 {
+        width: 40%;
+      }
+      .skl.h18 {
+        height: 18px;
+        margin-bottom: 14px;
+      }
+      @keyframes sk {
+        to {
+          background-position: -200% 0;
+        }
+      }
+      .err {
+        padding: 18px 22px;
+        font-family: var(--mono);
+        font-size: 11px;
+        color: var(--red);
+        line-height: 1.7;
+      }
+
+      /* ── FADE ── */
+      @keyframes fu {
+        from {
+          opacity: 0;
+          transform: translateY(6px);
+        }
+        to {
+          opacity: 1;
+          transform: none;
+        }
+      }
+      .f {
+        animation: fu 0.3s ease both;
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 1024px) {
+        .tg {
+          grid-template-columns: 1fr;
+        }
+        .tm-col {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .bg {
+          grid-template-columns: 1fr;
+        }
+        .ph-col {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .updates-row {
+          flex-direction: column;
+        }
+        .upd-col {
+          border-right: none;
+          border-bottom: 1px solid var(--border);
+        }
+        .upd-col:last-child {
+          border-bottom: none;
+        }
+      }
+      @media (max-width: 600px) {
+        .page {
+          padding: 0 13px 48px;
+        }
+        .hdr {
+          padding: 0 13px;
+          gap: 8px;
+        }
+        .nav,
+        .ts {
+          display: none;
+        }
+        .tm-hero h2 {
+          font-size: 18px;
+        }
+        .feed-row {
+          grid-template-columns: 100px 1fr 60px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- SETTINGS OVERLAY -->
+    <div class="overlay" id="overlay">
+      <div class="settings-panel">
+        <div class="sp-title">⚙ 设置</div>
+        <div class="sp-sub">编辑 Feed 链接、条目数量，以及配置自动翻译</div>
+        <button class="sp-close" onclick="closeSettings()">×</button>
+
+        <!-- TRANSLATION -->
+        <div class="sp-section">
+          <div class="sp-section-title">🌐 自动翻译</div>
+
+          <!-- engine tabs -->
+          <div
+            style="
+              display: flex;
+              gap: 0;
+              margin-bottom: 14px;
+              border: 1px solid var(--border2);
+              border-radius: 4px;
+              overflow: hidden;
+            "
+          >
+            <button
+              id="tab-deepl"
+              onclick="switchTransTab('deepl')"
+              style="
+                flex: 1;
+                padding: 7px 0;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                border: none;
+                background: var(--red);
+                color: #fff;
+                transition: all 0.15s;
+              "
+            >
+              DeepL
+            </button>
+            <button
+              id="tab-ai"
+              onclick="switchTransTab('ai')"
+              style="
+                flex: 1;
+                padding: 7px 0;
+                font-size: 11px;
+                font-weight: 700;
+                letter-spacing: 0.05em;
+                text-transform: uppercase;
+                border: none;
+                background: var(--surface2);
+                color: var(--text3);
+                transition: all 0.15s;
+              "
+            >
+              ✦ AstrDark AI
+            </button>
+          </div>
+
+          <!-- DeepL pane -->
+          <div id="pane-deepl">
+            <div class="trans-toggle" style="margin-bottom: 10px">
+              <label class="toggle"
+                ><input type="checkbox" id="transEnabled" /><span
+                  class="toggle-slider"
+                ></span
+              ></label>
+              <span class="toggle-label">启用 DeepL 翻译</span>
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">API Key</label>
+              <div style="display: flex; gap: 8px">
+                <input
+                  class="sp-input"
+                  type="password"
+                  id="deeplKey"
+                  placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx:fx"
+                  style="flex: 1"
+                />
+                <button onclick="testDeepL()" class="test-btn">测试</button>
+              </div>
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">目标语言</label>
+              <select
+                class="sp-input"
+                id="deeplLang"
+                style="font-family: var(--font)"
+              >
+                <option value="ZH">中文（简体）</option>
+                <option value="ZH-HANT">中文（繁体）</option>
+                <option value="JA">日语</option>
+                <option value="KO">韩语</option>
+                <option value="FR">法语</option>
+                <option value="DE">德语</option>
+              </select>
+            </div>
+            <div class="deepl-status" id="deeplStatus"></div>
+          </div>
+
+          <!-- AstrDark AI pane -->
+          <div id="pane-ai" style="display: none">
+            <div class="trans-toggle" style="margin-bottom: 10px">
+              <label class="toggle"
+                ><input type="checkbox" id="aiTransEnabled" /><span
+                  class="toggle-slider"
+                ></span
+              ></label>
+              <span class="toggle-label">启用 AI 翻译（免费 · 无限额度）</span>
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">Endpoint</label>
+              <input
+                class="sp-input"
+                id="aiEndpoint"
+                placeholder="https://api.astrdark.cyou"
+                value="https://api.astrdark.cyou"
+              />
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">API Key</label>
+              <div style="display: flex; gap: 8px">
+                <input
+                  class="sp-input"
+                  type="password"
+                  id="aiKey"
+                  placeholder="sk-..."
+                  style="flex: 1"
+                />
+                <button onclick="testAI()" class="test-btn">测试</button>
+              </div>
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">模型</label>
+              <input
+                class="sp-input"
+                id="aiModel"
+                placeholder="gpt-4o-mini"
+                value="gpt-4o-mini"
+              />
+            </div>
+            <div class="sp-deepl">
+              <label class="feed-label">目标语言</label>
+              <select
+                class="sp-input"
+                id="aiLang"
+                style="font-family: var(--font)"
+              >
+                <option value="Chinese">中文（简体）</option>
+                <option value="Traditional Chinese">中文（繁体）</option>
+                <option value="Japanese">日语</option>
+                <option value="Korean">韩语</option>
+                <option value="French">法语</option>
+                <option value="German">德语</option>
+              </select>
+            </div>
+            <div class="deepl-status" id="aiStatus"></div>
+          </div>
+        </div>
+
+        <!-- FEED SETTINGS -->
+        <div class="sp-section">
+          <div class="sp-section-title">📡 科技新闻</div>
+          <div class="feed-row">
+            <span class="feed-label">Techmeme</span
+            ><input class="sp-input" id="f-techmeme" type="url" /><input
+              class="sp-input sp-num"
+              id="n-techmeme"
+              type="number"
+              min="1"
+              max="50"
+            />
+          </div>
+          <div class="feed-row">
+            <span class="feed-label">HN Classic</span
+            ><input class="sp-input" id="f-hn" type="url" /><input
+              class="sp-input sp-num"
+              id="n-hn"
+              type="number"
+              min="1"
+              max="50"
+            />
+          </div>
+          <div class="feed-row">
+            <span class="feed-label">Solidot</span
+            ><input class="sp-input" id="f-solidot" type="url" /><input
+              class="sp-input sp-num"
+              id="n-solidot"
+              type="number"
+              min="1"
+              max="30"
+            />
+          </div>
+        </div>
+
+        <div class="sp-section">
+          <div class="sp-section-title">🪀 新玩意</div>
+          <div class="feed-row">
+            <span class="feed-label">Product Hunt</span
+            ><input class="sp-input" id="f-ph" type="url" /><input
+              class="sp-input sp-num"
+              id="n-ph"
+              type="number"
+              min="1"
+              max="30"
+            />
+          </div>
+          <div class="feed-row">
+            <span class="feed-label">GitHub</span
+            ><input class="sp-input" id="f-gh" type="url" /><input
+              class="sp-input sp-num"
+              id="n-gh"
+              type="number"
+              min="1"
+              max="30"
+            />
+          </div>
+        </div>
+
+        <div class="sp-section">
+          <div class="sp-section-title">🔔 产品更新</div>
+          <div id="updates-feed-rows"></div>
+          <button
+            onclick="addUpdateFeedRow()"
+            style="
+              background: none;
+              border: 1px dashed var(--border2);
+              color: var(--text3);
+              padding: 6px 14px;
+              border-radius: 3px;
+              font-size: 11px;
+              margin-top: 4px;
+              width: 100%;
+              transition: all 0.15s;
+            "
+            onmouseover="this.style.color = '#fff'"
+            onmouseout="this.style.color = 'var(--text3)'"
+          >
+            + 添加 Feed
+          </button>
+        </div>
+
+        <div class="sp-actions">
+          <button class="sp-cancel" onclick="closeSettings()">取消</button>
+          <button class="sp-save" onclick="saveSettings()">保存并刷新</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- HEADER -->
+    <header>
+      <div class="hdr">
+        <div class="logo">THE<em>FEED</em></div>
+        <nav class="nav">
+          <div class="np on">科技新闻</div>
+          <div class="np">荐读</div>
+          <div class="np">趣闻</div>
+          <div class="np">新玩意</div>
+          <div class="np">产品更新</div>
+        </nav>
+        <div class="hdr-r">
+          <span class="ts" id="ts"></span>
+          <button class="settings-btn" onclick="openSettings()" title="设置">
+            ⚙
+          </button>
+          <button class="hbtn" id="rbtn" onclick="loadAll()">
+            <span class="ico">↻</span> Refresh
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- PAGE -->
+    <div class="page">
+      <!-- § 科技新闻 -->
+      <div class="sh">
+        <div class="sh-dot d-red"></div>
+        <div class="sh-label">科技新闻 · Tech News</div>
+        <span class="tag t-red">Techmeme</span>
+        <span class="tag t-amber" style="margin-left: 4px">HN Classic</span>
+        <span class="tag t-teal" style="margin-left: 4px">Solidot</span>
+      </div>
+
+      <div class="tg">
+        <div class="tm-col" id="tm-col">
+          <div class="sk">
+            <div class="skl h18 w80"></div>
+            <div class="skl w60"></div>
+            <div class="skl w40"></div>
+            <div class="skl w80"></div>
+            <div class="skl w60"></div>
+            <div class="skl w40"></div>
+          </div>
+        </div>
+        <div class="sb">
+          <div class="hn-block">
+            <div class="bh">
+              <div class="bl">
+                <div class="sh-dot d-amber"></div>
+                Hacker News · 荐读
+              </div>
+              <span class="tag t-amber">Classic</span>
+            </div>
+            <div id="hn-items">
+              <div class="sk">
+                <div class="skl w80"></div>
+                <div class="skl w60"></div>
+                <div class="skl w40"></div>
+                <div class="skl w80"></div>
+              </div>
+            </div>
+          </div>
+          <div class="solidot-block">
+            <div class="bh">
+              <div class="bl">
+                <div class="sh-dot d-teal"></div>
+                Solidot · 趣闻
+              </div>
+              <span class="tag t-teal">奇趣</span>
+            </div>
+            <div id="solidot-items">
+              <div class="sk">
+                <div class="skl w80"></div>
+                <div class="skl w60"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- § 新玩意 -->
+      <div class="sh" style="padding-top: 34px">
+        <div class="sh-dot d-orange"></div>
+        <div class="sh-label">新玩意 · New Things</div>
+        <span class="tag t-orange">Product Hunt</span>
+        <span class="tag t-green" style="margin-left: 4px"
+          >GitHub Trending</span
+        >
+      </div>
+      <div class="bg">
+        <div class="ph-col">
+          <div class="bh">
+            <div class="bl">
+              <div class="sh-dot d-orange"></div>
+              Product Hunt
+            </div>
+            <span class="tag t-orange">今日产品</span>
+          </div>
+          <div id="ph-items">
+            <div class="sk">
+              <div class="skl w80"></div>
+              <div class="skl w60"></div>
+              <div class="skl w40"></div>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="bh">
+            <div class="bl">
+              <div class="sh-dot d-green"></div>
+              GitHub Trending
+            </div>
+            <span class="tag t-green">Daily</span>
+          </div>
+          <div id="gh-items">
+            <div class="sk">
+              <div class="skl w80"></div>
+              <div class="skl w60"></div>
+              <div class="skl w40"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- § 产品更新 -->
+      <div class="sh" style="padding-top: 34px">
+        <div class="sh-dot d-purple"></div>
+        <div class="sh-label">产品更新 · Product Updates</div>
+        <span class="tag t-purple" id="update-feed-tags"></span>
+      </div>
+      <div class="updates-row" id="updates-grid">
+        <div class="sk" style="grid-column: 1/-1">
+          <div class="skl w80"></div>
+          <div class="skl w60"></div>
+          <div class="skl w40"></div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════
+      //  DEFAULT CONFIG  (persisted to localStorage)
+      // ═══════════════════════════════════════════════
+      const DEFAULTS = {
+        feeds: {
+          techmeme: { url: "https://www.techmeme.com/feed.xml", count: 26 },
+          hn: { url: "https://hnrss.org/classic", count: 14 },
+          solidot: { url: "https://www.solidot.org/index.rss", count: 7 },
+          ph: {
+            url: "https://www.producthunt.com/feed?category=undefined",
+            count: 10,
+          },
+          gh: {
+            url: "https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml",
+            count: 12,
+          },
+        },
+        updates: [
+          {
+            name: "Vivaldi",
+            url: "https://vivaldi.com/category/desktop-snapshots/feed/",
+            count: 8,
+          },
+          {
+            name: "Claude",
+            url: "https://raw.githubusercontent.com/SebastianLavertheDe/blog-rss-feed/main/rss/claude_blog_rss.xml",
+            count: 8,
+          },
+        ],
+        deepl: { enabled: false, key: "", lang: "ZH" },
+        aiTrans: {
+          enabled: false,
+          endpoint: "https://api.astrdark.cyou",
+          key: "",
+          model: "gpt-4o-mini",
+          lang: "Chinese",
+        },
+      };
+
+      function loadConfig() {
+        try {
+          const s = localStorage.getItem("thefeed_cfg");
+          if (s) return JSON.parse(s);
+        } catch {}
+        return JSON.parse(JSON.stringify(DEFAULTS));
+      }
+      function saveConfig(cfg) {
+        localStorage.setItem("thefeed_cfg", JSON.stringify(cfg));
+      }
+
+      let CFG = loadConfig();
+
+      // ═══════════════════════════════════════════════
+      //  PROXY FALLBACK
+      // ═══════════════════════════════════════════════
+      const PROXIES = [
+        (u) => `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        (u) => `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        (u) =>
+          `https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`,
+        (u) => `https://thingproxy.freeboard.io/fetch/${u}`,
+      ];
+
+      async function proxyFetch(url) {
+        let lastErr;
+        for (const mk of PROXIES) {
+          try {
+            const r = await fetch(mk(url), { cache: "no-store" });
+            if (!r.ok) throw new Error(`HTTP ${r.status}`);
+            const t = await r.text();
+            if (t.length < 60) throw new Error("Empty");
+            if (t.trimStart().startsWith('{"contents"')) {
+              try {
+                return JSON.parse(t).contents;
+              } catch {}
+            }
+            return t;
+          } catch (e) {
+            lastErr = e;
+          }
+        }
+        throw new Error(lastErr?.message ?? "All proxies failed");
+      }
+
+      // ═══════════════════════════════════════════════
+      //  TRANSLATION ENGINE (DeepL  or  AstrDark AI)
+      // ═══════════════════════════════════════════════
+      const transCache = new Map();
+
+      // ── DeepL ────────────────────────────────────────
+      async function deeplFetch(key, texts, lang) {
+        const isFree = key.endsWith(":fx");
+        const apiUrl = isFree
+          ? "https://api-free.deepl.com/v2/translate"
+          : "https://api.deepl.com/v2/translate";
+        const proxy = `https://corsproxy.io/?${encodeURIComponent(apiUrl)}`;
+        const res = await fetch(proxy, {
+          method: "POST",
+          headers: {
+            Authorization: `DeepL-Auth-Key ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ text: texts, target_lang: lang }),
+        });
+        if (!res.ok) {
+          const t = await res.text().catch(() => "");
+          throw new Error(`DeepL ${res.status}: ${t.slice(0, 120)}`);
+        }
+        return res.json();
+      }
+
+      // ── AstrDark AI (OpenAI-compatible) ─────────────
+      async function aiFetch(endpoint, key, model, texts, lang) {
+        const url = endpoint.replace(/\/+$/, "") + "/v1/chat/completions";
+        const joined = texts.map((t, i) => `[${i + 1}] ${t}`).join("\n");
+        const res = await fetch(url, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${key}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            model,
+            max_tokens: 1024,
+            messages: [
+              {
+                role: "system",
+                content: `You are a professional translator. Translate each numbered item to ${lang}. Reply ONLY with the same numbered list format, no explanation.`,
+              },
+              { role: "user", content: joined },
+            ],
+          }),
+        });
+        if (!res.ok) {
+          const t = await res.text().catch(() => "");
+          throw new Error(`AI ${res.status}: ${t.slice(0, 200)}`);
+        }
+        const data = await res.json();
+        const raw = data.choices?.[0]?.message?.content ?? "";
+        // Parse "[1] text\n[2] text ..."
+        const results = [];
+        for (let i = 0; i < texts.length; i++) {
+          const m = raw.match(
+            new RegExp(`\\[${i + 1}\\]\\s*([\\s\\S]*?)(?=\\n\\[${i + 2}\\]|$)`),
+          );
+          results.push(m ? m[1].trim() : texts[i]);
+        }
+        return results;
+      }
+
+      // ── Unified translate() ──────────────────────────
+      async function translate(texts) {
+        if (!texts.length) return texts;
+
+        const useAI = CFG.aiTrans?.enabled && CFG.aiTrans?.key;
+        const useDeepL = CFG.deepl?.enabled && CFG.deepl?.key;
+        if (!useAI && !useDeepL) return texts;
+
+        const uncached = texts.filter((t) => !transCache.has(t));
+        if (uncached.length) {
+          try {
+            if (useAI) {
+              const { endpoint, key, model, lang } = CFG.aiTrans;
+              const out = await aiFetch(endpoint, key, model, uncached, lang);
+              uncached.forEach((t, j) => transCache.set(t, out[j] ?? t));
+            } else {
+              const { key, lang } = CFG.deepl;
+              const data = await deeplFetch(key, uncached, lang);
+              data.translations.forEach((tr, j) =>
+                transCache.set(uncached[j], tr.text),
+              );
+            }
+          } catch (e) {
+            console.warn("Translation error:", e.message);
+            return texts;
+          }
+        }
+        return texts.map((t) => transCache.get(t) ?? t);
+      }
+
+      async function translateItem(item) {
+        const active =
+          (CFG.aiTrans?.enabled && CFG.aiTrans?.key) ||
+          (CFG.deepl?.enabled && CFG.deepl?.key);
+        if (!active) return item;
+        const inputs = [item.title, item.desc].filter(Boolean);
+        const out = await translate(inputs);
+        const hasTrans = out.some((o, i) => o !== inputs[i]);
+        return {
+          ...item,
+          title: out[0] ?? item.title,
+          desc: item.desc ? (out[1] ?? item.desc) : "",
+          translated: hasTrans,
+        };
+      }
+
+      // ── Test buttons ─────────────────────────────────
+      async function testDeepL() {
+        const key = document.getElementById("deeplKey").value.trim();
+        const lang = document.getElementById("deeplLang").value;
+        const el = document.getElementById("deeplStatus");
+        if (!key) {
+          el.className = "deepl-status err";
+          el.textContent = "⚠ 请先填写 API Key";
+          return;
+        }
+        el.className = "deepl-status";
+        el.textContent = "⏳ 测试中…";
+        try {
+          const data = await deeplFetch(key, ["Hello, world!"], lang);
+          const r = data?.translations?.[0]?.text;
+          if (!r) throw new Error("No result");
+          el.className = "deepl-status ok";
+          el.textContent = `✓ 成功: "Hello, world!" → "${r}"`;
+        } catch (e) {
+          el.className = "deepl-status err";
+          el.textContent = `✗ ${e.message}`;
+        }
+      }
+
+      async function testAI() {
+        const endpoint = document.getElementById("aiEndpoint").value.trim();
+        const key = document.getElementById("aiKey").value.trim();
+        const model =
+          document.getElementById("aiModel").value.trim() || "gpt-4o-mini";
+        const lang = document.getElementById("aiLang").value;
+        const el = document.getElementById("aiStatus");
+        if (!key) {
+          el.className = "deepl-status err";
+          el.textContent = "⚠ 请先填写 API Key";
+          return;
+        }
+        el.className = "deepl-status";
+        el.textContent = "⏳ 测试中…";
+        try {
+          const out = await aiFetch(
+            endpoint,
+            key,
+            model,
+            ["Hello, world!"],
+            lang,
+          );
+          const r = out[0];
+          if (!r) throw new Error("No result");
+          el.className = "deepl-status ok";
+          el.textContent = `✓ 成功: "Hello, world!" → "${r}"`;
+        } catch (e) {
+          el.className = "deepl-status err";
+          el.textContent = `✗ ${e.message}`;
+        }
+      }
+
+      // ── Tab switcher ─────────────────────────────────
+      function switchTransTab(tab) {
+        const isAI = tab === "ai";
+        document.getElementById("pane-deepl").style.display = isAI
+          ? "none"
+          : "";
+        document.getElementById("pane-ai").style.display = isAI ? "" : "none";
+        document.getElementById("tab-deepl").style.background = isAI
+          ? "var(--surface2)"
+          : "var(--red)";
+        document.getElementById("tab-deepl").style.color = isAI
+          ? "var(--text3)"
+          : "#fff";
+        document.getElementById("tab-ai").style.background = isAI
+          ? "var(--purple)"
+          : "var(--surface2)";
+        document.getElementById("tab-ai").style.color = isAI
+          ? "#fff"
+          : "var(--text3)";
+      }
+
+      // ═══════════════════════════════════════════════
+      //  XML PARSER
+      // ═══════════════════════════════════════════════
+      function parseXML(raw) {
+        const safe = raw.replace(
+          /&(?!(?:amp|lt|gt|apos|quot|#\d+|#x[\da-fA-F]+);)/g,
+          "&amp;",
+        );
+        const doc = new DOMParser().parseFromString(safe, "text/xml");
+        const isAtom = !!doc.querySelector("feed");
+        if (isAtom) {
+          return [...doc.querySelectorAll("entry")].map((e) => ({
+            title: e.querySelector("title")?.textContent?.trim() ?? "",
+            link:
+              e.querySelector('link[rel="alternate"]')?.getAttribute("href") ??
+              e.querySelector("link:not([rel])")?.getAttribute("href") ??
+              e.querySelector("link")?.textContent?.trim() ??
+              "",
+            date:
+              e.querySelector("published,updated")?.textContent?.trim() ?? "",
+            desc: strip(e.querySelector("summary,content")?.textContent ?? ""),
+          }));
+        }
+        return [...doc.querySelectorAll("item")].map((e) => {
+          let link = "";
+          const le = e.querySelector("link");
+          if (le) {
+            link = le.textContent.trim();
+            if (!link) {
+              let n = le.nextSibling;
+              while (n) {
+                const t = n.textContent?.trim();
+                if (t?.startsWith("http")) {
+                  link = t;
+                  break;
+                }
+                n = n.nextSibling;
+              }
+            }
+          }
+          return {
+            title: e.querySelector("title")?.textContent?.trim() ?? "",
+            link,
+            comments: e.querySelector("comments")?.textContent?.trim() ?? "",
+            date: e.querySelector("pubDate")?.textContent?.trim() ?? "",
+            desc: strip(e.querySelector("description")?.textContent ?? ""),
+          };
+        });
+      }
+
+      // ═══════════════════════════════════════════════
+      //  HELPERS
+      // ═══════════════════════════════════════════════
+      function strip(s) {
+        const d = document.createElement("div");
+        d.innerHTML = s;
+        return (d.textContent || "").replace(/\s+/g, " ").trim();
+      }
+      function host(u) {
+        try {
+          return new URL(u).hostname.replace(/^www\./, "");
+        } catch {
+          return "";
+        }
+      }
+      function ago(ds) {
+        if (!ds) return "";
+        const d = new Date(ds);
+        if (isNaN(d)) return "";
+        const s = (Date.now() - d) / 1000;
+        if (s < 60) return "刚刚";
+        if (s < 3600) return `${Math.floor(s / 60)}m`;
+        if (s < 86400) return `${Math.floor(s / 3600)}h`;
+        return `${Math.floor(s / 86400)}d`;
+      }
+      function esc(s) {
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function tbadge(t) {
+        return t.translated ? `<span class="trans-badge">译</span>` : "";
+      }
+      const sk = `<div class="sk"><div class="skl w80"></div><div class="skl w60"></div><div class="skl w40"></div></div>`;
+
+      // ═══════════════════════════════════════════════
+      //  LOADERS
+      // ═══════════════════════════════════════════════
+      async function loadTechmeme() {
+        const col = document.getElementById("tm-col");
+        try {
+          const xml = await proxyFetch(CFG.feeds.techmeme.url);
+          let items = parseXML(xml)
+            .filter((i) => i.title && i.link)
+            .slice(0, CFG.feeds.techmeme.count);
+          if (!items.length) throw new Error("No items");
+          items = await Promise.all(items.map(translateItem));
+          const [h, ...rest] = items;
+          let html = `<a class="tm-hero f" href="${esc(h.link)}" target="_blank" rel="noopener">
       <div class="tm-eyebrow">Breaking${tbadge(h)}</div>
       <h2>${esc(h.title)}</h2>
-      <div class="meta">${host(h.link)?`<span class="src">${esc(host(h.link))}</span>`:''}${ago(h.date)}</div>
+      <div class="meta">${host(h.link) ? `<span class="src">${esc(host(h.link))}</span>` : ""}${ago(h.date)}</div>
     </a>`;
-    rest.forEach((it,i) => {
-      const n = String(i+2).padStart(2,'0');
-      html += `<div class="tm-row f" style="animation-delay:${i*16}ms">
+          rest.forEach((it, i) => {
+            const n = String(i + 2).padStart(2, "0");
+            html += `<div class="tm-row f" style="animation-delay:${i * 16}ms">
         <div class="rn">${n}</div>
         <div>
           <a class="rl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
-          <div class="rm">${host(it.link)?`<span class="src">${esc(host(it.link))}</span>`:''}${ago(it.date)}</div>
+          <div class="rm">${host(it.link) ? `<span class="src">${esc(host(it.link))}</span>` : ""}${ago(it.date)}</div>
         </div>
       </div>`;
-    });
-    col.innerHTML = html;
-  } catch(e) { col.innerHTML = `<div class="err">⚠ Techmeme 加载失败<br><small>${esc(e.message)}</small></div>`; }
-}
+          });
+          col.innerHTML = html;
+        } catch (e) {
+          col.innerHTML = `<div class="err">⚠ Techmeme 加载失败<br><small>${esc(e.message)}</small></div>`;
+        }
+      }
 
-async function loadHN() {
-  const el = document.getElementById('hn-items');
-  try {
-    const xml = await proxyFetch(CFG.feeds.hn.url);
-    let items = parseXML(xml).filter(i=>i.title).slice(0, CFG.feeds.hn.count);
-    if (!items.length) throw new Error('No items');
-    items = await Promise.all(items.map(translateItem));
-    el.innerHTML = items.map((it,i) => {
-      const commentsUrl = it.comments || it.link;
-      const articleUrl  = it.link && it.link !== commentsUrl ? it.link : '';
-      return `<div class="hi f" style="animation-delay:${i*20}ms">
+      async function loadHN() {
+        const el = document.getElementById("hn-items");
+        try {
+          const xml = await proxyFetch(CFG.feeds.hn.url);
+          let items = parseXML(xml)
+            .filter((i) => i.title)
+            .slice(0, CFG.feeds.hn.count);
+          if (!items.length) throw new Error("No items");
+          items = await Promise.all(items.map(translateItem));
+          el.innerHTML = items
+            .map((it, i) => {
+              const commentsUrl = it.comments || it.link;
+              const articleUrl =
+                it.link && it.link !== commentsUrl ? it.link : "";
+              return `<div class="hi f" style="animation-delay:${i * 20}ms">
         <a class="hl" href="${esc(commentsUrl)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
         <div class="hm">
-          ${articleUrl ? `<span class="src">${esc(host(articleUrl))}</span>` : ''}
+          ${articleUrl ? `<span class="src">${esc(host(articleUrl))}</span>` : ""}
           <span>${ago(it.date)}</span>
-          ${articleUrl ? `<a class="hn-comments" href="${esc(articleUrl)}" target="_blank" rel="noopener" title="打开原文">↗ 原文</a>` : ''}
+          ${articleUrl ? `<a class="hn-comments" href="${esc(articleUrl)}" target="_blank" rel="noopener" title="打开原文">↗ 原文</a>` : ""}
         </div>
       </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = `<div class="err">⚠ HN 加载失败<br><small>${esc(e.message)}</small></div>`; }
-}
+            })
+            .join("");
+        } catch (e) {
+          el.innerHTML = `<div class="err">⚠ HN 加载失败<br><small>${esc(e.message)}</small></div>`;
+        }
+      }
 
-async function loadSolidot() {
-  const el = document.getElementById('solidot-items');
-  try {
-    const xml = await proxyFetch(CFG.feeds.solidot.url);
-    let items = parseXML(xml).filter(i=>i.title).slice(0, CFG.feeds.solidot.count);
-    if (!items.length) throw new Error('No items');
-    items = await Promise.all(items.map(translateItem));
-    el.innerHTML = items.map((it,i) => {
-      const d = it.desc.slice(0,72);
-      return `<div class="si f" style="animation-delay:${i*26}ms">
+      async function loadSolidot() {
+        const el = document.getElementById("solidot-items");
+        try {
+          const xml = await proxyFetch(CFG.feeds.solidot.url);
+          let items = parseXML(xml)
+            .filter((i) => i.title)
+            .slice(0, CFG.feeds.solidot.count);
+          if (!items.length) throw new Error("No items");
+          items = await Promise.all(items.map(translateItem));
+          el.innerHTML = items
+            .map((it, i) => {
+              const d = it.desc.slice(0, 72);
+              return `<div class="si f" style="animation-delay:${i * 26}ms">
         <a class="sl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
-        ${d?`<div class="sd">${esc(d)}…</div>`:''}
+        ${d ? `<div class="sd">${esc(d)}…</div>` : ""}
       </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = `<div class="err">⚠ Solidot 加载失败<br><small>${esc(e.message)}</small></div>`; }
-}
+            })
+            .join("");
+        } catch (e) {
+          el.innerHTML = `<div class="err">⚠ Solidot 加载失败<br><small>${esc(e.message)}</small></div>`;
+        }
+      }
 
-async function loadProductHunt() {
-  const el = document.getElementById('ph-items');
-  try {
-    const xml = await proxyFetch(CFG.feeds.ph.url);
-    let items = parseXML(xml).filter(i=>i.title).slice(0, CFG.feeds.ph.count);
-    if (!items.length) throw new Error('No items');
-    items = await Promise.all(items.map(translateItem));
-    el.innerHTML = items.map((it,i) => {
-      const d = it.desc.slice(0,85);
-      return `<div class="pi f" style="animation-delay:${i*20}ms">
+      async function loadProductHunt() {
+        const el = document.getElementById("ph-items");
+        try {
+          const xml = await proxyFetch(CFG.feeds.ph.url);
+          let items = parseXML(xml)
+            .filter((i) => i.title)
+            .slice(0, CFG.feeds.ph.count);
+          if (!items.length) throw new Error("No items");
+          items = await Promise.all(items.map(translateItem));
+          el.innerHTML = items
+            .map((it, i) => {
+              const d = it.desc.slice(0, 85);
+              return `<div class="pi f" style="animation-delay:${i * 20}ms">
         <div>
           <a class="pl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
-          ${d?`<div class="pd">${esc(d)}${it.desc.length>85?'…':''}</div>`:''}
+          ${d ? `<div class="pd">${esc(d)}${it.desc.length > 85 ? "…" : ""}</div>` : ""}
         </div>
         <div class="pa">↗</div>
       </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = `<div class="err">⚠ Product Hunt 加载失败<br><small>${esc(e.message)}</small></div>`; }
-}
+            })
+            .join("");
+        } catch (e) {
+          el.innerHTML = `<div class="err">⚠ Product Hunt 加载失败<br><small>${esc(e.message)}</small></div>`;
+        }
+      }
 
-async function loadGitHub() {
-  const el = document.getElementById('gh-items');
-  try {
-    const xml = await proxyFetch(CFG.feeds.gh.url);
-    let items = parseXML(xml).filter(i=>i.title).slice(0, CFG.feeds.gh.count);
-    if (!items.length) throw new Error('No items');
-    items = await Promise.all(items.map(translateItem));
-    el.innerHTML = items.map((it,i) => {
-      const d = it.desc.slice(0,85);
-      const lm = it.desc.match(/[Ll]anguage[:\s]+([A-Za-z+#\-\.]+)/);
-      const lang = lm ? lm[1].trim() : '';
-      return `<div class="gi f" style="animation-delay:${i*20}ms">
+      async function loadGitHub() {
+        const el = document.getElementById("gh-items");
+        try {
+          const xml = await proxyFetch(CFG.feeds.gh.url);
+          let items = parseXML(xml)
+            .filter((i) => i.title)
+            .slice(0, CFG.feeds.gh.count);
+          if (!items.length) throw new Error("No items");
+          items = await Promise.all(items.map(translateItem));
+          el.innerHTML = items
+            .map((it, i) => {
+              const d = it.desc.slice(0, 85);
+              const lm = it.desc.match(/[Ll]anguage[:\s]+([A-Za-z+#\-\.]+)/);
+              const lang = lm ? lm[1].trim() : "";
+              return `<div class="gi f" style="animation-delay:${i * 20}ms">
         <div>
           <a class="gl" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title.trim())}${tbadge(it)}</a>
-          ${d?`<div class="gd">${esc(d)}${it.desc.length>85?'…':''}</div>`:''}
+          ${d ? `<div class="gd">${esc(d)}${it.desc.length > 85 ? "…" : ""}</div>` : ""}
         </div>
-        ${lang?`<div class="glang">${esc(lang)}</div>`:''}
+        ${lang ? `<div class="glang">${esc(lang)}</div>` : ""}
       </div>`;
-    }).join('');
-  } catch(e) { el.innerHTML = `<div class="err">⚠ GitHub 加载失败<br><small>${esc(e.message)}</small></div>`; }
-}
+            })
+            .join("");
+        } catch (e) {
+          el.innerHTML = `<div class="err">⚠ GitHub 加载失败<br><small>${esc(e.message)}</small></div>`;
+        }
+      }
 
-// ── PRODUCT UPDATES ──────────────────────────────
-async function loadUpdates() {
-  const grid = document.getElementById('updates-grid');
-  const tagEl = document.getElementById('update-feed-tags');
-  const updates = CFG.updates;
+      // ── PRODUCT UPDATES ──────────────────────────────
+      async function loadUpdates() {
+        const grid = document.getElementById("updates-grid");
+        const tagEl = document.getElementById("update-feed-tags");
+        const updates = CFG.updates;
 
-  if (!updates.length) {
-    grid.innerHTML = '<div class="err" style="grid-column:1/-1">⚠ 未配置任何产品 Feed，请点击 ⚙ 设置添加</div>';
-    return;
-  }
+        if (!updates.length) {
+          grid.innerHTML =
+            '<div class="err" style="grid-column:1/-1">⚠ 未配置任何产品 Feed，请点击 ⚙ 设置添加</div>';
+          return;
+        }
 
-  // Build columns — flex children, always fill the row evenly
-  grid.innerHTML = updates.map((u,i) =>
-    `<div class="upd-col">
+        // Build columns — flex children, always fill the row evenly
+        grid.innerHTML = updates
+          .map(
+            (u, i) =>
+              `<div class="upd-col">
       <div class="bh">
-        <div class="bl"><div class="sh-dot d-purple"></div>${esc(u.name||host(u.url)||'Feed '+i)}</div>
+        <div class="bl"><div class="sh-dot d-purple"></div>${esc(u.name || host(u.url) || "Feed " + i)}</div>
         <span class="tag t-purple">更新</span>
       </div>
       <div id="upd-${i}">${sk}</div>
-    </div>`
-  ).join('');
+    </div>`,
+          )
+          .join("");
 
-  // Update section tags
-  tagEl.textContent = updates.map(u => u.name || host(u.url)).join(' · ');
+        // Update section tags
+        tagEl.textContent = updates
+          .map((u) => u.name || host(u.url))
+          .join(" · ");
 
-  // Load each
-  await Promise.allSettled(updates.map(async (u, i) => {
-    const el = document.getElementById(`upd-${i}`);
-    try {
-      const xml = await proxyFetch(u.url);
-      let items = parseXML(xml).filter(it=>it.title).slice(0, u.count||8);
-      if (!items.length) throw new Error('No items');
-      items = await Promise.all(items.map(translateItem));
-      el.innerHTML = items.map((it,j) => {
-        const d = it.desc.slice(0,100);
-        return `<div class="ui f" style="animation-delay:${j*20}ms">
+        // Load each
+        await Promise.allSettled(
+          updates.map(async (u, i) => {
+            const el = document.getElementById(`upd-${i}`);
+            try {
+              const xml = await proxyFetch(u.url);
+              let items = parseXML(xml)
+                .filter((it) => it.title)
+                .slice(0, u.count || 8);
+              if (!items.length) throw new Error("No items");
+              items = await Promise.all(items.map(translateItem));
+              el.innerHTML = items
+                .map((it, j) => {
+                  const d = it.desc.slice(0, 100);
+                  return `<div class="ui f" style="animation-delay:${j * 20}ms">
           <div>
             <a class="ut" href="${esc(it.link)}" target="_blank" rel="noopener">${esc(it.title)}${tbadge(it)}</a>
-            ${d?`<div class="ud">${esc(d)}${it.desc.length>100?'…':''}</div>`:''}
-            <div class="um"><span class="src">${esc(host(it.link)||u.name)}</span>${ago(it.date)}</div>
+            ${d ? `<div class="ud">${esc(d)}${it.desc.length > 100 ? "…" : ""}</div>` : ""}
+            <div class="um"><span class="src">${esc(host(it.link) || u.name)}</span>${ago(it.date)}</div>
           </div>
           <div class="u-arrow">↗</div>
         </div>`;
-      }).join('');
-    } catch(e) {
-      el.innerHTML = `<div class="err">⚠ 加载失败<br><small>${esc(e.message)}</small></div>`;
-    }
-  }));
-}
+                })
+                .join("");
+            } catch (e) {
+              el.innerHTML = `<div class="err">⚠ 加载失败<br><small>${esc(e.message)}</small></div>`;
+            }
+          }),
+        );
+      }
 
-// ═══════════════════════════════════════════════
-//  LOAD ALL
-// ═══════════════════════════════════════════════
-async function loadAll() {
-  const btn = document.getElementById('rbtn');
-  btn.classList.add('spin'); btn.disabled = true;
-  transCache.clear(); // clear cache on refresh so fresh translations
-  await Promise.allSettled([
-    loadTechmeme(), loadHN(), loadSolidot(),
-    loadProductHunt(), loadGitHub(), loadUpdates()
-  ]);
-  const n = new Date();
-  document.getElementById('ts').textContent =
-    `${n.getHours().toString().padStart(2,'0')}:${n.getMinutes().toString().padStart(2,'0')} updated`;
-  btn.classList.remove('spin'); btn.disabled = false;
-}
+      // ═══════════════════════════════════════════════
+      //  LOAD ALL
+      // ═══════════════════════════════════════════════
+      async function loadAll() {
+        const btn = document.getElementById("rbtn");
+        btn.classList.add("spin");
+        btn.disabled = true;
+        transCache.clear(); // clear cache on refresh so fresh translations
+        await Promise.allSettled([
+          loadTechmeme(),
+          loadHN(),
+          loadSolidot(),
+          loadProductHunt(),
+          loadGitHub(),
+          loadUpdates(),
+        ]);
+        const n = new Date();
+        document.getElementById("ts").textContent =
+          `${n.getHours().toString().padStart(2, "0")}:${n.getMinutes().toString().padStart(2, "0")} updated`;
+        btn.classList.remove("spin");
+        btn.disabled = false;
+      }
 
-// ═══════════════════════════════════════════════
-//  SETTINGS PANEL
-// ═══════════════════════════════════════════════
-function openSettings() {
-  // Populate core feeds
-  const f = CFG.feeds;
-  ['techmeme','hn','solidot','ph','gh'].forEach(k => {
-    document.getElementById(`f-${k}`).value = f[k].url;
-    document.getElementById(`n-${k}`).value = f[k].count;
-  });
-  // Translation
-  document.getElementById('transEnabled').checked = CFG.deepl.enabled;
-  document.getElementById('deeplKey').value        = CFG.deepl.key;
-  document.getElementById('deeplLang').value       = CFG.deepl.lang;
-  document.getElementById('deeplStatus').textContent = '';
-  document.getElementById('aiTransEnabled').checked = CFG.aiTrans?.enabled ?? false;
-  document.getElementById('aiEndpoint').value       = CFG.aiTrans?.endpoint ?? 'https://api.astrdark.cyou';
-  document.getElementById('aiKey').value            = CFG.aiTrans?.key ?? '';
-  document.getElementById('aiModel').value          = CFG.aiTrans?.model ?? 'gpt-4o-mini';
-  document.getElementById('aiLang').value           = CFG.aiTrans?.lang ?? 'Chinese';
-  document.getElementById('aiStatus').textContent   = '';
-  // Show correct tab based on which engine is configured
-  const activeTab = (CFG.aiTrans?.enabled) ? 'ai' : 'deepl';
-  switchTransTab(activeTab);
-  // Updates
-  renderUpdateRows();
-  document.getElementById('overlay').classList.add('open');
-}
+      // ═══════════════════════════════════════════════
+      //  SETTINGS PANEL
+      // ═══════════════════════════════════════════════
+      function openSettings() {
+        // Populate core feeds
+        const f = CFG.feeds;
+        ["techmeme", "hn", "solidot", "ph", "gh"].forEach((k) => {
+          document.getElementById(`f-${k}`).value = f[k].url;
+          document.getElementById(`n-${k}`).value = f[k].count;
+        });
+        // Translation
+        document.getElementById("transEnabled").checked = CFG.deepl.enabled;
+        document.getElementById("deeplKey").value = CFG.deepl.key;
+        document.getElementById("deeplLang").value = CFG.deepl.lang;
+        document.getElementById("deeplStatus").textContent = "";
+        document.getElementById("aiTransEnabled").checked =
+          CFG.aiTrans?.enabled ?? false;
+        document.getElementById("aiEndpoint").value =
+          CFG.aiTrans?.endpoint ?? "https://api.astrdark.cyou";
+        document.getElementById("aiKey").value = CFG.aiTrans?.key ?? "";
+        document.getElementById("aiModel").value =
+          CFG.aiTrans?.model ?? "gpt-4o-mini";
+        document.getElementById("aiLang").value =
+          CFG.aiTrans?.lang ?? "Chinese";
+        document.getElementById("aiStatus").textContent = "";
+        // Show correct tab based on which engine is configured
+        const activeTab = CFG.aiTrans?.enabled ? "ai" : "deepl";
+        switchTransTab(activeTab);
+        // Updates
+        renderUpdateRows();
+        document.getElementById("overlay").classList.add("open");
+      }
 
-function closeSettings() {
-  document.getElementById('overlay').classList.remove('open');
-}
+      function closeSettings() {
+        document.getElementById("overlay").classList.remove("open");
+      }
 
-function renderUpdateRows() {
-  const container = document.getElementById('updates-feed-rows');
-  container.innerHTML = CFG.updates.map((u,i) => `
+      function renderUpdateRows() {
+        const container = document.getElementById("updates-feed-rows");
+        container.innerHTML = CFG.updates
+          .map(
+            (u, i) => `
     <div class="feed-row" id="urow-${i}" style="grid-template-columns:100px 1fr 60px 28px">
-      <input class="sp-input" id="un-${i}" value="${esc(u.name||'')}" placeholder="名称">
+      <input class="sp-input" id="un-${i}" value="${esc(u.name || "")}" placeholder="名称">
       <input class="sp-input" id="uu-${i}" type="url" value="${esc(u.url)}" placeholder="Feed URL">
-      <input class="sp-input sp-num" id="uc-${i}" type="number" min="1" max="30" value="${u.count||8}">
+      <input class="sp-input sp-num" id="uc-${i}" type="number" min="1" max="30" value="${u.count || 8}">
       <button onclick="removeUpdateRow(${i})" style="background:none;border:none;color:var(--text3);font-size:16px;cursor:pointer;padding:0 4px" title="删除">×</button>
-    </div>`).join('');
-}
+    </div>`,
+          )
+          .join("");
+      }
 
-function addUpdateFeedRow() {
-  CFG.updates.push({ name:'', url:'', count:8 });
-  renderUpdateRows();
-}
+      function addUpdateFeedRow() {
+        CFG.updates.push({ name: "", url: "", count: 8 });
+        renderUpdateRows();
+      }
 
-function removeUpdateRow(i) {
-  CFG.updates.splice(i, 1);
-  renderUpdateRows();
-}
+      function removeUpdateRow(i) {
+        CFG.updates.splice(i, 1);
+        renderUpdateRows();
+      }
 
-function saveSettings() {
-  // Core feeds
-  ['techmeme','hn','solidot','ph','gh'].forEach(k => {
-    CFG.feeds[k].url   = document.getElementById(`f-${k}`).value.trim();
-    CFG.feeds[k].count = parseInt(document.getElementById(`n-${k}`).value) || DEFAULTS.feeds[k].count;
-  });
-  // DeepL
-  CFG.deepl.enabled = document.getElementById('transEnabled').checked;
-  CFG.deepl.key     = document.getElementById('deeplKey').value.trim();
-  CFG.deepl.lang    = document.getElementById('deeplLang').value;
-  // AI Translation
-  if (!CFG.aiTrans) CFG.aiTrans = {};
-  CFG.aiTrans.enabled  = document.getElementById('aiTransEnabled').checked;
-  CFG.aiTrans.endpoint = document.getElementById('aiEndpoint').value.trim() || 'https://api.astrdark.cyou';
-  CFG.aiTrans.key      = document.getElementById('aiKey').value.trim();
-  CFG.aiTrans.model    = document.getElementById('aiModel').value.trim() || 'gpt-4o-mini';
-  CFG.aiTrans.lang     = document.getElementById('aiLang').value;
-  // Updates
-  const n = CFG.updates.length;
-  CFG.updates = Array.from({length:n}, (_,i) => ({
-    name:  document.getElementById(`un-${i}`)?.value.trim() || '',
-    url:   document.getElementById(`uu-${i}`)?.value.trim() || '',
-    count: parseInt(document.getElementById(`uc-${i}`)?.value) || 8,
-  })).filter(u => u.url);
+      function saveSettings() {
+        // Core feeds
+        ["techmeme", "hn", "solidot", "ph", "gh"].forEach((k) => {
+          CFG.feeds[k].url = document.getElementById(`f-${k}`).value.trim();
+          CFG.feeds[k].count =
+            parseInt(document.getElementById(`n-${k}`).value) ||
+            DEFAULTS.feeds[k].count;
+        });
+        // DeepL
+        CFG.deepl.enabled = document.getElementById("transEnabled").checked;
+        CFG.deepl.key = document.getElementById("deeplKey").value.trim();
+        CFG.deepl.lang = document.getElementById("deeplLang").value;
+        // AI Translation
+        if (!CFG.aiTrans) CFG.aiTrans = {};
+        CFG.aiTrans.enabled = document.getElementById("aiTransEnabled").checked;
+        CFG.aiTrans.endpoint =
+          document.getElementById("aiEndpoint").value.trim() ||
+          "https://api.astrdark.cyou";
+        CFG.aiTrans.key = document.getElementById("aiKey").value.trim();
+        CFG.aiTrans.model =
+          document.getElementById("aiModel").value.trim() || "gpt-4o-mini";
+        CFG.aiTrans.lang = document.getElementById("aiLang").value;
+        // Updates
+        const n = CFG.updates.length;
+        CFG.updates = Array.from({ length: n }, (_, i) => ({
+          name: document.getElementById(`un-${i}`)?.value.trim() || "",
+          url: document.getElementById(`uu-${i}`)?.value.trim() || "",
+          count: parseInt(document.getElementById(`uc-${i}`)?.value) || 8,
+        })).filter((u) => u.url);
 
-  saveConfig(CFG);
-  closeSettings();
-  loadAll();
-}
+        saveConfig(CFG);
+        closeSettings();
+        loadAll();
+      }
 
-// Close overlay on backdrop click
-document.getElementById('overlay').addEventListener('click', e => {
-  if (e.target === document.getElementById('overlay')) closeSettings();
-});
+      // Close overlay on backdrop click
+      document.getElementById("overlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("overlay")) closeSettings();
+      });
 
-// ═══════════════════════════════════════════════
-//  INIT
-// ═══════════════════════════════════════════════
-loadAll();
-setInterval(loadAll, 15 * 60 * 1000);
-</script>
-</body>
+      // ═══════════════════════════════════════════════
+      //  INIT
+      // ═══════════════════════════════════════════════
+      loadAll();
+      setInterval(loadAll, 15 * 60 * 1000);
+    </script>
+  </body>
 </html>
