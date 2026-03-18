@@ -1,0 +1,885 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>ResumeCraft | 简历定制工具</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg-primary: #0a0a0f;
+        --bg-secondary: #12121a;
+        --bg-tertiary: #1a1a25;
+        --accent-primary: #00ff9d;
+        --accent-secondary: #00b8ff;
+        --accent-warning: #ff6b35;
+        --text-primary: #f0f0f5;
+        --text-secondary: #8a8a9a;
+        --border-color: #2a2a38;
+        --glow-primary: rgba(0, 255, 157, 0.15);
+        --glow-secondary: rgba(0, 184, 255, 0.15);
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        font-family:
+          "Space Grotesk",
+          -apple-system,
+          BlinkMacSystemFont,
+          sans-serif;
+        background: var(--bg-primary);
+        color: var(--text-primary);
+        min-height: 100vh;
+        line-height: 1.6;
+      }
+
+      /* Background Pattern */
+      .bg-grid {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image:
+          linear-gradient(rgba(42, 42, 56, 0.3) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(42, 42, 56, 0.3) 1px, transparent 1px);
+        background-size: 40px 40px;
+        opacity: 0.4;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .noise-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        opacity: 0.03;
+        pointer-events: none;
+        z-index: 1;
+        background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%' height='100%' filter='url(%23noise)'/%3E%3C/svg%3E");
+      }
+
+      /* Header */
+      .header {
+        position: relative;
+        z-index: 2;
+        padding: 1.5rem 2rem;
+        border-bottom: 1px solid var(--border-color);
+        background: var(--bg-secondary);
+      }
+
+      .header-inner {
+        max-width: 1400px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+      }
+
+      .logo-icon {
+        width: 40px;
+        height: 40px;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-secondary)
+        );
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 700;
+        font-size: 1.2rem;
+        color: var(--bg-primary);
+      }
+
+      .logo-text {
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-secondary)
+        );
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.5px;
+      }
+
+      .header-meta {
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.75rem;
+        color: var(--text-secondary);
+      }
+
+      /* Main Layout */
+      .main {
+        position: relative;
+        z-index: 2;
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 2rem;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 2rem;
+      }
+
+      @media (max-width: 1024px) {
+        .main {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* Card Style */
+      .card {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border-color);
+        border-radius: 12px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 1px;
+        background: linear-gradient(
+          90deg,
+          transparent,
+          var(--accent-primary),
+          var(--accent-secondary),
+          transparent
+        );
+        opacity: 0.5;
+      }
+
+      .card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid var(--border-color);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        background: var(--bg-tertiary);
+      }
+
+      .card-title {
+        font-weight: 600;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      .card-title::before {
+        content: "";
+        width: 4px;
+        height: 16px;
+        background: var(--accent-primary);
+        border-radius: 2px;
+      }
+
+      .card-body {
+        padding: 1.5rem;
+      }
+
+      /* Input Areas */
+      textarea,
+      input[type="text"] {
+        width: 100%;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        color: var(--text-primary);
+        resize: vertical;
+        min-height: 150px;
+        transition: all 0.2s ease;
+      }
+
+      textarea:focus,
+      input[type="text"]:focus {
+        outline: none;
+        border-color: var(--accent-primary);
+        box-shadow: 0 0 0 3px var(--glow-primary);
+      }
+
+      input[type="text"] {
+        min-height: auto;
+      }
+
+      .input-group {
+        margin-bottom: 1.25rem;
+      }
+
+      .input-label {
+        display: block;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        margin-bottom: 0.5rem;
+        font-family: "JetBrains Mono", monospace;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      /* Tags */
+      .tags-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+        margin-top: 0.5rem;
+      }
+
+      .tag {
+        padding: 0.4rem 0.8rem;
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 20px;
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        font-family: "JetBrains Mono", monospace;
+      }
+
+      .tag:hover {
+        border-color: var(--accent-secondary);
+        transform: translateY(-2px);
+      }
+
+      .tag.active {
+        background: var(--accent-secondary);
+        border-color: var(--accent-secondary);
+        color: var(--bg-primary);
+      }
+
+      /* Buttons */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 8px;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .btn-primary {
+        background: linear-gradient(
+          135deg,
+          var(--accent-primary),
+          var(--accent-secondary)
+        );
+        color: var(--bg-primary);
+      }
+
+      .btn-primary:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 20px var(--glow-primary);
+      }
+
+      .btn-secondary {
+        background: var(--bg-tertiary);
+        color: var(--text-primary);
+        border: 1px solid var(--border-color);
+      }
+
+      .btn-secondary:hover {
+        border-color: var(--accent-secondary);
+      }
+
+      .btn-icon {
+        padding: 0.5rem;
+        width: 40px;
+        height: 40px;
+        border-radius: 8px;
+      }
+
+      .actions {
+        display: flex;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+        flex-wrap: wrap;
+      }
+
+      /* Output Area */
+      .output-preview {
+        background: var(--bg-primary);
+        border: 1px solid var(--border-color);
+        border-radius: 8px;
+        padding: 1.5rem;
+        min-height: 300px;
+        max-height: 600px;
+        overflow-y: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        line-height: 1.8;
+        white-space: pre-wrap;
+      }
+
+      .output-preview .resume-name {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+        color: var(--accent-primary);
+      }
+
+      .output-preview .resume-section {
+        margin-top: 1rem;
+      }
+
+      .output-preview .resume-section-title {
+        font-weight: 600;
+        color: var(--accent-secondary);
+        margin-bottom: 0.5rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+      }
+
+      .output-preview .resume-item {
+        margin-bottom: 0.75rem;
+        padding-left: 1rem;
+        border-left: 2px solid var(--border-color);
+      }
+
+      /* Toast */
+      .toast {
+        position: fixed;
+        bottom: 2rem;
+        right: 2rem;
+        padding: 1rem 1.5rem;
+        background: var(--bg-secondary);
+        border: 1px solid var(--accent-primary);
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        transform: translateY(100px);
+        opacity: 0;
+        transition: all 0.3s ease;
+        z-index: 100;
+      }
+
+      .toast.show {
+        transform: translateY(0);
+        opacity: 1;
+      }
+
+      .toast-icon {
+        color: var(--accent-primary);
+      }
+
+      /* Animations */
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      .card {
+        animation: fadeInUp 0.5s ease backwards;
+      }
+
+      .card:nth-child(2) {
+        animation-delay: 0.1s;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="bg-grid"></div>
+    <div class="noise-overlay"></div>
+
+    <header class="header">
+      <div class="header-inner">
+        <div class="logo">
+          <div class="logo-icon">R</div>
+          <span class="logo-text">ResumeCraft</span>
+        </div>
+        <div class="header-meta">v1.0 | 纯前端工具</div>
+      </div>
+    </header>
+
+    <main class="main">
+      <!-- Input Section -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">输入信息</h2>
+        </div>
+        <div class="card-body">
+          <div class="input-group">
+            <label class="input-label">
+              <span>📋 粘贴 JD 描述</span>
+              <span style="float: right; color: var(--accent-secondary)"
+                >支持中文</span
+              >
+            </label>
+            <textarea
+              id="jdInput"
+              placeholder="粘贴目标岗位的 JD 描述，系统将自动提取关键词用于简历匹配..."
+            ></textarea>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">👤 基本信息</label>
+            <div
+              style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem"
+            >
+              <input type="text" id="nameInput" placeholder="姓名 (如: Ryan)" />
+              <input
+                type="text"
+                id="titleInput"
+                placeholder="目标职位 (如: 机电一体化工程师)"
+              />
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">🎯 核心技能（点击选择）</label>
+            <div class="tags-container" id="skillTags">
+              <span class="tag" data-skill="V带传动设计">V带传动设计</span>
+              <span class="tag" data-skill="齿轮减速器">齿轮减速器</span>
+              <span class="tag" data-skill="Creo 3D建模">Creo 3D建模</span>
+              <span class="tag" data-skill="连杆机构">连杆机构</span>
+              <span class="tag" data-skill="机构仿真">机构仿真</span>
+              <span class="tag" data-skill="Node.js">Node.js</span>
+              <span class="tag" data-skill="SQL Server">SQL Server</span>
+              <span class="tag" data-skill="CLI工具开发">CLI工具开发</span>
+              <span class="tag" data-skill="自动化脚本">自动化脚本</span>
+              <span class="tag" data-skill="数据处理">数据处理</span>
+              <span class="tag" data-skill="系统集成">系统集成</span>
+              <span class="tag" data-skill="工业自动化">工业自动化</span>
+              <span class="tag" data-skill="嵌入式控制">嵌入式控制</span>
+              <span class="tag" data-skill="智能制造">智能制造</span>
+              <span class="tag" data-skill="Python">Python</span>
+              <span class="tag" data-skill="CAD/SolidWorks"
+                >CAD/SolidWorks</span
+              >
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">📝 项目/工作经历</label>
+            <textarea
+              id="experienceInput"
+              placeholder="输入项目或工作经历，一行一条...&#10;&#10;V带传动直齿轮减速器设计：完成机械结构设计、参数计算、3D建模&#10;Creo连杆机构建模：建立多关节连杆机构三维模型，进行运动学分析"
+            ></textarea>
+          </div>
+
+          <div class="actions">
+            <button class="btn btn-primary" id="generateBtn">
+              <span>▶</span> 生成简历
+            </button>
+            <button class="btn btn-secondary" id="clearBtn">
+              <span>✕</span> 清空
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <!-- Output Section -->
+      <section class="card">
+        <div class="card-header">
+          <h2 class="card-title">输出结果</h2>
+          <div style="display: flex; gap: 0.5rem">
+            <button
+              class="btn btn-secondary btn-icon"
+              id="copyBtn"
+              title="复制"
+            >
+              <span>📋</span>
+            </button>
+            <button
+              class="btn btn-secondary btn-icon"
+              id="downloadBtn"
+              title="下载"
+            >
+              <span>⬇</span>
+            </button>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="output-preview" id="outputPreview">
+            <span style="color: var(--text-secondary)"
+              >← 输入信息后点击"生成简历"查看结果</span
+            >
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <div class="toast" id="toast">
+      <span class="toast-icon">✓</span>
+      <span id="toastText">已复制到剪贴板</span>
+    </div>
+
+    <script>
+      // State Management
+      const state = {
+        selectedSkills: JSON.parse(
+          localStorage.getItem("selectedSkills") || "[]",
+        ),
+        jdInput: localStorage.getItem("jdInput") || "",
+        nameInput: localStorage.getItem("nameInput") || "",
+        titleInput: localStorage.getItem("titleInput") || "",
+        experienceInput: localStorage.getItem("experienceInput") || "",
+      };
+
+      // DOM Elements
+      const elements = {
+        jdInput: document.getElementById("jdInput"),
+        nameInput: document.getElementById("nameInput"),
+        titleInput: document.getElementById("titleInput"),
+        experienceInput: document.getElementById("experienceInput"),
+        skillTags: document.getElementById("skillTags"),
+        generateBtn: document.getElementById("generateBtn"),
+        clearBtn: document.getElementById("clearBtn"),
+        outputPreview: document.getElementById("outputPreview"),
+        copyBtn: document.getElementById("copyBtn"),
+        downloadBtn: document.getElementById("downloadBtn"),
+        toast: document.getElementById("toast"),
+        toastText: document.getElementById("toastText"),
+      };
+
+      // URL Parameter Handling
+      function loadFromURL() {
+        const params = new URLSearchParams(window.location.search);
+        const jd = params.get("jd");
+        const name = params.get("name");
+        const title = params.get("title");
+        const skills = params.get("skills");
+
+        if (jd) {
+          state.jdInput = jd;
+          elements.jdInput.value = jd;
+        }
+        if (name) {
+          state.nameInput = name;
+          elements.nameInput.value = name;
+        }
+        if (title) {
+          state.titleInput = title;
+          elements.titleInput.value = title;
+        }
+        if (skills) {
+          state.selectedSkills = skills.split(",");
+        }
+      }
+
+      function saveState() {
+        localStorage.setItem("jdInput", state.jdInput);
+        localStorage.setItem("nameInput", state.nameInput);
+        localStorage.setItem("titleInput", state.titleInput);
+        localStorage.setItem("experienceInput", state.experienceInput);
+        localStorage.setItem(
+          "selectedSkills",
+          JSON.stringify(state.selectedSkills),
+        );
+      }
+
+      function updateURL() {
+        const params = new URLSearchParams();
+        if (state.jdInput) params.set("jd", state.jdInput);
+        if (state.nameInput) params.set("name", state.nameInput);
+        if (state.titleInput) params.set("title", state.titleInput);
+        if (state.selectedSkills.length > 0)
+          params.set("skills", state.selectedSkills.join(","));
+        const newURL = `${window.location.pathname}${params.toString() ? "?" + params.toString() : ""}`;
+        window.history.replaceState({}, "", newURL);
+      }
+
+      // Keyword Extraction
+      function extractKeywords(text) {
+        const keywords = [];
+        const patterns = [
+          /设计/g,
+          /开发/g,
+          /建模/g,
+          /仿真/g,
+          /自动化/g,
+          /控制/g,
+          /系统/g,
+          /机械/g,
+          /电气/g,
+          /软件/g,
+          /嵌入式/g,
+          /Python/g,
+          /JavaScript/g,
+          /Creo/g,
+          /CAD/g,
+          /SolidWorks/g,
+          /MATLAB/g,
+          /PLC/g,
+          /传感器/g,
+          /数据/g,
+          /处理/g,
+          /分析/g,
+          /集成/g,
+          /测试/g,
+          /调试/g,
+        ];
+
+        patterns.forEach((pattern) => {
+          const matches = text.match(pattern);
+          if (matches) {
+            matches.forEach((m) => {
+              if (!keywords.includes(m)) keywords.push(m);
+            });
+          }
+        });
+
+        return keywords;
+      }
+
+      // Tag Click Handler
+      function handleTagClick(tag) {
+        const skill = tag.dataset.skill;
+        tag.classList.toggle("active");
+
+        if (state.selectedSkills.includes(skill)) {
+          state.selectedSkills = state.selectedSkills.filter(
+            (s) => s !== skill,
+          );
+        } else {
+          state.selectedSkills.push(skill);
+        }
+
+        saveState();
+        updateURL();
+      }
+
+      // Resume Generation
+      function generateResume() {
+        const jdText = elements.jdInput.value;
+        const name = elements.nameInput.value || "[您的姓名]";
+        const title = elements.titleInput.value || "[目标职位]";
+        const experienceText = elements.experienceInput.value;
+
+        const jdKeywords = extractKeywords(jdText);
+        const matchedSkills = state.selectedSkills.filter((s) =>
+          jdKeywords.some((k) => s.toLowerCase().includes(k.toLowerCase())),
+        );
+
+        const experiences = experienceText
+          .split("\n")
+          .filter((line) => line.trim())
+          .map((line) => {
+            const [name, desc] = line.split("：");
+            return name
+              ? `<div class="resume-item"><strong>${name}</strong><br>${desc || name}</div>`
+              : "";
+          })
+          .join("");
+
+        const resume = `
+<span class="resume-name">${name}</span>
+${title}
+<span style="color: var(--accent-secondary); padding-bottom: 0.5rem; display: block; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">机电一体化 · 机械+软件 · 交叉学科工程师</span>
+
+<span class="resume-section-title">专业总结</span>
+具备机械设计与软件工程双重背景的复合型工程师。熟练使用Creo进行3D建模与机构设计，掌握Node.js生态系统与CLI工作流。专注于工业自动化、智能控制、嵌入式系统等交叉领域，致力于通过软件技术赋能传统机械工程。
+
+<span class="resume-section-title">核心技能</span>
+<strong>机械设计：</strong>${
+          state.selectedSkills
+            .filter((s) =>
+              [
+                "V带传动设计",
+                "齿轮减速器",
+                "Creo 3D建模",
+                "连杆机构",
+                "机构仿真",
+                "CAD/SolidWorks",
+              ].includes(s),
+            )
+            .join(" · ") ||
+          "V带传动设计 · 齿轮减速器 · Creo 3D建模 · 连杆机构 · 机构仿真"
+        }
+
+<strong>软件开发：</strong>${
+          state.selectedSkills
+            .filter((s) =>
+              [
+                "Node.js",
+                "SQL Server",
+                "CLI工具开发",
+                "自动化脚本",
+                "数据处理",
+                "Python",
+                "系统集成",
+              ].includes(s),
+            )
+            .join(" · ") ||
+          "Node.js · SQL Server · Python · 自动化脚本 · 数据处理"
+        }
+
+<strong>JD匹配关键词：</strong>${matchedSkills.length > 0 ? matchedSkills.join(" · ") : "建议更详细JD描述"}
+
+<span class="resume-section-title">项目经验</span>
+${
+  experiences ||
+  `
+<div class="resume-item"><strong>V带传动直齿轮减速器设计</strong><br>完成机械结构设计、齿轮传动参数计算、工程图绘制与三维建模</div>
+<div class="resume-item"><strong>Creo连杆机构建模</strong><br>建立多关节连杆机构三维模型，进行运动学分析与仿真验证</div>
+`
+}
+
+<span class="resume-section-title">职业定位</span>
+优先考虑：机电一体化工程师、工业自动化工程师、嵌入式控制系统工程师
+`;
+
+        elements.outputPreview.innerHTML = resume.trim();
+      }
+
+      // Copy Function
+      async function copyToClipboard() {
+        const text = elements.outputPreview.innerText;
+        try {
+          await navigator.clipboard.writeText(text);
+          showToast("已复制到剪贴板");
+        } catch (err) {
+          showToast("复制失败，请手动复制");
+        }
+      }
+
+      // Download Function
+      function downloadResume() {
+        const text = elements.outputPreview.innerText;
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "resume.txt";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showToast("已下载简历文本");
+      }
+
+      // Toast Function
+      function showToast(message) {
+        elements.toastText.textContent = message;
+        elements.toast.classList.add("show");
+        setTimeout(() => {
+          elements.toast.classList.remove("show");
+        }, 2000);
+      }
+
+      // Clear Function
+      function clearAll() {
+        elements.jdInput.value = "";
+        elements.nameInput.value = "";
+        elements.titleInput.value = "";
+        elements.experienceInput.value = "";
+        state.jdInput = "";
+        state.nameInput = "";
+        state.titleInput = "";
+        state.experienceInput = "";
+        state.selectedSkills = [];
+
+        document
+          .querySelectorAll(".tag")
+          .forEach((tag) => tag.classList.remove("active"));
+        elements.outputPreview.innerHTML =
+          '<span style="color: var(--text-secondary);">← 输入信息后点击"生成简历"查看结果</span>';
+
+        saveState();
+        updateURL();
+        showToast("已清空所有输入");
+      }
+
+      // Initialize
+      function init() {
+        loadFromURL();
+
+        elements.jdInput.value = state.jdInput;
+        elements.nameInput.value = state.nameInput;
+        elements.titleInput.value = state.titleInput;
+        elements.experienceInput.value = state.experienceInput;
+
+        document.querySelectorAll(".tag").forEach((tag) => {
+          if (state.selectedSkills.includes(tag.dataset.skill)) {
+            tag.classList.add("active");
+          }
+          tag.addEventListener("click", () => handleTagClick(tag));
+        });
+
+        // Event Listeners
+        elements.jdInput.addEventListener("input", (e) => {
+          state.jdInput = e.target.value;
+          saveState();
+          updateURL();
+        });
+
+        elements.nameInput.addEventListener("input", (e) => {
+          state.nameInput = e.target.value;
+          saveState();
+          updateURL();
+        });
+
+        elements.titleInput.addEventListener("input", (e) => {
+          state.titleInput = e.target.value;
+          saveState();
+          updateURL();
+        });
+
+        elements.experienceInput.addEventListener("input", (e) => {
+          state.experienceInput = e.target.value;
+          saveState();
+        });
+
+        elements.generateBtn.addEventListener("click", generateResume);
+        elements.clearBtn.addEventListener("click", clearAll);
+        elements.copyBtn.addEventListener("click", copyToClipboard);
+        elements.downloadBtn.addEventListener("click", downloadResume);
+
+        // Auto-load from URL
+        if (
+          state.nameInput ||
+          state.titleInput ||
+          state.selectedSkills.length > 0
+        ) {
+          generateResume();
+        }
+      }
+
+      // Boot
+      init();
+    </script>
+  </body>
+</html>

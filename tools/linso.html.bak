@@ -1,0 +1,2172 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Linso — 智能搜索</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f3f2ee;
+        --bg2: #ffffff;
+        --bg3: #ececea;
+        --bg4: #e5e3df;
+        --text: #1a1917;
+        --text2: #7a7773;
+        --text3: #b3b0ab;
+        --accent: #1d4ed8;
+        --accent-d: #1e40af;
+        --accent-l: #dbeafe;
+        --danger: #dc2626;
+        --danger-l: #fee2e2;
+        --success: #059669;
+        --border: #e2dfd9;
+        --border2: #ccc9c2;
+        --shadow-s:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 6px 24px rgba(0, 0, 0, 0.06);
+        --shadow-l:
+          0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+        --r-pill: 28px;
+        --r-card: 18px;
+        --r-sm: 10px;
+        --t: 0.14s ease;
+      }
+
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px 72px;
+      }
+
+      /* ── LOGO ─────────────────────────────────────── */
+      .logo-wrap {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        margin-bottom: 38px;
+        user-select: none;
+      }
+      .logo {
+        font-family: "Playfair Display", serif;
+        font-weight: 900;
+        font-size: 76px;
+        letter-spacing: -4px;
+        line-height: 1;
+        color: var(--text);
+      }
+      .logo em {
+        font-style: italic;
+        color: var(--accent);
+      }
+      .logo-sub {
+        font-size: 11.5px;
+        color: var(--text3);
+        letter-spacing: 0.08em;
+        margin-top: 5px;
+      }
+
+      /* ── SEARCH ───────────────────────────────────── */
+      .search-outer {
+        width: 100%;
+        max-width: 640px;
+        position: relative;
+      }
+
+      .search-box {
+        display: flex;
+        align-items: center;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-pill);
+        box-shadow: var(--shadow);
+        transition:
+          box-shadow var(--t),
+          border-color var(--t);
+        overflow: visible;
+      }
+      .search-box:focus-within {
+        border-color: var(--accent);
+        box-shadow:
+          var(--shadow-l),
+          0 0 0 3px var(--accent-l);
+      }
+
+      .engine-trigger {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 10px 0 14px;
+        height: 52px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        flex-shrink: 0;
+        border-radius: var(--r-pill) 0 0 var(--r-pill);
+        transition: background var(--t);
+        position: relative;
+      }
+      .engine-trigger:hover {
+        background: var(--bg3);
+      }
+
+      .engine-favicon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+        transition: transform var(--t);
+      }
+      .engine-trigger:hover .engine-favicon {
+        transform: scale(1.08);
+      }
+
+      .engine-caret {
+        transition: transform var(--t);
+        color: var(--text3);
+        display: flex;
+      }
+      .engine-trigger[aria-expanded="true"] .engine-caret {
+        transform: rotate(180deg);
+      }
+
+      .engine-divider {
+        width: 1px;
+        height: 24px;
+        background: var(--border);
+        flex-shrink: 0;
+      }
+
+      .search-input {
+        flex: 1;
+        border: none;
+        outline: none;
+        font-family: inherit;
+        font-size: 17px;
+        font-weight: 400;
+        color: var(--text);
+        background: none;
+        padding: 14px 12px;
+        line-height: 1.4;
+        min-width: 0;
+      }
+      .search-input::placeholder {
+        color: var(--text3);
+      }
+
+      .search-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        border: none;
+        background: none;
+        cursor: pointer;
+        color: var(--text3);
+        margin-right: 5px;
+        flex-shrink: 0;
+        transition:
+          background var(--t),
+          color var(--t);
+      }
+      .search-btn:hover {
+        background: var(--bg3);
+        color: var(--text);
+      }
+
+      /* ── ENGINE DROPDOWN ──────────────────────────── */
+      .engine-dropdown {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        width: 248px;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        box-shadow: var(--shadow-l);
+        z-index: 300;
+        padding: 6px;
+        display: none;
+        animation: popIn 0.15s ease;
+      }
+      .engine-dropdown.open {
+        display: block;
+      }
+
+      @keyframes popIn {
+        from {
+          opacity: 0;
+          transform: translateY(-6px) scale(0.97);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+
+      .dd-section {
+        font-size: 9.5px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text3);
+        padding: 6px 10px 4px;
+      }
+      .dd-sep {
+        height: 1px;
+        background: var(--border);
+        margin: 4px 0;
+      }
+
+      .dd-engine {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--text);
+        width: 100%;
+        text-align: left;
+        transition: background var(--t);
+      }
+      .dd-engine:hover {
+        background: var(--bg3);
+      }
+      .dd-engine.active {
+        background: var(--accent-l);
+        color: var(--accent);
+        font-weight: 500;
+      }
+
+      .dd-icon {
+        width: 24px;
+        height: 24px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 12px;
+        font-weight: 700;
+        flex-shrink: 0;
+      }
+      .dd-check {
+        color: var(--accent);
+        display: none;
+      }
+      .dd-engine.active .dd-check {
+        display: flex;
+      }
+
+      .dd-add-custom {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 10px;
+        cursor: pointer;
+        width: 100%;
+        border: 1.5px dashed var(--border2);
+        background: none;
+        font-family: inherit;
+        font-size: 13px;
+        color: var(--text2);
+        margin-top: 4px;
+        transition:
+          border-color var(--t),
+          background var(--t),
+          color var(--t);
+      }
+      .dd-add-custom:hover {
+        border-color: var(--accent);
+        background: var(--accent-l);
+        color: var(--accent);
+      }
+
+      /* ── RESULT CARD ──────────────────────────────── */
+      .result-area {
+        width: 100%;
+        max-width: 640px;
+        margin-top: 12px;
+      }
+
+      .status-card {
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        padding: 18px 20px;
+        display: none;
+        box-shadow: var(--shadow-s);
+        animation: slideIn 0.16s ease;
+      }
+      @keyframes slideIn {
+        from {
+          opacity: 0;
+          transform: translateY(-5px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .status-card.visible {
+        display: block;
+      }
+
+      .status-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+        color: var(--text3);
+        margin-bottom: 10px;
+      }
+      .status-row {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+      }
+      .status-original {
+        font-size: 12px;
+        color: var(--text2);
+        display: flex;
+        align-items: baseline;
+        gap: 5px;
+      }
+      .status-original b {
+        color: var(--text3);
+        font-weight: 500;
+        font-size: 10.5px;
+      }
+      .status-enhanced {
+        font-size: 14.5px;
+        font-weight: 500;
+        color: var(--text);
+        line-height: 1.55;
+        word-break: break-word;
+        font-family: "DM Mono", monospace;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        padding: 10px 14px;
+      }
+      .status-actions {
+        display: flex;
+        gap: 7px;
+        margin-top: 14px;
+        flex-wrap: wrap;
+      }
+      .countdown-bar-wrap {
+        height: 2px;
+        background: var(--border);
+        border-radius: 2px;
+        margin-top: 10px;
+        overflow: hidden;
+        display: none;
+      }
+      .countdown-bar {
+        height: 100%;
+        background: var(--accent);
+        border-radius: 2px;
+        transition: width 0.95s linear;
+      }
+
+      .loading-row {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        font-size: 13px;
+        color: var(--text2);
+      }
+      .dots {
+        display: inline-flex;
+        gap: 4px;
+      }
+      .dots span {
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: var(--accent);
+        animation: blink 1.2s ease-in-out infinite;
+      }
+      .dots span:nth-child(2) {
+        animation-delay: 0.2s;
+      }
+      .dots span:nth-child(3) {
+        animation-delay: 0.4s;
+      }
+      @keyframes blink {
+        0%,
+        80%,
+        100% {
+          opacity: 0.18;
+          transform: scale(0.7);
+        }
+        40% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* ── BUTTONS ──────────────────────────────────── */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 8px 15px;
+        border-radius: var(--r-sm);
+        border: 1.5px solid var(--border);
+        background: var(--bg2);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--text);
+        white-space: nowrap;
+        transition:
+          background var(--t),
+          border-color var(--t);
+      }
+      .btn:hover {
+        background: var(--bg3);
+        border-color: var(--border2);
+      }
+      .btn-primary {
+        background: var(--accent);
+        color: #fff;
+        border-color: var(--accent);
+      }
+      .btn-primary:hover {
+        background: var(--accent-d);
+        border-color: var(--accent-d);
+      }
+      .btn-ghost {
+        border-color: transparent;
+        color: var(--text2);
+      }
+      .btn-ghost:hover {
+        background: var(--bg3);
+        border-color: var(--border);
+      }
+
+      /* ── TOPBAR ───────────────────────────────────── */
+      .topbar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 52px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        padding: 0 16px;
+        z-index: 100;
+      }
+      .settings-btn {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 13px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: var(--bg2);
+        cursor: pointer;
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 500;
+        color: var(--text2);
+        box-shadow: var(--shadow-s);
+        transition:
+          background var(--t),
+          color var(--t),
+          box-shadow var(--t);
+      }
+      .settings-btn:hover {
+        background: var(--bg3);
+        color: var(--text);
+        box-shadow: var(--shadow);
+      }
+
+      /* ── MODAL ────────────────────────────────────── */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(26, 25, 23, 0.38);
+        backdrop-filter: blur(7px);
+        -webkit-backdrop-filter: blur(7px);
+        z-index: 400;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.14s ease;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .overlay.open {
+        display: flex;
+      }
+
+      .modal {
+        background: var(--bg2);
+        border-radius: 20px;
+        width: 100%;
+        max-width: 520px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-l);
+        animation: modalIn 0.17s ease;
+      }
+      @keyframes modalIn {
+        from {
+          opacity: 0;
+          transform: scale(0.95) translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1) translateY(0);
+        }
+      }
+
+      .modal-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 20px 22px 16px;
+        border-bottom: 1px solid var(--border);
+        position: sticky;
+        top: 0;
+        background: var(--bg2);
+        z-index: 1;
+        border-radius: 20px 20px 0 0;
+      }
+      .modal-title {
+        font-size: 15px;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .modal-close {
+        width: 30px;
+        height: 30px;
+        border-radius: 8px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        transition:
+          background var(--t),
+          color var(--t);
+      }
+      .modal-close:hover {
+        background: var(--bg3);
+        color: var(--text);
+      }
+      .modal-body {
+        padding: 20px 22px 24px;
+      }
+      .modal-footer {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        padding-top: 4px;
+      }
+
+      /* ── FORM FIELDS ──────────────────────────────── */
+      .field {
+        margin-bottom: 16px;
+      }
+      .field:last-child {
+        margin-bottom: 0;
+      }
+      .field-label {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text2);
+        margin-bottom: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+      }
+      .required {
+        color: var(--danger);
+      }
+      .field-input {
+        width: 100%;
+        padding: 10px 13px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        font-family: inherit;
+        font-size: 13.5px;
+        color: var(--text);
+        background: var(--bg);
+        outline: none;
+        transition:
+          border-color var(--t),
+          box-shadow var(--t),
+          background var(--t);
+      }
+      .field-input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-l);
+        background: var(--bg2);
+      }
+      .field-hint {
+        font-size: 11.5px;
+        color: var(--text3);
+        margin-top: 5px;
+        line-height: 1.6;
+      }
+      .field-input.mono {
+        font-family: "DM Mono", monospace;
+        font-size: 12.5px;
+      }
+      textarea.field-input {
+        resize: vertical;
+        line-height: 1.65;
+        min-height: 120px;
+      }
+
+      /* ── TABS ─────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 3px;
+        background: var(--bg3);
+        border-radius: 10px;
+        padding: 3px;
+        margin-bottom: 20px;
+      }
+      .tab {
+        flex: 1;
+        padding: 7px 10px;
+        border-radius: 7px;
+        border: none;
+        background: none;
+        font-family: inherit;
+        font-size: 12.5px;
+        font-weight: 500;
+        cursor: pointer;
+        color: var(--text2);
+        transition:
+          background var(--t),
+          color var(--t),
+          box-shadow var(--t);
+      }
+      .tab.active {
+        background: var(--bg2);
+        color: var(--text);
+        box-shadow: var(--shadow-s);
+      }
+
+      /* ── MODEL AUTOCOMPLETE ───────────────────────── */
+      .model-row {
+        display: flex;
+        gap: 6px;
+        align-items: flex-start;
+      }
+      .model-wrap {
+        position: relative;
+        flex: 1;
+      }
+      .model-dropdown {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        box-shadow: var(--shadow);
+        z-index: 600;
+        max-height: 180px;
+        overflow-y: auto;
+        display: none;
+      }
+      .model-dropdown.open {
+        display: block;
+      }
+      .model-option {
+        padding: 9px 12px;
+        font-size: 13px;
+        cursor: pointer;
+        transition: background 0.1s;
+      }
+      .model-option:first-child {
+        border-radius: 10px 10px 0 0;
+      }
+      .model-option:last-child {
+        border-radius: 0 0 10px 10px;
+      }
+      .model-option:only-child {
+        border-radius: 10px;
+      }
+      .model-option:hover {
+        background: var(--bg3);
+      }
+      .model-option mark {
+        background: var(--accent-l);
+        color: var(--accent);
+        border-radius: 2px;
+        padding: 0 1px;
+      }
+
+      .model-fetch-btn {
+        width: 34px;
+        height: 34px;
+        border-radius: var(--r-sm);
+        border: 1.5px solid var(--border);
+        background: var(--bg2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text2);
+        flex-shrink: 0;
+        margin-top: 1px;
+        transition:
+          background var(--t),
+          color var(--t);
+      }
+      .model-fetch-btn:hover {
+        background: var(--bg3);
+        color: var(--text);
+      }
+      .model-fetch-btn.spinning svg {
+        animation: spin 0.75s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      .model-list-wrap {
+        margin-top: 12px;
+      }
+      .model-list-hd {
+        font-size: 10.5px;
+        font-weight: 700;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text3);
+        margin-bottom: 7px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .model-list {
+        display: flex;
+        flex-direction: column;
+        gap: 5px;
+      }
+      .model-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 11px;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        transition:
+          border-color var(--t),
+          background var(--t);
+        user-select: none;
+      }
+      .model-item.drag-over {
+        border-color: var(--accent);
+        background: var(--accent-l);
+      }
+      .model-item.dragging {
+        opacity: 0.35;
+      }
+      .drag-handle {
+        cursor: grab;
+        color: var(--text3);
+        display: flex;
+        align-items: center;
+        flex-shrink: 0;
+      }
+      .drag-handle:active {
+        cursor: grabbing;
+      }
+      .model-rank {
+        font-size: 10px;
+        font-weight: 700;
+        color: var(--text3);
+        width: 14px;
+        text-align: center;
+        flex-shrink: 0;
+      }
+      .model-item:first-child .model-rank {
+        color: var(--accent);
+      }
+      .model-name {
+        flex: 1;
+        font-size: 12.5px;
+        font-weight: 500;
+        font-family: "DM Mono", monospace;
+      }
+      .model-badge {
+        font-size: 9px;
+        font-weight: 700;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: var(--accent-l);
+        padding: 2px 7px;
+        border-radius: 20px;
+        flex-shrink: 0;
+      }
+      .model-del {
+        width: 20px;
+        height: 20px;
+        border-radius: 5px;
+        border: none;
+        background: none;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        font-size: 14px;
+        flex-shrink: 0;
+        transition:
+          background var(--t),
+          color var(--t);
+      }
+      .model-del:hover {
+        background: var(--danger-l);
+        color: var(--danger);
+      }
+
+      /* ── CUSTOM ENGINES ───────────────────────────── */
+      .ce-list {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        margin-bottom: 16px;
+      }
+      .ce-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 13px;
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        transition: border-color var(--t);
+      }
+      .ce-item:hover {
+        border-color: var(--border2);
+      }
+      .ce-item.is-active {
+        border-color: var(--accent);
+        background: var(--accent-l);
+      }
+      .ce-icon {
+        width: 28px;
+        height: 28px;
+        border-radius: 7px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        flex-shrink: 0;
+        background: var(--bg4);
+      }
+      .ce-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .ce-name {
+        font-size: 13px;
+        font-weight: 600;
+      }
+      .ce-url {
+        font-size: 11px;
+        color: var(--text3);
+        font-family: "DM Mono", monospace;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .ce-btns {
+        display: flex;
+        gap: 4px;
+        flex-shrink: 0;
+      }
+      .ce-btn {
+        width: 26px;
+        height: 26px;
+        border-radius: 6px;
+        border: 1.5px solid var(--border);
+        background: var(--bg2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--text3);
+        font-size: 12px;
+        transition:
+          background var(--t),
+          color var(--t),
+          border-color var(--t);
+      }
+      .ce-btn:hover {
+        background: var(--bg3);
+        border-color: var(--border2);
+        color: var(--text);
+      }
+      .ce-btn.del:hover {
+        background: var(--danger-l);
+        border-color: var(--danger);
+        color: var(--danger);
+      }
+      .ce-btn.sel:hover,
+      .ce-btn.sel.on {
+        background: var(--accent-l);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      .add-ce-box {
+        background: var(--bg);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        padding: 14px;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+      }
+      .add-ce-row {
+        display: flex;
+        gap: 8px;
+        align-items: flex-end;
+      }
+      .add-ce-row .field {
+        flex: 1;
+        margin-bottom: 0;
+      }
+
+      /* ── PROMPT RESET ─────────────────────────────── */
+      .prompt-reset {
+        font-size: 11px;
+        font-weight: 500;
+        color: var(--accent);
+        cursor: pointer;
+        border: none;
+        background: none;
+        padding: 0;
+        text-decoration: underline;
+        text-decoration-style: dotted;
+        transition: color var(--t);
+      }
+      .prompt-reset:hover {
+        color: var(--accent-d);
+      }
+
+      /* ── HINT ─────────────────────────────────────── */
+      .hint {
+        position: fixed;
+        bottom: 18px;
+        left: 50%;
+        transform: translateX(-50%);
+        font-size: 11.5px;
+        color: var(--text3);
+        display: flex;
+        gap: 14px;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      kbd {
+        font-family: inherit;
+        background: var(--bg2);
+        border: 1px solid var(--border2);
+        border-radius: 5px;
+        padding: 1px 6px;
+        font-size: 10.5px;
+      }
+
+      @media (max-width: 500px) {
+        .logo {
+          font-size: 56px;
+        }
+        .search-input {
+          font-size: 15px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Topbar -->
+    <div class="topbar">
+      <button class="settings-btn" id="settingsBtn">
+        <svg
+          width="13"
+          height="13"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2.2"
+          stroke-linecap="round"
+        >
+          <path
+            d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+          />
+          <circle cx="12" cy="12" r="3" />
+        </svg>
+        设置
+      </button>
+    </div>
+
+    <!-- Logo -->
+    <div class="logo-wrap">
+      <div class="logo">L<em>i</em>nso</div>
+      <div class="logo-sub">AI-Powered Search Middleware</div>
+    </div>
+
+    <!-- Search -->
+    <div class="search-outer">
+      <div class="search-box">
+        <button
+          class="engine-trigger"
+          id="engineTrigger"
+          aria-expanded="false"
+          aria-haspopup="true"
+        >
+          <span class="engine-favicon" id="triggerIcon"></span>
+          <span class="engine-caret">
+            <svg
+              width="12"
+              height="12"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+            >
+              <path d="m6 9 6 6 6-6" />
+            </svg>
+          </span>
+        </button>
+        <div class="engine-divider"></div>
+        <input
+          class="search-input"
+          id="searchInput"
+          type="text"
+          placeholder="输入搜索词，AI 为你优化…"
+          autocomplete="off"
+          spellcheck="false"
+        />
+        <button class="search-btn" id="searchBtn">
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.3"
+            stroke-linecap="round"
+          >
+            <circle cx="11" cy="11" r="8" />
+            <path d="m21 21-4.35-4.35" />
+          </svg>
+        </button>
+      </div>
+
+      <!-- Engine Dropdown -->
+      <div class="engine-dropdown" id="engineDropdown">
+        <div class="dd-section">搜索引擎</div>
+        <div id="ddBuiltins"></div>
+        <div class="dd-sep"></div>
+        <div class="dd-section">自定义引擎</div>
+        <div id="ddCustoms"></div>
+        <button class="dd-add-custom" id="ddManageBtn">
+          <svg
+            width="13"
+            height="13"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2.5"
+          >
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          管理自定义引擎
+        </button>
+      </div>
+    </div>
+
+    <!-- Result -->
+    <div class="result-area">
+      <div class="status-card" id="statusCard">
+        <div class="status-badge" id="statusBadge">
+          <div class="dots"><span></span><span></span><span></span></div>
+          AI 优化中
+        </div>
+        <div id="statusBody"></div>
+        <div class="countdown-bar-wrap" id="cdWrap">
+          <div class="countdown-bar" id="cdBar"></div>
+        </div>
+        <div
+          class="status-actions"
+          id="statusActions"
+          style="display: none"
+        ></div>
+      </div>
+    </div>
+
+    <!-- Hint -->
+    <div class="hint">
+      <span><kbd>Enter</kbd> 搜索</span>
+      <span><kbd>Esc</kbd> 取消</span>
+    </div>
+
+    <!-- ═══ SETTINGS MODAL ═══════════════════════════ -->
+    <div class="overlay" id="settingsOverlay">
+      <div class="modal">
+        <div class="modal-header">
+          <span class="modal-title">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+            >
+              <path
+                d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+              />
+              <circle cx="12" cy="12" r="3" />
+            </svg>
+            设置
+          </span>
+          <button class="modal-close" id="settingsClose">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="tabs">
+            <button class="tab active" data-tab="api">API 配置</button>
+            <button class="tab" data-tab="prompt">AI 提示词</button>
+          </div>
+
+          <!-- API tab -->
+          <div id="tabApi">
+            <div class="field">
+              <div class="field-label">Base URL</div>
+              <input
+                class="field-input mono"
+                id="cfgBaseUrl"
+                type="text"
+                placeholder="https://open.bigmodel.cn/api/paas/v4/chat/completions"
+              />
+              <div class="field-hint">
+                OpenAI 兼容的 chat completions 端点，留空使用默认智谱 AI
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">
+                API Key <span class="required">*</span>
+              </div>
+              <input
+                class="field-input mono"
+                id="cfgApiKey"
+                type="password"
+                placeholder="sk-…"
+              />
+              <div class="field-hint">仅保存在本地 localStorage，不会上传</div>
+            </div>
+            <div class="field">
+              <div class="field-label">Model Name</div>
+              <div class="model-row">
+                <div class="model-wrap">
+                  <input
+                    class="field-input mono"
+                    id="cfgModelInput"
+                    type="text"
+                    placeholder="glm-4-flash"
+                    autocomplete="off"
+                    spellcheck="false"
+                  />
+                  <div class="model-dropdown" id="modelDropdown"></div>
+                </div>
+                <button
+                  class="model-fetch-btn"
+                  id="fetchModelsBtn"
+                  title="获取模型列表"
+                >
+                  <svg
+                    width="13"
+                    height="13"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.2"
+                  >
+                    <path
+                      d="M21 12a9 9 0 1 1-9-9c2.52 0 4.93 1 6.74 2.74L21 8"
+                    />
+                    <path d="M21 3v5h-5" />
+                  </svg>
+                </button>
+              </div>
+              <div class="field-hint">
+                聚焦自动获取列表 · 回车添加自定义模型 · 留空默认 glm-4-flash
+              </div>
+              <div class="model-list-wrap">
+                <div class="model-list-hd">
+                  <svg
+                    width="10"
+                    height="10"
+                    viewBox="0 0 24 24"
+                    fill="currentColor"
+                  >
+                    <path d="M3 8h18M3 12h18M3 16h18" />
+                  </svg>
+                  优先级列表 · 拖动排序
+                </div>
+                <div class="model-list" id="modelList"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Prompt tab -->
+          <div id="tabPrompt" style="display: none">
+            <div class="field">
+              <div class="field-label">
+                系统提示词
+                <button class="prompt-reset" id="promptReset">恢复默认</button>
+              </div>
+              <textarea
+                class="field-input mono"
+                id="cfgPrompt"
+                style="min-height: 240px; font-size: 12px; line-height: 1.65"
+              ></textarea>
+              <div class="field-hint">
+                必须要求 AI 只返回搜索词，不得回答问题。<br />
+                <code
+                  style="
+                    background: var(--bg3);
+                    padding: 0 4px;
+                    border-radius: 3px;
+                  "
+                  >{engine}</code
+                >
+                会被替换为当前引擎名称。
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer">
+            <button class="btn btn-ghost" id="settingsCancel">取消</button>
+            <button class="btn btn-primary" id="settingsSave">
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.8"
+              >
+                <path d="M20 6 9 17l-5-5" />
+              </svg>
+              保存
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══ CUSTOM ENGINES MODAL ═════════════════════ -->
+    <div class="overlay" id="ceOverlay">
+      <div class="modal" style="max-width: 460px">
+        <div class="modal-header">
+          <span class="modal-title">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.2"
+            >
+              <circle cx="12" cy="12" r="10" />
+              <path d="M12 8v4l3 3" />
+            </svg>
+            自定义搜索引擎
+          </span>
+          <button class="modal-close" id="ceClose">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="modal-body">
+          <div class="ce-list" id="ceList"></div>
+
+          <div class="add-ce-box">
+            <div
+              style="
+                font-size: 10.5px;
+                font-weight: 700;
+                letter-spacing: 0.1em;
+                text-transform: uppercase;
+                color: var(--text3);
+                margin-bottom: 2px;
+              "
+            >
+              添加新引擎
+            </div>
+            <div class="add-ce-row">
+              <div class="field">
+                <div class="field-label">名称</div>
+                <input
+                  class="field-input"
+                  id="ceNameInput"
+                  type="text"
+                  placeholder="我的搜索引擎"
+                />
+              </div>
+              <div class="field" style="flex: 0 0 72px">
+                <div class="field-label">图标</div>
+                <input
+                  class="field-input"
+                  id="ceIconInput"
+                  type="text"
+                  placeholder="🔍"
+                  maxlength="4"
+                  style="text-align: center; font-size: 18px"
+                />
+              </div>
+            </div>
+            <div class="field" style="margin-bottom: 0">
+              <div class="field-label">搜索 URL</div>
+              <input
+                class="field-input mono"
+                id="ceUrlInput"
+                type="text"
+                placeholder="https://example.com/search?q={query}"
+              />
+              <div class="field-hint">
+                使用
+                <code
+                  style="
+                    background: var(--bg3);
+                    padding: 0 4px;
+                    border-radius: 3px;
+                  "
+                  >{query}</code
+                >
+                作搜索词占位符
+              </div>
+            </div>
+            <div
+              style="display: flex; justify-content: flex-end; margin-top: 2px"
+            >
+              <button
+                class="btn btn-primary"
+                id="ceAddBtn"
+                style="font-size: 12.5px; padding: 7px 14px"
+              >
+                <svg
+                  width="11"
+                  height="11"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2.8"
+                >
+                  <path d="M12 5v14M5 12h14" />
+                </svg>
+                添加
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // ═══════════════════════════════════════════════════════
+      //  DEFAULT PROMPT
+      // ═══════════════════════════════════════════════════════
+      const DEFAULT_PROMPT = `You are a search query optimizer. The user has typed a raw search query. Your ONLY task is to transform it into a smarter, higher-yield search query using {engine} advanced search syntax.
+
+RULES — STRICTLY FOLLOW:
+1. OUTPUT ONLY the optimized search query string. Nothing else.
+2. NEVER answer, explain, or add commentary of any kind.
+3. NEVER include any preamble such as "Here is..." or "Optimized:".
+4. NEVER start with any meta text — just the raw query string.
+5. Keep the same language as the original query.
+6. If already a good query, enhance it with syntax operators.
+
+Advanced syntax to apply as appropriate:
+- Exact match: "phrase in quotes"
+- Exclude terms: -excluded_word
+- Alternatives: term1 OR term2
+- Site filter: site:domain.com
+- File type: filetype:pdf
+- In title / URL: intitle: or inurl:
+- Date range: after:2023 before:2025
+- Wildcard: * for unknown words
+
+IMPORTANT: Your entire response must be ONLY the optimized query string. No sentence. No explanation.`;
+
+      // ═══════════════════════════════════════════════════════
+      //  BUILTIN ENGINES
+      // ═══════════════════════════════════════════════════════
+      const BUILTINS = [
+        {
+          id: "google",
+          name: "Google",
+          icon: "G",
+          bg: "#4285F4",
+          url: "https://www.google.com/search?q={query}",
+        },
+        {
+          id: "bing",
+          name: "Bing",
+          icon: "B",
+          bg: "#00809D",
+          url: "https://www.bing.com/search?q={query}",
+        },
+        {
+          id: "ddg",
+          name: "DuckDuckGo",
+          icon: "🦆",
+          bg: "#DE5833",
+          url: "https://duckduckgo.com/?q={query}",
+        },
+        {
+          id: "kagi",
+          name: "Kagi",
+          icon: "K",
+          bg: "#5C5BD4",
+          url: "https://kagi.com/search?q={query}",
+        },
+      ];
+
+      // ═══════════════════════════════════════════════════════
+      //  STATE
+      // ═══════════════════════════════════════════════════════
+      let S = {
+        engine: "google",
+        baseUrl: "",
+        apiKey: "",
+        models: [],
+        customEngines: [],
+        prompt: DEFAULT_PROMPT,
+      };
+
+      let fetchedModels = [];
+      let dragSrcIdx = null;
+      let cdTimer = null;
+
+      // ═══════════════════════════════════════════════════════
+      //  STORAGE
+      // ═══════════════════════════════════════════════════════
+      function load() {
+        try {
+          const r = localStorage.getItem("linso_v2");
+          if (r) {
+            const p = JSON.parse(r);
+            Object.assign(S, p);
+            if (!S.prompt) S.prompt = DEFAULT_PROMPT;
+          }
+        } catch (e) {}
+      }
+      function save() {
+        try {
+          localStorage.setItem("linso_v2", JSON.stringify(S));
+        } catch (e) {}
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  ENGINE HELPERS
+      // ═══════════════════════════════════════════════════════
+      function allEngines() {
+        return [...BUILTINS, ...S.customEngines];
+      }
+      function activeEngine() {
+        return allEngines().find((e) => e.id === S.engine) || BUILTINS[0];
+      }
+      function buildUrl(q) {
+        const eng = activeEngine();
+        return eng.url
+          ? eng.url.replace("{query}", encodeURIComponent(q))
+          : null;
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  TRIGGER ICON
+      // ═══════════════════════════════════════════════════════
+      function renderTrigger() {
+        const eng = activeEngine();
+        const icon = document.getElementById("triggerIcon");
+        const isBI = BUILTINS.some((b) => b.id === eng.id);
+        icon.textContent = eng.icon || "🔍";
+        icon.style.background = isBI ? eng.bg + "28" : "var(--bg4)";
+        icon.style.color = isBI ? eng.bg : "var(--text2)";
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  ENGINE DROPDOWN
+      // ═══════════════════════════════════════════════════════
+      function renderDropdown() {
+        const bc = document.getElementById("ddBuiltins");
+        const cc = document.getElementById("ddCustoms");
+
+        bc.innerHTML = "";
+        BUILTINS.forEach((eng) => {
+          bc.appendChild(makeEngineBtn(eng));
+        });
+
+        cc.innerHTML = "";
+        if (!S.customEngines.length) {
+          const em = document.createElement("div");
+          em.style.cssText =
+            "font-size:12px;color:var(--text3);padding:3px 10px 4px;";
+          em.textContent = "暂无自定义引擎";
+          cc.appendChild(em);
+        } else {
+          S.customEngines.forEach((eng) => cc.appendChild(makeEngineBtn(eng)));
+        }
+      }
+
+      function makeEngineBtn(eng) {
+        const btn = document.createElement("button");
+        btn.className = "dd-engine" + (S.engine === eng.id ? " active" : "");
+        const isBI = BUILTINS.some((b) => b.id === eng.id);
+        btn.innerHTML = `
+    <span class="dd-icon" style="background:${isBI ? eng.bg + "20" : "var(--bg4)"};color:${isBI ? eng.bg : "var(--text2)"}">${esc(eng.icon || "🔍")}</span>
+    <span style="flex:1">${esc(eng.name)}</span>
+    <span class="dd-check"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M20 6 9 17l-5-5"/></svg></span>`;
+        btn.addEventListener("click", () => {
+          S.engine = eng.id;
+          save();
+          renderTrigger();
+          renderDropdown();
+          closeDD();
+        });
+        return btn;
+      }
+
+      const engTrigger = document.getElementById("engineTrigger");
+      const engDropdown = document.getElementById("engineDropdown");
+
+      function openDD() {
+        renderDropdown();
+        engDropdown.classList.add("open");
+        engTrigger.setAttribute("aria-expanded", "true");
+      }
+      function closeDD() {
+        engDropdown.classList.remove("open");
+        engTrigger.setAttribute("aria-expanded", "false");
+      }
+
+      engTrigger.addEventListener("click", (e) => {
+        e.stopPropagation();
+        engDropdown.classList.contains("open") ? closeDD() : openDD();
+      });
+      document.addEventListener("click", (e) => {
+        if (!engDropdown.contains(e.target) && e.target !== engTrigger)
+          closeDD();
+      });
+      document.getElementById("ddManageBtn").addEventListener("click", () => {
+        closeDD();
+        openCE();
+      });
+
+      // ═══════════════════════════════════════════════════════
+      //  STATUS CARD
+      // ═══════════════════════════════════════════════════════
+      function showLoading(q) {
+        document.getElementById("statusBadge").innerHTML =
+          `<div class="dots"><span></span><span></span><span></span></div> AI 优化中`;
+        document.getElementById("statusBody").innerHTML =
+          `<div class="loading-row"><span>正在分析：<em style="color:var(--text)">"${esc(q)}"</em></span></div>`;
+        document.getElementById("statusActions").style.display = "none";
+        document.getElementById("cdWrap").style.display = "none";
+        document.getElementById("statusCard").classList.add("visible");
+      }
+
+      function showResult(orig, opt, url) {
+        document.getElementById("statusBadge").innerHTML =
+          `<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="var(--success)" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>
+     <span style="color:var(--success)">优化完成</span>`;
+        document.getElementById("statusBody").innerHTML = `
+    <div class="status-row">
+      <div class="status-original"><b>原始</b>${esc(orig)}</div>
+      <div class="status-enhanced">${esc(opt)}</div>
+    </div>`;
+
+        const acts = document.getElementById("statusActions");
+        acts.style.display = "";
+        acts.innerHTML = "";
+
+        const goBtn = mkBtn("btn-primary", svgArrow() + " 前往搜索 (3s)");
+        const copyBtn = mkBtn("btn", svgCopy() + " 复制");
+        const cancelBtn = mkBtn("btn-ghost", "取消");
+        acts.append(goBtn, copyBtn, cancelBtn);
+
+        const cdWrap = document.getElementById("cdWrap");
+        const cdBar = document.getElementById("cdBar");
+        cdWrap.style.display = "block";
+        cdBar.style.transition = "none";
+        cdBar.style.width = "100%";
+        void cdBar.offsetWidth;
+        cdBar.style.transition = "width 2.8s linear";
+        cdBar.style.width = "0%";
+
+        let sec = 3;
+        clearInterval(cdTimer);
+        cdTimer = setInterval(() => {
+          sec--;
+          if (sec > 0) goBtn.innerHTML = svgArrow() + ` 前往搜索 (${sec}s)`;
+          else {
+            clearInterval(cdTimer);
+            if (url) window.location.href = url;
+          }
+        }, 1000);
+
+        goBtn.onclick = () => {
+          clearInterval(cdTimer);
+          if (url) window.location.href = url;
+        };
+        copyBtn.onclick = () => {
+          navigator.clipboard.writeText(opt).then(() => {
+            copyBtn.innerHTML = svgCheck() + " 已复制";
+            setTimeout(() => (copyBtn.innerHTML = svgCopy() + " 复制"), 2200);
+          });
+        };
+        cancelBtn.onclick = () => {
+          clearInterval(cdTimer);
+          hideStatus();
+        };
+      }
+
+      function showError(msg, fallback) {
+        document.getElementById("statusBadge").innerHTML =
+          `<span style="color:var(--danger)">⚠ 出错了</span>`;
+        document.getElementById("statusBody").innerHTML = `
+    <div style="font-size:12.5px;color:var(--danger);line-height:1.6">${esc(msg)}</div>
+    <div style="font-size:12px;color:var(--text3);margin-top:3px">将使用原始搜索词继续</div>`;
+
+        const acts = document.getElementById("statusActions");
+        acts.style.display = "";
+        acts.innerHTML = "";
+
+        const goBtn = mkBtn("btn-primary", svgArrow() + " 用原始词搜索");
+        const cancelBtn = mkBtn("btn-ghost", "取消");
+        acts.append(goBtn, cancelBtn);
+        document.getElementById("cdWrap").style.display = "none";
+
+        goBtn.onclick = () => {
+          const u = buildUrl(fallback);
+          if (u) window.location.href = u;
+        };
+        cancelBtn.onclick = hideStatus;
+      }
+
+      function hideStatus() {
+        clearInterval(cdTimer);
+        document.getElementById("statusCard").classList.remove("visible");
+      }
+
+      function mkBtn(cls, html) {
+        const b = document.createElement("button");
+        b.className = "btn " + cls;
+        b.innerHTML = html;
+        return b;
+      }
+      const svgArrow = () =>
+        `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>`;
+      const svgCopy = () =>
+        `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>`;
+      const svgCheck = () =>
+        `<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M20 6 9 17l-5-5"/></svg>`;
+
+      // ═══════════════════════════════════════════════════════
+      //  AI SEARCH
+      // ═══════════════════════════════════════════════════════
+      async function doSearch(raw) {
+        if (!raw.trim()) return;
+        if (!S.apiKey) {
+          openSettings();
+          return;
+        }
+
+        showLoading(raw);
+
+        const baseUrl =
+          S.baseUrl.trim() ||
+          "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+        const model = S.models[0] || "glm-4-flash";
+        const engName = activeEngine().name;
+        const prompt = (S.prompt || DEFAULT_PROMPT).replace(
+          /{engine}/g,
+          engName,
+        );
+
+        try {
+          const res = await fetch(baseUrl, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${S.apiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages: [
+                { role: "system", content: prompt },
+                { role: "user", content: raw },
+              ],
+              max_tokens: 300,
+              temperature: 0.15,
+            }),
+          });
+
+          if (!res.ok) {
+            let msg = `HTTP ${res.status}`;
+            try {
+              const d = await res.json();
+              msg = d?.error?.message || d?.message || msg;
+            } catch (e) {}
+            throw new Error(msg);
+          }
+
+          const data = await res.json();
+          const opt = (data.choices?.[0]?.message?.content || "").trim() || raw;
+          const url = buildUrl(opt);
+          if (!url) throw new Error("搜索 URL 未配置，请检查自定义引擎设置");
+          showResult(raw, opt, url);
+        } catch (e) {
+          showError(e.message, raw);
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  SEARCH INPUT
+      // ═══════════════════════════════════════════════════════
+      document
+        .getElementById("searchInput")
+        .addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            const v = e.target.value.trim();
+            if (v) doSearch(v);
+          }
+          if (e.key === "Escape") hideStatus();
+        });
+      document.getElementById("searchBtn").addEventListener("click", () => {
+        const v = document.getElementById("searchInput").value.trim();
+        if (v) doSearch(v);
+      });
+
+      // ═══════════════════════════════════════════════════════
+      //  MODEL FETCH & LIST
+      // ═══════════════════════════════════════════════════════
+      async function fetchModels() {
+        const base =
+          document.getElementById("cfgBaseUrl").value.trim() ||
+          "https://open.bigmodel.cn/api/paas/v4/chat/completions";
+        const key =
+          document.getElementById("cfgApiKey").value.trim() || S.apiKey;
+        if (!key) return;
+
+        const btn = document.getElementById("fetchModelsBtn");
+        btn.classList.add("spinning");
+
+        let url = base.replace(/\/chat\/completions.*$/, "/models");
+        if (url === base) url = base.replace(/\/$/, "") + "/models";
+
+        try {
+          const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${key}` },
+          });
+          if (!res.ok) throw new Error();
+          const d = await res.json();
+          fetchedModels = (d.data || [])
+            .map((m) => (typeof m === "string" ? m : m.id))
+            .filter(Boolean)
+            .sort();
+        } catch (e) {
+          fetchedModels = [];
+        }
+
+        btn.classList.remove("spinning");
+        renderMDD(document.getElementById("cfgModelInput").value);
+      }
+
+      function renderMDD(filter) {
+        const dd = document.getElementById("modelDropdown");
+        const arr = filter
+          ? fetchedModels.filter((m) =>
+              m.toLowerCase().includes(filter.toLowerCase()),
+            )
+          : fetchedModels;
+        if (!arr.length) {
+          dd.classList.remove("open");
+          return;
+        }
+        dd.innerHTML = arr
+          .map((m) => {
+            const h = filter
+              ? m.replace(
+                  new RegExp(`(${escRe(filter)})`, "gi"),
+                  "<mark>$1</mark>",
+                )
+              : m;
+            return `<div class="model-option" data-m="${esc(m)}">${h}</div>`;
+          })
+          .join("");
+        dd.classList.add("open");
+        dd.querySelectorAll(".model-option").forEach((o) => {
+          o.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            addModel(o.dataset.m);
+            document.getElementById("cfgModelInput").value = "";
+            dd.classList.remove("open");
+          });
+        });
+      }
+
+      function addModel(m) {
+        if (!m || S.models.includes(m)) return;
+        S.models.push(m);
+        renderModelList();
+      }
+
+      function renderModelList() {
+        const list = document.getElementById("modelList");
+        list.innerHTML = "";
+        S.models.forEach((m, i) => {
+          const item = document.createElement("div");
+          item.className = "model-item";
+          item.draggable = true;
+          item.dataset.i = i;
+          item.innerHTML = `
+      <span class="drag-handle"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 13.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 21a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></span>
+      <span class="model-rank">#${i + 1}</span>
+      <span class="model-name">${esc(m)}</span>
+      ${i === 0 ? '<span class="model-badge">首选</span>' : ""}
+      <button class="model-del" data-i="${i}">×</button>`;
+          item.addEventListener("dragstart", (e) => {
+            dragSrcIdx = i;
+            e.dataTransfer.effectAllowed = "move";
+            requestAnimationFrame(() => item.classList.add("dragging"));
+          });
+          item.addEventListener("dragend", () => {
+            item.classList.remove("dragging");
+            list
+              .querySelectorAll(".model-item")
+              .forEach((el) => el.classList.remove("drag-over"));
+          });
+          item.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            list
+              .querySelectorAll(".model-item")
+              .forEach((el) => el.classList.remove("drag-over"));
+            item.classList.add("drag-over");
+          });
+          item.addEventListener("dragleave", () =>
+            item.classList.remove("drag-over"),
+          );
+          item.addEventListener("drop", (e) => {
+            e.preventDefault();
+            item.classList.remove("drag-over");
+            if (dragSrcIdx === null || dragSrcIdx === i) return;
+            const a = [...S.models];
+            const [mv] = a.splice(dragSrcIdx, 1);
+            a.splice(i, 0, mv);
+            S.models = a;
+            renderModelList();
+          });
+          item.querySelector(".model-del").addEventListener("click", () => {
+            S.models.splice(i, 1);
+            renderModelList();
+          });
+          list.appendChild(item);
+        });
+      }
+
+      const mi = document.getElementById("cfgModelInput");
+      mi.addEventListener("focus", async () => {
+        if (!fetchedModels.length) await fetchModels();
+        else renderMDD(mi.value);
+      });
+      mi.addEventListener("input", () => renderMDD(mi.value));
+      mi.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const v = mi.value.trim();
+          if (v) {
+            addModel(v);
+            mi.value = "";
+            document.getElementById("modelDropdown").classList.remove("open");
+          }
+        }
+        if (e.key === "Escape")
+          document.getElementById("modelDropdown").classList.remove("open");
+      });
+      mi.addEventListener("blur", () =>
+        setTimeout(
+          () =>
+            document.getElementById("modelDropdown").classList.remove("open"),
+          160,
+        ),
+      );
+      document
+        .getElementById("fetchModelsBtn")
+        .addEventListener("click", fetchModels);
+
+      // ═══════════════════════════════════════════════════════
+      //  SETTINGS MODAL
+      // ═══════════════════════════════════════════════════════
+      function openSettings() {
+        document.getElementById("cfgBaseUrl").value = S.baseUrl;
+        document.getElementById("cfgApiKey").value = S.apiKey;
+        document.getElementById("cfgPrompt").value = S.prompt || DEFAULT_PROMPT;
+        renderModelList();
+        switchTab("api");
+        document.getElementById("settingsOverlay").classList.add("open");
+      }
+      function closeSettings() {
+        document.getElementById("settingsOverlay").classList.remove("open");
+      }
+
+      function switchTab(id) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.toggle("active", t.dataset.tab === id));
+        document.getElementById("tabApi").style.display =
+          id === "api" ? "" : "none";
+        document.getElementById("tabPrompt").style.display =
+          id === "prompt" ? "" : "none";
+      }
+
+      document
+        .querySelectorAll(".tab")
+        .forEach((t) =>
+          t.addEventListener("click", () => switchTab(t.dataset.tab)),
+        );
+      document
+        .getElementById("settingsBtn")
+        .addEventListener("click", openSettings);
+      document
+        .getElementById("settingsClose")
+        .addEventListener("click", closeSettings);
+      document
+        .getElementById("settingsCancel")
+        .addEventListener("click", closeSettings);
+      document
+        .getElementById("settingsOverlay")
+        .addEventListener("click", (e) => {
+          if (e.target === document.getElementById("settingsOverlay"))
+            closeSettings();
+        });
+      document.getElementById("settingsSave").addEventListener("click", () => {
+        S.baseUrl = document.getElementById("cfgBaseUrl").value.trim();
+        S.apiKey = document.getElementById("cfgApiKey").value.trim();
+        S.prompt =
+          document.getElementById("cfgPrompt").value.trim() || DEFAULT_PROMPT;
+        save();
+        closeSettings();
+      });
+      document.getElementById("promptReset").addEventListener("click", () => {
+        document.getElementById("cfgPrompt").value = DEFAULT_PROMPT;
+      });
+
+      // ═══════════════════════════════════════════════════════
+      //  CUSTOM ENGINES MODAL
+      // ═══════════════════════════════════════════════════════
+      function openCE() {
+        renderCEList();
+        document.getElementById("ceOverlay").classList.add("open");
+      }
+      function closeCE() {
+        document.getElementById("ceOverlay").classList.remove("open");
+        renderDropdown();
+        renderTrigger();
+      }
+
+      document.getElementById("ceClose").addEventListener("click", closeCE);
+      document.getElementById("ceOverlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("ceOverlay")) closeCE();
+      });
+
+      function renderCEList() {
+        const cont = document.getElementById("ceList");
+        cont.innerHTML = "";
+        if (!S.customEngines.length) {
+          cont.innerHTML =
+            '<div style="font-size:12.5px;color:var(--text3);padding:0 0 8px;">暂无自定义引擎，在下方添加</div>';
+          return;
+        }
+        S.customEngines.forEach((eng, i) => {
+          const item = document.createElement("div");
+          item.className =
+            "ce-item" + (S.engine === eng.id ? " is-active" : "");
+          item.innerHTML = `
+      <span class="ce-icon">${esc(eng.icon || "🔍")}</span>
+      <div class="ce-info">
+        <div class="ce-name">${esc(eng.name)}</div>
+        <div class="ce-url">${esc(eng.url)}</div>
+      </div>
+      <div class="ce-btns">
+        <button class="ce-btn sel${S.engine === eng.id ? " on" : ""}" data-i="${i}" title="选为当前引擎">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.8"><path d="M20 6 9 17l-5-5"/></svg>
+        </button>
+        <button class="ce-btn del" data-i="${i}" title="删除">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+        </button>
+      </div>`;
+          item.querySelector(".sel").addEventListener("click", () => {
+            S.engine = eng.id;
+            save();
+            renderCEList();
+          });
+          item.querySelector(".del").addEventListener("click", () => {
+            if (S.engine === eng.id) S.engine = "google";
+            S.customEngines.splice(i, 1);
+            save();
+            renderCEList();
+          });
+          cont.appendChild(item);
+        });
+      }
+
+      function flashInvalid(el) {
+        el.style.borderColor = "var(--danger)";
+        setTimeout(() => (el.style.borderColor = ""), 1500);
+      }
+
+      document.getElementById("ceAddBtn").addEventListener("click", () => {
+        const name = document.getElementById("ceNameInput").value.trim();
+        const icon =
+          document.getElementById("ceIconInput").value.trim() || "🔍";
+        const url = document.getElementById("ceUrlInput").value.trim();
+
+        let ok = true;
+        if (!name) {
+          flashInvalid(document.getElementById("ceNameInput"));
+          ok = false;
+        }
+        if (!url) {
+          flashInvalid(document.getElementById("ceUrlInput"));
+          ok = false;
+        }
+        if (ok && !url.includes("{query}")) {
+          flashInvalid(document.getElementById("ceUrlInput"));
+          ok = false;
+        }
+        if (!ok) return;
+
+        S.customEngines.push({ id: "custom_" + Date.now(), name, icon, url });
+        save();
+        document.getElementById("ceNameInput").value = "";
+        document.getElementById("ceIconInput").value = "";
+        document.getElementById("ceUrlInput").value = "";
+        renderCEList();
+      });
+
+      // ═══════════════════════════════════════════════════════
+      //  URL PARAM — browser search engine
+      //  Set as: https://…/linso.html?q=%s
+      // ═══════════════════════════════════════════════════════
+      function checkUrlParam() {
+        const q = new URLSearchParams(window.location.search).get("q");
+        if (q && q.trim()) {
+          document.getElementById("searchInput").value = q.trim();
+          if (S.apiKey) doSearch(q.trim());
+          else openSettings();
+        }
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  UTILS
+      // ═══════════════════════════════════════════════════════
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+      function escRe(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      // ═══════════════════════════════════════════════════════
+      //  INIT
+      // ═══════════════════════════════════════════════════════
+      load();
+      renderTrigger();
+      checkUrlParam();
+
+      if (!new URLSearchParams(window.location.search).get("q")) {
+        document.getElementById("searchInput").focus();
+      }
+    </script>
+  </body>
+</html>
