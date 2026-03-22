@@ -1,0 +1,2181 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>四象限 — 任务管理</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #f3f2ee;
+        --bg2: #fff;
+        --bg3: #ececea;
+        --bg4: #e5e3df;
+        --text: #1a1917;
+        --text2: #7a7773;
+        --text3: #b3b0ab;
+        --accent: #1d4ed8;
+        --accent-d: #1e40af;
+        --accent-l: #dbeafe;
+        --danger: #dc2626;
+        --danger-l: #fee2e2;
+        --success: #059669;
+        --success-l: #dcfce7;
+        --warn: #d97706;
+        --warn-l: #fef3c7;
+        --green: #16a34a;
+        --green-l: #dcfce7;
+        --purple: #7c3aed;
+        --purple-l: #ede9fe;
+        --border: #e2dfd9;
+        --border2: #ccc9c2;
+        --shadow-s:
+          0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 6px 24px rgba(0, 0, 0, 0.06);
+        --shadow-l:
+          0 8px 32px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.05);
+        --r-pill: 28px;
+        --r-card: 16px;
+        --r-sm: 10px;
+        --t: 0.14s ease;
+      }
+      .dark {
+        --bg: #111110;
+        --bg2: #1c1b19;
+        --bg3: #262524;
+        --bg4: #323130;
+        --text: #f3f2ee;
+        --text2: #a8a49d;
+        --text3: #6b6860;
+        --border: #333230;
+        --border2: #4a4845;
+        --shadow-s: 0 1px 3px rgba(0, 0, 0, 0.3), 0 2px 8px rgba(0, 0, 0, 0.2);
+        --shadow: 0 2px 8px rgba(0, 0, 0, 0.3), 0 6px 24px rgba(0, 0, 0, 0.2);
+        --shadow-l: 0 8px 32px rgba(0, 0, 0, 0.4), 0 2px 8px rgba(0, 0, 0, 0.2);
+      }
+      * {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+      body {
+        font-family: "DM Sans", sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        min-height: 100vh;
+        padding: 20px 16px 80px;
+      }
+
+      /* ── HEADER ─────────────────────────────────────── */
+      .header {
+        max-width: 900px;
+        margin: 0 auto 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .header-title {
+        font-size: 22px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .header-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .icon-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg2);
+        cursor: pointer;
+        color: var(--text2);
+        transition: all var(--t);
+      }
+      .icon-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-l);
+      }
+
+      /* ── INPUT AREA ────────────────────────────────── */
+      .input-area {
+        max-width: 900px;
+        margin: 0 auto 24px;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        box-shadow: var(--shadow-s);
+        padding: 14px 16px;
+      }
+      .input-wrap {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+      .input-textarea {
+        flex: 1;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 14px;
+        padding: 9px 14px;
+        resize: none;
+        min-height: 40px;
+        max-height: 120px;
+        line-height: 1.5;
+        transition: border-color var(--t);
+      }
+      .input-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .input-textarea::placeholder {
+        color: var(--text3);
+      }
+      .send-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        height: 40px;
+        padding: 0 18px;
+        border: none;
+        border-radius: var(--r-sm);
+        background: var(--green);
+        color: #fff;
+        font-family: inherit;
+        font-size: 13.5px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--t);
+        flex-shrink: 0;
+      }
+      .send-btn:hover {
+        background: var(--green-d, #15803d);
+      }
+      .send-btn:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+      }
+      .send-btn.loading .btn-text {
+        display: none;
+      }
+      .send-btn .spinner {
+        display: none;
+      }
+      .send-btn.loading .spinner {
+        display: block;
+      }
+      .spinner {
+        width: 16px;
+        height: 16px;
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-top-color: #fff;
+        border-radius: 50%;
+        animation: spin 0.7s linear infinite;
+      }
+      @keyframes spin {
+        to {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* ── GRID ──────────────────────────────────────── */
+      .quadrant-grid {
+        max-width: 900px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 14px;
+        height: calc(100vh - 260px);
+        min-height: 400px;
+      }
+      .quadrant-card {
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        box-shadow: var(--shadow-s);
+        display: flex;
+        flex-direction: column;
+        overflow: hidden;
+      }
+      .q-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 12px 14px 10px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .q-label {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .q-num {
+        width: 22px;
+        height: 22px;
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        font-weight: 700;
+        color: #fff;
+        flex-shrink: 0;
+      }
+      .q1 .q-num {
+        background: #dc2626;
+      }
+      .q2 .q-num {
+        background: #d97706;
+      }
+      .q3 .q-num {
+        background: #16a34a;
+      }
+      .q4 .q-num {
+        background: #7c3aed;
+      }
+      .q-name {
+        font-size: 13px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .q-sub {
+        font-size: 10.5px;
+        color: var(--text3);
+        margin-left: 4px;
+      }
+      .q-count {
+        font-size: 11px;
+        color: var(--text3);
+        background: var(--bg3);
+        padding: 2px 7px;
+        border-radius: 10px;
+      }
+      .q-body {
+        flex: 1;
+        overflow-y: auto;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+      }
+      .q-body::-webkit-scrollbar {
+        width: 4px;
+      }
+      .q-body::-webkit-scrollbar-track {
+        background: transparent;
+      }
+      .q-body::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 2px;
+      }
+
+      /* ── TASK CARD ─────────────────────────────────── */
+      .task-card {
+        display: flex;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 9px 10px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        cursor: grab;
+        transition: all var(--t);
+        user-select: none;
+      }
+      .task-card:hover {
+        border-color: var(--accent);
+        background: var(--bg2);
+      }
+      .task-card.completed {
+        opacity: 0.55;
+      }
+      .task-card.dragging {
+        opacity: 0.4;
+        transform: scale(0.97);
+      }
+      .task-card.sortable-ghost {
+        opacity: 0.25;
+      }
+      .task-chk {
+        width: 18px;
+        height: 18px;
+        border: 1.5px solid var(--border2);
+        border-radius: 5px;
+        background: var(--bg2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+        margin-top: 1px;
+        transition: all var(--t);
+        color: transparent;
+      }
+      .task-chk:hover {
+        border-color: var(--accent);
+      }
+      .task-card.completed .task-chk {
+        background: var(--success);
+        border-color: var(--success);
+        color: #fff;
+      }
+      .task-content {
+        flex: 1;
+        min-width: 0;
+      }
+      .task-text {
+        font-size: 13px;
+        color: var(--text);
+        line-height: 1.4;
+        word-break: break-word;
+      }
+      .task-card.completed .task-text {
+        text-decoration: line-through;
+        color: var(--text3);
+      }
+      .task-edit-input {
+        width: 100%;
+        border: 1.5px solid var(--accent);
+        border-radius: 6px;
+        background: var(--bg2);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13px;
+        padding: 4px 8px;
+        outline: none;
+      }
+      .task-actions {
+        display: flex;
+        gap: 4px;
+        opacity: 0;
+        transition: opacity var(--t);
+        flex-shrink: 0;
+      }
+      .task-card:hover .task-actions {
+        opacity: 1;
+      }
+      .task-action-btn {
+        width: 22px;
+        height: 22px;
+        border: none;
+        border-radius: 5px;
+        background: var(--bg3);
+        color: var(--text3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--t);
+      }
+      .task-action-btn:hover {
+        background: var(--danger-l);
+        color: var(--danger);
+      }
+
+      /* ── ADD TASK ──────────────────────────────────── */
+      .add-task-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        width: 100%;
+        padding: 8px;
+        border: 1.5px dashed var(--border2);
+        border-radius: var(--r-sm);
+        background: none;
+        color: var(--text3);
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all var(--t);
+        margin-top: 4px;
+      }
+      .add-task-btn:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+        background: var(--accent-l);
+      }
+
+      /* ── EMPTY STATE ───────────────────────────────── */
+      .empty-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 24px 16px;
+        color: var(--text3);
+        font-size: 12px;
+        text-align: center;
+        gap: 6px;
+      }
+      .empty-state svg {
+        opacity: 0.4;
+      }
+
+      /* ── SETTINGS OVERLAY ──────────────────────────── */
+      .overlay {
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.45);
+        backdrop-filter: blur(4px);
+        z-index: 500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        padding: 20px;
+        animation: fadeIn 0.15s ease;
+      }
+      .overlay.open {
+        display: flex;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+      .modal {
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        box-shadow: var(--shadow-l);
+        width: 100%;
+        max-width: 560px;
+        max-height: 85vh;
+        display: flex;
+        flex-direction: column;
+        animation: slideUp 0.18s ease;
+      }
+      @keyframes slideUp {
+        from {
+          opacity: 0;
+          transform: translateY(12px) scale(0.98);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0) scale(1);
+        }
+      }
+      .modal-hd {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 18px 20px 14px;
+        border-bottom: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .modal-title {
+        font-size: 16px;
+        font-weight: 600;
+        color: var(--text);
+      }
+      .modal-close {
+        width: 30px;
+        height: 30px;
+        border: none;
+        border-radius: var(--r-sm);
+        background: var(--bg3);
+        color: var(--text2);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all var(--t);
+      }
+      .modal-close:hover {
+        background: var(--danger-l);
+        color: var(--danger);
+      }
+
+      /* ── TABS ──────────────────────────────────────── */
+      .tabs {
+        display: flex;
+        gap: 2px;
+        padding: 12px 20px 0;
+        border-bottom: 1px solid var(--border);
+      }
+      .tab {
+        padding: 8px 14px;
+        border: none;
+        border-bottom: 2px solid transparent;
+        background: none;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--text3);
+        cursor: pointer;
+        transition: all var(--t);
+        margin-bottom: -1px;
+      }
+      .tab:hover {
+        color: var(--text);
+      }
+      .tab.active {
+        color: var(--accent);
+        border-bottom-color: var(--accent);
+      }
+      .tab-body {
+        display: none;
+        padding: 18px 20px 20px;
+        overflow-y: auto;
+        flex: 1;
+      }
+      .tab-body.active {
+        display: block;
+      }
+
+      /* ── FORM ELEMENTS ─────────────────────────────── */
+      .form-row {
+        margin-bottom: 14px;
+      }
+      .form-label {
+        display: block;
+        font-size: 12px;
+        font-weight: 500;
+        color: var(--text2);
+        margin-bottom: 6px;
+      }
+      .form-input {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13.5px;
+        padding: 9px 12px;
+        transition: border-color var(--t);
+      }
+      .form-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .form-input::placeholder {
+        color: var(--text3);
+      }
+      .form-input:invalid.flash {
+        border-color: var(--danger);
+        animation: shake 0.3s;
+      }
+      @keyframes shake {
+        0%,
+        100% {
+          transform: translateX(0);
+        }
+        25% {
+          transform: translateX(-4px);
+        }
+        75% {
+          transform: translateX(4px);
+        }
+      }
+      .form-select {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 13.5px;
+        padding: 9px 12px;
+        cursor: pointer;
+        transition: border-color var(--t);
+      }
+      .form-select:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .form-hint {
+        font-size: 11px;
+        color: var(--text3);
+        margin-top: 4px;
+      }
+      .form-textarea {
+        width: 100%;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        color: var(--text);
+        font-family: "DM Mono", monospace;
+        font-size: 12.5px;
+        padding: 10px 12px;
+        resize: vertical;
+        min-height: 120px;
+        line-height: 1.5;
+        transition: border-color var(--t);
+      }
+      .form-textarea:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+
+      /* ── API KEY INPUT ─────────────────────────────── */
+      .key-wrap {
+        position: relative;
+        display: flex;
+        align-items: center;
+      }
+      .key-wrap .form-input {
+        padding-right: 40px;
+      }
+      .key-eye {
+        position: absolute;
+        right: 10px;
+        background: none;
+        border: none;
+        color: var(--text3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        padding: 4px;
+        transition: color var(--t);
+      }
+      .key-eye:hover {
+        color: var(--text);
+      }
+      .key-verify {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 6px;
+      }
+      .verify-btn {
+        padding: 6px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        color: var(--text2);
+        font-family: inherit;
+        font-size: 12px;
+        cursor: pointer;
+        transition: all var(--t);
+      }
+      .verify-btn:hover {
+        border-color: var(--success);
+        color: var(--success);
+      }
+      .verify-btn.spinning {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
+      .verify-msg {
+        font-size: 11.5px;
+        color: var(--text3);
+      }
+      .verify-msg.ok {
+        color: var(--success);
+      }
+      .verify-msg.err {
+        color: var(--danger);
+      }
+
+      /* ── MODEL LIST ───────────────────────────────── */
+      .model-list {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        margin-top: 10px;
+      }
+      .mi {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        background: var(--bg);
+        border: 1px solid var(--border);
+        border-radius: var(--r-sm);
+        cursor: grab;
+        transition: all var(--t);
+      }
+      .mi:hover {
+        border-color: var(--accent);
+      }
+      .mi.dragging {
+        opacity: 0.4;
+      }
+      .mi.drag-over {
+        border-color: var(--accent);
+        background: var(--accent-l);
+      }
+      .drag-h {
+        color: var(--text3);
+        cursor: grab;
+        flex-shrink: 0;
+      }
+      .mi-rank {
+        font-size: 11px;
+        color: var(--text3);
+        flex-shrink: 0;
+        width: 24px;
+      }
+      .mi-name {
+        flex: 1;
+        font-size: 12.5px;
+        color: var(--text);
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .mi-badge {
+        font-size: 10px;
+        background: var(--accent);
+        color: #fff;
+        padding: 2px 6px;
+        border-radius: 10px;
+        flex-shrink: 0;
+      }
+      .mi-del {
+        width: 20px;
+        height: 20px;
+        border: none;
+        border-radius: 5px;
+        background: none;
+        color: var(--text3);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 16px;
+        transition: all var(--t);
+        flex-shrink: 0;
+      }
+      .mi-del:hover {
+        background: var(--danger-l);
+        color: var(--danger);
+      }
+
+      /* ── MODEL DROPDOWN ────────────────────────────── */
+      .model-dd {
+        position: relative;
+      }
+      .model-dd-list {
+        position: absolute;
+        top: calc(100% + 4px);
+        left: 0;
+        right: 0;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        box-shadow: var(--shadow-l);
+        z-index: 100;
+        max-height: 180px;
+        overflow-y: auto;
+        display: none;
+      }
+      .model-dd-list.open {
+        display: block;
+      }
+      .model-opt {
+        padding: 8px 12px;
+        font-size: 12.5px;
+        color: var(--text);
+        cursor: pointer;
+        transition: background var(--t);
+      }
+      .model-opt:hover {
+        background: var(--bg3);
+      }
+      .model-opt mark {
+        background: var(--warn-l);
+        color: var(--warn);
+      }
+
+      /* ── MODAL FOOTER ─────────────────────────────── */
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        padding: 14px 20px;
+        border-top: 1px solid var(--border);
+        flex-shrink: 0;
+      }
+      .modal-footer-left {
+        display: flex;
+        gap: 8px;
+      }
+      .btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        padding: 9px 16px;
+        border-radius: var(--r-sm);
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 500;
+        cursor: pointer;
+        transition: all var(--t);
+      }
+      .btn-ghost {
+        border: 1.5px solid var(--border);
+        background: var(--bg);
+        color: var(--text2);
+      }
+      .btn-ghost:hover {
+        border-color: var(--text2);
+        color: var(--text);
+      }
+      .btn-primary {
+        border: none;
+        background: var(--accent);
+        color: #fff;
+      }
+      .btn-primary:hover {
+        background: var(--accent-d);
+      }
+
+      /* ── ADD TASK MODAL ───────────────────────────── */
+      .add-modal .modal {
+        max-width: 420px;
+      }
+      .quadrant-picker {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+        margin-top: 4px;
+      }
+      .quadrant-opt {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 10px 12px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg);
+        cursor: pointer;
+        transition: all var(--t);
+      }
+      .quadrant-opt:hover {
+        border-color: var(--accent);
+      }
+      .quadrant-opt.selected {
+        border-color: var(--accent);
+        background: var(--accent-l);
+      }
+      .quadrant-opt .q-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 4px;
+        flex-shrink: 0;
+      }
+      .quadrant-opt .q-dot.q1 {
+        background: #dc2626;
+      }
+      .quadrant-opt .q-dot.q2 {
+        background: #d97706;
+      }
+      .quadrant-opt .q-dot.q3 {
+        background: #16a34a;
+      }
+      .quadrant-opt .q-dot.q4 {
+        background: #7c3aed;
+      }
+      .quadrant-opt span {
+        font-size: 12.5px;
+        color: var(--text);
+      }
+
+      /* ── TOAST ────────────────────────────────────── */
+      .toast {
+        position: fixed;
+        bottom: 24px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        box-shadow: var(--shadow-l);
+        padding: 10px 18px;
+        font-size: 13px;
+        color: var(--text);
+        z-index: 9999;
+        opacity: 0;
+        transition: all 0.25s ease;
+        pointer-events: none;
+        white-space: nowrap;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+      .toast.success {
+        border-color: var(--success);
+      }
+      .toast.error {
+        border-color: var(--danger);
+      }
+
+      /* ── STREAMING OUTPUT ──────────────────────────── */
+      .stream-output {
+        max-width: 900px;
+        margin: 0 auto 16px;
+        background: var(--bg2);
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-card);
+        padding: 14px 16px;
+        font-family: "DM Mono", monospace;
+        font-size: 12px;
+        color: var(--text2);
+        display: none;
+        line-height: 1.6;
+        max-height: 200px;
+        overflow-y: auto;
+      }
+      .stream-output.visible {
+        display: block;
+      }
+      .stream-output::-webkit-scrollbar {
+        width: 4px;
+      }
+      .stream-output::-webkit-scrollbar-thumb {
+        background: var(--border2);
+        border-radius: 2px;
+      }
+
+      /* ── CONTEXT AREA ──────────────────────────────── */
+      .context-area {
+        max-width: 900px;
+        margin: 0 auto 16px;
+      }
+      .context-toggle {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 12px;
+        color: var(--text3);
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+        padding: 4px 0;
+        transition: color var(--t);
+      }
+      .context-toggle:hover {
+        color: var(--text);
+      }
+      .context-input {
+        width: 100%;
+        margin-top: 8px;
+        border: 1.5px solid var(--border);
+        border-radius: var(--r-sm);
+        background: var(--bg2);
+        color: var(--text);
+        font-family: inherit;
+        font-size: 12.5px;
+        padding: 8px 12px;
+        resize: none;
+        min-height: 56px;
+        line-height: 1.5;
+        transition: border-color var(--t);
+        display: none;
+      }
+      .context-input:focus {
+        outline: none;
+        border-color: var(--accent);
+      }
+      .context-input.open {
+        display: block;
+      }
+
+      /* ── RESPONSIVE ───────────────────────────────── */
+      @media (max-width: 640px) {
+        .header {
+          margin-bottom: 14px;
+        }
+        .header-title {
+          font-size: 18px;
+        }
+        .quadrant-grid {
+          grid-template-columns: 1fr;
+          grid-template-rows: repeat(4, minmax(200px, 1fr));
+          height: auto;
+        }
+        .input-wrap {
+          flex-direction: column;
+        }
+        .send-btn {
+          width: 100%;
+        }
+        .modal {
+          max-height: 90vh;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- HEADER -->
+    <header class="header">
+      <h1 class="header-title">四象限</h1>
+      <div class="header-actions">
+        <button class="icon-btn" id="themeBtn" title="切换主题">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />
+          </svg>
+        </button>
+        <button class="icon-btn" id="importBtn" title="导入数据">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"
+            />
+          </svg>
+        </button>
+        <button class="icon-btn" id="exportBtn" title="导出数据">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <path
+              d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"
+            />
+          </svg>
+        </button>
+        <button class="icon-btn" id="settingsBtn" title="设置">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+          >
+            <circle cx="12" cy="12" r="3" />
+            <path
+              d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9c.26.6.83 1.01 1.51 1.01H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"
+            />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTEXT TOGGLE -->
+    <div class="context-area">
+      <button class="context-toggle" id="contextToggle">
+        <svg
+          width="12"
+          height="12"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="2"
+        >
+          <path d="M9 18l6-6-6-6" />
+        </svg>
+        AI 上下文背景（可选）
+      </button>
+      <textarea
+        class="context-input"
+        id="contextInput"
+        placeholder="描述你的背景或偏好，帮助 AI 更准确分配任务"
+      ></textarea>
+    </div>
+
+    <!-- INPUT AREA -->
+    <div class="input-area">
+      <div class="input-wrap">
+        <textarea
+          class="input-textarea"
+          id="taskInput"
+          placeholder="输入任务描述，用 AI 智能分配到四个象限…"
+        ></textarea>
+        <button class="send-btn" id="sendBtn">
+          <span class="btn-text">发送</span>
+          <div class="spinner"></div>
+        </button>
+      </div>
+    </div>
+
+    <!-- STREAM OUTPUT -->
+    <div class="stream-output" id="streamOutput"></div>
+
+    <!-- QUADRANT GRID -->
+    <div class="quadrant-grid">
+      <div class="quadrant-card q1" data-quadrant="1">
+        <div class="q-header">
+          <div class="q-label">
+            <div class="q-num">1</div>
+            <span class="q-name">重要不紧急</span>
+            <span class="q-sub">计划 / 成长</span>
+          </div>
+          <span class="q-count" id="count1">0</span>
+        </div>
+        <div class="q-body" id="q1"></div>
+        <button class="add-task-btn" data-quadrant="1">+ 手动添加</button>
+      </div>
+      <div class="quadrant-card q2" data-quadrant="2">
+        <div class="q-header">
+          <div class="q-label">
+            <div class="q-num">2</div>
+            <span class="q-name">重要且紧急</span>
+            <span class="q-sub">立即执行</span>
+          </div>
+          <span class="q-count" id="count2">0</span>
+        </div>
+        <div class="q-body" id="q2"></div>
+        <button class="add-task-btn" data-quadrant="2">+ 手动添加</button>
+      </div>
+      <div class="quadrant-card q3" data-quadrant="3">
+        <div class="q-header">
+          <div class="q-label">
+            <div class="q-num">3</div>
+            <span class="q-name">不重要不紧急</span>
+            <span class="q-sub">减少投入</span>
+          </div>
+          <span class="q-count" id="count3">0</span>
+        </div>
+        <div class="q-body" id="q3"></div>
+        <button class="add-task-btn" data-quadrant="3">+ 手动添加</button>
+      </div>
+      <div class="quadrant-card q4" data-quadrant="4">
+        <div class="q-header">
+          <div class="q-label">
+            <div class="q-num">4</div>
+            <span class="q-name">不重要但紧急</span>
+            <span class="q-sub">尽量委托</span>
+          </div>
+          <span class="q-count" id="count4">0</span>
+        </div>
+        <div class="q-body" id="q4"></div>
+        <button class="add-task-btn" data-quadrant="4">+ 手动添加</button>
+      </div>
+    </div>
+
+    <!-- SETTINGS OVERLAY -->
+    <div class="overlay" id="settingsOverlay">
+      <div class="modal">
+        <div class="modal-hd">
+          <span class="modal-title">设置</span>
+          <button class="modal-close" id="settingsClose">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="tabs">
+          <button class="tab active" data-tab="api">API 配置</button>
+          <button class="tab" data-tab="prompt">提示词编辑</button>
+        </div>
+        <!-- API TAB -->
+        <div class="tab-body active" id="tabApi">
+          <div class="form-row">
+            <label class="form-label">Endpoint</label>
+            <select class="form-select" id="cfgEndpoint">
+              <option value="zhipu">智谱清言</option>
+              <option value="openrouter">OpenRouter</option>
+              <option value="custom">自定义</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Base URL</label>
+            <input
+              type="text"
+              class="form-input"
+              id="cfgBaseUrl"
+              placeholder="留空则使用默认地址"
+            />
+          </div>
+          <div class="form-row">
+            <label class="form-label">API Key</label>
+            <div class="key-wrap">
+              <input
+                type="password"
+                class="form-input"
+                id="cfgApiKey"
+                placeholder="必填"
+                autocomplete="off"
+              />
+              <button class="key-eye" id="keyEye" type="button">
+                <svg
+                  width="15"
+                  height="15"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                >
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" />
+                  <circle cx="12" cy="12" r="3" />
+                </svg>
+              </button>
+            </div>
+            <div class="key-verify">
+              <button class="verify-btn" id="verifyBtn">验证</button>
+              <span class="verify-msg" id="verifyMsg"></span>
+            </div>
+          </div>
+          <div class="form-row">
+            <label class="form-label">Model Name</label>
+            <div class="model-dd">
+              <input
+                type="text"
+                class="form-input"
+                id="cfgModelInput"
+                placeholder="聚焦获取模型列表，或直接输入"
+              />
+              <div class="model-dd-list" id="modelDropdown"></div>
+            </div>
+            <div class="model-list" id="modelList"></div>
+            <p class="form-hint">优先使用列表顶部的模型</p>
+          </div>
+        </div>
+        <!-- PROMPT TAB -->
+        <div class="tab-body" id="tabPrompt">
+          <div class="form-row">
+            <label class="form-label">系统提示词</label>
+            <textarea class="form-textarea" id="cfgPrompt" rows="8"></textarea>
+            <p class="form-hint">
+              变量：{userContext} = 用户背景，AI 仅回复 JSON 数组
+            </p>
+          </div>
+          <button class="btn btn-ghost" id="promptReset">恢复默认提示词</button>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-left"></div>
+          <button class="btn btn-ghost" id="settingsCancel">取消</button>
+          <button class="btn btn-primary" id="settingsSave">保存</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ADD TASK OVERLAY -->
+    <div class="overlay add-modal" id="addOverlay">
+      <div class="modal">
+        <div class="modal-hd">
+          <span class="modal-title">添加任务</span>
+          <button class="modal-close" id="addClose">
+            <svg
+              width="14"
+              height="14"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+            >
+              <path d="M18 6 6 18M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+        <div class="tab-body active" style="display: block">
+          <div class="form-row">
+            <label class="form-label">任务内容</label>
+            <input
+              type="text"
+              class="form-input"
+              id="addContent"
+              placeholder="输入任务描述"
+            />
+          </div>
+          <div class="form-row">
+            <label class="form-label">选择象限</label>
+            <div class="quadrant-picker">
+              <div class="quadrant-opt selected" data-quadrant="1">
+                <div class="q-dot q1"></div>
+                <span>重要不紧急</span>
+              </div>
+              <div class="quadrant-opt" data-quadrant="2">
+                <div class="q-dot q2"></div>
+                <span>重要且紧急</span>
+              </div>
+              <div class="quadrant-opt" data-quadrant="3">
+                <div class="q-dot q3"></div>
+                <span>不重要不紧急</span>
+              </div>
+              <div class="quadrant-opt" data-quadrant="4">
+                <div class="q-dot q4"></div>
+                <span>不重要但紧急</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <div class="modal-footer-left"></div>
+          <button class="btn btn-ghost" id="addCancel">取消</button>
+          <button class="btn btn-primary" id="addConfirm">添加</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div class="toast" id="toast"></div>
+
+    <!-- HIDDEN FILE INPUT -->
+    <input type="file" id="fileInput" accept=".json" style="display: none" />
+
+    <!-- SORTABLEJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.6/Sortable.min.js"></script>
+
+    <script>
+      // ── CONSTANTS ────────────────────────────────────────
+      const LS_KEY = "quadrant_v1";
+      const DEFAULT_PROMPT = `你是一个任务管理助手，擅长将用户输入的任务分配到艾森豪威尔四象限。
+
+四象限定义：
+1. 重要不紧急（计划/成长）- 对长期目标有价值，但不紧迫
+2. 重要且紧急（立即执行）- 必须马上做，有截止日期或后果严重
+3. 不重要不紧急（减少投入）- 休闲娱乐、无价值事务
+4. 不重要但紧急（尽量委托）- 干扰性事务，可推迟或委托
+
+用户背景：{userContext}
+
+请将以下任务分配到对应象限，只输出 JSON 数组，不要任何其他内容：
+[{"content":"任务内容","quadrant":1-4}]
+
+规则：
+- 只输出 JSON 数组，不要解释、不要前缀、不要 markdown 格式
+- quadrant 必须是 1、2、3 或 4
+- content 为任务原文
+- 解析所有任务，即使输入不明确`;
+
+      const ENDPOINTS = {
+        zhipu: {
+          baseUrl: "https://open.bigmodel.cn/api/paas/v4",
+          modelPlaceholder: "glm-4-flash",
+        },
+        openrouter: {
+          baseUrl: "https://openrouter.ai/api/v1",
+          modelPlaceholder: "",
+        },
+        custom: { baseUrl: "", modelPlaceholder: "" },
+      };
+
+      // ── STATE ───────────────────────────────────────────
+      let S = {
+        endpoint: "zhipu",
+        baseUrl: "",
+        apiKey: "",
+        models: [],
+        prompt: DEFAULT_PROMPT,
+        userContext: "",
+      };
+      let APP = { tasks: [] };
+      let fetchedModels = [];
+      let addQuadrant = 1;
+      let dragSrcIdx = null;
+
+      // ── INIT ────────────────────────────────────────────
+      function loadS() {
+        try {
+          const raw = localStorage.getItem(LS_KEY);
+          if (!raw) return;
+          const saved = JSON.parse(raw);
+          if (saved._version !== 1) return;
+          S = { ...S, ...saved };
+          APP.tasks = saved.tasks || [];
+          if (!S.prompt) S.prompt = DEFAULT_PROMPT;
+        } catch (e) {
+          console.warn("loadS failed", e);
+        }
+      }
+
+      function saveS() {
+        try {
+          localStorage.setItem(
+            LS_KEY,
+            JSON.stringify({
+              _version: 1,
+              ...S,
+              tasks: APP.tasks,
+            }),
+          );
+        } catch (e) {
+          console.warn("saveS failed", e);
+        }
+      }
+
+      function esc(s) {
+        return String(s || "")
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;");
+      }
+
+      function escRe(s) {
+        return s.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+      }
+
+      // ── THEME ───────────────────────────────────────────
+      function applyTheme(dark) {
+        document.body.classList.toggle("dark", dark);
+        const icon = document.querySelector("#themeBtn svg");
+        if (dark) {
+          icon.innerHTML =
+            '<circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/>';
+        } else {
+          icon.innerHTML =
+            '<path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>';
+        }
+      }
+
+      function initTheme() {
+        const dark = localStorage.getItem("quadrant_theme") !== "light";
+        applyTheme(dark);
+      }
+
+      function toggleTheme() {
+        const isDark = document.body.classList.toggle("dark");
+        localStorage.setItem("quadrant_theme", isDark ? "dark" : "light");
+        applyTheme(isDark);
+      }
+
+      // ── TOAST ───────────────────────────────────────────
+      function showToast(msg, type = "") {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.className = "toast" + (type ? " " + type : "");
+        requestAnimationFrame(() => t.classList.add("show"));
+        setTimeout(() => t.classList.remove("show"), 2600);
+      }
+
+      // ── RENDER TASKS ────────────────────────────────────
+      function renderTasks() {
+        [1, 2, 3, 4].forEach((q) => {
+          const body = document.getElementById("q" + q);
+          const tasks = APP.tasks.filter((t) => t.quadrant === q);
+          const active = tasks.filter((t) => !t.completed);
+          const done = tasks.filter((t) => t.completed);
+          body.innerHTML = "";
+          active
+            .sort((a, b) => a.order - b.order)
+            .forEach((t) => body.appendChild(makeTaskCard(t)));
+          if (done.length) {
+            if (active.length) {
+              const sep = document.createElement("div");
+              sep.style.cssText =
+                "border-top:1px dashed var(--border);margin:4px 0;";
+              body.appendChild(sep);
+            }
+            done
+              .sort((a, b) => a.order - b.order)
+              .forEach((t) => body.appendChild(makeTaskCard(t)));
+          }
+          if (!tasks.length) {
+            body.innerHTML = `<div class="empty-state">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+              <span>暂无任务</span>
+            </div>`;
+          }
+          document.getElementById("count" + q).textContent = tasks.length;
+        });
+        initSortable();
+      }
+
+      function makeTaskCard(task) {
+        const card = document.createElement("div");
+        card.className = "task-card" + (task.completed ? " completed" : "");
+        card.dataset.id = task.id;
+        card.innerHTML = `
+          <div class="task-chk">${task.completed ? '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6 9 17l-5-5"/></svg>' : ""}</div>
+          <div class="task-content">
+            <div class="task-text">${esc(task.content)}</div>
+          </div>
+          <div class="task-actions">
+            <button class="task-action-btn del-task" title="删除">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>`;
+        card.querySelector(".task-chk").addEventListener("click", (e) => {
+          e.stopPropagation();
+          toggleTask(task.id);
+        });
+        card.querySelector(".del-task").addEventListener("click", (e) => {
+          e.stopPropagation();
+          deleteTask(task.id);
+        });
+        card.addEventListener("click", (e) => {
+          if (
+            e.target.closest(".task-chk") ||
+            e.target.closest(".task-actions")
+          )
+            return;
+          startEdit(card, task);
+        });
+        return card;
+      }
+
+      function startEdit(card, task) {
+        const content = card.querySelector(".task-content");
+        const textEl = content.querySelector(".task-text");
+        const current = textEl.textContent;
+        content.innerHTML = `<input type="text" class="task-edit-input" value="${esc(current)}" />`;
+        const input = content.querySelector(".task-edit-input");
+        input.focus();
+        input.select();
+        const finish = () => {
+          const val = input.value.trim();
+          if (val && val !== current) {
+            task.content = val;
+            saveS();
+          }
+          renderTasks();
+        };
+        input.addEventListener("blur", finish);
+        input.addEventListener("keydown", (e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+            input.blur();
+          }
+          if (e.key === "Escape") {
+            renderTasks();
+          }
+        });
+      }
+
+      function toggleTask(id) {
+        const t = APP.tasks.find((t) => t.id === id);
+        if (!t) return;
+        t.completed = !t.completed;
+        saveS();
+        renderTasks();
+        showToast(t.completed ? "任务已完成" : "任务已恢复", "success");
+      }
+
+      function deleteTask(id) {
+        APP.tasks = APP.tasks.filter((t) => t.id !== id);
+        saveS();
+        renderTasks();
+        showToast("任务已删除", "success");
+      }
+
+      function addTask(content, quadrant) {
+        const maxOrder = APP.tasks.filter(
+          (t) => t.quadrant === quadrant,
+        ).length;
+        APP.tasks.push({
+          id: crypto.randomUUID(),
+          content,
+          quadrant,
+          completed: false,
+          order: maxOrder,
+        });
+        saveS();
+        renderTasks();
+      }
+
+      // ── SORTABLE ────────────────────────────────────────
+      function initSortable() {
+        [1, 2, 3, 4].forEach((q) => {
+          const el = document.getElementById("q" + q);
+          if (el._sortable) el._sortable.destroy();
+          el._sortable = new Sortable(el, {
+            group: "tasks",
+            animation: 150,
+            ghostClass: "sortable-ghost",
+            draggingClass: "dragging",
+            filter: ".empty-state",
+            onEnd(evt) {
+              const id = evt.item.dataset.id;
+              const task = APP.tasks.find((t) => t.id === id);
+              if (!task) return;
+              const newQ = parseInt(evt.to.id.replace("q", ""));
+              if (task.quadrant !== newQ) {
+                task.quadrant = newQ;
+              }
+              // Reorder
+              const siblings = APP.tasks.filter(
+                (t) => t.quadrant === newQ && !t.completed,
+              );
+              siblings.forEach((t, i) => (t.order = i));
+              saveS();
+              renderTasks();
+            },
+          });
+        });
+      }
+
+      // ── AI CALL ────────────────────────────────────────
+      async function callAI() {
+        const input = document.getElementById("taskInput").value.trim();
+        if (!input) return;
+        if (!S.apiKey) {
+          openSettings();
+          showToast("请先配置 API Key", "error");
+          document.getElementById("cfgApiKey").classList.add("flash");
+          setTimeout(
+            () =>
+              document.getElementById("cfgApiKey").classList.remove("flash"),
+            600,
+          );
+          return;
+        }
+
+        const btn = document.getElementById("sendBtn");
+        const streamEl = document.getElementById("streamOutput");
+        btn.classList.add("loading");
+        btn.disabled = true;
+        streamEl.classList.add("visible");
+        streamEl.textContent = "";
+
+        const baseUrl = S.baseUrl || ENDPOINTS[S.endpoint]?.baseUrl || "";
+        const model =
+          S.models[0] ||
+          ENDPOINTS[S.endpoint]?.modelPlaceholder ||
+          "glm-4-flash";
+        const userContext = S.userContext || "无";
+
+        try {
+          const systemPrompt = S.prompt.replace("{userContext}", userContext);
+          const messages = [
+            { role: "system", content: systemPrompt },
+            { role: "user", content: input },
+          ];
+
+          const rawResp = await fetch(baseUrl + "/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + S.apiKey,
+            },
+            body: JSON.stringify({
+              model,
+              messages,
+              stream: true,
+            }),
+          });
+
+          if (!rawResp.ok) {
+            const errText = await rawResp.text();
+            throw new Error(
+              `API 错误 ${rawResp.status}: ${errText.slice(0, 100)}`,
+            );
+          }
+
+          const reader = rawResp.body.getReader();
+          const decoder = new TextDecoder();
+          let full = "";
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value);
+            const lines = chunk.split("\n");
+            for (const line of lines) {
+              if (!line.startsWith("data: ")) continue;
+              const data = line.slice(6).trim();
+              if (data === "[DONE]") continue;
+              try {
+                const parsed = JSON.parse(data);
+                const content = parsed.choices?.[0]?.delta?.content || "";
+                if (content) {
+                  full += content;
+                  streamEl.textContent = full;
+                  streamEl.scrollTop = streamEl.scrollHeight;
+                }
+              } catch (e) {}
+            }
+          }
+
+          streamEl.classList.remove("visible");
+          const json = extractJSON(full);
+          handleAIResponse(json);
+          document.getElementById("taskInput").value = "";
+        } catch (e) {
+          streamEl.classList.remove("visible");
+          showToast("AI 调用失败：" + e.message, "error");
+        } finally {
+          btn.classList.remove("loading");
+          btn.disabled = false;
+        }
+      }
+
+      function extractJSON(raw) {
+        let text = raw;
+        text = text.replace(/<think>[\s\S]*?<\/think>/gi, "").trim();
+        text = text.replace(/```(?:json)?\s*([\s\S]*?)\s*```/gi, "$1").trim();
+        const start = text.indexOf("[");
+        if (start === -1) throw new Error("响应中没有找到 JSON 数组");
+        let depth = 0,
+          inStr = false,
+          escape = false;
+        for (let i = start; i < text.length; i++) {
+          const c = text[i];
+          if (escape) {
+            escape = false;
+            continue;
+          }
+          if (c === "\\" && inStr) {
+            escape = true;
+            continue;
+          }
+          if (c === '"') {
+            inStr = !inStr;
+            continue;
+          }
+          if (inStr) continue;
+          if (c === "[" || c === "{") depth++;
+          else if (c === "]" || c === "}") depth--;
+          if (depth === 0) {
+            const slice = text.slice(start, i + 1);
+            try {
+              return JSON.parse(slice);
+            } catch {}
+          }
+        }
+        throw new Error("无法解析 JSON");
+      }
+
+      function handleAIResponse(json) {
+        if (!Array.isArray(json)) {
+          showToast("AI 返回格式错误", "error");
+          return;
+        }
+        let added = 0;
+        json.forEach((item) => {
+          if (!item.content) return;
+          let q = parseInt(item.quadrant);
+          if (![1, 2, 3, 4].includes(q)) q = 1;
+          const maxOrder = APP.tasks.filter(
+            (t) => t.quadrant === q && !t.completed,
+          ).length;
+          APP.tasks.push({
+            id: crypto.randomUUID(),
+            content: String(item.content),
+            quadrant: q,
+            completed: false,
+            order: maxOrder,
+          });
+          added++;
+        });
+        saveS();
+        renderTasks();
+        if (added > 0) showToast("已添加 " + added + " 个任务", "success");
+        else showToast("未能解析到有效任务", "error");
+      }
+
+      // ── SETTINGS ────────────────────────────────────────
+      function openSettings() {
+        document.getElementById("cfgEndpoint").value = S.endpoint;
+        document.getElementById("cfgBaseUrl").value = S.baseUrl;
+        document.getElementById("cfgApiKey").value = S.apiKey;
+        document.getElementById("cfgPrompt").value = S.prompt || DEFAULT_PROMPT;
+        renderModelList();
+        switchTab("api");
+        document.getElementById("settingsOverlay").classList.add("open");
+      }
+
+      function closeSettings() {
+        document.getElementById("settingsOverlay").classList.remove("open");
+      }
+
+      function switchTab(id) {
+        document
+          .querySelectorAll(".tab")
+          .forEach((t) => t.classList.toggle("active", t.dataset.tab === id));
+        document.getElementById("tabApi").style.display =
+          id === "api" ? "" : "none";
+        document.getElementById("tabPrompt").style.display =
+          id === "prompt" ? "" : "none";
+      }
+
+      // ── MODEL LIST ─────────────────────────────────────
+      function renderModelList() {
+        const list = document.getElementById("modelList");
+        list.innerHTML = "";
+        S.models.forEach((m, i) => {
+          const item = document.createElement("div");
+          item.className = "mi";
+          item.draggable = true;
+          item.dataset.i = i;
+          item.innerHTML = `
+            <span class="drag-h"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M8 6a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 13.5a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zM8 21a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3zm8 0a1.5 1.5 0 1 1 0-3 1.5 1.5 0 0 1 0 3z"/></svg></span>
+            <span class="mi-rank">#${i + 1}</span>
+            <span class="mi-name">${esc(m)}</span>
+            ${i === 0 ? '<span class="mi-badge">首选</span>' : ""}
+            <button class="mi-del" data-i="${i}">×</button>`;
+          item.addEventListener("dragstart", (e) => {
+            dragSrcIdx = i;
+            e.dataTransfer.effectAllowed = "move";
+            requestAnimationFrame(() => item.classList.add("dragging"));
+          });
+          item.addEventListener("dragend", () => {
+            item.classList.remove("dragging");
+            list
+              .querySelectorAll(".mi")
+              .forEach((el) => el.classList.remove("drag-over"));
+          });
+          item.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            list
+              .querySelectorAll(".mi")
+              .forEach((el) => el.classList.remove("drag-over"));
+            item.classList.add("drag-over");
+          });
+          item.addEventListener("drop", (e) => {
+            e.preventDefault();
+            item.classList.remove("drag-over");
+            if (dragSrcIdx === null || dragSrcIdx === i) return;
+            const a = [...S.models];
+            const [mv] = a.splice(dragSrcIdx, 1);
+            a.splice(i, 0, mv);
+            S.models = a;
+            renderModelList();
+          });
+          item.querySelector(".mi-del").addEventListener("click", () => {
+            S.models.splice(i, 1);
+            renderModelList();
+          });
+          list.appendChild(item);
+        });
+      }
+
+      // ── MODEL DROPDOWN ─────────────────────────────────
+      async function fetchModels() {
+        const base = S.baseUrl || ENDPOINTS[S.endpoint]?.baseUrl || "";
+        if (!S.apiKey || !base) return;
+        const btn = document.getElementById("verifyBtn");
+        btn.classList.add("spinning");
+        let url = base.replace(/\/chat\/completions.*$/, "/models");
+        if (url === base) url = base.replace(/\/$/, "") + "/models";
+        try {
+          const res = await fetch(url, {
+            headers: { Authorization: `Bearer ${S.apiKey}` },
+          });
+          if (!res.ok) throw new Error();
+          const d = await res.json();
+          fetchedModels = (d.data || [])
+            .map((m) => (typeof m === "string" ? m : m.id))
+            .filter(Boolean)
+            .sort();
+        } catch {
+          fetchedModels = [];
+        }
+        btn.classList.remove("spinning");
+        renderMDD(document.getElementById("cfgModelInput").value);
+      }
+
+      function renderMDD(filter) {
+        const dd = document.getElementById("modelDropdown");
+        const arr = filter
+          ? fetchedModels.filter((m) =>
+              m.toLowerCase().includes(filter.toLowerCase()),
+            )
+          : fetchedModels;
+        if (!arr.length) {
+          dd.classList.remove("open");
+          return;
+        }
+        dd.innerHTML = arr
+          .map((m) => {
+            const h = filter
+              ? m.replace(
+                  new RegExp("(" + escRe(filter) + ")", "gi"),
+                  "<mark>$1</mark>",
+                )
+              : m;
+            return `<div class="model-opt" data-m="${esc(m)}">${h}</div>`;
+          })
+          .join("");
+        dd.classList.add("open");
+        dd.querySelectorAll(".model-opt").forEach((o) => {
+          o.addEventListener("mousedown", (e) => {
+            e.preventDefault();
+            addModel(o.dataset.m);
+            document.getElementById("cfgModelInput").value = "";
+            dd.classList.remove("open");
+          });
+        });
+      }
+
+      function addModel(m) {
+        if (!m || S.models.includes(m)) return;
+        S.models.push(m);
+        renderModelList();
+      }
+
+      // ── ADD TASK MODAL ──────────────────────────────────
+      function openAddModal(quadrant) {
+        addQuadrant = quadrant;
+        document.querySelectorAll(".quadrant-opt").forEach((opt) => {
+          opt.classList.toggle(
+            "selected",
+            parseInt(opt.dataset.quadrant) === quadrant,
+          );
+        });
+        document.getElementById("addContent").value = "";
+        document.getElementById("addOverlay").classList.add("open");
+        setTimeout(() => document.getElementById("addContent").focus(), 100);
+      }
+
+      function closeAddModal() {
+        document.getElementById("addOverlay").classList.remove("open");
+      }
+
+      // ── IMPORT / EXPORT ────────────────────────────────
+      function exportData() {
+        const data = JSON.stringify(
+          { _version: 1, ...S, tasks: APP.tasks },
+          null,
+          2,
+        );
+        const blob = new Blob([data], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "quadrant-backup.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast("数据已导出", "success");
+      }
+
+      function importData(file) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          try {
+            const data = JSON.parse(e.target.result);
+            if (!data.tasks) throw new Error("Invalid format");
+            APP.tasks = data.tasks;
+            if (data.userContext) S.userContext = data.userContext;
+            saveS();
+            renderTasks();
+            showToast(
+              "导入成功，共 " + APP.tasks.length + " 个任务",
+              "success",
+            );
+          } catch {
+            showToast("导入失败：文件格式错误", "error");
+          }
+        };
+        reader.readAsText(file);
+      }
+
+      // ── VERIFY API ──────────────────────────────────────
+      async function verifyAPI() {
+        const base = S.baseUrl || ENDPOINTS[S.endpoint]?.baseUrl || "";
+        if (!S.apiKey || !base) return;
+        const btn = document.getElementById("verifyBtn");
+        const msg = document.getElementById("verifyMsg");
+        btn.classList.add("spinning");
+        msg.textContent = "";
+        msg.className = "verify-msg";
+        try {
+          const model =
+            S.models[0] || ENDPOINTS[S.endpoint]?.modelPlaceholder || "";
+          const res = await fetch(base + "/chat/completions", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + S.apiKey,
+            },
+            body: JSON.stringify({
+              model,
+              messages: [{ role: "user", content: "Hi" }],
+              max_tokens: 5,
+            }),
+          });
+          if (!res.ok) throw new Error(await res.text());
+          msg.textContent = "验证成功";
+          msg.className = "verify-msg ok";
+        } catch (e) {
+          msg.textContent = "验证失败";
+          msg.className = "verify-msg err";
+        }
+        btn.classList.remove("spinning");
+      }
+
+      // ── EVENT LISTENERS ─────────────────────────────────
+      document.getElementById("sendBtn").addEventListener("click", callAI);
+      document.getElementById("taskInput").addEventListener("keydown", (e) => {
+        if (e.key === "Enter" && !e.shiftKey) {
+          e.preventDefault();
+          callAI();
+        }
+      });
+
+      document
+        .getElementById("themeBtn")
+        .addEventListener("click", toggleTheme);
+      document
+        .getElementById("settingsBtn")
+        .addEventListener("click", openSettings);
+      document
+        .getElementById("settingsClose")
+        .addEventListener("click", closeSettings);
+      document
+        .getElementById("settingsCancel")
+        .addEventListener("click", closeSettings);
+      document
+        .getElementById("settingsOverlay")
+        .addEventListener("click", (e) => {
+          if (e.target === document.getElementById("settingsOverlay"))
+            closeSettings();
+        });
+
+      document
+        .querySelectorAll(".tab")
+        .forEach((t) =>
+          t.addEventListener("click", () => switchTab(t.dataset.tab)),
+        );
+
+      document.getElementById("settingsSave").addEventListener("click", () => {
+        S.endpoint = document.getElementById("cfgEndpoint").value;
+        S.baseUrl = document.getElementById("cfgBaseUrl").value.trim();
+        S.apiKey = document.getElementById("cfgApiKey").value.trim();
+        S.prompt =
+          document.getElementById("cfgPrompt").value.trim() || DEFAULT_PROMPT;
+        saveS();
+        closeSettings();
+        showToast("设置已保存", "success");
+      });
+
+      document.getElementById("promptReset").addEventListener("click", () => {
+        document.getElementById("cfgPrompt").value = DEFAULT_PROMPT;
+      });
+
+      document.getElementById("keyEye").addEventListener("click", () => {
+        const input = document.getElementById("cfgApiKey");
+        input.type = input.type === "password" ? "text" : "password";
+      });
+
+      document.getElementById("verifyBtn").addEventListener("click", () => {
+        S.baseUrl =
+          document.getElementById("cfgBaseUrl").value.trim() ||
+          ENDPOINTS[S.endpoint]?.baseUrl ||
+          "";
+        S.apiKey = document.getElementById("cfgApiKey").value.trim();
+        S.models = S.models;
+        verifyAPI();
+      });
+
+      const cfgMi = document.getElementById("cfgModelInput");
+      cfgMi.addEventListener("focus", async () => {
+        if (!fetchedModels.length) await fetchModels();
+        else renderMDD(cfgMi.value);
+      });
+      cfgMi.addEventListener("input", () => renderMDD(cfgMi.value));
+      cfgMi.addEventListener("keydown", (e) => {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          const v = cfgMi.value.trim();
+          if (v) {
+            addModel(v);
+            cfgMi.value = "";
+            document.getElementById("modelDropdown").classList.remove("open");
+          }
+        }
+        if (e.key === "Escape")
+          document.getElementById("modelDropdown").classList.remove("open");
+      });
+      cfgMi.addEventListener("blur", () =>
+        setTimeout(
+          () =>
+            document.getElementById("modelDropdown").classList.remove("open"),
+          160,
+        ),
+      );
+
+      document.getElementById("addOverlay").addEventListener("click", (e) => {
+        if (e.target === document.getElementById("addOverlay")) closeAddModal();
+      });
+      document
+        .getElementById("addClose")
+        .addEventListener("click", closeAddModal);
+      document
+        .getElementById("addCancel")
+        .addEventListener("click", closeAddModal);
+      document.querySelectorAll(".quadrant-opt").forEach((opt) => {
+        opt.addEventListener("click", () => {
+          document
+            .querySelectorAll(".quadrant-opt")
+            .forEach((o) => o.classList.remove("selected"));
+          opt.classList.add("selected");
+          addQuadrant = parseInt(opt.dataset.quadrant);
+        });
+      });
+      document.getElementById("addConfirm").addEventListener("click", () => {
+        const content = document.getElementById("addContent").value.trim();
+        if (!content) {
+          document.getElementById("addContent").classList.add("flash");
+          setTimeout(
+            () =>
+              document.getElementById("addContent").classList.remove("flash"),
+            400,
+          );
+          return;
+        }
+        addTask(content, addQuadrant);
+        closeAddModal();
+        showToast("任务已添加", "success");
+      });
+
+      document.querySelectorAll(".add-task-btn").forEach((btn) => {
+        btn.addEventListener("click", () =>
+          openAddModal(parseInt(btn.dataset.quadrant)),
+        );
+      });
+
+      document
+        .getElementById("exportBtn")
+        .addEventListener("click", exportData);
+      document
+        .getElementById("importBtn")
+        .addEventListener("click", () =>
+          document.getElementById("fileInput").click(),
+        );
+      document.getElementById("fileInput").addEventListener("change", (e) => {
+        if (e.target.files[0]) importData(e.target.files[0]);
+        e.target.value = "";
+      });
+
+      document.getElementById("contextToggle").addEventListener("click", () => {
+        const input = document.getElementById("contextInput");
+        input.classList.toggle("open");
+        if (input.classList.contains("open")) input.focus();
+      });
+      document.getElementById("contextInput").addEventListener("blur", () => {
+        S.userContext = document.getElementById("contextInput").value.trim();
+        saveS();
+      });
+
+      // ── INIT ────────────────────────────────────────────
+      loadS();
+      initTheme();
+      renderTasks();
+      document.getElementById("contextInput").value = S.userContext || "";
+    </script>
+  </body>
+</html>
