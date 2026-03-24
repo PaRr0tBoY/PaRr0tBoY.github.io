@@ -1,0 +1,501 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ryan — 我是谁</title>
+    <style>
+      :root {
+        --bg: #0a0a0b;
+        --bg-card: #111113;
+        --bg-card-hover: #18181b;
+        --border: #27272a;
+        --text-primary: #fafafa;
+        --text-secondary: #a1a1aa;
+        --text-muted: #71717a;
+        --accent: #6366f1;
+        --accent-dim: #4f46e5;
+        --radius: 12px;
+        --transition: 0.2s ease;
+      }
+
+      [data-theme="light"] {
+        --bg: #fafafa;
+        --bg-card: #ffffff;
+        --bg-card-hover: #f4f4f5;
+        --border: #e4e4e7;
+        --text-primary: #09090b;
+        --text-secondary: #52525b;
+        --text-muted: #a1a1aa;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      body {
+        background: var(--bg);
+        color: var(--text-primary);
+        font-family:
+          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
+          sans-serif;
+        line-height: 1.6;
+        min-height: 100vh;
+        transition:
+          background var(--transition),
+          color var(--transition);
+      }
+
+      .container {
+        max-width: 900px;
+        margin: 0 auto;
+        padding: 0 24px;
+      }
+
+      /* header */
+      header {
+        position: sticky;
+        top: 0;
+        z-index: 100;
+        background: var(--bg);
+        border-bottom: 1px solid var(--border);
+        backdrop-filter: blur(12px);
+        -webkit-backdrop-filter: blur(12px);
+      }
+
+      header .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 56px;
+      }
+
+      .site-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        text-decoration: none;
+        letter-spacing: -0.01em;
+      }
+
+      .theme-toggle {
+        width: 36px;
+        height: 36px;
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        background: var(--bg-card);
+        color: var(--text-secondary);
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 14px;
+        transition:
+          background var(--transition),
+          color var(--transition),
+          border-color var(--transition);
+      }
+
+      .theme-toggle:hover {
+        background: var(--bg-card-hover);
+        color: var(--text-primary);
+      }
+
+      /* hero */
+      .hero {
+        padding: 80px 0 64px;
+        text-align: center;
+      }
+
+      .avatar {
+        width: 80px;
+        height: 80px;
+        border-radius: 50%;
+        background: var(--accent);
+        margin: 0 auto 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 32px;
+        font-weight: 700;
+        color: #fff;
+        letter-spacing: -0.02em;
+      }
+
+      .hero h1 {
+        font-size: 3rem;
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        line-height: 1.1;
+        margin-bottom: 12px;
+      }
+
+      .hero .tagline {
+        font-size: 1.25rem;
+        color: var(--text-secondary);
+        font-weight: 400;
+      }
+
+      /* tags */
+      .tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-top: 24px;
+      }
+
+      .tag {
+        padding: 4px 12px;
+        border: 1px solid var(--border);
+        border-radius: 100px;
+        font-size: 0.8rem;
+        color: var(--text-secondary);
+        background: var(--bg-card);
+      }
+
+      /* section */
+      .section {
+        padding: 48px 0;
+      }
+
+      .section + .section {
+        border-top: 1px solid var(--border);
+      }
+
+      .section-title {
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--text-muted);
+        margin-bottom: 32px;
+      }
+
+      /* about */
+      .about-text {
+        color: var(--text-secondary);
+        font-size: 1rem;
+        line-height: 1.8;
+        max-width: 640px;
+      }
+
+      .about-text p + p {
+        margin-top: 16px;
+      }
+
+      /* tools grid */
+      .tools-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+        gap: 12px;
+      }
+
+      .tool-card {
+        display: block;
+        padding: 20px;
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: var(--radius);
+        text-decoration: none;
+        color: inherit;
+        transition:
+          background var(--transition),
+          border-color var(--transition),
+          transform var(--transition);
+      }
+
+      .tool-card:hover {
+        background: var(--bg-card-hover);
+        border-color: var(--accent);
+        transform: translateY(-2px);
+      }
+
+      .tool-card .tool-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: var(--text-primary);
+        margin-bottom: 6px;
+      }
+
+      .tool-card .tool-desc {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.5;
+      }
+
+      /* footer */
+      footer {
+        padding: 48px 0;
+        border-top: 1px solid var(--border);
+      }
+
+      footer .container {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 24px;
+      }
+
+      .social-link {
+        color: var(--text-muted);
+        text-decoration: none;
+        font-size: 0.875rem;
+        transition: color var(--transition);
+      }
+
+      .social-link:hover {
+        color: var(--text-primary);
+      }
+
+      .divider {
+        color: var(--border);
+      }
+
+      /* toast */
+      #toast {
+        position: fixed;
+        bottom: 32px;
+        left: 50%;
+        transform: translateX(-50%) translateY(80px);
+        background: var(--bg-card);
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-size: 0.875rem;
+        color: var(--text-primary);
+        z-index: 999;
+        opacity: 0;
+        transition:
+          transform 0.3s ease,
+          opacity 0.3s ease;
+        pointer-events: none;
+      }
+
+      #toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+      }
+
+      /* mobile */
+      @media (max-width: 600px) {
+        .hero {
+          padding: 56px 0 40px;
+        }
+
+        .hero h1 {
+          font-size: 2.2rem;
+        }
+
+        .hero .tagline {
+          font-size: 1rem;
+        }
+
+        .tools-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      /* safe area */
+      @media (max-width: 390px) {
+        .container {
+          padding-left: 16px;
+          padding-right: 16px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="container">
+        <a href="/" class="site-name">Ryan</a>
+        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
+          ◑
+        </button>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero container">
+        <div class="avatar">R</div>
+        <h1>Ryan</h1>
+        <p class="tagline">机械 + 软件 / AI 应用 / 效率工具</p>
+        <div class="tags">
+          <span class="tag">机械制造基础</span>
+          <span class="tag">软件工程</span>
+          <span class="tag">AI Agent</span>
+          <span class="tag">无纸化学习</span>
+        </div>
+      </section>
+
+      <div class="container">
+        <section class="section">
+          <h2 class="section-title">关于我</h2>
+          <div class="about-text">
+            <p>
+              大学生，专业是机械制造基础 +
+              软件工程。对系统架构与底层逻辑有持续的兴趣，正在探索机械与软件交叉的长期发展赛道。
+            </p>
+            <p>
+              技术兴趣集中在工业软件、自动化与控制，AI 应用与 Agent
+              工具，效率工具与知识管理系统。英语能力较好（CET6 652
+              分），正在备战考研数学二。
+            </p>
+            <p>
+              喜欢结构化总结与 TLDR
+              风格，追求系统性理解而非碎片化知识。希望找到具有时代红利与上升空间的方向。
+            </p>
+          </div>
+        </section>
+
+        <section class="section">
+          <h2 class="section-title">工具集</h2>
+          <div class="tools-grid" id="toolsGrid"></div>
+        </section>
+      </div>
+    </main>
+
+    <footer>
+      <div class="container">
+        <a
+          class="social-link"
+          href="https://github.com/PaRr0tBoY"
+          target="_blank"
+          rel="noopener"
+          >GitHub</a
+        >
+        <span class="divider">·</span>
+        <a class="social-link" href="mailto:ryan@example.com">邮箱</a>
+        <span class="divider">·</span>
+        <a class="social-link" href="/feed.xml">RSS</a>
+      </div>
+    </footer>
+
+    <div id="toast"></div>
+
+    <script>
+      // ── 工具配置 ──────────────────────────────────────────────
+      const TOOLS = [
+        {
+          name: "Linso",
+          desc: "智能搜索中间层，AI 预测搜索意图并构造高级搜索词",
+          url: "/tools/linso.html",
+        },
+        {
+          name: "MathBank",
+          desc: "数学题库管理，支持题目收藏与分类",
+          url: "/tools/mathbank.html",
+        },
+        {
+          name: "FlowDay",
+          desc: "AI 驱动的日程规划与时间块管理",
+          url: "/tools/flowday.html",
+        },
+        {
+          name: "Chronos",
+          desc: "极简专注计时器，支持项目追踪",
+          url: "/tools/chronos.html",
+        },
+        {
+          name: "GanttLite",
+          desc: "轻量甘特图，项目进度可视化",
+          url: "/tools/ganttlite.html",
+        },
+        {
+          name: "SmartGoal",
+          desc: "目标管理，将大目标拆解为可执行任务",
+          url: "/tools/smartgoal.html",
+        },
+        {
+          name: "Snippy",
+          desc: "代码片段收藏与快速检索",
+          url: "/tools/snippy.html",
+        },
+        {
+          name: "TechFeed",
+          desc: "技术订阅源聚合阅读",
+          url: "/tools/techfeed.html",
+        },
+        {
+          name: "DateCal",
+          desc: "日期计算器，日期差与工作日计算",
+          url: "/tools/datecal.html",
+        },
+        {
+          name: "Check",
+          desc: "检查清单，任务验收与流程确认",
+          url: "/tools/check.html",
+        },
+        {
+          name: "Quadrant",
+          desc: "四象限优先级分类，重要紧急矩阵",
+          url: "/tools/quadrant.html",
+        },
+      ];
+
+      // ── 主题切换 ──────────────────────────────────────────────
+      function loadTheme() {
+        const saved = localStorage.getItem("theme_v1");
+        if (saved === "light") {
+          document.documentElement.setAttribute("data-theme", "light");
+        }
+        updateThemeIcon();
+      }
+
+      function toggleTheme() {
+        const current = document.documentElement.getAttribute("data-theme");
+        const next = current === "light" ? "" : "light";
+        if (next) {
+          document.documentElement.setAttribute("data-theme", next);
+          localStorage.setItem("theme_v1", next);
+        } else {
+          document.documentElement.removeAttribute("data-theme");
+          localStorage.removeItem("theme_v1");
+        }
+        updateThemeIcon();
+      }
+
+      function updateThemeIcon() {
+        const btn = document.getElementById("themeToggle");
+        const isLight =
+          document.documentElement.getAttribute("data-theme") === "light";
+        btn.textContent = isLight ? "◑" : "◒";
+      }
+
+      document
+        .getElementById("themeToggle")
+        .addEventListener("click", toggleTheme);
+      loadTheme();
+
+      // ── 渲染工具卡片 ──────────────────────────────────────────
+      function renderTools() {
+        const grid = document.getElementById("toolsGrid");
+        grid.innerHTML = TOOLS.map(
+          (tool) => `
+        <a href="${tool.url}" class="tool-card">
+          <div class="tool-name">${tool.name}</div>
+          <div class="tool-desc">${tool.desc}</div>
+        </a>
+      `,
+        ).join("");
+      }
+
+      renderTools();
+
+      // ── Toast ─────────────────────────────────────────────────
+      function showToast(msg) {
+        const t = document.getElementById("toast");
+        t.textContent = msg;
+        t.classList.add("show");
+        clearTimeout(t._timer);
+        t._timer = setTimeout(() => t.classList.remove("show"), 2500);
+      }
+
+      // ── 头像占位提示 ─────────────────────────────────────────
+      // 替换头像：将 .avatar 的 background 改为图片
+      // background: url('/avatar.jpg') center/cover no-repeat;
+    </script>
+  </body>
+</html>
