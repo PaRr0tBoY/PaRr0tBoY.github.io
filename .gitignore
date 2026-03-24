@@ -6,7 +6,9 @@ _site/
 .sass-cache/
 .jekyll-cache/
 .jekyll-metadata
-
+/CLAUDE.md
+/.claude/
+/docs/
 # Additional Ruby/bundler ignore for when you run: bundle install
 /vendor
 
