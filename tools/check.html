@@ -2,246 +2,283 @@
 <html lang="zh-CN">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, viewport-fit=cover"
+    />
     <title>每日备考复盘</title>
     <link
-      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;600&family=Noto+Sans+SC:wght@300;400;500&display=swap"
       rel="stylesheet"
     />
     <style>
       :root {
-        --bg: #faf8f4;
-        --card: #ffffff;
-        --ink: #2c2416;
-        --ink-light: #6b5f4e;
-        --ink-faint: #b5a99a;
-        --accent: #c17f3a;
-        --accent-light: #f0e6d3;
-        --accent-pale: #fdf6ec;
-        --red: #c0392b;
-        --green: #27735a;
-        --border: #e8e0d4;
-        --shadow: 0 2px 20px rgba(44, 36, 22, 0.07);
-        --radius: 16px;
+        --bg: #0d0f14;
+        --surface: #161923;
+        --surface2: #1e2230;
+        --ink: #e4e0d8;
+        --ink2: #9a958a;
+        --ink3: #4a4640;
+        --accent: #d4893a;
+        --accent2: #f0c070;
+        --accent-dim: rgba(212, 137, 58, 0.12);
+        --green: #4a9e7a;
+        --green-dim: rgba(74, 158, 122, 0.12);
+        --red: #c05858;
+        --border: #2a2e3a;
+        --radius: 14px;
+        --shadow: 0 8px 40px rgba(0, 0, 0, 0.4);
       }
-
+      [data-theme="light"] {
+        --bg: #f4f0e8;
+        --surface: #ffffff;
+        --surface2: #f8f6f0;
+        --ink: #2c2416;
+        --ink2: #6b5f4e;
+        --ink3: #b5a99a;
+        --accent: #c17f3a;
+        --accent2: #c17f3a;
+        --accent-dim: #fdf3e8;
+        --green: #27735a;
+        --green-dim: #f0faf6;
+        --red: #c0392b;
+        --border: #e0d8cc;
+        --shadow: 0 4px 24px rgba(44, 36, 22, 0.08);
+      }
       * {
         box-sizing: border-box;
         margin: 0;
         padding: 0;
       }
-
+      html,
+      body {
+        height: 100%;
+      }
       body {
         font-family: "Noto Sans SC", sans-serif;
         background: var(--bg);
         color: var(--ink);
         min-height: 100vh;
-        padding: 0 0 80px;
+        display: flex;
+        flex-direction: column;
+        transition:
+          background 0.3s,
+          color 0.3s;
       }
 
-      /* Header */
+      /* ── Header ── */
       .header {
-        background: var(--ink);
-        color: #fff;
-        padding: 28px 24px 24px;
-        text-align: center;
-        position: relative;
-        overflow: hidden;
+        background: var(--surface);
+        border-bottom: 1px solid var(--border);
+        padding: 18px 20px 16px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
       }
-      .header::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        background: repeating-linear-gradient(
-          45deg,
-          transparent,
-          transparent 20px,
-          rgba(255, 255, 255, 0.02) 20px,
-          rgba(255, 255, 255, 0.02) 21px
-        );
+      .header-left {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
       }
       .header-date {
-        font-family: "Noto Serif SC", serif;
-        font-size: 13px;
-        color: rgba(255, 255, 255, 0.55);
-        letter-spacing: 2px;
-        margin-bottom: 6px;
+        font-size: 11px;
+        color: var(--ink2);
+        letter-spacing: 1px;
       }
       .header-title {
         font-family: "Noto Serif SC", serif;
-        font-size: 22px;
+        font-size: 17px;
         font-weight: 500;
-        color: #fff;
-        letter-spacing: 1px;
+        letter-spacing: 0.5px;
+      }
+      .header-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
       }
       .countdown-badge {
-        display: inline-block;
-        margin-top: 10px;
-        background: var(--accent);
-        color: #fff;
-        font-size: 12px;
-        padding: 4px 14px;
-        border-radius: 20px;
-        letter-spacing: 1px;
-      }
-
-      /* Progress bar */
-      .progress-wrap {
-        padding: 16px 20px 0;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-        background: var(--bg);
-        border-bottom: 1px solid var(--border);
-        padding-bottom: 12px;
-      }
-      .progress-labels {
-        display: flex;
-        justify-content: space-between;
         font-size: 11px;
-        color: var(--ink-faint);
-        margin-bottom: 6px;
-      }
-      .progress-bar-bg {
-        height: 4px;
-        background: var(--border);
-        border-radius: 4px;
-        overflow: hidden;
-      }
-      .progress-bar-fill {
-        height: 100%;
-        background: var(--accent);
-        border-radius: 4px;
-        transition: width 0.4s ease;
-        width: 0%;
-      }
-
-      /* Sections */
-      .sections {
-        padding: 20px 16px;
-        max-width: 680px;
-        margin: 0 auto;
-        display: flex;
-        flex-direction: column;
-        gap: 16px;
-      }
-
-      .section-card {
-        background: var(--card);
-        border-radius: var(--radius);
-        border: 1px solid var(--border);
-        box-shadow: var(--shadow);
-        overflow: hidden;
-      }
-
-      .section-header {
-        padding: 16px 20px 12px;
-        border-bottom: 1px solid var(--border);
-        display: flex;
-        align-items: center;
-        gap: 10px;
-      }
-      .section-icon {
-        font-size: 18px;
-      }
-      .section-title {
-        font-family: "Noto Serif SC", serif;
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--ink);
-      }
-      .section-body {
-        padding: 16px 20px;
-        display: flex;
-        flex-direction: column;
-        gap: 18px;
-      }
-
-      /* Question */
-      .q-label {
-        font-size: 13px;
-        color: var(--ink-light);
-        margin-bottom: 8px;
-        display: flex;
-        align-items: center;
-        gap: 6px;
-      }
-      .q-label .req {
         color: var(--accent);
-        font-size: 10px;
+        background: var(--accent-dim);
+        padding: 4px 12px;
+        border-radius: 20px;
+        white-space: nowrap;
       }
-
-      /* Emoji Mood Picker */
-      .mood-picker {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .mood-btn {
-        width: 52px;
-        height: 52px;
-        border-radius: 14px;
-        border: 2px solid var(--border);
-        background: var(--bg);
-        font-size: 24px;
+      .icon-btn {
+        width: 36px;
+        height: 36px;
+        border-radius: 10px;
+        border: 1px solid var(--border);
+        background: var(--surface2);
+        color: var(--ink2);
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
-        transition: all 0.15s ease;
-        position: relative;
+        font-size: 15px;
+        transition: all 0.15s;
       }
-      .mood-btn:hover {
-        transform: scale(1.08);
-        border-color: var(--accent-light);
-      }
-      .mood-btn.selected {
+      .icon-btn:hover {
         border-color: var(--accent);
-        background: var(--accent-pale);
-        box-shadow: 0 0 0 3px rgba(193, 127, 58, 0.15);
-        transform: scale(1.05);
-      }
-      .mood-label {
-        font-size: 9px;
-        color: var(--ink-faint);
-        position: absolute;
-        bottom: -16px;
-        left: 50%;
-        transform: translateX(-50%);
-        white-space: nowrap;
-      }
-      .mood-wrap {
-        position: relative;
-        padding-bottom: 16px;
+        color: var(--accent);
+        background: var(--accent-dim);
       }
 
-      /* Star Rating */
-      .star-row {
+      /* ── Step Indicator ── */
+      .step-bar {
+        padding: 12px 20px;
         display: flex;
-        gap: 6px;
         align-items: center;
+        gap: 6px;
       }
-      .star {
-        font-size: 28px;
-        cursor: pointer;
-        color: var(--border);
-        transition: all 0.1s;
-        line-height: 1;
+      .step-dot {
+        height: 3px;
+        flex: 1;
+        border-radius: 3px;
+        background: var(--border);
+        transition: background 0.3s;
       }
-      .star.on {
-        color: #f0a500;
+      .step-dot.done {
+        background: var(--accent);
       }
-      .star:hover {
-        transform: scale(1.15);
+      .step-dot.active {
+        background: var(--accent2);
       }
 
-      /* Stress slider */
-      .slider-wrap {
+      /* ── Main Card ── */
+      .main {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 20px 16px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        box-shadow: var(--shadow);
+        width: 100%;
+        max-width: 560px;
+        overflow: hidden;
+        animation: fadeUp 0.35s ease;
+      }
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(16px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+      .card-head {
+        padding: 20px 24px 16px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+      .card-icon {
+        font-size: 20px;
+      }
+      .card-step {
+        font-size: 11px;
+        color: var(--ink3);
+        background: var(--surface2);
+        padding: 2px 8px;
+        border-radius: 8px;
+      }
+      .card-title {
+        font-family: "Noto Serif SC", serif;
+        font-size: 16px;
+        font-weight: 500;
+      }
+      .card-body {
+        padding: 24px;
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+      }
+
+      /* ── Question ── */
+      .q-label {
+        font-size: 12px;
+        color: var(--ink2);
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+      }
+      .q-label .opt {
+        font-size: 10px;
+        color: var(--ink3);
+        background: var(--surface2);
+        padding: 1px 6px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+      }
+
+      /* ── Exam Checkboxes ── */
+      .exam-chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .exam-chip {
+        padding: 10px 18px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        font-size: 13px;
+        color: var(--ink2);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .exam-chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .exam-chip.on {
+        background: var(--accent-dim);
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+
+      /* ── Duration Slider ── */
+      .dur-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .dur-row {
         display: flex;
         align-items: center;
         gap: 12px;
       }
-      .slider-wrap input[type="range"] {
+      .dur-value {
+        font-size: 36px;
+        font-weight: 600;
+        color: var(--accent);
+        font-family: "Noto Serif SC", serif;
+        min-width: 60px;
+        text-align: center;
+        transition: color 0.2s;
+      }
+      .dur-value span {
+        font-size: 14px;
+        font-weight: 400;
+        color: var(--ink2);
+      }
+      .dur-slider {
         flex: 1;
         -webkit-appearance: none;
         height: 6px;
@@ -254,32 +291,242 @@
         );
         outline: none;
       }
-      .slider-wrap input[type="range"]::-webkit-slider-thumb {
+      .dur-slider::-webkit-slider-thumb {
+        -webkit-appearance: none;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        background: var(--surface);
+        border: 2.5px solid var(--accent);
+        cursor: pointer;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+      }
+      .dur-labels {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: var(--ink3);
+      }
+
+      /* ── State Chips ── */
+      .state-chips {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .state-chip {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 16px;
+        border-radius: 12px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .state-chip:hover {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+      }
+      .state-chip.on {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+      }
+      .state-emoji {
+        font-size: 20px;
+      }
+      .state-info {
+        flex: 1;
+      }
+      .state-name {
+        font-size: 14px;
+        font-weight: 500;
+        color: var(--ink);
+      }
+      .state-desc {
+        font-size: 11px;
+        color: var(--ink2);
+        margin-top: 1px;
+      }
+      .state-check {
+        width: 20px;
+        height: 20px;
+        border-radius: 50%;
+        border: 2px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 10px;
+        color: transparent;
+        transition: all 0.15s;
+        flex-shrink: 0;
+      }
+      .state-chip.on .state-check {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      /* ── Mood Picker ── */
+      .mood-picker {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+      .mood-btn {
+        width: 54px;
+        height: 54px;
+        border-radius: 14px;
+        border: 2px solid var(--border);
+        background: var(--surface2);
+        font-size: 26px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.15s;
+      }
+      .mood-btn:hover {
+        transform: scale(1.08);
+        border-color: var(--accent);
+      }
+      .mood-btn.on {
+        border-color: var(--accent);
+        background: var(--accent-dim);
+        transform: scale(1.05);
+        box-shadow: 0 0 0 3px rgba(212, 137, 58, 0.2);
+      }
+
+      /* ── Stress Slider ── */
+      .stress-wrap {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .stress-row {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .stress-val {
+        font-size: 28px;
+        font-weight: 600;
+        color: var(--accent);
+        font-family: "Noto Serif SC", serif;
+        min-width: 40px;
+        text-align: center;
+      }
+      .stress-slider {
+        flex: 1;
+        -webkit-appearance: none;
+        height: 6px;
+        border-radius: 3px;
+        background: linear-gradient(
+          to right,
+          var(--green) 0%,
+          #f0a500 50%,
+          var(--red) 100%
+        );
+        outline: none;
+      }
+      .stress-slider::-webkit-slider-thumb {
         -webkit-appearance: none;
         width: 20px;
         height: 20px;
         border-radius: 50%;
-        background: var(--card);
+        background: var(--surface);
         border: 2.5px solid var(--accent);
         cursor: pointer;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       }
-      .slider-val {
-        font-size: 18px;
-        font-weight: 600;
-        color: var(--accent);
-        min-width: 24px;
-        text-align: center;
-      }
-      .slider-labels {
+      .stress-labels {
         display: flex;
         justify-content: space-between;
         font-size: 10px;
-        color: var(--ink-faint);
-        margin-top: 4px;
+        color: var(--ink3);
       }
 
-      /* Text input */
+      /* ── Chips ── */
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .chip {
+        padding: 8px 16px;
+        border-radius: 20px;
+        border: 1.5px solid var(--border);
+        background: var(--surface2);
+        font-size: 12px;
+        color: var(--ink2);
+        cursor: pointer;
+        transition: all 0.15s;
+        user-select: none;
+      }
+      .chip:hover {
+        border-color: var(--accent);
+        color: var(--accent);
+      }
+      .chip.on {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #fff;
+      }
+
+      /* ── Distraction ── */
+      .distract-list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .distract-item {
+        background: var(--surface2);
+        border: 1.5px solid var(--border);
+        border-radius: 12px;
+        padding: 12px 14px;
+        transition: border-color 0.2s;
+      }
+      .distract-item.active {
+        border-color: #d4703a;
+        background: rgba(212, 112, 58, 0.08);
+      }
+      .distract-top {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+      }
+      .distract-name {
+        font-size: 13px;
+        font-weight: 500;
+        color: var(--ink);
+        flex: 1;
+      }
+      .distract-toggle {
+        display: flex;
+        gap: 5px;
+      }
+      .d-chip {
+        padding: 4px 10px;
+        border-radius: 10px;
+        font-size: 11px;
+        border: 1.5px solid var(--border);
+        background: transparent;
+        color: var(--ink2);
+        cursor: pointer;
+        transition: all 0.12s;
+        user-select: none;
+      }
+      .d-chip.on {
+        background: #d4703a;
+        border-color: #d4703a;
+        color: #fff;
+      }
+
+      /* ── Textarea ── */
       .text-input {
         width: 100%;
         border: 1.5px solid var(--border);
@@ -288,1179 +535,674 @@
         font-family: "Noto Sans SC", sans-serif;
         font-size: 13px;
         color: var(--ink);
-        background: var(--bg);
+        background: var(--surface2);
         outline: none;
-        transition: border-color 0.2s;
         resize: none;
+        transition: border-color 0.2s;
+        line-height: 1.6;
       }
       .text-input:focus {
         border-color: var(--accent);
-        background: var(--card);
+        background: var(--surface);
       }
       .text-input::placeholder {
-        color: var(--ink-faint);
+        color: var(--ink3);
       }
 
-      /* Hour inputs */
-      .hour-row {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        flex-wrap: wrap;
-      }
-      .hour-item {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        background: var(--bg);
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        padding: 8px 12px;
-        flex: 1;
-        min-width: 90px;
-      }
-      .hour-item label {
-        font-size: 12px;
-        color: var(--ink-light);
-        white-space: nowrap;
-      }
-      .hour-item input {
-        width: 38px;
-        border: none;
-        background: transparent;
-        font-size: 16px;
-        font-weight: 500;
-        color: var(--accent);
-        text-align: center;
-        outline: none;
-      }
-      .hour-item .unit {
-        font-size: 11px;
-        color: var(--ink-faint);
-      }
-
-      /* Quick choice chips */
-      .chips {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-      }
-      .chip {
-        padding: 7px 14px;
-        border-radius: 20px;
-        border: 1.5px solid var(--border);
-        background: var(--bg);
-        font-size: 12px;
-        color: var(--ink-light);
-        cursor: pointer;
-        transition: all 0.15s;
-      }
-      .chip:hover {
-        border-color: var(--accent);
-        color: var(--accent);
-      }
-      .chip.selected {
-        background: var(--accent);
-        border-color: var(--accent);
-        color: #fff;
-      }
-
-      /* Tasks */
-      .task-list {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .task-item {
-        display: flex;
-        align-items: center;
-        gap: 10px;
-        background: var(--bg);
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        padding: 10px 12px;
-        transition: border-color 0.2s;
-      }
-      .task-item.done {
-        border-color: var(--green);
-        background: #f0faf6;
-      }
-      .task-check {
-        width: 20px;
-        height: 20px;
-        border-radius: 6px;
-        border: 2px solid var(--border);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
-        flex-shrink: 0;
-        transition: all 0.15s;
-      }
-      .task-check.checked {
-        background: var(--green);
-        border-color: var(--green);
-        color: #fff;
-        font-size: 11px;
-      }
-      .task-text {
-        font-size: 13px;
-        flex: 1;
-        outline: none;
-        border: none;
-        background: transparent;
-        color: var(--ink);
-        font-family: inherit;
-      }
-
-      /* Distraction table */
-      .distract-list {
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-      }
-      .distract-item {
-        background: var(--bg);
-        border: 1.5px solid var(--border);
-        border-radius: 12px;
-        padding: 12px 14px;
-        transition: border-color 0.2s;
-      }
-      .distract-item.active {
-        border-color: #e07b5a;
-        background: #fff8f5;
-      }
-      .distract-top {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        margin-bottom: 8px;
-      }
-      .distract-name {
-        font-size: 13px;
-        font-weight: 500;
-        color: var(--ink);
-      }
-      .distract-toggle {
-        display: flex;
-        gap: 6px;
-      }
-      .d-chip {
-        padding: 4px 10px;
-        border-radius: 12px;
-        font-size: 11px;
-        border: 1.5px solid var(--border);
-        background: transparent;
-        color: var(--ink-light);
-        cursor: pointer;
-        transition: all 0.12s;
-      }
-      .d-chip.on {
-        background: #e07b5a;
-        border-color: #e07b5a;
-        color: #fff;
-      }
-      .distract-detail {
-        display: none;
-        gap: 8px;
-        flex-direction: column;
-        margin-top: 8px;
-      }
-      .distract-detail.show {
-        display: flex;
-      }
-      .distract-detail input {
-        width: 100%;
-        border: 1.5px solid var(--border);
-        border-radius: 8px;
-        padding: 7px 10px;
-        font-size: 12px;
-        font-family: inherit;
-        color: var(--ink);
-        background: var(--card);
-        outline: none;
-      }
-
-      /* Review pairs */
-      .review-pair {
-        background: var(--bg);
-        border: 1.5px solid var(--border);
-        border-radius: 12px;
-        padding: 12px;
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-      }
-      .review-tag {
-        font-size: 11px;
-        color: var(--ink-faint);
-        display: flex;
-        align-items: center;
-        gap: 4px;
-      }
-
-      /* Tomorrow tasks */
-      .tomorrow-task {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        background: var(--bg);
-        border: 1.5px dashed var(--border);
-        border-radius: 10px;
-        padding: 10px 12px;
-      }
-      .tomorrow-task::before {
-        content: "→";
-        color: var(--accent);
-        font-size: 13px;
-        flex-shrink: 0;
-      }
-      .tomorrow-task input {
-        flex: 1;
-        border: none;
-        background: transparent;
-        font-size: 13px;
-        color: var(--ink);
-        font-family: inherit;
-        outline: none;
-      }
-
-      /* Sleep row */
-      .sleep-row {
-        display: flex;
-        gap: 10px;
-        flex-wrap: wrap;
-      }
-      .sleep-item {
-        flex: 1;
-        min-width: 130px;
-        background: var(--bg);
-        border: 1.5px solid var(--border);
-        border-radius: 10px;
-        padding: 10px 14px;
-      }
-      .sleep-item label {
-        font-size: 11px;
-        color: var(--ink-faint);
-        display: block;
-        margin-bottom: 4px;
-      }
-      .sleep-item input {
-        width: 100%;
-        border: none;
-        background: transparent;
-        font-size: 15px;
-        font-weight: 500;
-        color: var(--ink);
-        font-family: inherit;
-        outline: none;
-      }
-
-      /* Submit area */
-      .submit-area {
-        max-width: 680px;
+      /* ── Nav ── */
+      .nav {
+        padding: 16px 20px 32px;
+        max-width: 560px;
         margin: 0 auto;
-        padding: 0 16px 20px;
+        width: 100%;
         display: flex;
-        gap: 12px;
-        align-items: center;
+        gap: 10px;
       }
       .btn {
-        padding: 14px 28px;
+        padding: 13px 20px;
         border-radius: 12px;
-        font-size: 14px;
+        font-size: 13px;
         font-family: "Noto Sans SC", sans-serif;
         font-weight: 500;
         cursor: pointer;
         border: none;
         transition: all 0.2s;
-        letter-spacing: 0.5px;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+      }
+      .btn-ghost {
+        background: var(--surface2);
+        color: var(--ink2);
+        border: 1.5px solid var(--border);
+      }
+      .btn-ghost:hover {
+        border-color: var(--accent);
+        color: var(--accent);
       }
       .btn-primary {
         flex: 1;
-        background: var(--ink);
-        color: #fff;
-      }
-      .btn-primary:hover {
-        background: #3d3425;
-        transform: translateY(-1px);
-        box-shadow: 0 4px 14px rgba(44, 36, 22, 0.2);
-      }
-      .btn-download {
-        background: var(--border);
-        color: var(--ink-faint);
-        pointer-events: none;
-        cursor: not-allowed;
-        font-size: 13px;
-        padding: 14px 20px;
-        flex-shrink: 0;
-      }
-      .btn-download.active {
-        background: var(--accent-light);
-        color: var(--accent);
-        pointer-events: auto;
-        cursor: pointer;
-        border: 1.5px solid var(--accent);
-      }
-      .btn-download.active:hover {
         background: var(--accent);
         color: #fff;
-      }
-
-      /* Toast */
-      .toast {
-        position: fixed;
-        bottom: 24px;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: var(--ink);
-        color: #fff;
-        padding: 12px 22px;
-        border-radius: 12px;
-        font-size: 13px;
-        z-index: 100;
-        transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
-        white-space: nowrap;
-        max-width: 90vw;
-        text-align: center;
-      }
-      .toast.show {
-        transform: translateX(-50%) translateY(0);
-      }
-
-      /* Divider */
-      .q-divider {
-        height: 1px;
-        background: var(--border);
-        margin: 2px 0;
-      }
-
-      /* Confirm modal */
-      .modal-overlay {
-        display: none;
-        position: fixed;
-        inset: 0;
-        background: rgba(44, 36, 22, 0.45);
-        z-index: 200;
-        align-items: center;
         justify-content: center;
-        padding: 20px;
       }
-      .modal-overlay.show {
-        display: flex;
+      .btn-primary:hover {
+        filter: brightness(1.1);
+        transform: translateY(-1px);
       }
-      .modal-box {
-        background: var(--card);
+      .btn-skip {
+        background: transparent;
+        color: var(--ink3);
+        font-size: 12px;
+        padding: 13px 12px;
+      }
+      .btn-skip:hover {
+        color: var(--ink2);
+      }
+
+      /* ── Summary Card ── */
+      .summary-card {
+        background: var(--surface);
+        border: 1px solid var(--border);
         border-radius: 20px;
-        padding: 28px 24px;
-        max-width: 320px;
+        box-shadow: var(--shadow);
         width: 100%;
-        text-align: center;
-        box-shadow: 0 20px 60px rgba(44, 36, 22, 0.2);
+        max-width: 560px;
+        overflow: hidden;
+        animation: fadeUp 0.35s ease;
       }
-      .modal-icon {
-        font-size: 36px;
-        margin-bottom: 12px;
+      .summary-head {
+        padding: 16px 20px;
+        border-bottom: 1px solid var(--border);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
       }
-      .modal-title {
+      .summary-title {
         font-family: "Noto Serif SC", serif;
-        font-size: 17px;
+        font-size: 15px;
         font-weight: 500;
-        margin-bottom: 8px;
       }
-      .modal-text {
+      .summary-body {
+        padding: 16px 20px;
         font-size: 13px;
-        color: var(--ink-light);
-        line-height: 1.6;
-        margin-bottom: 20px;
+        line-height: 1.8;
+        color: var(--ink2);
+        white-space: pre-wrap;
+        max-height: 60vh;
+        overflow-y: auto;
       }
-      .modal-btns {
+      .summary-actions {
+        padding: 12px 20px 16px;
         display: flex;
         gap: 10px;
       }
-      .modal-btns .btn {
-        flex: 1;
-        padding: 12px;
-        font-size: 13px;
+
+      /* ── Toast ── */
+      .toast {
+        position: fixed;
+        top: 80px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        opacity: 0;
+        visibility: hidden;
+        background: var(--ink);
+        color: var(--bg);
+        padding: 10px 20px;
+        border-radius: 12px;
+        font-size: 12px;
+        z-index: 200;
+        transition:
+          transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
+          opacity 0.25s ease,
+          visibility 0.25s;
+        white-space: nowrap;
+        max-width: 90vw;
+        pointer-events: none;
       }
-      .btn-cancel {
-        background: var(--bg);
-        color: var(--ink-light);
-        border: 1.5px solid var(--border);
-      }
-      .btn-confirm {
-        background: var(--accent);
-        color: #fff;
+      .toast.show {
+        transform: translateX(-50%) translateY(0);
+        opacity: 1;
+        visibility: visible;
       }
 
-      @media (max-width: 480px) {
-        .header-title {
-          font-size: 18px;
+      /* Safe area */
+      @supports (padding-bottom: env(safe-area-inset-bottom)) {
+        .nav {
+          padding-bottom: calc(16px + env(safe-area-inset-bottom));
         }
-        .section-body {
-          padding: 14px 16px;
+        .toast {
+          top: calc(80px + env(safe-area-inset-bottom));
+        }
+      }
+      @media (max-width: 480px) {
+        .card-body {
+          padding: 20px 16px;
+        }
+        .dur-value {
+          font-size: 28px;
         }
       }
     </style>
   </head>
   <body>
     <div class="header">
-      <div class="header-date" id="headerDate">加载中…</div>
-      <div class="header-title">每日备考复盘</div>
-      <div class="countdown-badge" id="countdownBadge">距考试 — 天</div>
-    </div>
-
-    <div class="progress-wrap">
-      <div class="progress-labels">
-        <span id="progressText">0 / 8 项已完成</span>
-        <span id="progressPct">0%</span>
+      <div class="header-left">
+        <div class="header-date" id="headerDate">加载中…</div>
+        <div class="header-title">每日备考复盘</div>
       </div>
-      <div class="progress-bar-bg">
-        <div class="progress-bar-fill" id="progressFill"></div>
+      <div class="header-right">
+        <div class="countdown-badge" id="countdownBadge">距考试 — 天</div>
+        <button class="icon-btn" id="themeBtn" title="切换主题">◐</button>
       </div>
     </div>
 
-    <div class="sections">
-      <!-- 1. 基础信息 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">📋</span>
-          <span class="section-title">基础信息</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">考试名称 <span class="req">必填</span></div>
-            <input
-              class="text-input"
-              id="examName"
-              type="text"
-              placeholder="例：考研数学 / 英语 / 政治…"
-              style="height: 42px"
-            />
-          </div>
-          <div>
-            <div class="q-label">今日学习时长</div>
-            <div class="hour-row">
-              <div class="hour-item">
-                <label>计划</label
-                ><input
-                  type="number"
-                  id="planHour"
-                  min="0"
-                  max="24"
-                  placeholder="0"
-                /><span class="unit">h</span>
-              </div>
-              <div class="hour-item">
-                <label>实际</label
-                ><input
-                  type="number"
-                  id="realHour"
-                  min="0"
-                  max="24"
-                  placeholder="0"
-                /><span class="unit">h</span>
-              </div>
-              <div class="hour-item">
-                <label>专注</label
-                ><input
-                  type="number"
-                  id="focusHour"
-                  min="0"
-                  max="24"
-                  placeholder="0"
-                /><span class="unit">h</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
+    <div class="step-bar" id="stepBar"></div>
 
-      <!-- 2. 状态速览 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">🌡️</span>
-          <span class="section-title">今日状态</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">心情怎么样？<span class="req">必填</span></div>
-            <div class="mood-picker">
-              <div class="mood-wrap">
-                <button
-                  class="mood-btn"
-                  data-val="非常好"
-                  onclick="selectMood(this)"
-                >
-                  🥳
-                </button>
-                <div class="mood-label">超棒</div>
-              </div>
-              <div class="mood-wrap">
-                <button
-                  class="mood-btn"
-                  data-val="不错"
-                  onclick="selectMood(this)"
-                >
-                  😊
-                </button>
-                <div class="mood-label">不错</div>
-              </div>
-              <div class="mood-wrap">
-                <button
-                  class="mood-btn"
-                  data-val="一般"
-                  onclick="selectMood(this)"
-                >
-                  😐
-                </button>
-                <div class="mood-label">一般</div>
-              </div>
-              <div class="mood-wrap">
-                <button
-                  class="mood-btn"
-                  data-val="有点低落"
-                  onclick="selectMood(this)"
-                >
-                  😔
-                </button>
-                <div class="mood-label">低落</div>
-              </div>
-              <div class="mood-wrap">
-                <button
-                  class="mood-btn"
-                  data-val="很差"
-                  onclick="selectMood(this)"
-                >
-                  😫
-                </button>
-                <div class="mood-label">很差</div>
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="q-label">
-              整体学习状态 <span class="req">必填</span>
-            </div>
-            <div class="star-row" id="starRow">
-              <span class="star" data-v="1" onclick="selectStar(1)">☆</span>
-              <span class="star" data-v="2" onclick="selectStar(2)">☆</span>
-              <span class="star" data-v="3" onclick="selectStar(3)">☆</span>
-              <span class="star" data-v="4" onclick="selectStar(4)">☆</span>
-              <span class="star" data-v="5" onclick="selectStar(5)">☆</span>
-            </div>
-          </div>
-          <div>
-            <div class="q-label">压力值 <span class="req">必填</span></div>
-            <div class="slider-wrap">
-              <input
-                type="range"
-                id="stressSlider"
-                min="1"
-                max="10"
-                value="5"
-                oninput="
-                  document.getElementById('stressVal').textContent = this.value;
-                  updateProgress();
-                "
-              />
-              <div class="slider-val" id="stressVal">5</div>
-            </div>
-            <div class="slider-labels">
-              <span>🌿 轻松</span><span>🔥 高压</span>
-            </div>
-          </div>
-          <div>
-            <div class="q-label">
-              一句话总结今天 <span class="req">必填</span>
-            </div>
-            <input
-              class="text-input"
-              id="summary"
-              type="text"
-              placeholder="今天的关键词是…"
-              style="height: 42px"
-              oninput="updateProgress()"
-            />
-          </div>
-        </div>
-      </div>
+    <main class="main" id="mainArea"></main>
 
-      <!-- 3. 学习记录 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">📚</span>
-          <span class="section-title">学习记录</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">
-              今日主攻内容 <span class="req">必填</span>
-            </div>
-            <input
-              class="text-input"
-              id="studyContent"
-              type="text"
-              placeholder="例：线性代数 第三章 / 英语阅读 20篇"
-              style="height: 42px"
-              oninput="updateProgress()"
-            />
-          </div>
-          <div>
-            <div class="q-label">整体进度感觉</div>
-            <div class="chips" id="progressChips">
-              <div
-                class="chip"
-                onclick="selectChip(this, 'progressChips', 'progressVal')"
-              >
-                超预期完成 🚀
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'progressChips', 'progressVal')"
-              >
-                按计划完成 ✅
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'progressChips', 'progressVal')"
-              >
-                完成七八成 📈
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'progressChips', 'progressVal')"
-              >
-                完成一半 🌓
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'progressChips', 'progressVal')"
-              >
-                不太理想 📉
-              </div>
-            </div>
-            <input type="hidden" id="progressVal" />
-          </div>
-          <div>
-            <div class="q-label">
-              今日任务打卡 <span class="req">必填</span>
-            </div>
-            <div class="task-list" id="taskList">
-              <div class="task-item" id="task0">
-                <div class="task-check" onclick="toggleTask(0)">✓</div>
-                <input
-                  class="task-text"
-                  placeholder="任务 1（输入内容，点左侧打卡）"
-                  oninput="updateProgress()"
-                  data-idx="0"
-                />
-              </div>
-              <div class="task-item" id="task1">
-                <div class="task-check" onclick="toggleTask(1)">✓</div>
-                <input class="task-text" placeholder="任务 2" data-idx="1" />
-              </div>
-              <div class="task-item" id="task2">
-                <div class="task-check" onclick="toggleTask(2)">✓</div>
-                <input
-                  class="task-text"
-                  placeholder="任务 3（可留空）"
-                  data-idx="2"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 4. 干扰源 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">⚠️</span>
-          <span class="section-title">干扰源记录</span>
-        </div>
-        <div class="section-body">
-          <div class="q-label" style="margin-bottom: 0">
-            今天被什么打扰了？点击遇到的干扰源 <span class="req">必选</span>
-          </div>
-          <div class="distract-list">
-            <div class="distract-item" id="d0">
-              <div class="distract-top">
-                <span class="distract-name">📱 手机 / 社交软件</span>
-                <div class="distract-toggle">
-                  <button class="d-chip" onclick="toggleDistract(0, '无')">
-                    无
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(0, '轻微')">
-                    轻微
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(0, '较多')">
-                    较多
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(0, '严重')">
-                    严重
-                  </button>
-                </div>
-              </div>
-              <div class="distract-detail" id="dd0">
-                <input placeholder="如何应对？（可选）" />
-              </div>
-            </div>
-            <div class="distract-item" id="d1">
-              <div class="distract-top">
-                <span class="distract-name">😴 疲劳 / 犯困</span>
-                <div class="distract-toggle">
-                  <button class="d-chip" onclick="toggleDistract(1, '无')">
-                    无
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(1, '轻微')">
-                    轻微
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(1, '较多')">
-                    较多
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(1, '严重')">
-                    严重
-                  </button>
-                </div>
-              </div>
-              <div class="distract-detail" id="dd1">
-                <input placeholder="如何应对？（可选）" />
-              </div>
-            </div>
-            <div class="distract-item" id="d2">
-              <div class="distract-top">
-                <span class="distract-name">🔊 环境噪音</span>
-                <div class="distract-toggle">
-                  <button class="d-chip" onclick="toggleDistract(2, '无')">
-                    无
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(2, '轻微')">
-                    轻微
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(2, '较多')">
-                    较多
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(2, '严重')">
-                    严重
-                  </button>
-                </div>
-              </div>
-              <div class="distract-detail" id="dd2">
-                <input placeholder="如何应对？（可选）" />
-              </div>
-            </div>
-            <div class="distract-item" id="d3">
-              <div class="distract-top">
-                <span class="distract-name">😰 情绪 / 焦虑</span>
-                <div class="distract-toggle">
-                  <button class="d-chip" onclick="toggleDistract(3, '无')">
-                    无
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(3, '轻微')">
-                    轻微
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(3, '较多')">
-                    较多
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(3, '严重')">
-                    严重
-                  </button>
-                </div>
-              </div>
-              <div class="distract-detail" id="dd3">
-                <input placeholder="如何应对？（可选）" />
-              </div>
-            </div>
-            <div class="distract-item" id="d4">
-              <div class="distract-top">
-                <span class="distract-name">🔖 其他</span>
-                <div class="distract-toggle">
-                  <button class="d-chip" onclick="toggleDistract(4, '无')">
-                    无
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(4, '轻微')">
-                    轻微
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(4, '较多')">
-                    较多
-                  </button>
-                  <button class="d-chip" onclick="toggleDistract(4, '严重')">
-                    严重
-                  </button>
-                </div>
-              </div>
-              <div class="distract-detail" id="dd4">
-                <input placeholder="具体是什么？（可选）" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- 5. 复盘 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">🔍</span>
-          <span class="section-title">复盘总结</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">
-              ✅ 今天做得最好的一件事 <span class="req">必填</span>
-            </div>
-            <div class="review-pair">
-              <input
-                class="text-input"
-                id="keepGood"
-                type="text"
-                placeholder="是什么…"
-                style="height: 38px"
-                oninput="updateProgress()"
-              />
-              <div class="review-tag">💡 因为</div>
-              <input
-                class="text-input"
-                id="keepWhy"
-                type="text"
-                placeholder="背后的原因…"
-                style="height: 38px"
-              />
-            </div>
-          </div>
-          <div>
-            <div class="q-label">
-              🔧 需要改进的一个问题 <span class="req">必填</span>
-            </div>
-            <div class="review-pair">
-              <input
-                class="text-input"
-                id="improveProblem"
-                type="text"
-                placeholder="问题是…"
-                style="height: 38px"
-                oninput="updateProgress()"
-              />
-              <div class="review-tag">🗓️ 明日如何改善</div>
-              <input
-                class="text-input"
-                id="improvePlan"
-                type="text"
-                placeholder="具体的改善方案…"
-                style="height: 38px"
-              />
-            </div>
-          </div>
-          <div>
-            <div class="q-label">今天的状态主要受什么影响？</div>
-            <div class="chips" id="stateChips">
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                睡眠质量 😴
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                饮食状态 🍱
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                目标清晰度 🎯
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                学习环境 🏠
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                心理压力 💭
-              </div>
-              <div
-                class="chip"
-                onclick="selectChip(this, 'stateChips', 'stateVal')"
-              >
-                外部干扰 📳
-              </div>
-            </div>
-            <input type="hidden" id="stateVal" />
-          </div>
-        </div>
-      </div>
-
-      <!-- 6. 今日收获 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">✨</span>
-          <span class="section-title">今日收获</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">
-              今天最重要的知识点/突破 <span class="req">必填</span>
-            </div>
-            <textarea
-              class="text-input"
-              id="knowledge"
-              rows="2"
-              placeholder="写下让你印象最深的一个点…"
-              oninput="updateProgress()"
-            ></textarea>
-          </div>
-          <div>
-            <div class="q-label">今天的感悟</div>
-            <textarea
-              class="text-input"
-              id="insight"
-              rows="2"
-              placeholder="关于学习、状态、方法的一点想法…"
-            ></textarea>
-          </div>
-          <div>
-            <div class="q-label">给自己说一句话</div>
-            <input
-              class="text-input"
-              id="selfTalk"
-              type="text"
-              placeholder="明天的自己，加油 💪"
-              style="height: 42px"
-            />
-          </div>
-        </div>
-      </div>
-
-      <!-- 7. 明日计划 -->
-      <div class="section-card">
-        <div class="section-header">
-          <span class="section-icon">🌅</span>
-          <span class="section-title">明日计划</span>
-        </div>
-        <div class="section-body">
-          <div>
-            <div class="q-label">明日三件事 <span class="req">必填</span></div>
-            <div
-              style="display: flex; flex-direction: column; gap: 8px"
-              id="tomorrowTasks"
-            >
-              <div class="tomorrow-task">
-                <input
-                  id="tmr0"
-                  placeholder="任务 1（最重要）"
-                  oninput="updateProgress()"
-                />
-              </div>
-              <div class="tomorrow-task">
-                <input id="tmr1" placeholder="任务 2" />
-              </div>
-              <div class="tomorrow-task">
-                <input id="tmr2" placeholder="任务 3（可留空）" />
-              </div>
-            </div>
-          </div>
-          <div>
-            <div class="q-label">睡眠计划</div>
-            <div class="sleep-row">
-              <div class="sleep-item">
-                <label>🌙 几点睡</label
-                ><input id="sleepTime" type="text" placeholder="23:00" />
-              </div>
-              <div class="sleep-item">
-                <label>☀️ 几点起</label
-                ><input id="wakeTime" type="text" placeholder="7:00" />
-              </div>
-              <div class="sleep-item">
-                <label>🏃 运动分钟</label
-                ><input id="exercise" type="number" placeholder="30" />
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <!-- end sections -->
-
-    <div class="submit-area">
-      <button class="btn btn-primary" onclick="handleSubmit()">
-        📄 生成复盘记录
-      </button>
-      <button class="btn btn-download" id="downloadBtn" onclick="downloadMd()">
-        ⬇ 下载
-      </button>
-    </div>
-
-    <!-- Confirm modal -->
-    <div class="modal-overlay" id="confirmModal">
-      <div class="modal-box">
-        <div class="modal-icon">⚠️</div>
-        <div class="modal-title">总结未完成</div>
-        <div class="modal-text">部分内容尚未填写，确定现在生成 md 文件吗？</div>
-        <div class="modal-btns">
-          <button class="btn btn-cancel" onclick="closeModal()">
-            继续填写
-          </button>
-          <button class="btn btn-confirm" onclick="confirmGenerate()">
-            确定生成
-          </button>
-        </div>
-      </div>
-    </div>
+    <nav class="nav" id="navArea"></nav>
 
     <div class="toast" id="toast"></div>
 
     <script>
-      // ─── State ────────────────────────────────────────────────────────────────────
-      let state = {
-        mood: "",
-        stars: 0,
-        distractLevels: ["", "", "", "", ""], // per distract item
-      };
-      let mdContent = "";
-      let taskChecked = [false, false, false];
-
-      // ─── Progress fields (must be before init IIFE) ───────────────────────────────
-      const REQUIRED_FIELDS = [
-        () => document.getElementById("examName").value.trim(),
-        () => state.mood,
-        () => (state.stars > 0 ? "ok" : ""),
-        () => document.getElementById("summary").value.trim(),
-        () => document.getElementById("studyContent").value.trim(),
-        () =>
-          document.getElementById("task0") &&
-          document.querySelector("#task0 .task-text").value.trim(),
-        () => (state.distractLevels.some((l) => l !== "") ? "ok" : ""),
-        () => document.getElementById("keepGood").value.trim(),
-        () => document.getElementById("improveProblem").value.trim(),
-        () => document.getElementById("knowledge").value.trim(),
-        () => document.getElementById("tmr0").value.trim(),
+      // ─── Sections Definition ──────────────────────────────────────────────────────
+      const SECTIONS = [
+        {
+          id: "exams",
+          icon: "📋",
+          title: "基础信息",
+          step: 1,
+          content: `
+      <div>
+        <div class="q-label">今日主攻科目</div>
+        <div class="exam-chips" id="examChips">
+          <div class="exam-chip" onclick="toggleExam(this)">📐 数学</div>
+          <div class="exam-chip" onclick="toggleExam(this)">🔤 英语</div>
+          <div class="exam-chip" onclick="toggleExam(this)">🏛️ 政治</div>
+          <div class="exam-chip" onclick="toggleExam(this)">⚙️ 机械</div>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">今日学习时长</div>
+        <div class="dur-wrap">
+          <div class="dur-row">
+            <div class="dur-value" id="durVal">0<span>h</span></div>
+            <input type="range" class="dur-slider" id="durSlider" min="0" max="16" step="0.5" value="0"
+              oninput="document.getElementById('durVal').innerHTML=this.value+'<span>h</span>'"/>
+          </div>
+          <div class="dur-labels"><span>0h</span><span>4h</span><span>8h</span><span>12h</span><span>16h</span></div>
+        </div>
+      </div>`,
+        },
+        {
+          id: "mood",
+          icon: "🌡️",
+          title: "今日状态",
+          step: 2,
+          content: `
+      <div>
+        <div class="q-label">心情怎么样？</div>
+        <div class="mood-picker">
+          <button class="mood-btn" data-val="非常好" onclick="selectMood(this)">🥳</button>
+          <button class="mood-btn" data-val="不错" onclick="selectMood(this)">😊</button>
+          <button class="mood-btn" data-val="一般" onclick="selectMood(this)">😐</button>
+          <button class="mood-btn" data-val="有点低落" onclick="selectMood(this)">😔</button>
+          <button class="mood-btn" data-val="很差" onclick="selectMood(this)">😫</button>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">整体学习状态</div>
+        <div class="state-chips" id="stateChips">
+          <div class="state-chip" onclick="selectState(this,0)">
+            <div class="state-emoji">💀</div>
+            <div class="state-info"><div class="state-name">自暴自弃</div><div class="state-desc">状态极差，完全不想学</div></div>
+            <div class="state-check">✓</div>
+          </div>
+          <div class="state-chip" onclick="selectState(this,1)">
+            <div class="state-emoji">🐒</div>
+            <div class="state-info"><div class="state-name">心猿意马</div><div class="state-desc">状态差，注意力飘忽</div></div>
+            <div class="state-check">✓</div>
+          </div>
+          <div class="state-chip" onclick="selectState(this,2)">
+            <div class="state-emoji">🤖</div>
+            <div class="state-info"><div class="state-name">循规蹈矩</div><div class="state-desc">状态中等，按部就班</div></div>
+            <div class="state-check">✓</div>
+          </div>
+          <div class="state-chip" onclick="selectState(this,3)">
+            <div class="state-emoji">🎯</div>
+            <div class="state-info"><div class="state-name">心无旁骛</div><div class="state-desc">状态好，专注投入</div></div>
+            <div class="state-check">✓</div>
+          </div>
+          <div class="state-chip" onclick="selectState(this,4)">
+            <div class="state-emoji">🌀</div>
+            <div class="state-info"><div class="state-name">浑然忘我</div><div class="state-desc">状态极好，效率爆棚</div></div>
+            <div class="state-check">✓</div>
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">压力值</div>
+        <div class="stress-wrap">
+          <div class="stress-row">
+            <div class="stress-val" id="stressVal">5</div>
+            <input type="range" class="stress-slider" id="stressSlider" min="1" max="10" value="5"
+              oninput="document.getElementById('stressVal').textContent=this.value"/>
+          </div>
+          <div class="stress-labels"><span>🌿 轻松</span><span>🔥 高压</span></div>
+        </div>
+      </div>`,
+        },
+        {
+          id: "study",
+          icon: "📚",
+          title: "学习记录",
+          step: 3,
+          content: `
+      <div>
+        <div class="q-label">今日主攻内容 <span class="opt">选填</span></div>
+        <textarea class="text-input" id="studyContent" rows="2" placeholder="例：线性代数第三章 / 英语阅读 20篇…"></textarea>
+      </div>
+      <div>
+        <div class="q-label">整体进度感觉</div>
+        <div class="chips" id="progressChips">
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">🚀 超预期完成</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">✅ 按计划完成</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">📈 完成七八成</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">🌓 完成一半</div>
+          <div class="chip" onclick="selectChip(this,'progressChips','progressVal')">📉 不太理想</div>
+        </div>
+        <input type="hidden" id="progressVal"/>
+      </div>`,
+        },
+        {
+          id: "distract",
+          icon: "⚠️",
+          title: "干扰源记录",
+          step: 4,
+          content: `
+      <div class="q-label" style="margin-bottom:4px">今天被什么打扰了？</div>
+      <div class="distract-list">
+        <div class="distract-item" id="d0">
+          <div class="distract-top">
+            <div class="distract-name">📱 手机 / 社交软件</div>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(0,this,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(0,this,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(0,this,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(0,this,'严重')">严重</button>
+            </div>
+          </div>
+        </div>
+        <div class="distract-item" id="d1">
+          <div class="distract-top">
+            <div class="distract-name">😴 疲劳 / 犯困</div>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(1,this,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(1,this,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(1,this,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(1,this,'严重')">严重</button>
+            </div>
+          </div>
+        </div>
+        <div class="distract-item" id="d2">
+          <div class="distract-top">
+            <div class="distract-name">🔊 环境噪音</div>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(2,this,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(2,this,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(2,this,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(2,this,'严重')">严重</button>
+            </div>
+          </div>
+        </div>
+        <div class="distract-item" id="d3">
+          <div class="distract-top">
+            <div class="distract-name">😰 情绪 / 焦虑</div>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(3,this,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(3,this,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(3,this,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(3,this,'严重')">严重</button>
+            </div>
+          </div>
+        </div>
+        <div class="distract-item" id="d4">
+          <div class="distract-top">
+            <div class="distract-name">🔖 其他</div>
+            <div class="distract-toggle">
+              <button class="d-chip" onclick="toggleDistract(4,this,'无')">无</button>
+              <button class="d-chip" onclick="toggleDistract(4,this,'轻微')">轻微</button>
+              <button class="d-chip" onclick="toggleDistract(4,this,'较多')">较多</button>
+              <button class="d-chip" onclick="toggleDistract(4,this,'严重')">严重</button>
+            </div>
+          </div>
+        </div>
+      </div>`,
+        },
+        {
+          id: "review",
+          icon: "🔍",
+          title: "复盘总结",
+          step: 5,
+          optional: true,
+          content: `
+      <div>
+        <div class="q-label">✅ 今天做得最好的一件事 <span class="opt">选填</span></div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <input class="text-input" id="keepGood" type="text" placeholder="是什么…" style="height:40px"/>
+          <input class="text-input" id="keepWhy" type="text" placeholder="背后的原因…" style="height:40px"/>
+        </div>
+      </div>
+      <div>
+        <div class="q-label">🔧 需要改进的一个问题 <span class="opt">选填</span></div>
+        <input class="text-input" id="improveProblem" type="text" placeholder="问题是…" style="height:40px"/>
+      </div>`,
+        },
+        {
+          id: "gain",
+          icon: "✨",
+          title: "今日收获",
+          step: 6,
+          optional: true,
+          content: `
+      <div>
+        <div class="q-label">今天最重要的知识点 / 突破 <span class="opt">选填</span></div>
+        <textarea class="text-input" id="knowledge" rows="2" placeholder="写下让你印象最深的一个点…"></textarea>
+      </div>
+      <div>
+        <div class="q-label">今天的感悟 <span class="opt">选填</span></div>
+        <textarea class="text-input" id="insight" rows="2" placeholder="关于学习、状态、方法的一点想法…"></textarea>
+      </div>`,
+        },
       ];
+
+      // ─── State ───────────────────────────────────────────────────────────────────
+      // stepData saves per-step form data so returning to a step restores it
+      const state = {
+        theme: localStorage.getItem("check_theme") || "dark",
+        currentStep: 0,
+        exams: [],
+        dur: 0,
+        mood: "",
+        studyState: -1,
+        stress: 5,
+        studyContent: "",
+        progressVal: "",
+        distractLevels: ["", "", "", "", ""],
+        keepGood: "",
+        keepWhy: "",
+        improveProblem: "",
+        knowledge: "",
+        insight: "",
+        mdContent: "",
+      };
 
       // ─── Init ─────────────────────────────────────────────────────────────────────
       (function init() {
+        applyTheme();
+
         const now = new Date();
         const days = ["日", "一", "二", "三", "四", "五", "六"];
         const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
-        const dayStr = `星期${days[now.getDay()]}`;
         document.getElementById("headerDate").textContent =
-          `${dateStr}  ${dayStr}`;
+          `${dateStr} 星期${days[now.getDay()]}`;
 
-        // countdown to Dec 20
         const target = new Date(now.getFullYear(), 11, 20);
         if (now > target) target.setFullYear(target.getFullYear() + 1);
         const diff = Math.ceil((target - now) / 86400000);
         document.getElementById("countdownBadge").textContent =
-          `距考试还有 ${diff} 天`;
+          `距考试 ${diff} 天`;
 
-        updateProgress();
+        document
+          .getElementById("themeBtn")
+          .addEventListener("click", toggleTheme);
+
+        renderStep();
       })();
 
-      // ─── Mood ─────────────────────────────────────────────────────────────────────
+      // ─── Theme ───────────────────────────────────────────────────────────────────
+      function toggleTheme() {
+        state.theme = state.theme === "dark" ? "light" : "dark";
+        localStorage.setItem("check_theme", state.theme);
+        applyTheme();
+      }
+      function applyTheme() {
+        document.body.dataset.theme = state.theme === "light" ? "light" : "";
+        document.getElementById("themeBtn").textContent =
+          state.theme === "light" ? "◑" : "◐";
+      }
+
+      // ─── Step Rendering ───────────────────────────────────────────────────────────
+      function renderStep() {
+        const total = SECTIONS.length;
+        // step dots
+        const barHtml = SECTIONS.map((s, i) => {
+          const cls =
+            i < state.currentStep
+              ? "done"
+              : i === state.currentStep
+                ? "active"
+                : "";
+          return `<div class="step-dot ${cls}"></div>`;
+        }).join("");
+        document.getElementById("stepBar").innerHTML = barHtml;
+
+        const section = SECTIONS[state.currentStep];
+        const card = `
+    <div class="card">
+      <div class="card-head">
+        <span class="card-icon">${section.icon}</span>
+        <span class="card-step">${section.step} / ${total}</span>
+        <span class="card-title">${section.title}</span>
+      </div>
+      <div class="card-body">${section.content}</div>
+    </div>`;
+        document.getElementById("mainArea").innerHTML = card;
+
+        // nav
+        const isLast = state.currentStep === total - 1;
+        const isFirst = state.currentStep === 0;
+        let nav = "";
+        if (!isFirst) {
+          nav += `<button class="btn btn-ghost" onclick="prevStep()">← 上一步</button>`;
+        }
+        if (section.optional) {
+          nav += `<button class="btn btn-skip" onclick="skipSection()">跳过</button>`;
+        }
+        nav += `<button class="btn btn-primary" onclick="nextStep()">${isLast ? "📄 生成记录" : "下一步 →"}</button>`;
+        document.getElementById("navArea").innerHTML = nav;
+
+        // Restore DOM state from saved step data
+        requestAnimationFrame(() => restoreStepDOM(section.id));
+      }
+
+      function restoreStepDOM(id) {
+        const s = state;
+        switch (id) {
+          case "exams":
+            document.getElementById("durSlider").value = s.dur;
+            document.getElementById("durVal").innerHTML =
+              s.dur + "<span>h</span>";
+            document.querySelectorAll(".exam-chip").forEach((chip) => {
+              const name = chip.textContent.trim();
+              if (s.exams.includes(name)) chip.classList.add("on");
+            });
+            break;
+          case "mood":
+            if (s.mood) {
+              document.querySelectorAll(".mood-btn").forEach((b) => {
+                if (b.dataset.val === s.mood) b.classList.add("on");
+              });
+            }
+            if (s.studyState >= 0) {
+              document.querySelectorAll(".state-chip").forEach((c, i) => {
+                if (i === s.studyState) c.classList.add("on");
+              });
+            }
+            document.getElementById("stressSlider").value = s.stress;
+            document.getElementById("stressVal").textContent = s.stress;
+            break;
+          case "study":
+            if (document.getElementById("studyContent"))
+              document.getElementById("studyContent").value = s.studyContent;
+            if (s.progressVal) {
+              document.querySelectorAll("#progressChips .chip").forEach((c) => {
+                if (c.textContent.trim() === s.progressVal)
+                  c.classList.add("on");
+              });
+              const hv = document.getElementById("progressVal");
+              if (hv) hv.value = s.progressVal;
+            }
+            break;
+          case "distract":
+            s.distractLevels.forEach((lv, i) => {
+              if (!lv) return;
+              document.querySelectorAll(`#d${i} .d-chip`).forEach((c) => {
+                if (c.textContent.trim() === lv) c.classList.add("on");
+              });
+              if (lv !== "无")
+                document.getElementById(`d${i}`).classList.add("active");
+            });
+            break;
+          case "review":
+            if (document.getElementById("keepGood"))
+              document.getElementById("keepGood").value = s.keepGood;
+            if (document.getElementById("keepWhy"))
+              document.getElementById("keepWhy").value = s.keepWhy;
+            if (document.getElementById("improveProblem"))
+              document.getElementById("improveProblem").value =
+                s.improveProblem;
+            break;
+          case "gain":
+            if (document.getElementById("knowledge"))
+              document.getElementById("knowledge").value = s.knowledge;
+            if (document.getElementById("insight"))
+              document.getElementById("insight").value = s.insight;
+            break;
+        }
+      }
+
+      function saveCurrentStep() {
+        const s = state;
+        switch (SECTIONS[state.currentStep].id) {
+          case "exams":
+            // exams already saved on toggle
+            s.dur = parseFloat(
+              document.getElementById("durSlider")?.value || 0,
+            );
+            break;
+          case "mood":
+            // mood/studyState already saved on click
+            s.stress = parseInt(
+              document.getElementById("stressSlider")?.value || 5,
+            );
+            break;
+          case "study":
+            s.studyContent = v("studyContent");
+            s.progressVal = v("progressVal");
+            break;
+          case "distract":
+            // distractLevels already saved on click
+            break;
+          case "review":
+            s.keepGood = v("keepGood");
+            s.keepWhy = v("keepWhy");
+            s.improveProblem = v("improveProblem");
+            break;
+          case "gain":
+            s.knowledge = v("knowledge");
+            s.insight = v("insight");
+            break;
+        }
+      }
+
+      function prevStep() {
+        saveCurrentStep();
+        state.currentStep--;
+        renderStep();
+      }
+
+      function skipSection() {
+        if (state.currentStep === SECTIONS.length - 1) {
+          try {
+            generate();
+          } catch (e) {
+            showToast("生成失败：" + e.message);
+          }
+        } else {
+          state.currentStep++;
+          renderStep();
+        }
+      }
+
+      function nextStep() {
+        saveCurrentStep();
+        if (state.currentStep < SECTIONS.length - 1) {
+          state.currentStep++;
+          renderStep();
+        } else {
+          try {
+            generate();
+          } catch (e) {
+            showToast("生成失败：" + e.message);
+          }
+        }
+      }
+
+      // ─── Interactions ────────────────────────────────────────────────────────────
+      function toggleExam(el) {
+        el.classList.toggle("on");
+        const name = el.textContent.trim();
+        if (el.classList.contains("on")) {
+          if (!state.exams.includes(name)) state.exams.push(name);
+        } else {
+          state.exams = state.exams.filter((e) => e !== name);
+        }
+      }
+
       function selectMood(btn) {
         document
           .querySelectorAll(".mood-btn")
-          .forEach((b) => b.classList.remove("selected"));
-        btn.classList.add("selected");
+          .forEach((b) => b.classList.remove("on"));
+        btn.classList.add("on");
         state.mood = btn.dataset.val;
-        updateProgress();
       }
 
-      // ─── Stars ────────────────────────────────────────────────────────────────────
-      function selectStar(n) {
-        state.stars = n;
-        document.querySelectorAll(".star").forEach((s, i) => {
-          s.textContent = i < n ? "★" : "☆";
-          s.classList.toggle("on", i < n);
-        });
-        updateProgress();
+      function selectState(el, idx) {
+        document
+          .querySelectorAll(".state-chip")
+          .forEach((c) => c.classList.remove("on"));
+        el.classList.add("on");
+        state.studyState = idx;
       }
 
-      // ─── Chips ────────────────────────────────────────────────────────────────────
       function selectChip(el, groupId, hiddenId) {
         document
           .querySelectorAll(`#${groupId} .chip`)
-          .forEach((c) => c.classList.remove("selected"));
-        el.classList.add("selected");
+          .forEach((c) => c.classList.remove("on"));
+        el.classList.add("on");
         document.getElementById(hiddenId).value = el.textContent.trim();
-        updateProgress();
       }
 
-      // ─── Tasks ────────────────────────────────────────────────────────────────────
-      function toggleTask(idx) {
-        taskChecked[idx] = !taskChecked[idx];
-        const item = document.getElementById(`task${idx}`);
-        const check = item.querySelector(".task-check");
-        check.classList.toggle("checked", taskChecked[idx]);
-        item.classList.toggle("done", taskChecked[idx]);
-        updateProgress();
-      }
-
-      // ─── Distractions ─────────────────────────────────────────────────────────────
-      function toggleDistract(idx, level) {
+      function toggleDistract(idx, btn, level) {
         const prev = state.distractLevels[idx];
-        const item = document.getElementById(`d${idx}`);
-        const detail = document.getElementById(`dd${idx}`);
-        const chips = item.querySelectorAll(".d-chip");
-
+        const chips = document.querySelectorAll(`#d${idx} .d-chip`);
         chips.forEach((c) => c.classList.remove("on"));
 
         if (prev === level) {
-          // deselect
           state.distractLevels[idx] = "";
-          item.classList.remove("active");
-          detail.classList.remove("show");
+          document.getElementById(`d${idx}`).classList.remove("active");
         } else {
           state.distractLevels[idx] = level;
-          chips.forEach((c) => {
-            if (c.textContent.trim() === level) c.classList.add("on");
-          });
-          if (level !== "无") {
-            item.classList.add("active");
-            detail.classList.add("show");
-          } else {
-            item.classList.remove("active");
-            detail.classList.remove("show");
-          }
-        }
-        updateProgress();
-      }
-
-      // ─── Progress ─────────────────────────────────────────────────────────────────
-      function updateProgress() {
-        const done = REQUIRED_FIELDS.filter((f) => f()).length;
-        const total = REQUIRED_FIELDS.length;
-        const pct = Math.round((done / total) * 100);
-        document.getElementById("progressFill").style.width = pct + "%";
-        document.getElementById("progressText").textContent =
-          `${done} / ${total} 项已完成`;
-        document.getElementById("progressPct").textContent = pct + "%";
-      }
-
-      // ─── Submit & Generate ────────────────────────────────────────────────────────
-      function handleSubmit() {
-        const done = REQUIRED_FIELDS.filter((f) => f()).length;
-        if (done < REQUIRED_FIELDS.length) {
-          document.getElementById("confirmModal").classList.add("show");
-        } else {
-          generate();
+          btn.classList.add("on");
+          if (level !== "无")
+            document.getElementById(`d${idx}`).classList.add("active");
+          else document.getElementById(`d${idx}`).classList.remove("active");
         }
       }
 
-      function closeModal() {
-        document.getElementById("confirmModal").classList.remove("show");
-      }
-
-      function confirmGenerate() {
-        closeModal();
-        generate();
-      }
-
+      // ─── Generate ────────────────────────────────────────────────────────────────
       function generate() {
         const now = new Date();
         const days = ["日", "一", "二", "三", "四", "五", "六"];
@@ -1471,30 +1213,24 @@
         if (now > target) target.setFullYear(target.getFullYear() + 1);
         const diff = Math.ceil((target - now) / 86400000);
 
-        const examName = v("examName") || "（未填写）";
-        const planH = v("planHour") || "?";
-        const realH = v("realHour") || "?";
-        const focH = v("focusHour") || "?";
+        const examStr = state.exams.length
+          ? state.exams.join("、")
+          : "（未选）";
+        const dur = state.dur;
         const mood = state.mood || "（未选）";
-        const stars = state.stars
-          ? "⭐".repeat(state.stars) + "☆".repeat(5 - state.stars)
-          : "（未评）";
-        const stress = document.getElementById("stressSlider").value;
-        const summary = v("summary") || "（未填写）";
-        const content = v("studyContent") || "（未填写）";
-        const progressChip = v("progressVal") || "（未选）";
-
-        const tasks =
-          [0, 1, 2]
-            .map((i) => {
-              const txt = document
-                .querySelector(`#task${i} .task-text`)
-                .value.trim();
-              if (!txt) return null;
-              return `- [${taskChecked[i] ? "x" : " "}] ${txt}`;
-            })
-            .filter(Boolean)
-            .join("\n") || "- （未填写）";
+        const stateNames = [
+          "",
+          "自暴自弃 💀",
+          "心猿意马 🐒",
+          "循规蹈矩 🤖",
+          "心无旁骛 🎯",
+          "浑然忘我 🌀",
+        ];
+        const studyState =
+          state.studyState >= 0 ? stateNames[state.studyState + 1] : "（未选）";
+        const stress = state.stress;
+        const studyContent = state.studyContent || "（未填写）";
+        const progressChip = state.progressVal || "（未选）";
 
         const distractNames = [
           "手机/社交软件",
@@ -1503,41 +1239,21 @@
           "情绪/焦虑",
           "其他",
         ];
-        const distractMd = [0, 1, 2, 3, 4]
-          .map((i) => {
-            const lv = state.distractLevels[i] || "（未选）";
-            const cope =
-              document.querySelector(`#dd${i} input`)?.value.trim() || "—";
-            return `| ${distractNames[i]} | ${lv} | ${cope} |`;
+        const distractMd = state.distractLevels
+          .map((lv, i) => {
+            return `| ${distractNames[i]} | ${lv || "—"} |`;
           })
           .join("\n");
 
-        const keepGood = v("keepGood") || "（未填写）";
-        const keepWhy = v("keepWhy") || "—";
-        const impProblem = v("improveProblem") || "（未填写）";
-        const impPlan = v("improvePlan") || "—";
-        const stateInfluence = v("stateVal") || "（未选）";
+        const keepGood = state.keepGood || "—";
+        const keepWhy = state.keepWhy || "—";
+        const impProblem = state.improveProblem || "—";
+        const knowledge = state.knowledge || "—";
+        const insight = state.insight || "—";
 
-        const knowledge = v("knowledge") || "（未填写）";
-        const insight = v("insight") || "—";
-        const selfTalk = v("selfTalk") || "—";
+        const md = `# 📋 每日备考复盘｜${dateStr} ${dayStr}
 
-        const tmrTasks =
-          [0, 1, 2]
-            .map((i) => {
-              const t = document.getElementById(`tmr${i}`).value.trim();
-              return t ? `- [ ] ${t}` : null;
-            })
-            .filter(Boolean)
-            .join("\n") || "- （未填写）";
-
-        const sleepT = v("sleepTime") || "？";
-        const wakeT = v("wakeTime") || "？";
-        const exer = v("exercise") ? v("exercise") + " 分钟" : "（未填）";
-
-        mdContent = `# 📋 每日备考复盘｜${dateStr} ${dayStr}
-
-> **考试**：${examName}　｜　**距考研**：${diff} 天
+> **科目**：${examStr}　｜　**倒计时**：${diff} 天
 
 ---
 
@@ -1546,57 +1262,40 @@
 | 项目 | 数据 |
 |------|------|
 | 日期 | ${dateStr} ${dayStr} |
-| 考试 | ${examName} |
+| 主攻科目 | ${examStr} |
+| 学习时长 | ${dur}h |
 | 倒计时 | ${diff} 天 |
-| 计划时长 | ${planH}h |
-| 实际时长 | ${realH}h |
-| 专注时长 | ${focH}h |
 
 ---
 
 ## 今日状态
 
-| 心情 | 整体状态 | 压力值 |
+| 心情 | 学习状态 | 压力值 |
 |------|---------|--------|
-| ${mood} | ${stars} | ${stress} / 10 |
-
-**一句话总结**：${summary}
+| ${mood} | ${studyState} | ${stress} / 10 |
 
 ---
 
 ## 学习记录
 
-**今日内容**：${content}
-
-**进度感觉**：${progressChip}
-
-**任务完成情况**：
-
-${tasks}
+- **主攻内容**：${studyContent}
+- **进度感觉**：${progressChip}
 
 ---
 
 ## 干扰源记录
 
-| 干扰类型 | 程度 | 应对措施 |
-|---------|------|---------|
+| 干扰类型 | 程度 |
+|---------|------|
 ${distractMd}
 
 ---
 
 ## 复盘总结
 
-### ✅ 保持
-
-- **做得好**：${keepGood}
+- **做得好的事**：${keepGood}
 - **原因**：${keepWhy}
-
-### 🔧 改进
-
-- **问题**：${impProblem}
-- **明日方案**：${impPlan}
-
-**状态主要受什么影响**：${stateInfluence}
+- **需改进的问题**：${impProblem}
 
 ---
 
@@ -1604,30 +1303,40 @@ ${distractMd}
 
 - **知识点 / 突破**：${knowledge}
 - **感悟**：${insight}
-- **给自己的话**：${selfTalk}
-
----
-
-## 明日计划
-
-${tmrTasks}
-
-**睡眠**：${sleepT} 入睡　/　${wakeT} 起床　｜　**运动**：${exer}
 
 ---
 
 *由「每日备考复盘」自动生成 · ${dateStr}*
 `;
 
-        document.getElementById("downloadBtn").classList.add("active");
-        showToast('✅ 复盘记录已生成，点击"下载"保存 md 文件');
+        state.mdContent = md;
+
+        const summaryHtml = `
+    <div class="summary-card">
+      <div class="summary-head">
+        <div class="summary-title">📄 复盘记录预览</div>
+        <button class="icon-btn" onclick="closeSummary()" style="width:30px;height:30px;font-size:13px;border:none;background:var(--surface2)">✕</button>
+      </div>
+      <div class="summary-body">${md}</div>
+      <div class="summary-actions">
+        <button class="btn btn-ghost" onclick="closeSummary()">← 继续修改</button>
+        <button class="btn btn-primary" onclick="downloadMd()">⬇ 下载 .md</button>
+      </div>
+    </div>`;
+        document.getElementById("mainArea").innerHTML = summaryHtml;
+        document.getElementById("navArea").innerHTML = "";
+        document.getElementById("stepBar").innerHTML = "";
+      }
+
+      function closeSummary() {
+        renderStep();
       }
 
       function downloadMd() {
-        if (!mdContent) return;
+        if (!state.mdContent) return;
         const now = new Date();
         const dateStr = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, "0")}${String(now.getDate()).padStart(2, "0")}`;
-        const blob = new Blob([mdContent], {
+        const blob = new Blob([state.mdContent], {
           type: "text/markdown;charset=utf-8",
         });
         const url = URL.createObjectURL(blob);
