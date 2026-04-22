@@ -537,6 +537,10 @@
         z-index: 35;
       }
 
+      body.chat-active .theme-float {
+        display: none;
+      }
+
       .icon-btn,
       .pill-btn {
         display: inline-flex;
@@ -646,12 +650,12 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        gap: 12px;
+        gap: 8px;
         border: 1px solid var(--line);
         border-radius: var(--radius-lg);
         background: var(--ivory);
         box-shadow: var(--shadow-soft);
-        padding: 14px;
+        padding: 12px;
         transition:
           border-color var(--speed),
           box-shadow var(--speed);
@@ -690,14 +694,14 @@
 
       .composer-input {
         width: 100%;
-        min-height: 72px;
+        min-height: 46px;
         max-height: 210px;
         resize: none;
         border: none;
         outline: none;
         background: transparent;
         color: var(--ink);
-        padding: 7px 8px 0;
+        padding: 6px 8px 0;
         font-size: 17px;
         line-height: 1.6;
       }
@@ -718,8 +722,10 @@
       .composer-actions {
         display: flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 8px;
         min-width: 0;
+        flex: 1;
       }
 
       .tool-btn,
@@ -755,6 +761,7 @@
 
       .model-picker {
         position: relative;
+        min-width: 0;
       }
 
       .model-trigger {
@@ -769,6 +776,7 @@
         font-weight: 500;
         white-space: nowrap;
         line-height: 1;
+        overflow: hidden;
       }
 
       .model-trigger:hover,
@@ -778,10 +786,12 @@
       }
 
       .model-trigger-text {
-        display: inline-flex;
-        align-items: center;
+        display: block;
+        min-width: 0;
+        max-width: calc(100% - 18px);
         overflow: hidden;
         text-overflow: ellipsis;
+        white-space: nowrap;
         line-height: 14px;
       }
 
@@ -949,6 +959,8 @@
       }
 
       .send-btn {
+        position: relative;
+        overflow: hidden;
         width: 40px;
         height: 40px;
         border: none;
@@ -964,6 +976,28 @@
           background var(--speed),
           box-shadow var(--speed),
           opacity var(--speed);
+      }
+
+      .send-btn svg {
+        position: absolute;
+        transition:
+          opacity 0.18s ease,
+          transform 0.18s ease;
+      }
+
+      .send-btn .stop-icon {
+        opacity: 0;
+        transform: scale(0.42) rotate(-45deg);
+      }
+
+      .send-btn.running .send-icon {
+        opacity: 0;
+        transform: scale(0.42) rotate(45deg);
+      }
+
+      .send-btn.running .stop-icon {
+        opacity: 1;
+        transform: scale(1) rotate(0deg);
       }
 
       .send-btn:hover {
@@ -1467,7 +1501,7 @@
       }
 
       .thread-composer .composer-input {
-        min-height: 44px;
+        min-height: 38px;
       }
 
       .scroll-btn {
@@ -1781,7 +1815,31 @@
 
       @media (max-width: 720px) {
         .sidebar {
+          top: 10px;
+          left: 10px;
+          bottom: 10px;
+          width: min(288px, calc(100vw - 20px));
+          border: 1px solid var(--line-strong);
+          border-radius: 18px;
+          box-shadow: 0 20px 90px rgba(20, 20, 19, 0.22);
+          padding: 15px 12px 14px;
+          transition:
+            width var(--speed),
+            padding var(--speed),
+            border-radius var(--speed),
+            box-shadow var(--speed);
+        }
+
+        body.sidebar-collapsed .sidebar {
+          top: 0;
+          left: 0;
+          bottom: 0;
           width: 56px;
+          border-left: none;
+          border-top: none;
+          border-bottom: none;
+          border-radius: 0;
+          box-shadow: none;
           padding-inline: 8px;
         }
 
@@ -1801,14 +1859,32 @@
           left: calc(50% + 28px);
         }
 
-        .sidebar-label,
-        .chat-title,
-        .folder-name,
-        .sidebar-title,
-        .logo {
+        body.sidebar-collapsed .sidebar-label,
+        body.sidebar-collapsed .chat-title,
+        body.sidebar-collapsed .folder-name,
+        body.sidebar-collapsed .sidebar-title,
+        body.sidebar-collapsed .logo {
           opacity: 0;
           visibility: hidden;
           width: 0;
+        }
+
+        body:not(.sidebar-collapsed) .brand {
+          display: flex;
+        }
+
+        body:not(.sidebar-collapsed) .sidebar-label,
+        body:not(.sidebar-collapsed) .chat-title,
+        body:not(.sidebar-collapsed) .folder-name,
+        body:not(.sidebar-collapsed) .sidebar-title,
+        body:not(.sidebar-collapsed) .logo {
+          opacity: 1;
+          visibility: visible;
+          width: auto;
+        }
+
+        body:not(.sidebar-collapsed) .sidebar-section:not(:first-child) {
+          display: block;
         }
 
         .hero {
@@ -1817,7 +1893,7 @@
 
         .model-trigger {
           min-width: 112px;
-          max-width: 146px;
+          max-width: min(146px, 38vw);
         }
 
         .composer-input {
@@ -1907,8 +1983,11 @@
                     <div class="model-dropdown" id="heroModelDropdown"></div>
                   </div>
                   <button class="send-btn" id="heroSendBtn" title="发送" aria-label="发送">
-                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                    <svg class="send-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
                       <path d="M12 19V5M5 12l7-7 7 7" />
+                    </svg>
+                    <svg class="stop-icon" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                      <rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" />
                     </svg>
                   </button>
                 </div>
@@ -1951,8 +2030,11 @@
                 <div class="model-dropdown" id="threadModelDropdown"></div>
               </div>
               <button class="send-btn" id="threadSendBtn" title="发送" aria-label="发送">
-                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                <svg class="send-icon" width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
                   <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+                <svg class="stop-icon" width="17" height="17" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="7" y="7" width="10" height="10" rx="2" fill="currentColor" />
                 </svg>
               </button>
             </div>
@@ -2462,6 +2544,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           autoFollow = distance < 120;
           els.scrollBtn.classList.toggle("visible", !autoFollow && messages.length > 0);
         }, { passive: true });
+        window.addEventListener("resize", updateScrollButtonOffset, { passive: true });
 
         window.addEventListener("hashchange", async () => {
           const route = parseRoute();
@@ -2485,13 +2568,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             cancelRun();
           }
         });
-        button.addEventListener("click", () => submitFrom(input));
+        button.addEventListener("click", () => {
+          if (running) {
+            cancelRun();
+            return;
+          }
+          submitFrom(input);
+        });
         bindDropZone(input);
       }
 
       function autosize(input) {
         input.style.height = "auto";
         input.style.height = Math.min(input.scrollHeight, 210) + "px";
+        updateScrollButtonOffset();
       }
 
       function scopeOfInput(input) {
@@ -2609,6 +2699,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           mount.appendChild(chip);
         });
         mount.classList.toggle("visible", attachments[scope].length > 0);
+        updateScrollButtonOffset();
       }
 
       function attachmentCardHTML(file, removable = true) {
@@ -2883,7 +2974,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function submitFrom(input) {
         const text = input.value.trim();
         const scope = scopeOfInput(input);
-        if ((!text && !attachments[scope].length) || running) return;
+        if (running) {
+          cancelRun();
+          return;
+        }
+        if (!text && !attachments[scope].length) return;
         if (!state.apiKey) {
           openSettings();
           showToast("先填 API Key，然后就能直接进入 AI 搜索对话。");
@@ -2902,9 +2997,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function startThread() {
+        document.body.classList.add("chat-active");
         els.hero.classList.add("hidden");
         els.thread.classList.add("active");
         els.threadComposer.style.display = "";
+        updateScrollButtonOffset();
         setTimeout(() => els.threadInput.focus(), 60);
       }
 
@@ -2914,6 +3011,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         currentChat = null;
         activeFolder = "";
         closeChatMenu();
+        document.body.classList.remove("chat-active");
         els.messages.innerHTML = "";
         els.hero.classList.remove("hidden");
         els.thread.classList.remove("active");
@@ -2924,6 +3022,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         attachments.thread = [];
         renderAttachments("hero");
         renderAttachments("thread");
+        updateScrollButtonOffset();
         if (!opts.preserveHash) history.pushState(null, "", location.pathname + location.search);
         renderSidebar();
         updateSendState();
@@ -2993,13 +3092,22 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           createdAt: chat.createdAt || Date.now(),
           updatedAt: chat.updatedAt || Date.now(),
         };
-        messages = Array.isArray(chat.messages) ? chat.messages : [];
+        messages = normalizeLoadedMessages(Array.isArray(chat.messages) ? chat.messages : []);
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
         startThread();
         updateSendState();
         renderSidebar();
         scrollToBottom();
+      }
+
+      function normalizeLoadedMessages(items) {
+        return items.map((message) => {
+          if (!message?.loading) return message;
+          const next = { ...message, loading: false };
+          if (!next.content) next.content = "生成已中断。";
+          return next;
+        });
       }
 
       function scheduleSaveChat() {
@@ -3100,12 +3208,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         sources.style.display = sourceItems.length ? "" : "none";
 
         if (message.loading && !message.content && !message.thinking) {
-          answer.innerHTML = `<div class="loading-line"><span class="dots"><span></span><span></span><span></span></span><span>正在检索和组织答案…</span></div>`;
+          answer.innerHTML = loadingDotsHTML();
           footer.innerHTML = "";
           return;
         }
         const thinking = renderThinking(message);
-        const body = message.content ? renderMarkdown(message.content) : `<div class="loading-line"><span class="dots"><span></span><span></span><span></span></span><span>正在组织正文…</span></div>`;
+        const body = message.content ? renderMarkdown(message.content) : loadingDotsHTML();
         answer.innerHTML = thinking + body;
         bindThinking(answer, message);
         bindCodeCopyButtons(answer);
@@ -3125,12 +3233,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!message.thinking) return "";
         const done = !message.loading && message.content;
         const seconds = Math.max(1, Math.round((message.thoughtSeconds || 0) / 1000));
-        const label = done ? `thought for ${seconds} seconds>` : "thinking...";
+        const label = done ? `thought for ${seconds} seconds` : "thinking...";
         return `
           <div class="thinking-block${message.thoughtOpen ? " open" : ""}">
             <button class="thinking-toggle" type="button">${esc(label)}<span>›</span></button>
             <div class="thinking-content">${esc(message.thinking)}</div>
           </div>`;
+      }
+
+      function loadingDotsHTML() {
+        return `<div class="loading-line" aria-label="loading"><span class="dots"><span></span><span></span><span></span></span></div>`;
       }
 
       function bindThinking(root, message) {
@@ -3373,8 +3485,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function updateSendState() {
         const hasHero = els.heroInput.value.trim().length > 0 || attachments.hero.length > 0;
         const hasThread = els.threadInput.value.trim().length > 0 || attachments.thread.length > 0;
-        els.heroSendBtn.disabled = !hasHero || running;
-        els.threadSendBtn.disabled = !hasThread || running;
+        [
+          [els.heroSendBtn, hasHero],
+          [els.threadSendBtn, hasThread],
+        ].forEach(([button, hasContent]) => {
+          button.disabled = running ? false : !hasContent;
+          button.classList.toggle("running", running);
+          button.title = running ? "停止生成" : "发送";
+          button.setAttribute("aria-label", running ? "停止生成" : "发送");
+        });
       }
 
       function openSettings() {
@@ -3821,6 +3940,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         requestAnimationFrame(() => {
           window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
         });
+      }
+
+      function updateScrollButtonOffset() {
+        if (!els.threadComposer || !els.scrollBtn) return;
+        const visible = els.threadComposer.style.display !== "none";
+        const height = visible ? els.threadComposer.getBoundingClientRect().height : 0;
+        els.scrollBtn.style.bottom = `${Math.max(120, height + 34)}px`;
       }
 
       function domainOf(url) {
