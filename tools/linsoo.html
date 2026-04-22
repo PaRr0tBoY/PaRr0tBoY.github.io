@@ -235,6 +235,15 @@
         margin-bottom: 18px;
       }
 
+      .sidebar-section.drag-over .sidebar-title,
+      .folder-row.drag-over,
+      .folder-chat-list.drag-over,
+      #pinnedList.drag-over,
+      #recentList.drag-over {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
       .sidebar-title {
         margin: 0 0 8px 4px;
         color: var(--faint);
@@ -259,6 +268,20 @@
         transition:
           background var(--speed),
           color var(--speed);
+      }
+
+      .sidebar-action,
+      .sidebar-title,
+      .chat-row,
+      .folder-row,
+      .chat-menu,
+      .composer-tools,
+      .composer-actions {
+        user-select: none;
+      }
+
+      .chat-row.dragging {
+        opacity: 0.46;
       }
 
       .folder-row .folder-caret {
@@ -326,8 +349,8 @@
       }
 
       .sidebar-action[data-icon="settings"] {
-        --sidebar-icon-size: 19px;
-        --sidebar-icon-stroke: 1.82;
+        --sidebar-icon-size: 17px;
+        --sidebar-icon-stroke: 1.9;
       }
 
       .sidebar-action[data-icon="theme"] {
@@ -446,6 +469,11 @@
         flex: 0 0 auto;
       }
 
+      .chat-menu .menu-icon svg {
+        width: 15px;
+        height: 15px;
+      }
+
       .chat-menu button.danger {
         color: var(--danger);
       }
@@ -548,10 +576,20 @@
       }
 
       .search-result-title {
+        min-width: 0;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
         font-size: 14px;
+      }
+
+      .search-result-title svg {
+        width: 15px;
+        height: 15px;
+        flex: 0 0 15px;
       }
 
       .search-result-time {
@@ -726,28 +764,51 @@
       }
 
       .rail-mark {
-        height: 1px;
+        position: relative;
+        height: 9px;
         min-width: 10px;
         max-width: 48px;
         border: none;
         border-radius: 999px;
-        background: color-mix(in srgb, var(--faint) 34%, transparent);
+        background: transparent;
         cursor: pointer;
         transition:
           width var(--speed),
-          height var(--speed),
-          background var(--speed),
           opacity var(--speed);
       }
 
-      .conversation-rail:hover .rail-mark {
+      .rail-mark::before {
+        content: "";
+        position: absolute;
+        top: 50%;
+        right: 0;
+        width: 100%;
+        height: 1px;
+        transform: translateY(-50%);
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--faint) 34%, transparent);
+        transition:
+          height var(--speed),
+          background var(--speed);
+      }
+
+      .conversation-rail:hover .rail-mark::before {
         background: color-mix(in srgb, var(--faint) 58%, transparent);
       }
 
-      .rail-mark.active,
-      .rail-mark:hover {
+      .rail-mark.active::before {
         height: 2px;
         background: var(--accent);
+      }
+
+      .conversation-rail:hover .rail-mark.active:not(:hover)::before {
+        height: 1px;
+        background: color-mix(in srgb, var(--faint) 58%, transparent);
+      }
+
+      .conversation-rail .rail-mark:hover::before {
+        height: 2px;
+        background: var(--accent) !important;
       }
 
       .rail-nav {
@@ -2421,7 +2482,11 @@
       }
 
       @media (max-width: 720px) {
-        html,
+        html {
+          min-height: 100%;
+          overflow-x: hidden;
+        }
+
         body:not(.chat-active) {
           height: 100dvh;
           min-height: 100dvh;
@@ -2430,7 +2495,9 @@
 
         body.chat-active {
           height: auto;
+          min-height: 100dvh;
           overflow-x: hidden;
+          overflow-y: auto;
         }
 
         body:not(.chat-active) .shell {
@@ -2828,6 +2895,20 @@
               </div>
               <label class="switch"><input id="cfgRail" type="checkbox" /><span></span></label>
             </div>
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">队列调用</div>
+                <div class="setting-subtitle">首选模型失败后，按模型列表顺序尝试下一个模型。</div>
+              </div>
+              <label class="switch"><input id="cfgQueueFallback" type="checkbox" /><span></span></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">失败重做</div>
+                <div class="setting-subtitle">单个模型失败或空输出时，按 1s、2s、3s 间隔重试。</div>
+              </div>
+              <label class="switch"><input id="cfgRetryOnFailure" type="checkbox" /><span></span></label>
+            </div>
             <div class="field" style="margin-top: 16px">
               <div class="field-label">配置</div>
               <div class="inline-actions">
@@ -2888,7 +2969,7 @@
                 </div>
                 <button class="primary-btn" id="refreshModelsBtn">刷新</button>
               </div>
-              <div class="field-hint">只保存一个当前模型。获取不到模型列表时，可以直接输入模型名称并保存；模型列表按 Base URL 和 API Key 缓存，Base URL 变化后会重新获取。</div>
+              <div class="field-hint">按 Enter 或点击候选模型加入调用列表；第一个模型优先调用。获取到的模型只作为候选，不会自动进入调用列表。</div>
               <div class="model-list" id="modelList"></div>
             </div>
             <div class="field">
@@ -2968,7 +3049,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       const ICON_SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2.2M12 18.8V21M4.8 4.8l1.6 1.6M17.6 17.6l1.6 1.6M3 12h2.2M18.8 12H21M4.8 19.2l1.6-1.6M17.6 6.4l1.6-1.6"/><circle cx="12" cy="12" r="3.7"/></svg>';
       const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
       const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-      const ICON_CONTINUE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
       const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
       const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
       const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
@@ -3010,12 +3090,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         apiKey: "",
         models: [],
         activeModel: "",
+        modelQueue: [],
         prompt: DEFAULT_PROMPT,
         mode: "search",
         theme: "light",
         themeMode: "light",
         webSearch: true,
         railEnabled: true,
+        queueFallback: false,
+        retryOnFailure: true,
         provider: "custom-default",
         customName: "",
         customProviders: [{ ...DEFAULT_CUSTOM_PROVIDER }],
@@ -3031,6 +3114,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let activeChatMenuSlug = "";
       let pendingDeleteSlug = "";
       let folderPickerSlug = "";
+      let draggedChatSlug = "";
       let attachments = {
         hero: [],
         thread: [],
@@ -3158,6 +3242,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "testApiKeyBtn",
           "cfgWebSearch",
           "cfgRail",
+          "cfgQueueFallback",
+          "cfgRetryOnFailure",
           "exportConfigBtn",
           "importConfigBtn",
           "importConfigInput",
@@ -3335,7 +3421,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const rows = folders.filter((folder) => !query || folder.toLowerCase().includes(query.toLowerCase()));
         els.folderResults.innerHTML = rows.map((folder) => `
           <button class="search-result-row" data-folder="${esc(folder)}">
-            <span class="search-result-title">${ICON_FOLDER} ${esc(folder)}</span>
+            <span class="search-result-title">${ICON_FOLDER}<span>${esc(folder)}</span></span>
             <span class="search-result-time">Folder</span>
           </button>`).join("");
         if (query && !exact) {
@@ -3354,18 +3440,41 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       async function assignChatFolder(folder) {
         const name = String(folder || "").trim().slice(0, 48);
         if (!name || !folderPickerSlug) return;
-        const chat = await readJsonFile(`${OPFS_CHAT_DIR}/${folderPickerSlug}.json`, null);
-        const target = chat || (currentChat?.slug === folderPickerSlug ? { ...currentChat, messages } : null);
-        if (!target) return closeFolderPicker();
-        target.folder = name;
-        target.updatedAt = Date.now();
-        await writeJsonFile(`${OPFS_CHAT_DIR}/${target.slug}.json`, target);
-        if (currentChat?.slug === target.slug) currentChat.folder = name;
-        const idx = chatIndex.findIndex((item) => item.slug === target.slug);
-        if (idx >= 0) chatIndex[idx] = chatSummary(target);
+        const moved = await updateChatPlacement(folderPickerSlug, { folder: name, pinned: false });
         expandedFolder = name;
         closeFolderPicker();
-        renderSidebar();
+        if (moved) renderSidebar();
+      }
+
+      async function updateChatPlacement(slug, placement) {
+        if (!slug) return false;
+        const target = currentChat?.slug === slug
+          ? { ...currentChat, messages }
+          : await readJsonFile(`${OPFS_CHAT_DIR}/${slug}.json`, null);
+        if (!target) return false;
+        if (Object.prototype.hasOwnProperty.call(placement, "folder")) {
+          target.folder = String(placement.folder || "").trim().slice(0, 48);
+        }
+        if (Object.prototype.hasOwnProperty.call(placement, "pinned")) {
+          target.pinned = !!placement.pinned;
+        }
+        target.updatedAt = Date.now();
+        await writeJsonFile(`${OPFS_CHAT_DIR}/${target.slug}.json`, target);
+        if (currentChat?.slug === target.slug) {
+          currentChat = {
+            ...currentChat,
+            title: target.title,
+            titlePending: !!target.titlePending,
+            pinned: !!target.pinned,
+            folder: target.folder || "",
+          };
+        }
+        const idx = chatIndex.findIndex((item) => item.slug === target.slug);
+        const summary = chatSummary(target);
+        if (idx >= 0) chatIndex[idx] = summary;
+        else chatIndex.unshift(summary);
+        chatIndex.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        return true;
       }
 
       async function deleteChat(slug) {
@@ -3429,9 +3538,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {}
 
         state.models = [];
+        if (!Array.isArray(state.modelQueue)) state.modelQueue = [];
+        if (!state.modelQueue.length && state.activeModel) state.modelQueue = [state.activeModel];
+        state.modelQueue = uniqueModels(state.modelQueue);
+        state.activeModel = state.modelQueue[0] || state.activeModel || "";
         if (!state.themeMode) state.themeMode = state.theme || "light";
         state.webSearch = state.webSearch !== false;
         state.railEnabled = state.railEnabled !== false;
+        state.queueFallback = state.queueFallback === true;
+        state.retryOnFailure = state.retryOnFailure !== false;
         if (!Array.isArray(state.customProviders)) state.customProviders = [];
         if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
         if (!state.provider) state.provider = state.baseUrl ? inferProviderFromBaseUrl(state.baseUrl) || "glm" : "custom-default";
@@ -3456,8 +3571,23 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function ensureActiveModel() {
-        if (state.activeModel) return;
-        state.activeModel = fetchedModels[0] || "";
+        if (!Array.isArray(state.modelQueue)) state.modelQueue = [];
+        if (!state.modelQueue.length && state.activeModel) state.modelQueue = [state.activeModel];
+        state.modelQueue = uniqueModels(state.modelQueue);
+        state.activeModel = state.modelQueue[0] || "";
+      }
+
+      function uniqueModels(models) {
+        const seen = new Set();
+        return (models || [])
+          .map((model) => String(model || "").trim())
+          .filter(Boolean)
+          .filter((model) => {
+            const key = model.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          });
       }
 
       function bindEvents() {
@@ -3791,9 +3921,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function renderModelPickers() {
         ensureActiveModel();
         ["hero", "thread"].forEach((scope) => {
-          els[`${scope}ModelLabel`].textContent = state.activeModel || "Model";
+          els[`${scope}ModelLabel`].textContent = state.modelQueue[0] || "Model";
           renderComposerModelDropdown(scope);
         });
+        renderModelList();
       }
 
       function renderHeroLine() {
@@ -3827,11 +3958,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function modelChoices() {
         const seen = new Set();
-        return [state.activeModel, ...fetchedModels]
+        return [...(state.modelQueue || []), ...fetchedModels]
           .filter(Boolean)
           .filter((model) => {
-            if (seen.has(model)) return false;
-            seen.add(model);
+            const key = model.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
             return true;
           });
       }
@@ -3867,9 +3999,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function modelOptionHTML(model) {
         return `
-          <button class="model-option${model === state.activeModel ? " active" : ""}" data-model="${esc(model)}">
+          <button class="model-option${model === state.modelQueue?.[0] ? " active" : ""}" data-model="${esc(model)}">
             <span class="model-option-name">${esc(model)}</span>
-            ${model === state.activeModel ? '<span class="model-option-check">✓</span>' : ""}
+            ${model === state.modelQueue?.[0] ? '<span class="model-option-check">✓</span>' : ""}
           </button>`;
       }
 
@@ -3880,10 +4012,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               const open = folder === expandedFolder;
               const chats = chatIndex.filter((chat) => chat.folder === folder);
               return `
-                <button class="folder-row${open ? " open active" : ""}" data-folder="${esc(folder)}">
+                <button class="folder-row${open ? " open active" : ""}" data-folder="${esc(folder)}" data-drop-folder="${esc(folder)}">
                   <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span><span class="folder-caret">›</span>
                 </button>
-                ${open ? `<div class="folder-chat-list">${chats.map(chatRowHTML).join("")}</div>` : ""}`;
+                ${open ? `<div class="folder-chat-list" data-drop-folder="${esc(folder)}">${chats.map(chatRowHTML).join("")}</div>` : ""}`;
             }).join("")
           : `<div class="empty-row">No folders</div>`;
         els.folderList.querySelectorAll(".folder-row").forEach((btn) => {
@@ -3899,6 +4031,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.pinnedList.innerHTML = pinned.length ? pinned.map(chatRowHTML).join("") : emptySidebarRow("No pinned chats");
         els.recentList.innerHTML = recents.length ? recents.map(chatRowHTML).join("") : emptySidebarRow("No recent chats");
         bindChatRows();
+        bindSidebarDropTargets();
       }
 
       function emptySidebarRow(text) {
@@ -3907,7 +4040,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function chatRowHTML(chat) {
         return `
-          <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0">
+          <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0" draggable="true">
             <span class="chat-title">${esc(chat.title)}</span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
           </div>`;
@@ -3966,6 +4099,22 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           row.addEventListener("keydown", (event) => {
             if (event.key === "Enter") open(event);
           });
+          row.addEventListener("dragstart", (event) => {
+            if (event.target.closest(".chat-menu-btn") || event.target.closest(".rename-input")) {
+              event.preventDefault();
+              return;
+            }
+            draggedChatSlug = row.dataset.slug;
+            row.classList.add("dragging");
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/linsoo-chat", draggedChatSlug);
+            event.dataTransfer.setData("text/plain", draggedChatSlug);
+          });
+          row.addEventListener("dragend", () => {
+            draggedChatSlug = "";
+            row.classList.remove("dragging");
+            clearSidebarDragState();
+          });
         });
         document.querySelectorAll(".chat-menu-btn").forEach((btn) => {
           btn.addEventListener("click", (event) => {
@@ -3975,6 +4124,49 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      function bindSidebarDropTargets() {
+        const targets = [
+          { node: els.pinnedList, placement: { folder: "", pinned: true } },
+          { node: els.recentList, placement: { folder: "", pinned: false } },
+          ...[...document.querySelectorAll("[data-drop-folder]")].map((node) => ({
+            node,
+            placement: { folder: node.dataset.dropFolder || "", pinned: false },
+          })),
+        ].filter((target) => target.node);
+
+        targets.forEach(({ node, placement }) => {
+          node.addEventListener("dragover", (event) => {
+            const slug = dragChatSlug(event);
+            if (!slug) return;
+            event.preventDefault();
+            event.dataTransfer.dropEffect = "move";
+            node.classList.add("drag-over");
+          });
+          node.addEventListener("dragleave", (event) => {
+            if (!node.contains(event.relatedTarget)) node.classList.remove("drag-over");
+          });
+          node.addEventListener("drop", async (event) => {
+            const slug = dragChatSlug(event);
+            if (!slug) return;
+            event.preventDefault();
+            event.stopPropagation();
+            clearSidebarDragState();
+            const moved = await updateChatPlacement(slug, placement);
+            if (moved && placement.folder) expandedFolder = placement.folder;
+            renderSidebar();
+          });
+        });
+      }
+
+      function dragChatSlug(event) {
+        return event.dataTransfer?.getData("text/linsoo-chat") || event.dataTransfer?.getData("text/plain") || draggedChatSlug;
+      }
+
+      function clearSidebarDragState() {
+        document.querySelectorAll(".drag-over").forEach((node) => node.classList.remove("drag-over"));
+        document.querySelectorAll(".chat-row.dragging").forEach((node) => node.classList.remove("dragging"));
+      }
+
       function openChatMenu(slug, rect) {
         activeChatMenuSlug = slug;
         const chat = chatIndex.find((item) => item.slug === slug);
@@ -3982,7 +4174,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.chatMenu.innerHTML = `
           <button data-action="pin"><span class="menu-icon">${ICON_PIN}</span><span>${chat.pinned ? "取消固定" : "固定对话"}</span></button>
           <button data-action="rename"><span class="menu-icon">${ICON_EDIT}</span><span>重命名</span></button>
-          <button data-action="folder"><span class="menu-icon">${ICON_FOLDER}</span><span>添加到文件夹</span></button>
+          <button data-action="${chat.folder ? "remove-folder" : "folder"}"><span class="menu-icon">${ICON_FOLDER}</span><span>${chat.folder ? "移出文件夹" : "添加到文件夹"}</span></button>
           <hr>
           <button class="danger" data-action="delete"><span class="menu-icon">${ICON_TRASH}</span><span>删除</span></button>`;
         els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, rect.right + 6)}px`;
@@ -4001,10 +4193,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       async function handleChatMenu(action) {
-        let chat = await readJsonFile(`${OPFS_CHAT_DIR}/${activeChatMenuSlug}.json`, null);
-        if (!chat && currentChat?.slug === activeChatMenuSlug) {
-          chat = { ...currentChat, messages };
-        }
+        let chat = currentChat?.slug === activeChatMenuSlug
+          ? { ...currentChat, messages }
+          : await readJsonFile(`${OPFS_CHAT_DIR}/${activeChatMenuSlug}.json`, null);
         if (!chat) return;
         if (action === "pin") {
           chat.pinned = !chat.pinned;
@@ -4017,6 +4208,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (action === "folder") {
           closeChatMenu();
           openFolderPicker(chat.slug);
+          return;
+        }
+        if (action === "remove-folder") {
+          await updateChatPlacement(chat.slug, { folder: "" });
+          closeChatMenu();
+          renderSidebar();
           return;
         }
         if (action === "delete") {
@@ -4395,13 +4592,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         bindCodeCopyButtons(answer);
         footer.innerHTML = `
           <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
-          <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
-          <button class="mini-btn message-action-btn continue-answer-btn" title="继续追问" aria-label="继续追问">${ICON_CONTINUE}</button>`;
+          <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>`;
         footer.querySelector(".copy-answer-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
-        footer.querySelector(".continue-answer-btn").addEventListener("click", () => {
-          els.threadInput.focus();
-        });
         queueMathTypeset(answer);
       }
 
@@ -4462,6 +4655,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function maybeGenerateTitle() {
         if (!currentChat?.titlePending || !state.apiKey) return;
+        const titleModel = requestModelQueue()[0];
+        if (!titleModel) return;
         const firstUser = messages.find((m) => m.role === "user");
         const firstAssistant = messages.find((m) => m.role === "assistant" && m.content);
         if (!firstUser || !firstAssistant) return;
@@ -4473,7 +4668,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               Authorization: `Bearer ${state.apiKey}`,
             },
             body: JSON.stringify({
-              model: state.activeModel || modelChoices()[0],
+              model: titleModel,
               messages: [
                 { role: "system", content: "Create a concise conversation title. Return only the title, no quotes." },
                 { role: "user", content: `${firstUser.content}\n\n${firstAssistant.content.slice(0, 1200)}` },
@@ -4496,21 +4691,61 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       async function callChat(assistantId, signal) {
-        const modelList = modelChoices();
+        const modelList = requestModelQueue();
         if (!modelList.length) {
           openSettings();
-          throw new Error("请先在设置中选择模型。");
+          throw new Error("请先在设置中添加调用模型。");
         }
+        const queue = state.queueFallback === true ? modelList : modelList.slice(0, 1);
         let lastError;
-        for (const model of modelList) {
+        for (const model of queue) {
           try {
-            return await callChatModel(model, assistantId, signal);
+            return await callChatModelWithRetries(model, assistantId, signal);
           } catch (error) {
             if (error.name === "AbortError") throw error;
             lastError = error;
           }
         }
-        throw lastError || new Error("所有模型都请求失败");
+        throw lastError || new Error("模型请求失败");
+      }
+
+      function requestModelQueue() {
+        ensureActiveModel();
+        return uniqueModels(state.modelQueue || []);
+      }
+
+      async function callChatModelWithRetries(model, assistantId, signal) {
+        const delays = state.retryOnFailure === false ? [0] : [0, 1000, 2000, 3000];
+        let lastError;
+        for (let i = 0; i < delays.length; i++) {
+          if (delays[i]) {
+            await waitForRetry(delays[i], signal);
+            updateMessage(assistantId, { content: "", thinking: "", thoughtSeconds: 0, loading: true });
+          }
+          try {
+            const content = await callChatModel(model, assistantId, signal);
+            if (!content.trim()) throw new Error("模型没有返回内容。");
+            return content;
+          } catch (error) {
+            if (error.name === "AbortError") throw error;
+            lastError = error;
+          }
+        }
+        throw new Error(`${model}: ${lastError?.message || lastError || "请求失败"}`);
+      }
+
+      function waitForRetry(ms, signal) {
+        return new Promise((resolve, reject) => {
+          if (signal?.aborted) {
+            reject(new DOMException("Aborted", "AbortError"));
+            return;
+          }
+          const timer = setTimeout(resolve, ms);
+          signal?.addEventListener("abort", () => {
+            clearTimeout(timer);
+            reject(new DOMException("Aborted", "AbortError"));
+          }, { once: true });
+        });
       }
 
       async function callChatModel(model, assistantId, signal) {
@@ -4549,7 +4784,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const type = response.headers.get("content-type") || "";
         if (!response.body || !type.includes("text/event-stream")) {
           const data = await response.json();
-          return extractContentFromResponse(data);
+          const content = extractContentFromResponse(data);
+          if (!content) throw new Error("模型没有返回内容。");
+          return content;
         }
 
         const reader = response.body.getReader();
@@ -4598,7 +4835,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           }
         }
 
-        return content.trim() || "模型没有返回内容。";
+        if (!content.trim()) throw new Error("模型没有返回内容。");
+        return content.trim();
       }
 
       function buildSystemPrompt() {
@@ -4680,6 +4918,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         els.cfgWebSearch.checked = state.webSearch !== false;
         els.cfgRail.checked = state.railEnabled !== false;
+        els.cfgQueueFallback.checked = state.queueFallback === true;
+        els.cfgRetryOnFailure.checked = state.retryOnFailure !== false;
         els.cfgApiKey.type = "password";
         els.toggleKeyBtn.classList.remove("visible");
         renderProviderFields();
@@ -4702,9 +4942,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
         state.webSearch = els.cfgWebSearch.checked;
         state.railEnabled = els.cfgRail.checked;
+        state.queueFallback = els.cfgQueueFallback.checked;
+        state.retryOnFailure = els.cfgRetryOnFailure.checked;
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
-        if (els.cfgModelInput.value.trim()) selectModel(els.cfgModelInput.value.trim(), { silent: true });
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
         if (oldUrl !== state.baseUrl) {
           fetchedModels = [];
@@ -4956,6 +5197,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!data) return;
           Object.assign(state, data.state || data);
           state.models = [];
+          ensureActiveModel();
           await saveState();
           applyTheme();
           applyGeneralSettings();
@@ -5001,16 +5243,37 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function selectModel(model, opts = {}) {
-        if (!model) return;
-        state.activeModel = model;
+        const name = String(model || "").trim();
+        if (!name) return;
+        state.modelQueue = uniqueModels([name, ...(state.modelQueue || []).filter((item) => item !== name)]);
+        state.activeModel = state.modelQueue[0] || "";
+        if (els.cfgModelInput) els.cfgModelInput.value = name;
         saveState();
         renderModelPickers();
         renderSettingsModelDropdown(els.cfgModelInput.value);
-        if (!opts.silent) showToast(`已选择模型：${model}`);
+        if (!opts.silent) showToast(`已加入调用列表：${name}`);
       }
 
       function renderModelList() {
-        if (els.modelList) els.modelList.innerHTML = "";
+        if (!els.modelList) return;
+        ensureActiveModel();
+        els.modelList.innerHTML = state.modelQueue.length
+          ? state.modelQueue.map((model, index) => `
+              <span class="model-token" title="${index === 0 ? "优先调用" : "队列候选"}">
+                <span>${index + 1}. ${esc(model)}</span>
+                <button type="button" data-remove-model="${esc(model)}" title="移除" aria-label="移除 ${esc(model)}">×</button>
+              </span>`).join("")
+          : `<div class="model-empty">还没有调用模型。按 Enter 或点击候选模型添加。</div>`;
+        els.modelList.querySelectorAll("[data-remove-model]").forEach((button) => {
+          button.addEventListener("click", () => removeModelFromQueue(button.dataset.removeModel));
+        });
+      }
+
+      function removeModelFromQueue(model) {
+        state.modelQueue = (state.modelQueue || []).filter((item) => item !== model);
+        ensureActiveModel();
+        saveState();
+        renderModelPickers();
       }
 
       async function fetchModels({ force = false, open = false, filter = null } = {}) {
