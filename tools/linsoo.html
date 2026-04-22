@@ -9,6 +9,22 @@
       href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&amp;family=DM+Mono:wght@400;500&amp;display=swap"
       rel="stylesheet"
     />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [["\\(", "\\)"]],
+          displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+          processEscapes: true,
+        },
+        chtml: {
+          matchFontHeight: false,
+        },
+        startup: {
+          typeset: false,
+        },
+      };
+    </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js"></script>
     <style>
       :root {
         --paper: #f5f4ed;
@@ -41,6 +57,35 @@
         --radius-md: 16px;
         --radius-sm: 8px;
         --speed: 0.16s ease;
+      }
+
+      body[data-theme="dark"] {
+        --paper: #1f1f1c;
+        --ivory: #2b2b28;
+        --white: #343430;
+        --sand: #353530;
+        --sand-2: #30302c;
+        --ink: #f1f0e8;
+        --charcoal: #181815;
+        --text-strong: #d7d5ca;
+        --muted: #b8b5aa;
+        --faint: #8f8c82;
+        --silver: #bdb8aa;
+        --line: #34342f;
+        --line-strong: #4a4942;
+        --ring: #55534b;
+        --ring-deep: #6a675d;
+        --accent: #d97757;
+        --accent-2: #e48764;
+        --accent-soft: rgba(217, 119, 87, 0.16);
+        --olive: #a6b094;
+        --olive-soft: rgba(166, 176, 148, 0.14);
+        --focus: #7aa7ff;
+        --danger: #f28b82;
+        --danger-soft: rgba(242, 139, 130, 0.14);
+        --shadow-soft: 0 0 0 1px var(--line), 0 18px 70px rgba(0, 0, 0, 0.2);
+        --shadow-ring: 0 0 0 1px var(--ring);
+        --shadow-ring-deep: 0 0 0 1px var(--ring-deep);
       }
 
       * {
@@ -100,7 +145,7 @@
         justify-content: space-between;
         gap: 12px;
         padding: 14px clamp(16px, 4vw, 34px);
-        background: rgba(245, 244, 237, 0.92);
+        background: color-mix(in srgb, var(--paper) 92%, transparent);
         border-bottom: 1px solid var(--line);
       }
 
@@ -238,6 +283,30 @@
           box-shadow var(--speed);
       }
 
+      .composer-shell.drop-active {
+        min-height: 178px;
+        border-style: dashed;
+        border-color: var(--focus);
+        background: color-mix(in srgb, var(--focus) 13%, var(--ivory));
+        box-shadow:
+          var(--shadow-soft),
+          0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      }
+
+      .composer-shell.drop-active::after {
+        content: "Drop files here";
+        position: absolute;
+        inset: 10px;
+        display: grid;
+        place-items: center;
+        border-radius: calc(var(--radius-lg) - 8px);
+        background: color-mix(in srgb, var(--focus) 12%, transparent);
+        color: var(--focus);
+        font-size: 14px;
+        font-weight: 600;
+        pointer-events: none;
+      }
+
       .composer-shell:focus-within {
         border-color: var(--focus);
         box-shadow:
@@ -269,13 +338,6 @@
         justify-content: space-between;
         gap: 10px;
         min-height: 40px;
-      }
-
-      .mode-strip {
-        display: flex;
-        align-items: center;
-        gap: 6px;
-        min-width: 0;
       }
 
       .composer-tools,
@@ -414,8 +476,8 @@
       .attachment-strip {
         display: none;
         flex-wrap: wrap;
-        gap: 6px;
-        padding: 0 4px;
+        gap: 10px;
+        padding: 2px 4px 0;
       }
 
       .attachment-strip.visible {
@@ -424,26 +486,67 @@
 
       .attachment-chip {
         display: inline-flex;
-        align-items: center;
-        gap: 6px;
-        max-width: 100%;
-        border-radius: 999px;
-        background: var(--sand);
+        position: relative;
+        width: 118px;
+        height: 104px;
+        flex-direction: column;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 8px;
+        border-radius: 13px;
+        background: color-mix(in srgb, var(--sand) 80%, var(--ivory));
         box-shadow: var(--shadow-ring);
         color: var(--text-strong);
-        padding: 5px 8px;
-        font-size: 12px;
+        padding: 10px;
+        font-size: 11px;
       }
 
       .attachment-chip span {
+        display: block;
+        width: 100%;
         overflow: hidden;
         text-overflow: ellipsis;
-        white-space: nowrap;
+        line-height: 1.25;
+      }
+
+      .attachment-icon {
+        width: 38px;
+        height: 44px;
+        display: grid;
+        place-items: end center;
+        border-radius: 6px 6px 3px 3px;
+        background:
+          linear-gradient(135deg, transparent 0 14px, var(--ivory) 14px),
+          var(--white);
+        box-shadow: var(--shadow-ring);
+        color: var(--muted);
+        padding-bottom: 5px;
+        font-family: "DM Mono", ui-monospace, monospace;
+        font-size: 9px;
+        font-weight: 600;
+        letter-spacing: 0.03em;
+        text-transform: uppercase;
+      }
+
+      .attachment-name {
+        min-height: 28px;
+        color: var(--text-strong);
+      }
+
+      .attachment-meta {
+        color: var(--faint);
+        font-size: 10px;
       }
 
       .attachment-chip button {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        width: 19px;
+        height: 19px;
+        border-radius: 50%;
         border: none;
-        background: transparent;
+        background: color-mix(in srgb, var(--ink) 8%, transparent);
         color: var(--muted);
         cursor: pointer;
         font-size: 14px;
@@ -586,6 +689,7 @@
         border-radius: 0;
         color: var(--ink);
         background: transparent;
+        white-space: normal;
       }
 
       .assistant-head {
@@ -627,6 +731,10 @@
         gap: 6px;
       }
 
+      .assistant-head .message-actions {
+        display: none;
+      }
+
       .mini-btn {
         width: 32px;
         height: 32px;
@@ -658,11 +766,18 @@
         margin-top: 12px;
       }
 
+      .user-footer {
+        justify-self: end;
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        margin-top: -2px;
+      }
+
       .message-action-btn {
-        min-height: 32px;
-        padding: 0 10px;
-        font-size: 12px;
-        font-weight: 500;
+        width: 32px;
+        height: 32px;
+        box-shadow: none;
       }
 
       .answer {
@@ -711,6 +826,7 @@
         background: var(--ink);
         color: var(--silver);
         padding: 14px;
+        white-space: pre;
       }
 
       .code-block {
@@ -759,13 +875,16 @@
         margin: 0;
         border: none;
         border-radius: 0;
+        white-space: pre;
       }
 
       .answer pre code {
+        display: block;
         border: none;
         background: transparent;
         color: inherit;
         padding: 0;
+        white-space: pre;
       }
 
       .answer blockquote {
@@ -801,6 +920,43 @@
         text-decoration: underline;
         text-decoration-thickness: 1px;
         text-underline-offset: 3px;
+      }
+
+      .math-display {
+        overflow-x: auto;
+        margin: 14px 0 16px;
+        padding: 2px 0;
+      }
+
+      .thinking-block {
+        margin: 0 0 14px;
+        color: var(--faint);
+        font-size: 13px;
+      }
+
+      .thinking-toggle {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        border: none;
+        background: transparent;
+        color: var(--faint);
+        cursor: pointer;
+        padding: 0;
+        font-size: 13px;
+      }
+
+      .thinking-content {
+        display: none;
+        margin-top: 8px;
+        border-left: 2px solid var(--line-strong);
+        padding-left: 11px;
+        white-space: pre-wrap;
+        line-height: 1.55;
+      }
+
+      .thinking-block.open .thinking-content {
+        display: block;
       }
 
       .sources {
@@ -1264,6 +1420,11 @@
             </svg>
             <span>新对话</span>
           </button>
+          <button class="icon-btn" id="themeBtn" title="切换暗色模式" aria-label="切换暗色模式">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+              <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8z" />
+            </svg>
+          </button>
           <button class="icon-btn" id="settingsBtn" title="设置" aria-label="设置">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
               <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z" />
@@ -1280,13 +1441,13 @@
           </div>
           <div class="composer-panel">
             <div class="composer-shell">
+              <div class="attachment-strip" id="heroAttachments"></div>
               <textarea
                 class="composer-input"
                 id="heroInput"
                 placeholder="How can I help you today?"
                 spellcheck="false"
               ></textarea>
-              <div class="attachment-strip" id="heroAttachments"></div>
               <div class="composer-row">
                 <div class="composer-tools">
                   <button class="tool-btn upload-btn" data-input="heroFileInput" title="上传文件" aria-label="上传文件">+</button>
@@ -1325,13 +1486,13 @@
 
       <div class="thread-composer" id="threadComposer" style="display: none">
         <div class="composer-shell">
+          <div class="attachment-strip" id="threadAttachments"></div>
           <textarea
             class="composer-input"
             id="threadInput"
             placeholder="Ask anything"
             spellcheck="false"
           ></textarea>
-          <div class="attachment-strip" id="threadAttachments"></div>
           <div class="composer-row">
             <div class="composer-tools">
               <button class="tool-btn upload-btn" data-input="threadFileInput" title="上传文件" aria-label="上传文件">+</button>
@@ -1382,7 +1543,7 @@
             <div class="field">
               <div class="field-label">API Key</div>
               <input class="input mono" id="cfgApiKey" type="password" placeholder="sk-..." />
-              <div class="field-hint">仅保存在本机 localStorage。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
+              <div class="field-hint">保存在浏览器 OPFS。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
             </div>
             <div class="field">
               <div class="field-label">Models</div>
@@ -1421,6 +1582,10 @@
       const LINSO_STORAGE_KEY = "linso_v3";
       const MODEL_CACHE_KEY = "linsoo_model_cache_v1";
       const MAX_FILE_CHARS = 12000;
+      const PASTE_ATTACHMENT_LIMIT = 800;
+      const OPFS_SETTINGS_FILE = "linsoo-settings.json";
+      const OPFS_MODEL_CACHE_FILE = "linsoo-model-cache.json";
+      const OPFS_CHAT_DIR = "linsoo-chats";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
 Your job:
@@ -1456,6 +1621,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         },
       ];
 
+      const ICON_COPY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
+      const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+      const ICON_CONTINUE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+
       let state = {
         baseUrl: "",
         apiKey: "",
@@ -1463,9 +1633,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         activeModel: "",
         prompt: DEFAULT_PROMPT,
         mode: "search",
+        theme: "light",
       };
 
       let messages = [];
+      let currentChat = null;
       let attachments = {
         hero: [],
         thread: [],
@@ -1476,15 +1648,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let aborter = null;
       let autoFollow = true;
       let toastTimer = null;
+      let opfsRoot = null;
+      let opfsReady = false;
+      let saveTimer = null;
 
       const els = {};
 
-      function boot() {
+      async function boot() {
         cacheEls();
-        loadState();
-        loadModelCache();
+        await initStorage();
+        await loadState();
+        await loadModelCache();
         hydrateModelsFromCache();
         ensureActiveModel();
+        applyTheme();
         renderModelPickers();
         renderAttachments("hero");
         renderAttachments("thread");
@@ -1492,6 +1669,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderModelList();
         bindEvents();
         updateSendState();
+
+        const route = parseRoute();
+        if (route) {
+          await loadChatBySlug(route);
+          return;
+        }
 
         const q = new URLSearchParams(window.location.search).get("q");
         if (q && q.trim()) {
@@ -1527,6 +1710,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "settingsCancel",
           "settingsSave",
           "newChatBtn",
+          "themeBtn",
           "scrollBtn",
           "toast",
           "cfgBaseUrl",
@@ -1544,10 +1728,77 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
-      function loadState() {
+      async function initStorage() {
         try {
-          const raw = localStorage.getItem(STORAGE_KEY);
-          if (raw) Object.assign(state, JSON.parse(raw));
+          if (navigator.storage?.getDirectory) {
+            opfsRoot = await navigator.storage.getDirectory();
+            opfsReady = true;
+          }
+        } catch (e) {
+          opfsRoot = null;
+          opfsReady = false;
+        }
+      }
+
+      async function readJsonFile(path, fallback) {
+        if (!opfsReady) {
+          try {
+            const raw = localStorage.getItem(path);
+            return raw ? JSON.parse(raw) : fallback;
+          } catch (e) {
+            return fallback;
+          }
+        }
+        try {
+          const file = await getOpfsFile(path, { create: false });
+          if (!file) return fallback;
+          return JSON.parse(await file.text());
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      async function writeJsonFile(path, data) {
+        if (!opfsReady) {
+          try {
+            localStorage.setItem(path, JSON.stringify(data));
+          } catch (e) {}
+          return;
+        }
+        const handle = await getOpfsHandle(path, { create: true });
+        const writable = await handle.createWritable();
+        await writable.write(JSON.stringify(data, null, 2));
+        await writable.close();
+      }
+
+      async function getOpfsFile(path, opts = {}) {
+        const handle = await getOpfsHandle(path, opts);
+        return handle ? handle.getFile() : null;
+      }
+
+      async function getOpfsHandle(path, opts = {}) {
+        if (!opfsRoot) return null;
+        const parts = path.split("/").filter(Boolean);
+        let dir = opfsRoot;
+        for (let i = 0; i < parts.length - 1; i++) {
+          dir = await dir.getDirectoryHandle(parts[i], { create: opts.create });
+        }
+        try {
+          return await dir.getFileHandle(parts[parts.length - 1], { create: opts.create });
+        } catch (e) {
+          if (opts.create) throw e;
+          return null;
+        }
+      }
+
+      async function loadState() {
+        try {
+          const stored = await readJsonFile(OPFS_SETTINGS_FILE, null);
+          if (stored) Object.assign(state, stored);
+          if (!stored) {
+            const rawLegacy = localStorage.getItem(STORAGE_KEY);
+            if (rawLegacy) Object.assign(state, JSON.parse(rawLegacy));
+          }
         } catch (e) {}
 
         try {
@@ -1562,23 +1813,26 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
       }
 
-      function saveState() {
+      async function saveState() {
         try {
-          localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+          await writeJsonFile(OPFS_SETTINGS_FILE, state);
         } catch (e) {}
       }
 
-      function loadModelCache() {
+      async function loadModelCache() {
         try {
-          modelCache = JSON.parse(localStorage.getItem(MODEL_CACHE_KEY) || "{}");
+          modelCache = await readJsonFile(OPFS_MODEL_CACHE_FILE, {});
+          if (!Object.keys(modelCache).length) {
+            modelCache = JSON.parse(localStorage.getItem(MODEL_CACHE_KEY) || "{}");
+          }
         } catch (e) {
           modelCache = {};
         }
       }
 
-      function saveModelCache() {
+      async function saveModelCache() {
         try {
-          localStorage.setItem(MODEL_CACHE_KEY, JSON.stringify(modelCache));
+          await writeJsonFile(OPFS_MODEL_CACHE_FILE, modelCache);
         } catch (e) {}
       }
 
@@ -1615,6 +1869,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
         els.settingsSave.addEventListener("click", saveSettings);
         els.newChatBtn.addEventListener("click", newChat);
+        els.themeBtn.addEventListener("click", toggleTheme);
         els.scrollBtn.addEventListener("click", () => {
           autoFollow = true;
           scrollToBottom();
@@ -1655,6 +1910,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           autoFollow = distance < 120;
           els.scrollBtn.classList.toggle("visible", !autoFollow && messages.length > 0);
         }, { passive: true });
+
+        window.addEventListener("hashchange", async () => {
+          const route = parseRoute();
+          if (route && route !== currentChat?.slug) await loadChatBySlug(route);
+          if (!route && currentChat) newChat({ preserveHash: true });
+        });
       }
 
       function bindComposer(input, button) {
@@ -1662,6 +1923,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           autosize(input);
           updateSendState();
         });
+        input.addEventListener("paste", (event) => handlePasteAttachment(event, input));
         input.addEventListener("keydown", (event) => {
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
@@ -1672,11 +1934,57 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           }
         });
         button.addEventListener("click", () => submitFrom(input));
+        bindDropZone(input);
       }
 
       function autosize(input) {
         input.style.height = "auto";
         input.style.height = Math.min(input.scrollHeight, 210) + "px";
+      }
+
+      function scopeOfInput(input) {
+        return input === els.heroInput ? "hero" : "thread";
+      }
+
+      function shellOfInput(input) {
+        return input.closest(".composer-shell");
+      }
+
+      function bindDropZone(input) {
+        const shell = shellOfInput(input);
+        if (!shell) return;
+        let depth = 0;
+        shell.addEventListener("dragenter", (event) => {
+          if (!event.dataTransfer?.types?.includes("Files")) return;
+          event.preventDefault();
+          depth++;
+          shell.classList.add("drop-active");
+        });
+        shell.addEventListener("dragover", (event) => {
+          if (!event.dataTransfer?.types?.includes("Files")) return;
+          event.preventDefault();
+          event.dataTransfer.dropEffect = "copy";
+          shell.classList.add("drop-active");
+        });
+        shell.addEventListener("dragleave", () => {
+          depth = Math.max(0, depth - 1);
+          if (!depth) shell.classList.remove("drop-active");
+        });
+        shell.addEventListener("drop", async (event) => {
+          if (!event.dataTransfer?.files?.length) return;
+          event.preventDefault();
+          depth = 0;
+          shell.classList.remove("drop-active");
+          await addFiles(scopeOfInput(input), [...event.dataTransfer.files]);
+        });
+      }
+
+      async function handlePasteAttachment(event, input) {
+        const text = event.clipboardData?.getData("text/plain") || "";
+        if (text.length <= PASTE_ATTACHMENT_LIMIT) return;
+        event.preventDefault();
+        await addTextAttachment(scopeOfInput(input), text, "pasted");
+        updateSendState();
       }
 
       function bindFileInput(scope) {
@@ -1697,6 +2005,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             name: file.name,
             type: file.type || "file",
             size: file.size,
+            kind: "file",
             text: "",
           };
           if (isReadableTextFile(file)) {
@@ -1708,6 +2017,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           }
           attachments[scope].push(item);
         }
+        renderAttachments(scope);
+        updateSendState();
+      }
+
+      async function addTextAttachment(scope, text, name = "pasted") {
+        attachments[scope].push({
+          id: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now() + Math.random()),
+          name,
+          type: "text/plain",
+          size: text.length,
+          kind: "pasted",
+          text: text.slice(0, MAX_FILE_CHARS),
+        });
         renderAttachments(scope);
       }
 
@@ -1724,16 +2046,41 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const mount = els[`${scope}Attachments`];
         mount.innerHTML = "";
         attachments[scope].forEach((file) => {
-          const chip = document.createElement("span");
-          chip.className = "attachment-chip";
-          chip.innerHTML = `<span>${esc(file.name)}</span><button title="移除" aria-label="移除">×</button>`;
+          const template = document.createElement("template");
+          template.innerHTML = attachmentCardHTML(file, true).trim();
+          const chip = template.content.firstElementChild;
           chip.querySelector("button").addEventListener("click", () => {
             attachments[scope] = attachments[scope].filter((item) => item.id !== file.id);
             renderAttachments(scope);
+            updateSendState();
           });
           mount.appendChild(chip);
         });
         mount.classList.toggle("visible", attachments[scope].length > 0);
+      }
+
+      function attachmentCardHTML(file, removable = true) {
+        return `
+          <span class="attachment-chip">
+            <span class="attachment-icon">${esc(fileExt(file))}</span>
+            <span class="attachment-name">${esc(file.name)}</span>
+            <span class="attachment-meta">${esc(file.kind === "pasted" ? "pasted" : formatBytes(file.size))}</span>
+            ${removable ? '<button title="移除" aria-label="移除">×</button>' : ""}
+          </span>`;
+      }
+
+      function fileExt(file) {
+        if (file.kind === "pasted") return "TXT";
+        const name = file.name || "";
+        const ext = name.includes(".") ? name.split(".").pop() : "";
+        return (ext || (file.type || "file").split("/").pop() || "FILE").slice(0, 5).toUpperCase();
+      }
+
+      function formatBytes(bytes) {
+        if (!bytes) return "0 B";
+        if (bytes < 1024) return `${bytes} B`;
+        if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+        return `${(bytes / 1024 / 1024).toFixed(1)} MB`;
       }
 
       function bindModelPicker(scope) {
@@ -1821,7 +2168,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function submitFrom(input) {
         const text = input.value.trim();
-        if (!text || running) return;
+        const scope = scopeOfInput(input);
+        if ((!text && !attachments[scope].length) || running) return;
         if (!state.apiKey) {
           openSettings();
           showToast("先填 API Key，然后就能直接进入 AI 搜索对话。");
@@ -1830,12 +2178,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         input.value = "";
         autosize(input);
-        const scope = input === els.heroInput ? "hero" : "thread";
         const activeAttachments = attachments[scope].slice();
         attachments[scope] = [];
         renderAttachments(scope);
         startThread();
-        pushMessage({ role: "user", content: text, attachments: activeAttachments });
+        ensureCurrentChat(text, activeAttachments);
+        pushMessage({ role: "user", content: text || "请阅读附件。", attachments: activeAttachments });
         runAssistant();
       }
 
@@ -1846,28 +2194,102 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         setTimeout(() => els.threadInput.focus(), 60);
       }
 
-      function newChat() {
+      function newChat(opts = {}) {
         cancelRun();
         messages = [];
+        currentChat = null;
         els.messages.innerHTML = "";
         els.hero.classList.remove("hidden");
         els.thread.classList.remove("active");
         els.threadComposer.style.display = "none";
         els.heroInput.value = "";
         els.threadInput.value = "";
+        attachments.hero = [];
+        attachments.thread = [];
+        renderAttachments("hero");
+        renderAttachments("thread");
+        if (!opts.preserveHash) history.pushState(null, "", location.pathname + location.search);
         updateSendState();
         setTimeout(() => els.heroInput.focus(), 60);
       }
 
       function pushMessage(message) {
         const next = {
-          id: crypto.randomUUID ? crypto.randomUUID() : String(Date.now() + Math.random()),
+          id: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now() + Math.random()),
           ...message,
         };
         messages.push(next);
         renderMessage(next);
         scrollToBottom();
+        scheduleSaveChat();
         return next;
+      }
+
+      function ensureCurrentChat(text, files = []) {
+        if (currentChat) return currentChat;
+        const seed = text || files[0]?.name || "new chat";
+        const slug = makeSlug(seed);
+        currentChat = {
+          id: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now()),
+          slug,
+          title: seed.slice(0, 64),
+          titlePending: true,
+          createdAt: Date.now(),
+          updatedAt: Date.now(),
+        };
+        history.replaceState(null, "", `#chat/${encodeURIComponent(slug)}`);
+        return currentChat;
+      }
+
+      function makeSlug(text) {
+        const ascii = String(text || "")
+          .toLowerCase()
+          .replace(/https?:\/\/\S+/g, " link ")
+          .replace(/[^a-z0-9\u4e00-\u9fa5]+/g, "-")
+          .replace(/^-+|-+$/g, "")
+          .slice(0, 54);
+        return `${ascii || "chat"}-${Date.now().toString(36)}`;
+      }
+
+      function parseRoute() {
+        const match = location.hash.match(/^#chat\/([^/?#]+)$/);
+        return match ? decodeURIComponent(match[1]) : "";
+      }
+
+      async function loadChatBySlug(slug) {
+        const chat = await readJsonFile(`${OPFS_CHAT_DIR}/${slug}.json`, null);
+        if (!chat) {
+          showToast("没有找到这条历史对话。");
+          return;
+        }
+        currentChat = {
+          id: chat.id,
+          slug: chat.slug,
+          title: chat.title || chat.slug,
+          titlePending: !!chat.titlePending,
+          createdAt: chat.createdAt || Date.now(),
+          updatedAt: chat.updatedAt || Date.now(),
+        };
+        messages = Array.isArray(chat.messages) ? chat.messages : [];
+        els.messages.innerHTML = "";
+        messages.forEach(renderMessage);
+        startThread();
+        updateSendState();
+        scrollToBottom();
+      }
+
+      function scheduleSaveChat() {
+        clearTimeout(saveTimer);
+        saveTimer = setTimeout(saveCurrentChat, 180);
+      }
+
+      async function saveCurrentChat() {
+        if (!currentChat) return;
+        currentChat.updatedAt = Date.now();
+        await writeJsonFile(`${OPFS_CHAT_DIR}/${currentChat.slug}.json`, {
+          ...currentChat,
+          messages,
+        });
       }
 
       function renderMessage(message) {
@@ -1877,9 +2299,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         if (message.role === "user") {
           const files = (message.attachments || [])
-            .map((file) => `<span class="attachment-chip"><span>${esc(file.name)}</span></span>`)
+            .map((file) => attachmentCardHTML(file, false))
             .join("");
-          node.innerHTML = `<div class="bubble">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>`;
+          node.innerHTML = `
+            <div class="bubble">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>
+            <div class="user-footer">
+              <button class="mini-btn copy-user-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
+              <button class="mini-btn edit-user-btn" title="编辑" aria-label="编辑">${ICON_EDIT}</button>
+            </div>`;
+          node.querySelector(".copy-user-btn").addEventListener("click", () => copyText(message.content || ""));
+          node.querySelector(".edit-user-btn").addEventListener("click", () => editUserMessage(message.id));
         } else {
           node.innerHTML = `
             <div class="assistant-head">
@@ -1908,6 +2337,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         Object.assign(message, patch);
         const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
         if (node && message.role === "assistant") renderAssistantContent(node, message);
+        scheduleSaveChat();
+      }
+
+      function editUserMessage(id) {
+        if (running) return;
+        const idx = messages.findIndex((m) => m.id === id);
+        const message = messages[idx];
+        if (!message || message.role !== "user") return;
+        els.threadInput.value = message.content || "";
+        attachments.thread = (message.attachments || []).map((file) => ({ ...file }));
+        renderAttachments("thread");
+        autosize(els.threadInput);
+        messages = messages.slice(0, idx);
+        els.messages.innerHTML = "";
+        messages.forEach(renderMessage);
+        updateSendState();
+        els.threadInput.focus();
+        scheduleSaveChat();
       }
 
       function renderAssistantContent(node, message) {
@@ -1922,21 +2369,48 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           </a>`).join("");
         sources.style.display = sourceItems.length ? "" : "none";
 
-        if (message.loading && !message.content) {
+        if (message.loading && !message.content && !message.thinking) {
           answer.innerHTML = `<div class="loading-line"><span class="dots"><span></span><span></span><span></span></span><span>正在检索和组织答案…</span></div>`;
           footer.innerHTML = "";
           return;
         }
-        answer.innerHTML = renderMarkdown(message.content || "");
+        const thinking = renderThinking(message);
+        const body = message.content ? renderMarkdown(message.content) : `<div class="loading-line"><span class="dots"><span></span><span></span><span></span></span><span>正在组织正文…</span></div>`;
+        answer.innerHTML = thinking + body;
+        bindThinking(answer, message);
         bindCodeCopyButtons(answer);
         footer.innerHTML = `
-          <button class="message-action-btn copy-answer-btn">复制</button>
-          <button class="message-action-btn retry-answer-btn">重试</button>
-          <button class="message-action-btn continue-answer-btn">继续追问</button>`;
+          <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
+          <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
+          <button class="mini-btn message-action-btn continue-answer-btn" title="继续追问" aria-label="继续追问">${ICON_CONTINUE}</button>`;
         footer.querySelector(".copy-answer-btn").addEventListener("click", () => copyText(message.content || ""));
         footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
         footer.querySelector(".continue-answer-btn").addEventListener("click", () => {
           els.threadInput.focus();
+        });
+        queueMathTypeset(answer);
+      }
+
+      function renderThinking(message) {
+        if (!message.thinking) return "";
+        const done = !message.loading && message.content;
+        const seconds = Math.max(1, Math.round((message.thoughtSeconds || 0) / 1000));
+        const label = done ? `thought for ${seconds} seconds>` : "thinking...";
+        return `
+          <div class="thinking-block${message.thoughtOpen ? " open" : ""}">
+            <button class="thinking-toggle" type="button">${esc(label)}<span>›</span></button>
+            <div class="thinking-content">${esc(message.thinking)}</div>
+          </div>`;
+      }
+
+      function bindThinking(root, message) {
+        const button = root.querySelector(".thinking-toggle");
+        if (!button) return;
+        button.addEventListener("click", () => {
+          message.thoughtOpen = !message.thoughtOpen;
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
+          if (node) renderAssistantContent(node, message);
+          scheduleSaveChat();
         });
       }
 
@@ -1949,6 +2423,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         try {
           const content = await callChat(assistant.id, aborter.signal);
           updateMessage(assistant.id, { content, loading: false });
+          maybeGenerateTitle();
         } catch (error) {
           if (error.name === "AbortError") {
             updateMessage(assistant.id, { content: "已停止生成。", loading: false });
@@ -1962,8 +2437,43 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           running = false;
           aborter = null;
           updateSendState();
+          scheduleSaveChat();
           scrollToBottom();
         }
+      }
+
+      async function maybeGenerateTitle() {
+        if (!currentChat?.titlePending || !state.apiKey) return;
+        const firstUser = messages.find((m) => m.role === "user");
+        const firstAssistant = messages.find((m) => m.role === "assistant" && m.content);
+        if (!firstUser || !firstAssistant) return;
+        try {
+          const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.apiKey}`,
+            },
+            body: JSON.stringify({
+              model: state.activeModel || modelChoices()[0],
+              messages: [
+                { role: "system", content: "Create a concise conversation title. Return only the title, no quotes." },
+                { role: "user", content: `${firstUser.content}\n\n${firstAssistant.content.slice(0, 1200)}` },
+              ],
+              temperature: 0.2,
+              max_tokens: 24,
+              stream: false,
+            }),
+          });
+          if (!response.ok) return;
+          const data = await response.json();
+          const title = extractContentFromResponse(data).replace(/^["“]|["”]$/g, "").trim();
+          if (title) {
+            currentChat.title = title.slice(0, 80);
+            currentChat.titlePending = false;
+            scheduleSaveChat();
+          }
+        } catch (e) {}
       }
 
       async function callChat(assistantId, signal) {
@@ -2023,6 +2533,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const decoder = new TextDecoder();
         let buffer = "";
         let content = "";
+        let thinking = "";
+        let thinkingStartedAt = 0;
+        let thinkingEndedAt = 0;
 
         while (true) {
           const { done, value } = await reader.read();
@@ -2038,10 +2551,23 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               if (!data || data === "[DONE]") continue;
               try {
                 const json = JSON.parse(data);
-                const delta = extractDelta(json);
-                if (delta) {
-                  content += delta;
-                  updateMessage(assistantId, { content, loading: false });
+                const reasoningDelta = extractReasoningDelta(json);
+                const contentDelta = extractContentDelta(json);
+                if (reasoningDelta) {
+                  if (!thinkingStartedAt) thinkingStartedAt = Date.now();
+                  thinking += reasoningDelta;
+                  updateMessage(assistantId, { thinking, loading: true });
+                  if (autoFollow) scrollToBottom();
+                }
+                if (contentDelta) {
+                  if (thinkingStartedAt && !thinkingEndedAt) thinkingEndedAt = Date.now();
+                  content += contentDelta;
+                  updateMessage(assistantId, {
+                    content,
+                    thinking,
+                    thoughtSeconds: thinkingEndedAt ? thinkingEndedAt - thinkingStartedAt : 0,
+                    loading: false,
+                  });
                   if (autoFollow) scrollToBottom();
                 }
               } catch (e) {}
@@ -2075,9 +2601,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return `${message.content}\n\nAttached files:\n${fileContext}`;
       }
 
-      function extractDelta(json) {
+      function extractContentDelta(json) {
         const choice = json.choices?.[0];
-        return choice?.delta?.content || choice?.delta?.reasoning_content || choice?.message?.content || "";
+        return choice?.delta?.content || choice?.message?.content || "";
+      }
+
+      function extractReasoningDelta(json) {
+        const choice = json.choices?.[0];
+        return choice?.delta?.reasoning_content || choice?.delta?.reasoning || choice?.message?.reasoning_content || "";
       }
 
       function extractContentFromResponse(data) {
@@ -2105,8 +2636,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function updateSendState() {
-        const hasHero = els.heroInput.value.trim().length > 0;
-        const hasThread = els.threadInput.value.trim().length > 0;
+        const hasHero = els.heroInput.value.trim().length > 0 || attachments.hero.length > 0;
+        const hasThread = els.threadInput.value.trim().length > 0 || attachments.thread.length > 0;
         els.heroSendBtn.disabled = !hasHero || running;
         els.threadSendBtn.disabled = !hasThread || running;
       }
@@ -2125,7 +2656,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.settingsOverlay.classList.remove("open");
       }
 
-      function saveSettings() {
+      async function saveSettings() {
         const oldUrl = state.baseUrl;
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
@@ -2136,11 +2667,21 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           hydrateModelsFromCache();
         }
         ensureActiveModel();
-        saveState();
+        await saveState();
         renderModelPickers();
         renderModelList();
         closeSettings();
         showToast("设置已保存。");
+      }
+
+      function applyTheme() {
+        document.body.dataset.theme = state.theme === "dark" ? "dark" : "light";
+      }
+
+      function toggleTheme() {
+        state.theme = state.theme === "dark" ? "light" : "dark";
+        applyTheme();
+        saveState();
       }
 
       function switchTab(id) {
@@ -2214,10 +2755,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             models: fetchedModels,
             savedAt: Date.now(),
           };
-          saveModelCache();
+          await saveModelCache();
           if (!state.models.length && fetchedModels.length) state.models = fetchedModels.slice(0, 8);
           ensureActiveModel();
-          saveState();
+          await saveState();
           renderModelList();
           renderModelPickers();
           if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
@@ -2310,6 +2851,31 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             continue;
           }
 
+          if (/^\s*\$\$\s*$/.test(line)) {
+            const formula = [];
+            i++;
+            while (i < lines.length && !/^\s*\$\$\s*$/.test(lines[i])) {
+              formula.push(lines[i]);
+              i++;
+            }
+            if (i < lines.length) i++;
+            html.push(renderMathDisplay(formula.join("\n")));
+            continue;
+          }
+
+          const bracketMath = line.match(/^\\\[\s*$/);
+          if (bracketMath) {
+            const formula = [];
+            i++;
+            while (i < lines.length && !/^\\\]\s*$/.test(lines[i])) {
+              formula.push(lines[i]);
+              i++;
+            }
+            if (i < lines.length) i++;
+            html.push(renderMathDisplay(formula.join("\n")));
+            continue;
+          }
+
           const table = collectTable(lines, i);
           if (table) {
             html.push(renderTable(table.rows));
@@ -2387,6 +2953,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           </div>`;
       }
 
+      function renderMathDisplay(formula) {
+        return `<div class="math-display">\\[${esc(formula)}\\]</div>`;
+      }
+
       function collectTable(lines, start) {
         if (start + 1 >= lines.length) return null;
         if (!/^\s*\|.+\|\s*$/.test(lines[start])) return null;
@@ -2414,13 +2984,28 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function inlineMarkdown(text) {
-        return esc(text)
+        const math = [];
+        let source = String(text || "").replace(/\\\(([\s\S]+?)\\\)/g, (_, formula) => {
+          const key = `@@MATH${math.length}@@`;
+          math.push(`\\(${esc(formula)}\\)`);
+          return key;
+        });
+        source = esc(source)
           .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
           .replace(/`([^`]+)`/g, "<code>$1</code>")
           .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
           .replace(/__([^_]+)__/g, "<strong>$1</strong>")
           .replace(/\*([^*]+)\*/g, "<em>$1</em>")
           .replace(/_([^_]+)_/g, "<em>$1</em>");
+        math.forEach((formula, index) => {
+          source = source.replace(`@@MATH${index}@@`, formula);
+        });
+        return source;
+      }
+
+      function queueMathTypeset(root) {
+        if (!window.MathJax?.typesetPromise) return;
+        window.MathJax.typesetPromise([root]).catch(() => {});
       }
 
       function bindCodeCopyButtons(root) {
@@ -2491,7 +3076,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           .replace(/"/g, "&quot;");
       }
 
-      boot();
+      boot().catch((error) => {
+        console.error(error);
+        showToast("初始化失败，请刷新页面。");
+      });
     </script>
   </body>
 </html>
