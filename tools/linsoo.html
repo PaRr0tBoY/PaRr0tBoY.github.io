@@ -46,7 +46,7 @@
         --accent-soft: #f1ded5;
         --olive: #66725d;
         --olive-soft: #e5e8de;
-        --focus: #3898ec;
+        --focus: #c96442;
         --danger: #b53333;
         --danger-soft: #f4dfdc;
         --shadow-soft: 0 0 0 1px var(--line), 0 4px 24px rgba(0, 0, 0, 0.05);
@@ -79,7 +79,7 @@
         --accent-soft: rgba(217, 119, 87, 0.16);
         --olive: #a6b094;
         --olive-soft: rgba(166, 176, 148, 0.14);
-        --focus: #7aa7ff;
+        --focus: #d97757;
         --danger: #f28b82;
         --danger-soft: rgba(242, 139, 130, 0.14);
         --shadow-soft: 0 0 0 1px var(--line), 0 18px 70px rgba(0, 0, 0, 0.2);
@@ -261,6 +261,35 @@
           color var(--speed);
       }
 
+      .folder-row .folder-caret {
+        color: var(--faint);
+        font-size: 14px;
+        transition: transform var(--speed);
+      }
+
+      .folder-row.open .folder-caret {
+        transform: rotate(90deg);
+      }
+
+      .folder-chat-list {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+        margin: 3px 0 10px 16px;
+      }
+
+      .rename-input {
+        min-width: 0;
+        flex: 1;
+        border: 1px solid var(--ring);
+        border-radius: 8px;
+        background: var(--paper);
+        color: var(--ink);
+        padding: 5px 7px;
+        font: inherit;
+        outline: none;
+      }
+
       .sidebar-action:hover,
       .chat-row:hover,
       .folder-row:hover,
@@ -276,13 +305,34 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 22px;
+        font-size: 20px;
         line-height: 1;
       }
 
       .sidebar-icon svg {
-        width: 20px;
-        height: 20px;
+        width: var(--sidebar-icon-size, 19px);
+        height: var(--sidebar-icon-size, 19px);
+        stroke-width: var(--sidebar-icon-stroke, 2);
+      }
+
+      .sidebar-action[data-icon="new"] {
+        --sidebar-icon-size: 19px;
+        --sidebar-icon-stroke: 2.1;
+      }
+
+      .sidebar-action[data-icon="search"] {
+        --sidebar-icon-size: 20px;
+        --sidebar-icon-stroke: 2.05;
+      }
+
+      .sidebar-action[data-icon="settings"] {
+        --sidebar-icon-size: 19px;
+        --sidebar-icon-stroke: 1.82;
+      }
+
+      .sidebar-action[data-icon="theme"] {
+        --sidebar-icon-size: 19px;
+        --sidebar-icon-stroke: 1.95;
       }
 
       .empty-row {
@@ -362,6 +412,9 @@
       .chat-menu button {
         width: 100%;
         min-height: 34px;
+        display: flex;
+        align-items: center;
+        gap: 9px;
         border: none;
         border-radius: 8px;
         background: transparent;
@@ -377,14 +430,39 @@
         color: var(--ink);
       }
 
+      .chat-menu hr {
+        height: 1px;
+        border: none;
+        background: var(--line);
+        margin: 6px 4px;
+      }
+
+      .chat-menu .menu-icon {
+        width: 15px;
+        height: 15px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        flex: 0 0 auto;
+      }
+
+      .chat-menu button.danger {
+        color: var(--danger);
+      }
+
+      .chat-menu button.danger:hover {
+        background: var(--danger);
+        color: var(--ivory);
+      }
+
       .search-overlay {
         position: fixed;
         inset: 0;
         z-index: 85;
         display: none;
-        align-items: flex-start;
+        align-items: center;
         justify-content: center;
-        padding-top: min(12vh, 92px);
+        padding: 24px;
         background: rgba(20, 20, 19, 0.34);
       }
 
@@ -394,7 +472,7 @@
 
       .search-modal {
         width: min(92vw, 672px);
-        max-height: min(78vh, 620px);
+        max-height: min(78vh, 500px);
         overflow: hidden;
         border: 1px solid var(--line-strong);
         border-radius: 15px;
@@ -442,7 +520,7 @@
       }
 
       .search-results {
-        max-height: calc(min(78vh, 620px) - 64px);
+        max-height: calc(min(78vh, 500px) - 64px);
         overflow-y: auto;
         padding: 8px 10px 12px;
       }
@@ -532,8 +610,8 @@
       }
 
       body.sidebar-collapsed .sidebar-icon svg {
-        width: 20px;
-        height: 20px;
+        width: var(--sidebar-icon-size, 19px);
+        height: var(--sidebar-icon-size, 19px);
       }
 
       .theme-float {
@@ -631,6 +709,10 @@
 
       body.chat-active .conversation-rail {
         display: block;
+      }
+
+      body.rail-disabled .conversation-rail {
+        display: none;
       }
 
       .rail-inner {
@@ -743,6 +825,7 @@
         align-content: center;
         gap: 26px;
         padding: 0;
+        transform: translateY(-5vh);
       }
 
       .hero.hidden {
@@ -779,12 +862,12 @@
         position: relative;
         display: flex;
         flex-direction: column;
-        gap: 8px;
+        gap: 6px;
         border: 1px solid var(--line);
         border-radius: var(--radius-lg);
         background: var(--ivory);
         box-shadow: var(--shadow-soft);
-        padding: 12px;
+        padding: 10px 12px;
         transition:
           border-color var(--speed),
           box-shadow var(--speed);
@@ -823,16 +906,16 @@
 
       .composer-input {
         width: 100%;
-        min-height: 46px;
+        min-height: 38px;
         max-height: 210px;
         resize: none;
         border: none;
         outline: none;
         background: transparent;
         color: var(--ink);
-        padding: 6px 8px 0;
+        padding: 3px 8px 0;
         font-size: 17px;
-        line-height: 1.6;
+        line-height: 1.45;
       }
 
       .composer-input::placeholder {
@@ -844,7 +927,7 @@
         align-items: center;
         justify-content: space-between;
         gap: 10px;
-        min-height: 40px;
+        min-height: 36px;
       }
 
       /*
@@ -1334,6 +1417,26 @@
         box-shadow: none;
       }
 
+      .mini-btn.copied {
+        color: var(--accent);
+        animation: copyPop 0.42s ease both;
+      }
+
+      @keyframes copyPop {
+        0% {
+          transform: scale(0.82);
+          opacity: 0.5;
+        }
+        58% {
+          transform: scale(1.12);
+          opacity: 1;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
       .assistant-footer {
         display: flex;
         align-items: center;
@@ -1407,34 +1510,31 @@
         font-size: 0.88em;
       }
 
-      .answer pre {
-        overflow-x: auto;
-        margin: 12px 0 16px;
-        border: 1px solid var(--charcoal);
-        border-radius: var(--radius-md);
-        background: var(--ink);
-        color: var(--silver);
-        padding: 14px;
-        white-space: pre;
-      }
-
       .code-block {
-        margin: 14px 0 18px;
-        overflow: hidden;
-        border: 1px solid var(--charcoal);
-        border-radius: var(--radius-md);
-        background: var(--ink);
+        position: relative;
+        margin: 16px 0 20px;
+        overflow: visible;
+        border: 1px solid color-mix(in srgb, var(--line-strong) 42%, transparent);
+        border-radius: 13px;
+        background: #111110;
+        color: #e7e4dc;
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.03);
       }
 
       .code-head {
+        position: sticky;
+        top: 70px;
+        z-index: 2;
         display: flex;
         align-items: center;
         justify-content: space-between;
         gap: 12px;
-        min-height: 38px;
-        border-bottom: 1px solid var(--charcoal);
-        padding: 0 10px 0 13px;
-        color: var(--silver);
+        min-height: 42px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+        border-radius: 12px 12px 0 0;
+        background: #111110;
+        padding: 0 10px 0 14px;
+        color: rgba(231, 228, 220, 0.64);
         font-size: 12px;
       }
 
@@ -1449,21 +1549,35 @@
         border: none;
         border-radius: 8px;
         background: transparent;
-        color: var(--silver);
+        color: rgba(231, 228, 220, 0.68);
         cursor: pointer;
         padding: 5px 8px;
         font-size: 12px;
+        min-width: 42px;
+        transition:
+          color var(--speed),
+          background var(--speed),
+          transform 0.18s ease;
       }
 
       .code-copy:hover {
-        background: var(--charcoal);
-        color: var(--ivory);
+        background: rgba(255, 255, 255, 0.08);
+        color: #fffaf0;
+      }
+
+      .code-copy.copied {
+        color: #fffaf0;
+        transform: scale(0.96);
       }
 
       .code-block pre {
+        overflow-x: auto;
         margin: 0;
         border: none;
         border-radius: 0;
+        background: transparent;
+        color: inherit;
+        padding: 22px 18px 24px;
         white-space: pre;
       }
 
@@ -1473,6 +1587,17 @@
         background: transparent;
         color: inherit;
         padding: 0;
+        white-space: pre;
+      }
+
+      .answer > pre {
+        overflow-x: auto;
+        margin: 12px 0 16px;
+        border: 1px solid color-mix(in srgb, var(--line-strong) 42%, transparent);
+        border-radius: 13px;
+        background: #111110;
+        color: #e7e4dc;
+        padding: 16px;
         white-space: pre;
       }
 
@@ -1639,7 +1764,10 @@
         z-index: 15;
         width: min(calc(100% - 28px), 820px);
         transform: translateX(-50%);
-        transition: left var(--speed);
+        transition:
+          left var(--speed),
+          opacity 0.24s ease,
+          transform 0.24s ease;
       }
 
       body.sidebar-collapsed .thread-composer {
@@ -1651,7 +1779,13 @@
       }
 
       .thread-composer .composer-input {
-        min-height: 38px;
+        min-height: 32px;
+      }
+
+      .thread-composer.composer-hidden {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-50%) translateY(12px);
       }
 
       .scroll-btn {
@@ -1762,6 +1896,75 @@
         padding: 18px 20px 20px;
       }
 
+      .delete-dialog {
+        width: min(100%, 384px);
+        border: 1px solid var(--line-strong);
+        border-radius: 13px;
+        background: var(--ivory);
+        box-shadow: var(--shadow-soft), 0 22px 70px rgba(20, 20, 19, 0.2);
+        padding: 24px;
+        animation: modalIn 0.17s ease both;
+      }
+
+      .delete-dialog h2 {
+        margin: 0 0 10px;
+        font-family: "DM Sans", ui-sans-serif, sans-serif;
+        font-size: 19px;
+        line-height: 1.25;
+        font-weight: 700;
+        letter-spacing: 0;
+      }
+
+      .delete-dialog p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 17px;
+        line-height: 1.45;
+      }
+
+      .delete-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 8px;
+        margin-top: 24px;
+      }
+
+      .delete-actions button {
+        min-width: 80px;
+        height: 36px;
+        border-radius: 7px;
+        border: 1px solid var(--line-strong);
+        background: transparent;
+        color: var(--ink);
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition:
+          background var(--speed),
+          border-color var(--speed),
+          color var(--speed),
+          transform 0.16s ease;
+      }
+
+      .delete-actions button:hover {
+        background: var(--sand-2);
+      }
+
+      .delete-actions button:active {
+        transform: translateY(1px);
+      }
+
+      .delete-actions .confirm-delete {
+        border-color: var(--danger);
+        background: var(--danger);
+        color: #fffaf0;
+      }
+
+      .delete-actions .confirm-delete:hover {
+        background: color-mix(in srgb, var(--danger) 88%, #000);
+        border-color: color-mix(in srgb, var(--danger) 88%, #000);
+      }
+
       .tabs {
         display: flex;
         gap: 4px;
@@ -1793,6 +1996,75 @@
         margin-bottom: 16px;
       }
 
+      .setting-row {
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        border-bottom: 1px solid var(--line);
+        padding: 8px 0;
+      }
+
+      .setting-row:last-child {
+        border-bottom: none;
+      }
+
+      .setting-title {
+        color: var(--text-strong);
+        font-size: 13.5px;
+        font-weight: 600;
+      }
+
+      .setting-subtitle {
+        margin-top: 3px;
+        color: var(--faint);
+        font-size: 11.5px;
+        line-height: 1.45;
+      }
+
+      .switch {
+        position: relative;
+        width: 42px;
+        height: 24px;
+        flex: 0 0 auto;
+      }
+
+      .switch input {
+        position: absolute;
+        opacity: 0;
+      }
+
+      .switch span {
+        position: absolute;
+        inset: 0;
+        border-radius: 999px;
+        background: var(--line-strong);
+        cursor: pointer;
+        transition: background var(--speed);
+      }
+
+      .switch span::after {
+        content: "";
+        position: absolute;
+        top: 3px;
+        left: 3px;
+        width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        background: var(--ivory);
+        box-shadow: 0 1px 3px rgba(20, 20, 19, 0.2);
+        transition: transform var(--speed);
+      }
+
+      .switch input:checked + span {
+        background: var(--accent);
+      }
+
+      .switch input:checked + span::after {
+        transform: translateX(18px);
+      }
+
       .field-label {
         display: flex;
         justify-content: space-between;
@@ -1803,6 +2075,13 @@
         font-weight: 500;
         letter-spacing: 0.5px;
         text-transform: uppercase;
+      }
+
+      .field-label a {
+        color: var(--accent);
+        text-decoration: none;
+        text-transform: none;
+        letter-spacing: 0;
       }
 
       .field-hint {
@@ -1828,11 +2107,189 @@
           background var(--speed);
       }
 
+      .key-wrap {
+        position: relative;
+      }
+
+      .key-wrap .input {
+        padding-right: 44px;
+      }
+
+      .key-eye {
+        position: absolute;
+        top: 50%;
+        right: 7px;
+        width: 32px;
+        height: 32px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        transform: translateY(-50%);
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--faint);
+        cursor: pointer;
+      }
+
+      .key-eye:hover {
+        color: var(--ink);
+        background: var(--sand);
+      }
+
+      .key-eye .slash {
+        display: none;
+      }
+
+      .key-eye.visible .slash {
+        display: block;
+      }
+
+      .segmented {
+        display: flex;
+        gap: 4px;
+        border-radius: 13px;
+        background: var(--sand);
+        padding: 4px;
+      }
+
+      .segmented button {
+        flex: 1;
+        min-height: 34px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .segmented button.active {
+        background: var(--ivory);
+        color: var(--ink);
+        box-shadow: 0 1px 2px rgba(54, 44, 32, 0.05);
+      }
+
+      .inline-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .outline-btn {
+        min-height: 38px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--sand);
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 0 14px;
+        font-size: 13px;
+        font-weight: 600;
+      }
+
+      .outline-btn:hover {
+        background: var(--white);
+        border-color: var(--ring);
+        color: var(--ink);
+      }
+
+      .provider-select {
+        position: relative;
+      }
+
+      .provider-trigger {
+        width: 100%;
+        min-height: 42px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--paper);
+        color: var(--ink);
+        cursor: pointer;
+        padding: 0 12px;
+        font-size: 13.5px;
+        text-align: left;
+      }
+
+      .provider-trigger[aria-expanded="true"] {
+        border-radius: 12px 12px 0 0;
+        border-color: var(--focus);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      }
+
+      .provider-dropdown {
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0;
+        right: 0;
+        z-index: 72;
+        display: none;
+        border: 1px solid var(--focus);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        background: var(--ivory);
+        box-shadow: 0 16px 34px rgba(20, 20, 19, 0.08);
+        padding: 4px;
+      }
+
+      .provider-dropdown.open {
+        display: block;
+      }
+
+      .provider-option {
+        width: 100%;
+        min-height: 36px;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 0 10px;
+        text-align: left;
+        font-size: 13px;
+      }
+
+      .provider-option:hover,
+      .provider-option.active {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
+      .base-url-wrap {
+        position: relative;
+      }
+
+      .base-url-wrap.locked .input {
+        color: var(--faint);
+        background: color-mix(in srgb, var(--paper) 78%, var(--line));
+        cursor: not-allowed;
+      }
+
+      .base-url-wrap.locked::after {
+        content: "Locked by provider";
+        position: absolute;
+        inset: 1px;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        border-radius: 12px;
+        background: linear-gradient(90deg, transparent 45%, color-mix(in srgb, var(--paper) 86%, transparent));
+        color: var(--faint);
+        padding-right: 12px;
+        font-size: 11px;
+        pointer-events: none;
+      }
+
       .input:focus,
       .textarea:focus {
         border-color: var(--focus);
         background: var(--ivory);
-        box-shadow: 0 0 0 3px rgba(56, 152, 236, 0.16);
+        box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
       }
 
       .mono {
@@ -2065,6 +2522,10 @@
           width: min(calc(100% - 16px), 820px);
         }
 
+        .code-head {
+          top: 58px;
+        }
+
         .scroll-btn,
         body.sidebar-collapsed .scroll-btn {
           left: 50%;
@@ -2159,18 +2620,18 @@
         </div>
         <div class="sidebar-body">
           <section class="sidebar-section">
-            <button class="sidebar-action" id="newChatBtn" title="新建对话">
+            <button class="sidebar-action" id="newChatBtn" data-icon="new" title="新建对话">
               <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="sidebar-label">New chat</span>
             </button>
-            <button class="sidebar-action" id="searchHistoryBtn" title="搜索历史">
+            <button class="sidebar-action" id="searchHistoryBtn" data-icon="search" title="搜索历史">
               <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></span><span class="sidebar-label">Search</span>
             </button>
-            <button class="sidebar-action" id="settingsBtn" title="设置">
-              <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h0m0 18h0m7.8-13.5h0M4.2 16.5h0m15.6 0h0M4.2 7.5h0"/><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M19.8 7.5 17.2 9M6.8 15l-2.6 1.5"/></svg></span><span class="sidebar-label">Settings</span>
+            <button class="sidebar-action" id="settingsBtn" data-icon="settings" title="设置">
+              <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M19.4 15a1.8 1.8 0 0 0 .36 2l.05.05a2.1 2.1 0 0 1-3 3l-.05-.05a1.8 1.8 0 0 0-2-.36 1.8 1.8 0 0 0-1.1 1.65V21a2.1 2.1 0 0 1-4.2 0v-.08a1.8 1.8 0 0 0-1.1-1.65 1.8 1.8 0 0 0-2 .36l-.05.05a2.1 2.1 0 0 1-3-3l.05-.05a1.8 1.8 0 0 0 .36-2 1.8 1.8 0 0 0-1.65-1.1H3a2.1 2.1 0 0 1 0-4.2h.08a1.8 1.8 0 0 0 1.65-1.1 1.8 1.8 0 0 0-.36-2l-.05-.05a2.1 2.1 0 0 1 3-3l.05.05a1.8 1.8 0 0 0 2 .36H9.4A1.8 1.8 0 0 0 10.5 3V3a2.1 2.1 0 0 1 4.2 0v.08a1.8 1.8 0 0 0 1.1 1.65 1.8 1.8 0 0 0 2-.36l.05-.05a2.1 2.1 0 0 1 3 3l-.05.05a1.8 1.8 0 0 0-.36 2v.03A1.8 1.8 0 0 0 21 10.5h0a2.1 2.1 0 0 1 0 4.2h-.08A1.8 1.8 0 0 0 19.4 15Z"/></svg></span><span class="sidebar-label">Settings</span>
             </button>
-              <button class="sidebar-action" id="sidebarThemeBtn" title="切换主题">
+            <button class="sidebar-action" id="sidebarThemeBtn" data-icon="theme" title="切换主题">
               <span class="sidebar-icon">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8z" /></svg>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h0m0 18h0m7.8-13.5h0M4.2 16.5h0m15.6 0h0M4.2 7.5h0"/><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M19.8 7.5 17.2 9M6.8 15l-2.6 1.5"/></svg>
               </span>
               <span class="sidebar-label">Appearance</span>
             </button>
@@ -2312,6 +2773,28 @@
         <div class="search-results" id="globalSearchResults"></div>
       </div>
     </div>
+    <div class="search-overlay" id="folderOverlay">
+      <div class="search-modal">
+        <div class="search-head">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+          <input id="folderSearchInput" type="search" placeholder="Search or create folder" />
+          <button class="search-close" id="folderClose" title="关闭" aria-label="关闭">×</button>
+        </div>
+        <div class="search-results" id="folderResults"></div>
+      </div>
+    </div>
+    <div class="overlay" id="deleteOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteDialogTitle">
+      <div class="delete-dialog">
+        <h2 id="deleteDialogTitle">Delete chat</h2>
+        <p>Are you sure you want to delete this chat?</p>
+        <div class="delete-actions">
+          <button type="button" id="deleteCancel">Cancel</button>
+          <button type="button" class="confirm-delete" id="deleteConfirm">Delete</button>
+        </div>
+      </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <div class="overlay" id="settingsOverlay">
@@ -2326,34 +2809,88 @@
         </div>
         <div class="modal-body">
           <div class="tabs">
-            <button class="tab active" data-tab="api">API</button>
-            <button class="tab" data-tab="prompt">Prompt</button>
+            <button class="tab active" data-tab="general">General</button>
+            <button class="tab" data-tab="ai">AI 设置</button>
+            <button class="tab" data-tab="appearance">外观设置</button>
           </div>
-          <div id="tabApi">
+          <div id="tabGeneral">
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">Web Search</div>
+                <div class="setting-subtitle">暂时只保留前端开关，后续接具体搜索实现。</div>
+              </div>
+              <label class="switch"><input id="cfgWebSearch" type="checkbox" /><span></span></label>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">对话记录条</div>
+                <div class="setting-subtitle">长对话右侧的消息位置索引。</div>
+              </div>
+              <label class="switch"><input id="cfgRail" type="checkbox" /><span></span></label>
+            </div>
+            <div class="field" style="margin-top: 16px">
+              <div class="field-label">配置</div>
+              <div class="inline-actions">
+                <button class="outline-btn" id="exportConfigBtn">导出配置</button>
+                <button class="outline-btn" id="importConfigBtn">导入配置</button>
+                <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
+              </div>
+            </div>
+            <div class="field">
+              <div class="field-label">消息记录</div>
+              <div class="inline-actions">
+                <button class="outline-btn" id="exportChatsBtn">导出消息记录</button>
+                <button class="outline-btn" id="importChatsBtn">导入消息记录</button>
+                <input id="importChatsInput" type="file" accept="application/json,.json" hidden />
+              </div>
+            </div>
+          </div>
+          <div id="tabAI" style="display: none">
+            <div class="field">
+              <div class="field-label">AI Provider</div>
+              <div class="provider-select">
+                <button class="provider-trigger" id="cfgProviderTrigger" type="button" aria-expanded="false">
+                  <span id="cfgProviderLabel"></span><span>⌄</span>
+                </button>
+                <div class="provider-dropdown" id="providerDropdown"></div>
+              </div>
+            </div>
+            <div class="field" id="customNameField" style="display: none">
+              <div class="field-label">Custom 命名 <button class="ghost-btn" id="deleteCustomBtn" type="button" style="min-height: 22px; padding: 0 8px">删除 Custom</button></div>
+              <input class="input" id="cfgCustomName" type="text" placeholder="My Provider" />
+            </div>
             <div class="field">
               <div class="field-label">Base URL</div>
-              <input class="input mono" id="cfgBaseUrl" type="text" placeholder="https://open.bigmodel.cn/api/paas/v4/chat/completions" />
+              <div class="base-url-wrap" id="baseUrlWrap">
+                <input class="input mono" id="cfgBaseUrl" type="text" placeholder="https://open.bigmodel.cn/api/paas/v4/chat/completions" />
+              </div>
               <div class="field-hint">OpenAI 兼容 chat completions 端点；留空沿用默认智谱 AI 地址。</div>
             </div>
             <div class="field">
-              <div class="field-label">API Key</div>
-              <input class="input mono" id="cfgApiKey" type="password" placeholder="sk-..." />
+              <div class="field-label">API Key <a id="providerKeyLink" href="#" target="_blank" rel="noopener noreferrer">get key</a></div>
+              <div class="key-wrap">
+                <input class="input mono" id="cfgApiKey" type="password" placeholder="sk-..." />
+                <button class="key-eye" id="toggleKeyBtn" type="button" title="显示/隐藏 API Key" aria-label="显示/隐藏 API Key">
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 20 20 4"/></svg>
+                </button>
+              </div>
               <div class="field-hint">保存在浏览器 OPFS。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
             </div>
-            <div class="field" style="display: none">
-              <div class="field-label">Model</div>
+            <div class="field">
+              <button class="outline-btn" id="testApiKeyBtn">测试 API Key</button>
+            </div>
+            <div class="field">
+              <div class="field-label">Model <span style="color: var(--faint); text-transform: none; letter-spacing: 0">可手动输入</span></div>
               <div class="model-row">
                 <div class="settings-model-wrap">
-                  <input class="input mono" id="cfgModelInput" type="text" placeholder="聚焦后从当前 Base URL 获取模型" autocomplete="off" spellcheck="false" />
+                  <input class="input mono" id="cfgModelInput" type="text" placeholder="例如 mimo-v2-flash；聚焦后会尝试获取模型" autocomplete="off" spellcheck="false" />
                   <div class="settings-model-dd" id="settingsModelDropdown"></div>
                 </div>
                 <button class="primary-btn" id="refreshModelsBtn">刷新</button>
               </div>
-              <div class="field-hint">只保存一个当前模型。模型列表每次从当前 Base URL 的 /models 端点重新获取，不做本地缓存。</div>
+              <div class="field-hint">只保存一个当前模型。获取不到模型列表时，可以直接输入模型名称并保存；模型列表按 Base URL 和 API Key 缓存，Base URL 变化后会重新获取。</div>
               <div class="model-list" id="modelList"></div>
             </div>
-          </div>
-          <div id="tabPrompt" style="display: none">
             <div class="field">
               <div class="field-label">
                 System Prompt
@@ -2361,6 +2898,16 @@
               </div>
               <textarea class="textarea mono" id="cfgPrompt"></textarea>
               <div class="field-hint">这个提示词用于“搜索回答”模式，不再要求模型输出查询词 JSON。</div>
+            </div>
+          </div>
+          <div id="tabAppearance" style="display: none">
+            <div class="field">
+              <div class="field-label">Theme</div>
+              <div class="segmented" id="themeModeGroup">
+                <button type="button" data-theme-mode="light">亮色</button>
+                <button type="button" data-theme-mode="dark">暗色</button>
+                <button type="button" data-theme-mode="auto">Auto</button>
+              </div>
             </div>
           </div>
           <div class="modal-foot">
@@ -2375,6 +2922,7 @@
       const DEFAULT_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
       const STORAGE_KEY = "linsoo_v1";
       const LINSO_STORAGE_KEY = "linso_v3";
+      const MODEL_CACHE_TTL = 10 * 60 * 1000;
       const MAX_FILE_CHARS = 12000;
       const PASTE_ATTACHMENT_LIMIT = 800;
       const OPFS_SETTINGS_FILE = "linsoo-settings.json";
@@ -2415,10 +2963,39 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       ];
 
       const ICON_COPY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      const ICON_CHECK = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m5 12 4 4L19 6"/></svg>';
+      const ICON_MOON = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8z"/></svg>';
+      const ICON_SUN = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.95" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v2.2M12 18.8V21M4.8 4.8l1.6 1.6M17.6 17.6l1.6 1.6M3 12h2.2M18.8 12H21M4.8 19.2l1.6-1.6M17.6 6.4l1.6-1.6"/><circle cx="12" cy="12" r="3.7"/></svg>';
       const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
       const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
       const ICON_CONTINUE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
       const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
+      const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
+      const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
+      const PROVIDERS = {
+        glm: {
+          label: "GLM",
+          baseUrl: "https://open.bigmodel.cn/api/paas/v4/chat/completions",
+          keyUrl: "https://open.bigmodel.cn/usercenter/proj-mgmt/apikeys",
+        },
+        openrouter: {
+          label: "OpenRouter",
+          baseUrl: "https://openrouter.ai/api/v1/chat/completions",
+          keyUrl: "https://openrouter.ai/settings/keys",
+        },
+        deepseek: {
+          label: "DeepSeek",
+          baseUrl: "https://api.deepseek.com/chat/completions",
+          keyUrl: "https://platform.deepseek.com/api_keys",
+        },
+        mimo: {
+          label: "Mimo",
+          baseUrl: "https://api.xiaomimimo.com/v1/chat/completions",
+          keyUrl: "https://platform.mimo.org/",
+        },
+      };
+      const CUSTOM_PROVIDER_VALUE = "__custom_new__";
+      const DEFAULT_CUSTOM_PROVIDER = { id: "custom-default", name: "Custom", baseUrl: "", keyUrl: "", apiKey: "" };
       const HERO_LINES = [
         "Linsoo 这一块",
         "Linsoo, 欸没搜呢",
@@ -2436,6 +3013,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         prompt: DEFAULT_PROMPT,
         mode: "search",
         theme: "light",
+        themeMode: "light",
+        webSearch: true,
+        railEnabled: true,
+        provider: "custom-default",
+        customName: "",
+        customProviders: [{ ...DEFAULT_CUSTOM_PROVIDER }],
+        modelCache: { baseUrl: "", models: [], savedAt: 0 },
         sidebarCollapsed: false,
       };
 
@@ -2443,16 +3027,22 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let currentChat = null;
       let chatIndex = [];
       let activeFolder = "";
+      let expandedFolder = "";
       let activeChatMenuSlug = "";
+      let pendingDeleteSlug = "";
+      let folderPickerSlug = "";
       let attachments = {
         hero: [],
         thread: [],
       };
       let fetchedModels = [];
+      let modelsLoading = false;
+      let modelFetchMessage = "";
       let running = false;
       let aborter = null;
       let autoFollow = true;
       let toastTimer = null;
+      let mobileComposerTimer = null;
       let opfsRoot = null;
       let opfsReady = false;
       let saveTimer = null;
@@ -2468,6 +3058,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         ensureActiveModel();
         applyResponsiveSidebarDefault();
         applyTheme();
+        applyGeneralSettings();
         applySidebarState();
         loadMathJax();
         renderHeroLine();
@@ -2520,6 +3111,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "globalSearchInput",
           "globalSearchResults",
           "searchClose",
+          "folderOverlay",
+          "folderSearchInput",
+          "folderResults",
+          "folderClose",
+          "deleteOverlay",
+          "deleteCancel",
+          "deleteConfirm",
           "folderList",
           "pinnedList",
           "recentList",
@@ -2548,11 +3146,32 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "modelList",
           "cfgPrompt",
           "resetPromptBtn",
-          "tabApi",
-          "tabPrompt",
+          "cfgProviderTrigger",
+          "cfgProviderLabel",
+          "providerDropdown",
+          "cfgCustomName",
+          "customNameField",
+          "deleteCustomBtn",
+          "baseUrlWrap",
+          "providerKeyLink",
+          "toggleKeyBtn",
+          "testApiKeyBtn",
+          "cfgWebSearch",
+          "cfgRail",
+          "exportConfigBtn",
+          "importConfigBtn",
+          "importConfigInput",
+          "exportChatsBtn",
+          "importChatsBtn",
+          "importChatsInput",
+          "themeModeGroup",
+          "tabGeneral",
+          "tabAI",
+          "tabAppearance",
         ].forEach((id) => {
           els[id] = document.getElementById(id);
         });
+        els.cfgProvider = els.cfgProviderTrigger;
       }
 
       async function initStorage() {
@@ -2596,6 +3215,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const writable = await handle.createWritable();
         await writable.write(JSON.stringify(data, null, 2));
         await writable.close();
+      }
+
+      async function deleteJsonFile(path) {
+        if (!opfsReady) {
+          localStorage.removeItem(path);
+          return;
+        }
+        const parts = path.split("/").filter(Boolean);
+        const name = parts.pop();
+        let dir = opfsRoot;
+        for (const part of parts) dir = await dir.getDirectoryHandle(part, { create: true });
+        await dir.removeEntry(name).catch(() => {});
       }
 
       async function getOpfsFile(path, opts = {}) {
@@ -2650,6 +3281,119 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderSidebar();
       }
 
+      function startInlineRename(slug) {
+        const chat = chatIndex.find((item) => item.slug === slug);
+        const row = document.querySelector(`.chat-row[data-slug="${CSS.escape(slug)}"]`);
+        if (!chat || !row) return;
+        const title = row.querySelector(".chat-title");
+        title.innerHTML = `<input class="rename-input" value="${esc(chat.title)}" aria-label="重命名对话" />`;
+        const input = title.querySelector("input");
+        input.focus();
+        input.select();
+        const commit = async () => {
+          const next = input.value.trim().slice(0, 80);
+          if (!next) return renderSidebar();
+          const full = await readJsonFile(`${OPFS_CHAT_DIR}/${slug}.json`, null);
+          const target = full || (currentChat?.slug === slug ? { ...currentChat, messages } : null);
+          if (!target) return renderSidebar();
+          target.title = next;
+          target.titlePending = false;
+          target.updatedAt = Date.now();
+          await writeJsonFile(`${OPFS_CHAT_DIR}/${slug}.json`, target);
+          if (currentChat?.slug === slug) {
+            currentChat.title = next;
+            currentChat.titlePending = false;
+          }
+          const idx = chatIndex.findIndex((item) => item.slug === slug);
+          if (idx >= 0) chatIndex[idx] = chatSummary(target);
+          renderSidebar();
+        };
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") commit();
+          if (event.key === "Escape") renderSidebar();
+        });
+        input.addEventListener("blur", commit, { once: true });
+      }
+
+      function openFolderPicker(slug) {
+        folderPickerSlug = slug;
+        els.folderOverlay.classList.add("open");
+        els.folderSearchInput.value = "";
+        renderFolderPickerResults();
+        setTimeout(() => els.folderSearchInput.focus(), 30);
+      }
+
+      function closeFolderPicker() {
+        els.folderOverlay.classList.remove("open");
+        folderPickerSlug = "";
+      }
+
+      function renderFolderPickerResults() {
+        const query = els.folderSearchInput.value.trim().slice(0, 48);
+        const folders = [...new Set(chatIndex.map((chat) => chat.folder).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+        const exact = folders.some((folder) => folder.toLowerCase() === query.toLowerCase());
+        const rows = folders.filter((folder) => !query || folder.toLowerCase().includes(query.toLowerCase()));
+        els.folderResults.innerHTML = rows.map((folder) => `
+          <button class="search-result-row" data-folder="${esc(folder)}">
+            <span class="search-result-title">${ICON_FOLDER} ${esc(folder)}</span>
+            <span class="search-result-time">Folder</span>
+          </button>`).join("");
+        if (query && !exact) {
+          els.folderResults.insertAdjacentHTML("beforeend", `
+            <button class="search-result-row" data-create-folder="${esc(query)}">
+              <span class="search-result-title"><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg> 创建 ${esc(query)}</span>
+              <span class="search-result-time">New</span>
+            </button>`);
+        }
+        if (!els.folderResults.innerHTML) els.folderResults.innerHTML = `<div class="empty-row">输入名称创建文件夹</div>`;
+        els.folderResults.querySelectorAll(".search-result-row").forEach((row) => {
+          row.addEventListener("click", () => assignChatFolder(row.dataset.folder || row.dataset.createFolder || ""));
+        });
+      }
+
+      async function assignChatFolder(folder) {
+        const name = String(folder || "").trim().slice(0, 48);
+        if (!name || !folderPickerSlug) return;
+        const chat = await readJsonFile(`${OPFS_CHAT_DIR}/${folderPickerSlug}.json`, null);
+        const target = chat || (currentChat?.slug === folderPickerSlug ? { ...currentChat, messages } : null);
+        if (!target) return closeFolderPicker();
+        target.folder = name;
+        target.updatedAt = Date.now();
+        await writeJsonFile(`${OPFS_CHAT_DIR}/${target.slug}.json`, target);
+        if (currentChat?.slug === target.slug) currentChat.folder = name;
+        const idx = chatIndex.findIndex((item) => item.slug === target.slug);
+        if (idx >= 0) chatIndex[idx] = chatSummary(target);
+        expandedFolder = name;
+        closeFolderPicker();
+        renderSidebar();
+      }
+
+      async function deleteChat(slug) {
+        await deleteJsonFile(`${OPFS_CHAT_DIR}/${slug}.json`);
+        chatIndex = chatIndex.filter((item) => item.slug !== slug);
+        if (currentChat?.slug === slug) newChat({ preserveHash: true });
+        history.replaceState(null, "", location.pathname);
+        renderSidebar();
+      }
+
+      function openDeleteConfirm(slug) {
+        pendingDeleteSlug = slug;
+        els.deleteOverlay.classList.add("open");
+        setTimeout(() => els.deleteCancel.focus(), 30);
+      }
+
+      function closeDeleteConfirm() {
+        pendingDeleteSlug = "";
+        els.deleteOverlay.classList.remove("open");
+      }
+
+      async function confirmDeleteChat() {
+        if (!pendingDeleteSlug) return;
+        const slug = pendingDeleteSlug;
+        closeDeleteConfirm();
+        await deleteChat(slug);
+      }
+
       function chatSummary(chat) {
         const text = (chat.messages || [])
           .map((m) => `${m.role}: ${m.content || ""}`)
@@ -2685,7 +3429,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {}
 
         state.models = [];
+        if (!state.themeMode) state.themeMode = state.theme || "light";
+        state.webSearch = state.webSearch !== false;
+        state.railEnabled = state.railEnabled !== false;
+        if (!Array.isArray(state.customProviders)) state.customProviders = [];
+        if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
+        if (!state.provider) state.provider = state.baseUrl ? inferProviderFromBaseUrl(state.baseUrl) || "glm" : "custom-default";
+        if (!state.modelCache || !Array.isArray(state.modelCache.models)) state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
+        hydrateModelsFromCache();
+      }
+
+      function hydrateModelsFromCache() {
+        const cache = state.modelCache || {};
+        if (cache.baseUrl === (state.baseUrl || "") && Array.isArray(cache.models)) {
+          fetchedModels = cache.models.slice();
+        } else {
+          fetchedModels = [];
+        }
       }
 
       async function saveState() {
@@ -2728,7 +3489,45 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.settingsOverlay.addEventListener("click", (event) => {
           if (event.target === els.settingsOverlay) closeSettings();
         });
+        els.folderClose.addEventListener("click", closeFolderPicker);
+        els.folderOverlay.addEventListener("click", (event) => {
+          if (event.target === els.folderOverlay) closeFolderPicker();
+        });
+        els.deleteCancel.addEventListener("click", closeDeleteConfirm);
+        els.deleteConfirm.addEventListener("click", confirmDeleteChat);
+        els.deleteOverlay.addEventListener("click", (event) => {
+          if (event.target === els.deleteOverlay) closeDeleteConfirm();
+        });
+        els.folderSearchInput.addEventListener("input", renderFolderPickerResults);
+        els.folderSearchInput.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeFolderPicker();
+          if (event.key === "Enter") {
+            const first = els.folderResults.querySelector(".search-result-row");
+            if (first) first.click();
+          }
+        });
         els.settingsSave.addEventListener("click", saveSettings);
+        els.cfgProviderTrigger.addEventListener("click", toggleProviderDropdown);
+        els.providerDropdown.addEventListener("click", (event) => {
+          const btn = event.target.closest(".provider-option");
+          if (btn) handleProviderChoice(btn.dataset.provider);
+        });
+        els.deleteCustomBtn.addEventListener("click", deleteCurrentCustomProvider);
+        els.toggleKeyBtn.addEventListener("click", toggleApiKeyVisibility);
+        els.testApiKeyBtn.addEventListener("click", testApiKey);
+        els.exportConfigBtn.addEventListener("click", exportConfig);
+        els.importConfigBtn.addEventListener("click", () => els.importConfigInput.click());
+        els.importConfigInput.addEventListener("change", importConfig);
+        els.exportChatsBtn.addEventListener("click", exportChats);
+        els.importChatsBtn.addEventListener("click", () => els.importChatsInput.click());
+        els.importChatsInput.addEventListener("change", importChats);
+        els.themeModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            state.themeMode = button.dataset.themeMode;
+            applyTheme();
+            renderThemeMode();
+          });
+        });
         els.newChatBtn.addEventListener("click", newChat);
         els.themeBtn.addEventListener("click", toggleTheme);
         document.getElementById('sidebarThemeBtn')?.addEventListener('click', toggleTheme);
@@ -2774,13 +3573,21 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         document.addEventListener("click", (event) => {
           if (!event.target.closest(".model-picker")) closeComposerModelDropdowns();
+          if (!event.target.closest(".provider-select")) closeProviderDropdown();
           if (!event.target.closest(".chat-menu") && !event.target.closest(".chat-menu-btn")) closeChatMenu();
+        });
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeDeleteConfirm();
+        });
+        window.matchMedia?.("(prefers-color-scheme: dark)").addEventListener?.("change", () => {
+          if (state.themeMode === "auto") applyTheme();
         });
 
         window.addEventListener("scroll", () => {
           const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
           autoFollow = distance < 120;
           els.scrollBtn.classList.toggle("visible", !autoFollow && messages.length > 0);
+          handleMobileComposerScroll(distance);
           updateRailActive();
         }, { passive: true });
         window.addEventListener("resize", updateScrollButtonOffset, { passive: true });
@@ -2974,7 +3781,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function bindModelPicker(scope) {
         const trigger = els[`${scope}ModelTrigger`];
-        trigger.addEventListener("focus", () => fetchModels({ force: true, open: false }));
+        trigger.addEventListener("focus", () => fetchModels({ open: false }));
         trigger.addEventListener("click", (event) => {
           event.stopPropagation();
           toggleComposerModelDropdown(scope);
@@ -3001,7 +3808,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const isOpen = dropdown.classList.contains("open");
         closeComposerModelDropdowns();
         if (!isOpen) {
-          fetchModels({ force: true, open: false }).then(() => {
+          fetchModels({ open: false }).then(() => {
             if (dropdown.classList.contains("open")) renderComposerModelDropdown(scope);
           });
           dropdown.classList.add("open");
@@ -3034,7 +3841,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const models = modelChoices();
         dropdown.innerHTML = models.length
           ? models.map((model) => modelOptionHTML(model)).join("")
-          : `<div class="model-empty">正在从当前 Base URL 获取模型；也可以在设置里先填 API Key。</div>`;
+          : `<div class="model-empty">${esc(modelFetchMessage || "正在从当前 Base URL 获取模型；也可以在设置里先填 API Key。")}</div>`;
+        if (modelFetchMessage && models.length) dropdown.insertAdjacentHTML("beforeend", `<div class="model-empty">${esc(modelFetchMessage)}</div>`);
+        if (modelsLoading) dropdown.insertAdjacentHTML("beforeend", `<div class="model-empty"><span class="dots"><span></span><span></span><span></span></span></div>`);
         dropdown.querySelectorAll(".model-option").forEach((btn) => {
           btn.addEventListener("click", () => {
             selectModel(btn.dataset.model);
@@ -3067,21 +3876,26 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function renderSidebar() {
         const folders = [...new Set(chatIndex.map((chat) => chat.folder).filter(Boolean))].sort((a, b) => a.localeCompare(b));
         els.folderList.innerHTML = folders.length
-          ? folders.map((folder) => `
-              <button class="folder-row${folder === activeFolder ? " active" : ""}" data-folder="${esc(folder)}">
-                <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span>
-              </button>`).join("")
+          ? folders.map((folder) => {
+              const open = folder === expandedFolder;
+              const chats = chatIndex.filter((chat) => chat.folder === folder);
+              return `
+                <button class="folder-row${open ? " open active" : ""}" data-folder="${esc(folder)}">
+                  <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span><span class="folder-caret">›</span>
+                </button>
+                ${open ? `<div class="folder-chat-list">${chats.map(chatRowHTML).join("")}</div>` : ""}`;
+            }).join("")
           : `<div class="empty-row">No folders</div>`;
         els.folderList.querySelectorAll(".folder-row").forEach((btn) => {
           btn.addEventListener("click", () => {
-            activeFolder = btn.dataset.folder === activeFolder ? "" : btn.dataset.folder;
+            expandedFolder = btn.dataset.folder === expandedFolder ? "" : btn.dataset.folder;
             renderSidebar();
           });
         });
 
-        const matches = chatIndex.filter((chat) => !activeFolder || chat.folder === activeFolder);
-        const pinned = matches.filter((chat) => chat.pinned);
-        const recents = matches.filter((chat) => !chat.pinned);
+        const rootChats = chatIndex.filter((chat) => !chat.folder);
+        const pinned = rootChats.filter((chat) => chat.pinned);
+        const recents = rootChats.filter((chat) => !chat.pinned);
         els.pinnedList.innerHTML = pinned.length ? pinned.map(chatRowHTML).join("") : emptySidebarRow("No pinned chats");
         els.recentList.innerHTML = recents.length ? recents.map(chatRowHTML).join("") : emptySidebarRow("No recent chats");
         bindChatRows();
@@ -3093,10 +3907,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function chatRowHTML(chat) {
         return `
-          <button class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}">
+          <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0">
             <span class="chat-title">${esc(chat.title)}</span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
-          </button>`;
+          </div>`;
       }
 
       function openGlobalSearch() {
@@ -3142,11 +3956,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function bindChatRows() {
         document.querySelectorAll(".chat-row").forEach((row) => {
-          row.addEventListener("click", async (event) => {
-            if (event.target.closest(".chat-menu-btn")) return;
+          const open = async (event) => {
+            if (event.target.closest(".chat-menu-btn") || event.target.closest(".rename-input")) return;
             const slug = row.dataset.slug;
             location.hash = `chat/${encodeURIComponent(slug)}`;
             await loadChatBySlug(slug);
+          };
+          row.addEventListener("click", open);
+          row.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") open(event);
           });
         });
         document.querySelectorAll(".chat-menu-btn").forEach((btn) => {
@@ -3162,11 +3980,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const chat = chatIndex.find((item) => item.slug === slug);
         if (!chat) return;
         els.chatMenu.innerHTML = `
-          <button data-action="pin">${chat.pinned ? "取消固定" : "固定对话"}</button>
-          <button data-action="rename">重命名</button>
-          <button data-action="folder">添加到文件夹</button>`;
+          <button data-action="pin"><span class="menu-icon">${ICON_PIN}</span><span>${chat.pinned ? "取消固定" : "固定对话"}</span></button>
+          <button data-action="rename"><span class="menu-icon">${ICON_EDIT}</span><span>重命名</span></button>
+          <button data-action="folder"><span class="menu-icon">${ICON_FOLDER}</span><span>添加到文件夹</span></button>
+          <hr>
+          <button class="danger" data-action="delete"><span class="menu-icon">${ICON_TRASH}</span><span>删除</span></button>`;
         els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, rect.right + 6)}px`;
-        els.chatMenu.style.top = `${Math.min(window.innerHeight - 126, rect.top)}px`;
+        els.chatMenu.style.top = `${Math.min(window.innerHeight - 176, rect.top)}px`;
         els.chatMenu.classList.add("open");
         document.querySelectorAll(".chat-menu-btn").forEach((item) => item.classList.toggle("open", item.dataset.menu === slug));
         els.chatMenu.querySelectorAll("button").forEach((button) => {
@@ -3190,15 +4010,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           chat.pinned = !chat.pinned;
         }
         if (action === "rename") {
-          const title = prompt("重命名对话", chat.title || chat.slug);
-          if (!title) return closeChatMenu();
-          chat.title = title.trim().slice(0, 80);
-          chat.titlePending = false;
+          closeChatMenu();
+          startInlineRename(chat.slug);
+          return;
         }
         if (action === "folder") {
-          const folder = prompt("添加到文件夹", chat.folder || "");
-          if (folder === null) return closeChatMenu();
-          chat.folder = folder.trim().slice(0, 48);
+          closeChatMenu();
+          openFolderPicker(chat.slug);
+          return;
+        }
+        if (action === "delete") {
+          closeChatMenu();
+          openDeleteConfirm(chat.slug);
+          return;
         }
         chat.updatedAt = Date.now();
         if (currentChat?.slug === chat.slug) {
@@ -3258,6 +4082,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function goHome() {
         newChat({ preserveHash: true });
         history.pushState(null, "", location.pathname);
+        collapseMobileSidebar();
       }
 
       function newChat(opts = {}) {
@@ -3266,6 +4091,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         currentChat = null;
         activeFolder = "";
         closeChatMenu();
+        closeDeleteConfirm();
         document.body.classList.remove("chat-active");
         els.messages.innerHTML = "";
         els.hero.classList.remove("hidden");
@@ -3278,8 +4104,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderAttachments("hero");
         renderAttachments("thread");
         renderConversationRail();
+        autoFollow = true;
+        els.scrollBtn.classList.remove("visible");
+        els.scrollBtn.style.bottom = "";
+        showThreadComposer();
         updateScrollButtonOffset();
         if (!opts.preserveHash) history.pushState(null, "", location.pathname);
+        collapseMobileSidebar();
         renderSidebar();
         updateSendState();
         setTimeout(() => els.heroInput.focus(), 60);
@@ -3488,7 +4319,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               <button class="mini-btn copy-user-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
               <button class="mini-btn edit-user-btn" title="编辑" aria-label="编辑">${ICON_EDIT}</button>
             </div>`;
-          node.querySelector(".copy-user-btn").addEventListener("click", () => copyText(message.content || ""));
+          node.querySelector(".copy-user-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
           node.querySelector(".edit-user-btn").addEventListener("click", () => editUserMessage(message.id));
         } else {
           node.innerHTML = `
@@ -3504,7 +4335,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               </div>
             </div>
             <div class="bubble"><div class="sources"></div><div class="answer"></div><div class="assistant-footer"></div></div>`;
-          node.querySelector(".copy-btn").addEventListener("click", () => copyText(message.content || ""));
+          node.querySelector(".copy-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
           node.querySelector(".retry-btn").addEventListener("click", () => retryFrom(message.id));
           renderAssistantContent(node, message);
         }
@@ -3566,7 +4397,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
           <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
           <button class="mini-btn message-action-btn continue-answer-btn" title="继续追问" aria-label="继续追问">${ICON_CONTINUE}</button>`;
-        footer.querySelector(".copy-answer-btn").addEventListener("click", () => copyText(message.content || ""));
+        footer.querySelector(".copy-answer-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
         footer.querySelector(".continue-answer-btn").addEventListener("click", () => {
           els.threadInput.focus();
@@ -3842,12 +4673,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function openSettings() {
+        renderProviderSelect();
         els.cfgBaseUrl.value = state.baseUrl;
         els.cfgApiKey.value = state.apiKey;
         els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
+        els.cfgWebSearch.checked = state.webSearch !== false;
+        els.cfgRail.checked = state.railEnabled !== false;
+        els.cfgApiKey.type = "password";
+        els.toggleKeyBtn.classList.remove("visible");
+        renderProviderFields();
+        renderThemeMode();
         renderModelList();
-        switchTab("api");
+        switchTab("general");
         els.settingsOverlay.classList.add("open");
       }
 
@@ -3857,12 +4695,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function saveSettings() {
         const oldUrl = state.baseUrl;
+        try {
+          persistProviderDraft();
+        } catch (e) {
+          return;
+        }
+        state.webSearch = els.cfgWebSearch.checked;
+        state.railEnabled = els.cfgRail.checked;
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
         if (els.cfgModelInput.value.trim()) selectModel(els.cfgModelInput.value.trim(), { silent: true });
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
-        if (oldUrl !== state.baseUrl) fetchedModels = [];
+        if (oldUrl !== state.baseUrl) {
+          fetchedModels = [];
+          state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
+        }
         ensureActiveModel();
+        applyTheme();
+        applyGeneralSettings();
         await saveState();
         renderModelPickers();
         closeSettings();
@@ -3870,13 +4720,40 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function applyTheme() {
-        document.body.dataset.theme = state.theme === "dark" ? "dark" : "light";
+        const mode = state.themeMode || state.theme || "light";
+        const prefersDark = window.matchMedia?.("(prefers-color-scheme: dark)").matches;
+        const resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode;
+        state.theme = resolved;
+        document.body.dataset.theme = resolved === "dark" ? "dark" : "light";
+        renderThemeButtons();
       }
 
       function toggleTheme() {
-        state.theme = state.theme === "dark" ? "light" : "dark";
+        state.themeMode = (state.themeMode || state.theme) === "dark" ? "light" : "dark";
         applyTheme();
         saveState();
+      }
+
+      function renderThemeButtons() {
+        const isDark = document.body.dataset.theme === "dark";
+        const icon = isDark ? ICON_SUN : ICON_MOON;
+        const label = isDark ? "切换亮色模式" : "切换暗色模式";
+        if (els.themeBtn) {
+          els.themeBtn.innerHTML = icon;
+          els.themeBtn.title = label;
+          els.themeBtn.setAttribute("aria-label", label);
+        }
+        const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
+        const sidebarIcon = sidebarThemeBtn?.querySelector(".sidebar-icon");
+        if (sidebarIcon) sidebarIcon.innerHTML = icon;
+        if (sidebarThemeBtn) {
+          sidebarThemeBtn.title = label;
+          sidebarThemeBtn.setAttribute("aria-label", label);
+        }
+      }
+
+      function applyGeneralSettings() {
+        document.body.classList.toggle("rail-disabled", state.railEnabled === false);
       }
 
       function applySidebarState() {
@@ -3918,8 +4795,209 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         document.querySelectorAll(".tab").forEach((tab) => {
           tab.classList.toggle("active", tab.dataset.tab === id);
         });
-        els.tabApi.style.display = id === "api" ? "" : "none";
-        els.tabPrompt.style.display = id === "prompt" ? "" : "none";
+        els.tabGeneral.style.display = id === "general" ? "" : "none";
+        els.tabAI.style.display = id === "ai" ? "" : "none";
+        els.tabAppearance.style.display = id === "appearance" ? "" : "none";
+      }
+
+      function renderProviderSelect() {
+        const current = currentProviderConfig();
+        els.cfgProviderLabel.textContent = current.label || current.name || "Custom";
+        const standard = Object.entries(PROVIDERS)
+          .map(([id, provider]) => providerOptionHTML(id, provider.label))
+          .join("");
+        const custom = (state.customProviders || []).map((provider) => providerOptionHTML(provider.id, provider.name)).join("");
+        els.providerDropdown.innerHTML = `${standard}${custom}${providerOptionHTML(CUSTOM_PROVIDER_VALUE, "创建 Custom", true)}`;
+      }
+
+      function providerOptionHTML(value, label, create = false) {
+        return `<button class="provider-option${value === state.provider ? " active" : ""}" data-provider="${esc(value)}">${create ? "+ " : ""}${esc(label)}</button>`;
+      }
+
+      function toggleProviderDropdown() {
+        const open = !els.providerDropdown.classList.contains("open");
+        els.providerDropdown.classList.toggle("open", open);
+        els.cfgProviderTrigger.setAttribute("aria-expanded", String(open));
+      }
+
+      function closeProviderDropdown() {
+        els.providerDropdown.classList.remove("open");
+        els.cfgProviderTrigger.setAttribute("aria-expanded", "false");
+      }
+
+      function handleProviderChoice(value) {
+        persistProviderDraft({ validate: false });
+        if (value === CUSTOM_PROVIDER_VALUE) {
+          const id = `custom-${Date.now().toString(36)}`;
+          const provider = { id, name: uniqueCustomName("Custom"), baseUrl: "", keyUrl: "", apiKey: "" };
+          state.customProviders.push(provider);
+          state.provider = id;
+        } else {
+          state.provider = value;
+        }
+        state.apiKey = "";
+        fetchedModels = [];
+        state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
+        closeProviderDropdown();
+        renderProviderSelect();
+        renderProviderFields();
+      }
+
+      function currentProviderConfig() {
+        return PROVIDERS[state.provider] || (state.customProviders || []).find((provider) => provider.id === state.provider) || PROVIDERS.glm;
+      }
+
+      function renderProviderFields() {
+        const provider = currentProviderConfig();
+        const isCustom = !!(state.customProviders || []).find((item) => item.id === state.provider);
+        els.customNameField.style.display = isCustom ? "" : "none";
+        els.cfgCustomName.value = isCustom ? provider.name || "" : "";
+        els.cfgBaseUrl.value = isCustom ? provider.baseUrl || state.baseUrl || "" : provider.baseUrl;
+        els.cfgBaseUrl.readOnly = !isCustom;
+        els.baseUrlWrap.classList.toggle("locked", !isCustom);
+        els.providerKeyLink.href = provider.keyUrl || "#";
+        els.providerKeyLink.style.display = provider.keyUrl ? "" : "none";
+        els.cfgApiKey.value = isCustom ? provider.apiKey || "" : state.apiKey || "";
+      }
+
+      function persistProviderDraft(opts = {}) {
+        const isCustom = !!(state.customProviders || []).find((item) => item.id === state.provider);
+        if (isCustom) {
+          const provider = state.customProviders.find((item) => item.id === state.provider);
+          const nextName = els.cfgCustomName.value.trim() || "Custom";
+          const duplicate = state.customProviders.some((item) => item.id !== provider.id && item.name.toLowerCase() === nextName.toLowerCase());
+          if (duplicate && opts.validate !== false) {
+            showToast("Custom 配置不可重名。");
+            throw new Error("duplicate custom provider");
+          }
+          provider.name = nextName;
+          provider.baseUrl = els.cfgBaseUrl.value.trim();
+          provider.apiKey = els.cfgApiKey.value.trim();
+          state.baseUrl = provider.baseUrl;
+          state.apiKey = provider.apiKey;
+        } else {
+          const provider = currentProviderConfig();
+          state.baseUrl = provider.baseUrl;
+          state.apiKey = els.cfgApiKey.value.trim();
+        }
+      }
+
+      function uniqueCustomName(base) {
+        const names = new Set((state.customProviders || []).map((item) => item.name.toLowerCase()));
+        if (!names.has(base.toLowerCase())) return base;
+        let i = 2;
+        while (names.has(`${base} ${i}`.toLowerCase())) i++;
+        return `${base} ${i}`;
+      }
+
+      function deleteCurrentCustomProvider() {
+        const idx = state.customProviders.findIndex((item) => item.id === state.provider);
+        if (idx < 0) return;
+        state.customProviders.splice(idx, 1);
+        state.provider = state.customProviders[0]?.id || "glm";
+        state.apiKey = "";
+        fetchedModels = [];
+        state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
+        renderProviderSelect();
+        renderProviderFields();
+      }
+
+      function inferProviderFromBaseUrl(baseUrl = "") {
+        return Object.entries(PROVIDERS).find(([, provider]) => provider.baseUrl === baseUrl)?.[0] || "";
+      }
+
+      function toggleApiKeyVisibility() {
+        const visible = els.cfgApiKey.type === "text";
+        els.cfgApiKey.type = visible ? "password" : "text";
+        els.toggleKeyBtn.classList.toggle("visible", !visible);
+      }
+
+      async function testApiKey() {
+        persistProviderDraft();
+        els.testApiKeyBtn.disabled = true;
+        els.testApiKeyBtn.textContent = "测试中…";
+        const models = await fetchModels({ force: true, open: false });
+        els.testApiKeyBtn.disabled = false;
+        els.testApiKeyBtn.textContent = "测试 API Key";
+        showToast(models.length ? `API Key 可用，获取到 ${models.length} 个模型。` : "没有获取到模型；若该 Provider 不开放模型列表，请手动输入模型名后保存。");
+      }
+
+      function renderThemeMode() {
+        const mode = state.themeMode || state.theme || "light";
+        els.themeModeGroup.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.themeMode === mode);
+        });
+      }
+
+      function downloadJson(name, data) {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = name;
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function readSelectedJson(input) {
+        const file = input.files?.[0];
+        input.value = "";
+        if (!file) return Promise.resolve(null);
+        return file.text().then((text) => JSON.parse(text));
+      }
+
+      function exportConfig() {
+        downloadJson("linsoo-config.json", { version: 1, state });
+      }
+
+      async function importConfig() {
+        try {
+          const data = await readSelectedJson(els.importConfigInput);
+          if (!data) return;
+          Object.assign(state, data.state || data);
+          state.models = [];
+          await saveState();
+          applyTheme();
+          applyGeneralSettings();
+          renderModelPickers();
+          openSettings();
+          showToast("配置已导入。");
+        } catch (error) {
+          showToast(`导入配置失败：${error.message}`);
+        }
+      }
+
+      async function collectChatsForExport() {
+        const chats = [];
+        for (const item of chatIndex) {
+          const chat = await readJsonFile(`${OPFS_CHAT_DIR}/${item.slug}.json`, null);
+          if (chat) chats.push(chat);
+        }
+        if (currentChat && !chats.some((chat) => chat.slug === currentChat.slug)) {
+          chats.unshift({ ...currentChat, messages });
+        }
+        return chats;
+      }
+
+      async function exportChats() {
+        downloadJson("linsoo-chats.json", { version: 1, exportedAt: Date.now(), chats: await collectChatsForExport() });
+      }
+
+      async function importChats() {
+        try {
+          const data = await readSelectedJson(els.importChatsInput);
+          if (!data) return;
+          const chats = Array.isArray(data.chats) ? data.chats : Array.isArray(data) ? data : [];
+          for (const chat of chats) {
+            if (!chat.slug) continue;
+            await writeJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`, chat);
+          }
+          await loadChatIndex();
+          renderSidebar();
+          showToast(`已导入 ${chats.length} 条消息记录。`);
+        } catch (error) {
+          showToast(`导入消息失败：${error.message}`);
+        }
       }
 
       function selectModel(model, opts = {}) {
@@ -3938,29 +5016,66 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       async function fetchModels({ force = false, open = false, filter = null } = {}) {
         const url = (els.cfgBaseUrl?.value.trim() || state.baseUrl || DEFAULT_BASE_URL).trim();
         const key = els.cfgApiKey?.value.trim() || state.apiKey;
+        const cached = state.modelCache?.baseUrl === url && Array.isArray(state.modelCache.models) ? state.modelCache : null;
+        if (!force && cached?.models.length) {
+          fetchedModels = cached.models.slice();
+          modelFetchMessage = "";
+          renderModelPickers();
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
+          if (Date.now() - (cached.savedAt || 0) > MODEL_CACHE_TTL) refreshModelsInBackground(url, key);
+          return fetchedModels;
+        }
         if (!key) {
+          modelFetchMessage = "填写 API Key 后可获取模型列表。";
+          renderModelPickers();
           if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, "填写 API Key 后可获取模型列表。");
           return [];
         }
 
+        modelsLoading = true;
+        modelFetchMessage = "";
         if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, "正在获取模型列表…");
+        renderModelPickers();
         const modelsUrl = buildModelsUrl(url);
         try {
           const response = await fetch(modelsUrl, {
-            headers: { Authorization: `Bearer ${key}` },
+            headers: modelRequestHeaders(key, url),
           });
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          if (!response.ok) throw new Error(`HTTP ${response.status} ${response.statusText || ""}`.trim());
           const data = await response.json();
           fetchedModels = normalizeModels(data);
+          if (!fetchedModels.length) throw new Error("未识别到模型列表");
+          modelFetchMessage = "";
+          state.modelCache = { baseUrl: url, models: fetchedModels.slice(), savedAt: Date.now() };
           ensureActiveModel();
           await saveState();
           renderModelPickers();
           if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
           return fetchedModels;
         } catch (error) {
-          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, `获取失败：${error.message}`);
+          modelFetchMessage = `获取模型失败：${error.message}。部分服务的 /models 端点会校验 API Key、限制跨域，或不公开模型枚举；可以在设置里手动输入模型名称。`;
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, modelFetchMessage);
           return [];
+        } finally {
+          modelsLoading = false;
+          renderModelPickers();
         }
+      }
+
+      async function refreshModelsInBackground(url, key) {
+        if (!key) return;
+        try {
+          const response = await fetch(buildModelsUrl(url), { headers: modelRequestHeaders(key, url) });
+          if (!response.ok) return;
+          const models = normalizeModels(await response.json());
+          if (!models.length) return;
+          const changed = JSON.stringify(models) !== JSON.stringify(state.modelCache?.models || []);
+          state.modelCache = { baseUrl: url, models, savedAt: Date.now() };
+          fetchedModels = models.slice();
+          modelFetchMessage = "";
+          if (changed) renderModelPickers();
+          await saveState();
+        } catch (e) {}
       }
 
       function buildModelsUrl(baseUrl) {
@@ -3970,10 +5085,31 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return url;
       }
 
+      function modelRequestHeaders(key, baseUrl = "") {
+        const headers = {
+          Authorization: `Bearer ${key}`,
+          Accept: "application/json",
+        };
+        if (/openrouter\.ai/i.test(baseUrl)) {
+          headers["HTTP-Referer"] = location.origin || "https://parr0tboy.github.io";
+          headers["X-Title"] = "Linsoo";
+        }
+        return headers;
+      }
+
       function normalizeModels(data) {
-        const list = Array.isArray(data?.data) ? data.data : Array.isArray(data?.models) ? data.models : [];
+        const candidates = [
+          data?.data,
+          data?.models,
+          data?.result,
+          data?.result?.data,
+          data?.result?.models,
+          data?.model_list,
+          data?.models?.data,
+        ];
+        const list = candidates.find(Array.isArray) || [];
         return list
-          .map((item) => (typeof item === "string" ? item : item.id || item.name))
+          .map((item) => (typeof item === "string" ? item : item.id || item.name || item.model || item.model_id))
           .filter(Boolean)
           .sort((a, b) => a.localeCompare(b));
       }
@@ -4219,23 +5355,42 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         root.querySelectorAll(".code-copy").forEach((button) => {
           button.addEventListener("click", () => {
             const code = button.closest(".code-block")?.querySelector("code")?.innerText || "";
-            copyText(code);
+            copyText(code, button);
           });
         });
       }
 
-      function copyText(text) {
+      function showCopyFeedback(button) {
+        if (!button) return;
+        clearTimeout(button._copyTimer);
+        const isCodeButton = button.classList.contains("code-copy");
+        if (!button.dataset.copyOriginal) {
+          button.dataset.copyOriginal = button.innerHTML;
+        }
+        button.classList.add("copied");
+        button.innerHTML = isCodeButton ? "已复制" : ICON_CHECK;
+        button._copyTimer = setTimeout(() => {
+          button.classList.remove("copied");
+          button.innerHTML = button.dataset.copyOriginal || (isCodeButton ? "复制" : ICON_COPY);
+          delete button.dataset.copyOriginal;
+        }, 1050);
+      }
+
+      function copyText(text, button = null) {
         if (!navigator.clipboard) {
-          fallbackCopyText(text);
+          fallbackCopyText(text, button);
           return;
         }
         navigator.clipboard.writeText(text).then(
-          () => showToast("已复制。"),
-          () => fallbackCopyText(text),
+          () => {
+            showCopyFeedback(button);
+            showToast("已复制。");
+          },
+          () => fallbackCopyText(text, button),
         );
       }
 
-      function fallbackCopyText(text) {
+      function fallbackCopyText(text, button = null) {
         const area = document.createElement("textarea");
         area.value = text;
         area.setAttribute("readonly", "");
@@ -4246,6 +5401,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         area.select();
         try {
           const ok = document.execCommand("copy");
+          if (ok) showCopyFeedback(button);
           showToast(ok ? "已复制。" : "复制失败，浏览器不允许访问剪贴板。");
         } catch (e) {
           showToast("复制失败，浏览器不允许访问剪贴板。");
@@ -4262,9 +5418,29 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function scrollToBottom() {
+        showThreadComposer();
         requestAnimationFrame(() => {
           window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
         });
+      }
+
+      function showThreadComposer() {
+        clearTimeout(mobileComposerTimer);
+        els.threadComposer?.classList.remove("composer-hidden");
+      }
+
+      function handleMobileComposerScroll(distance) {
+        if (!isMobileViewport() || !document.body.classList.contains("chat-active")) {
+          showThreadComposer();
+          return;
+        }
+        if (distance < 80) {
+          showThreadComposer();
+          return;
+        }
+        els.threadComposer.classList.add("composer-hidden");
+        clearTimeout(mobileComposerTimer);
+        mobileComposerTimer = setTimeout(showThreadComposer, 1000);
       }
 
       function updateScrollButtonOffset() {
