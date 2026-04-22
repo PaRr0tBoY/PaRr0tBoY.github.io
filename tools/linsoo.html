@@ -594,15 +594,22 @@
         color: var(--ink);
       }
 
+
       .main {
-        width: calc(100% - 288px);
-        margin: 0;
-        flex: 1;
-        display: flex;
-        flex-direction: column;
-        padding: clamp(26px, 5vw, 70px) clamp(16px, 3vw, 28px) 24px;
-        margin-left: 288px;
-        transition: margin-left var(--speed);
+          min-height: 100vh;
+          display: flex; /* 改为 flex */
+          flex-direction: column;
+          align-items: center; /* 水平居中 */
+          justify-content: center; /* 首页模式下垂直居中 */
+          width: calc(100% - 288px);
+          margin-left: 288px;
+          transition: margin-left var(--speed);
+          position: relative;
+      }
+
+      /* 当进入对话模式时，改变对齐方式，让内容从顶部开始排 */
+      body.chat-active .main {
+          justify-content: flex-start; 
       }
 
       body.sidebar-collapsed .main {
@@ -623,6 +630,11 @@
 
       body.chat-active .conversation-rail {
         display: block;
+      }
+
+      body.chat-active .main {
+          height: auto;
+          overflow: visible;
       }
 
       .rail-inner {
@@ -728,17 +740,19 @@
       }
 
       .hero {
-        width: min(100%, 1120px);
-        margin: 0 auto;
-        min-height: 100vh;
-        display: grid;
-        align-content: center;
-        gap: 26px;
-        padding: 0 0 20vh;
+          display: flex; /* 改为 flex 方便内部居中 */
+          flex-direction: column;
+          align-items: center;
+          gap: 26px;
+          width: 100%;
+          max-width: 1120px;
+          padding: 20px;
+          /* 移除之前的 position: absolute 或 grid-area 等 */
       }
 
+      /* 确保隐藏逻辑优先级最高 */
       .hero.hidden {
-        display: none;
+          display: none !important;
       }
 
       .hero-copy {
@@ -1193,12 +1207,11 @@
       }
 
       .thread {
-        display: none;
-        width: min(100%, 820px);
-        margin: 0 auto;
-        flex: 1;
-        min-height: calc(100vh - 88px);
-        flex-direction: column;
+          display: none;
+          width: min(100%, 820px);
+          margin: 0 auto;
+          padding-top: clamp(40px, 8vh, 80px); /* 在对话模式下才开启顶部间距 */
+          padding-bottom: 160px;
       }
 
       .thread.active {
