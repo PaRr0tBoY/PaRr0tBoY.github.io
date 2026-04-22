@@ -96,6 +96,7 @@
       html {
         min-height: 100%;
         background: var(--paper);
+        touch-action: manipulation;
       }
 
       body {
@@ -104,6 +105,7 @@
         font-family: "DM Sans", Arial, sans-serif;
         background: var(--paper);
         overflow-x: hidden;
+        touch-action: manipulation;
       }
 
       body::before {
@@ -594,22 +596,15 @@
         color: var(--ink);
       }
 
-
       .main {
-          min-height: 100vh;
-          display: flex; /* 改为 flex */
-          flex-direction: column;
-          align-items: center; /* 水平居中 */
-          justify-content: center; /* 首页模式下垂直居中 */
-          width: calc(100% - 288px);
-          margin-left: 288px;
-          transition: margin-left var(--speed);
-          position: relative;
-      }
-
-      /* 当进入对话模式时，改变对齐方式，让内容从顶部开始排 */
-      body.chat-active .main {
-          justify-content: flex-start; 
+        width: calc(100% - 288px);
+        margin: 0;
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        padding: clamp(26px, 5vw, 70px) clamp(16px, 3vw, 28px) 24px;
+        margin-left: 288px;
+        transition: margin-left var(--speed);
       }
 
       body.sidebar-collapsed .main {
@@ -630,11 +625,6 @@
 
       body.chat-active .conversation-rail {
         display: block;
-      }
-
-      body.chat-active .main {
-          height: auto;
-          overflow: visible;
       }
 
       .rail-inner {
@@ -740,19 +730,17 @@
       }
 
       .hero {
-          display: flex; /* 改为 flex 方便内部居中 */
-          flex-direction: column;
-          align-items: center;
-          gap: 26px;
-          width: 100%;
-          max-width: 1120px;
-          padding: 20px;
-          /* 移除之前的 position: absolute 或 grid-area 等 */
+        width: min(100%, 1120px);
+        margin: 0 auto;
+        min-height: calc(100vh - clamp(26px, 5vw, 70px) - 24px);
+        display: grid;
+        align-content: center;
+        gap: 26px;
+        padding: 0;
       }
 
-      /* 确保隐藏逻辑优先级最高 */
       .hero.hidden {
-          display: none !important;
+        display: none;
       }
 
       .hero-copy {
@@ -1207,11 +1195,12 @@
       }
 
       .thread {
-          display: none;
-          width: min(100%, 820px);
-          margin: 0 auto;
-          padding-top: clamp(40px, 8vh, 80px); /* 在对话模式下才开启顶部间距 */
-          padding-bottom: 160px;
+        display: none;
+        width: min(100%, 820px);
+        margin: 0 auto;
+        flex: 1;
+        min-height: calc(100vh - 88px);
+        flex-direction: column;
       }
 
       .thread.active {
@@ -1969,6 +1958,12 @@
       }
 
       @media (max-width: 720px) {
+        .theme-float {
+          top: 8px;
+          right: 58px;
+          z-index: 32;
+        }
+
         .sidebar {
           top: 0;
           left: 0;
@@ -2100,7 +2095,8 @@
         }
 
         .hero {
-          padding: 0 0 9vh;
+          min-height: calc(100vh - 94px);
+          padding: 0;
         }
 
         .model-trigger {
@@ -2122,10 +2118,6 @@
         }
 
         .conversation-rail {
-          display: none !important;
-        }
-
-        .theme-float {
           display: none !important;
         }
       }
@@ -2457,6 +2449,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         await loadModelCache();
         hydrateModelsFromCache();
         ensureActiveModel();
+        applyResponsiveSidebarDefault();
         applyTheme();
         applySidebarState();
         loadMathJax();
@@ -2727,7 +2720,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         bindModelPicker("hero");
         bindModelPicker("thread");
 
-        els.homeBtn.addEventListener("click", () => newChat());
+        els.homeBtn.addEventListener("click", goHome);
         els.sidebarToggle.addEventListener("click", toggleSidebar);
         els.searchHistoryBtn.addEventListener("click", openGlobalSearch);
         els.searchClose.addEventListener("click", closeGlobalSearch);
@@ -2761,6 +2754,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.conversationRail.addEventListener("mouseleave", () => {
           els.railPreview.classList.remove("visible");
         });
+        document.addEventListener("dblclick", (event) => {
+          if (!isMobileViewport()) return;
+          event.preventDefault();
+        }, { passive: false });
 
         document.querySelectorAll(".tab").forEach((tab) => {
           tab.addEventListener("click", () => switchTab(tab.dataset.tab));
@@ -3256,8 +3253,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.hero.classList.add("hidden");
         els.thread.classList.add("active");
         els.threadComposer.style.display = "";
+        collapseMobileSidebar();
         updateScrollButtonOffset();
         setTimeout(() => els.threadInput.focus(), 60);
+      }
+
+      function goHome() {
+        newChat({ preserveHash: true });
+        history.pushState(null, "", location.pathname);
       }
 
       function newChat(opts = {}) {
@@ -3279,7 +3282,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderAttachments("thread");
         renderConversationRail();
         updateScrollButtonOffset();
-        if (!opts.preserveHash) history.pushState(null, "", location.pathname + location.search);
+        if (!opts.preserveHash) history.pushState(null, "", location.pathname);
         renderSidebar();
         updateSendState();
         setTimeout(() => els.heroInput.focus(), 60);
@@ -3885,6 +3888,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function applySidebarState() {
         document.body.classList.toggle("sidebar-collapsed", !!state.sidebarCollapsed);
+      }
+
+      function applyResponsiveSidebarDefault() {
+        state.sidebarCollapsed = isMobileViewport();
+      }
+
+      function collapseMobileSidebar() {
+        if (!isMobileViewport() || state.sidebarCollapsed) return;
+        state.sidebarCollapsed = true;
+        applySidebarState();
       }
 
       function toggleSidebar() {
