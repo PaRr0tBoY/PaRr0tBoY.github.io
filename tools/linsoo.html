@@ -161,6 +161,10 @@
         padding-right: 0;
       }
 
+      body.sidebar-collapsed .sidebar-head {
+        justify-content: center;
+      }
+
       .sidebar-head,
       .sidebar-footer {
         display: flex;
@@ -261,13 +265,18 @@
       }
 
       .sidebar-icon {
-        width: 24px;
-        min-width: 24px;
+        width: 28px;
+        min-width: 28px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
-        font-size: 18px;
+        font-size: 22px;
         line-height: 1;
+      }
+
+      .sidebar-icon svg {
+        width: 23px;
+        height: 23px;
       }
 
       .empty-row {
@@ -280,10 +289,7 @@
       .sidebar-label,
       .chat-title,
       .folder-name,
-      .sidebar-title,
-      .profile-name,
-      .profile-plan,
-      .search-panel {
+      .sidebar-title {
         transition:
           opacity var(--speed),
           visibility var(--speed);
@@ -359,35 +365,122 @@
         color: var(--ink);
       }
 
-      .search-panel {
+      .search-overlay {
+        position: fixed;
+        inset: 0;
+        z-index: 85;
         display: none;
-        margin: 8px 0 0;
+        align-items: flex-start;
+        justify-content: center;
+        padding-top: min(12vh, 92px);
+        background: rgba(20, 20, 19, 0.34);
       }
 
-      .search-panel.open {
-        display: block;
+      .search-overlay.open {
+        display: flex;
       }
 
-      .search-input {
-        width: 100%;
+      .search-modal {
+        width: min(92vw, 672px);
+        max-height: min(78vh, 620px);
+        overflow: hidden;
         border: 1px solid var(--line-strong);
-        border-radius: 10px;
+        border-radius: 15px;
         background: var(--ivory);
-        color: var(--ink);
+        box-shadow: var(--shadow-soft), 0 24px 90px rgba(20, 20, 19, 0.18);
+      }
+
+      .search-head {
+        height: 64px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid var(--line);
+        padding: 0 14px 0 18px;
+      }
+
+      .search-head svg {
+        color: var(--faint);
+        flex-shrink: 0;
+      }
+
+      .search-head input {
+        flex: 1;
+        min-width: 0;
+        border: none;
         outline: none;
-        padding: 8px 9px;
-        font-size: 13px;
+        background: transparent;
+        color: var(--ink);
+        font-size: 15px;
+      }
+
+      .search-close {
+        width: 34px;
+        height: 34px;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--faint);
+        cursor: pointer;
+        font-size: 24px;
+      }
+
+      .search-close:hover {
+        color: var(--ink);
+      }
+
+      .search-results {
+        max-height: calc(min(78vh, 620px) - 64px);
+        overflow-y: auto;
+        padding: 8px 10px 12px;
+      }
+
+      .search-result-row {
+        width: 100%;
+        min-height: 38px;
+        display: grid;
+        grid-template-columns: 1fr auto;
+        align-items: center;
+        gap: 12px;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 0 10px;
+        text-align: left;
+      }
+
+      .search-result-row:hover,
+      .search-result-row.active {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
+      .search-result-title {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-size: 14px;
+      }
+
+      .search-result-time {
+        color: var(--faint);
+        font-size: 12px;
       }
 
       body.sidebar-collapsed .sidebar-label,
       body.sidebar-collapsed .chat-title,
       body.sidebar-collapsed .folder-name,
       body.sidebar-collapsed .sidebar-title,
-      body.sidebar-collapsed .search-panel,
       body.sidebar-collapsed .logo {
         opacity: 0;
         visibility: hidden;
         width: 0;
+      }
+
+      body.sidebar-collapsed .brand {
+        display: none;
       }
 
       body.sidebar-collapsed .sidebar-label {
@@ -419,6 +512,11 @@
 
       body.sidebar-collapsed .sidebar-section:first-child .sidebar-action {
         width: 40px;
+      }
+
+      body.sidebar-collapsed .sidebar-icon {
+        width: 40px;
+        min-width: 40px;
       }
 
       .theme-float {
@@ -648,14 +746,17 @@
       }
 
       .model-trigger {
-        min-width: 142px;
-        max-width: 220px;
+        min-width: 0;
+        max-width: 180px;
         height: 36px;
-        justify-content: flex-start;
-        padding: 0 10px;
+        justify-content: center;
+        align-items: center;
+        padding: 0 8px;
+        gap: 4px;
         font-size: 13px;
         font-weight: 500;
         white-space: nowrap;
+        line-height: 1;
       }
 
       .model-trigger:hover,
@@ -667,11 +768,18 @@
       .model-trigger-text {
         overflow: hidden;
         text-overflow: ellipsis;
+        line-height: 1;
       }
 
       .model-trigger-caret {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
         color: var(--faint);
         flex-shrink: 0;
+        width: 14px;
+        height: 14px;
+        line-height: 1;
       }
 
       .model-dropdown {
@@ -692,6 +800,11 @@
 
       .model-dropdown.open {
         display: block;
+      }
+
+      .model-dropdown.open-up {
+        top: auto;
+        bottom: calc(100% + 8px);
       }
 
       .model-option {
@@ -821,7 +934,7 @@
         width: 40px;
         height: 40px;
         border: none;
-        border-radius: 12px;
+        border-radius: 50%;
         background: var(--accent);
         color: var(--ivory);
         display: inline-flex;
@@ -1674,7 +1787,6 @@
         .chat-title,
         .folder-name,
         .sidebar-title,
-        .search-panel,
         .logo {
           opacity: 0;
           visibility: hidden;
@@ -1719,16 +1831,13 @@
         <div class="sidebar-body">
           <section class="sidebar-section">
             <button class="sidebar-action" id="newChatBtn" title="新建对话">
-              <span class="sidebar-icon">＋</span><span class="sidebar-label">New chat</span>
+              <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg></span><span class="sidebar-label">New chat</span>
             </button>
             <button class="sidebar-action" id="searchHistoryBtn" title="搜索历史">
-              <span class="sidebar-icon">⌕</span><span class="sidebar-label">Search</span>
+              <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.4-3.4"/></svg></span><span class="sidebar-label">Search</span>
             </button>
-            <div class="search-panel" id="searchPanel">
-              <input class="search-input" id="historySearchInput" type="search" placeholder="Search chats" />
-            </div>
             <button class="sidebar-action" id="settingsBtn" title="设置">
-              <span class="sidebar-icon">⚙</span><span class="sidebar-label">Settings</span>
+              <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h0m0 18h0m7.8-13.5h0M4.2 16.5h0m15.6 0h0M4.2 7.5h0"/><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M19.8 7.5 17.2 9M6.8 15l-2.6 1.5"/></svg></span><span class="sidebar-label">Settings</span>
             </button>
           </section>
           <section class="sidebar-section">
@@ -1835,6 +1944,19 @@
     </div>
 
     <div class="chat-menu" id="chatMenu"></div>
+    <div class="search-overlay" id="searchOverlay">
+      <div class="search-modal">
+        <div class="search-head">
+          <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <circle cx="11" cy="11" r="7" />
+            <path d="m20 20-3.4-3.4" />
+          </svg>
+          <input id="globalSearchInput" type="search" placeholder="Search chats and projects" />
+          <button class="search-close" id="searchClose" title="关闭" aria-label="关闭">×</button>
+        </div>
+        <div class="search-results" id="globalSearchResults"></div>
+      </div>
+    </div>
     <div class="toast" id="toast"></div>
 
     <div class="overlay" id="settingsOverlay">
@@ -1939,10 +2061,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         },
       ];
 
-      const ICON_COPY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
-      const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
-      const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
-      const ICON_CONTINUE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+      const ICON_COPY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>';
+      const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
+      const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
+      const ICON_CONTINUE = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/><path d="m13 6 6 6-6 6"/></svg>';
+      const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
 
       let state = {
         baseUrl: "",
@@ -2032,8 +2155,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "homeBtn",
           "sidebarToggle",
           "searchHistoryBtn",
-          "searchPanel",
-          "historySearchInput",
+          "searchOverlay",
+          "globalSearchInput",
+          "globalSearchResults",
+          "searchClose",
           "folderList",
           "pinnedList",
           "recentList",
@@ -2233,7 +2358,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function ensureActiveModel() {
         if (state.activeModel) return;
-        state.activeModel = state.models[0] || fetchedModels[0] || "glm-4-flash";
+        state.activeModel = state.models[0] || fetchedModels[0] || "";
       }
 
       function bindEvents() {
@@ -2246,11 +2371,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         els.homeBtn.addEventListener("click", () => newChat());
         els.sidebarToggle.addEventListener("click", toggleSidebar);
-        els.searchHistoryBtn.addEventListener("click", () => {
-          els.searchPanel.classList.toggle("open");
-          if (els.searchPanel.classList.contains("open")) els.historySearchInput.focus();
+        els.searchHistoryBtn.addEventListener("click", openGlobalSearch);
+        els.searchClose.addEventListener("click", closeGlobalSearch);
+        els.searchOverlay.addEventListener("click", (event) => {
+          if (event.target === els.searchOverlay) closeGlobalSearch();
         });
-        els.historySearchInput.addEventListener("input", renderSidebar);
+        els.globalSearchInput.addEventListener("input", renderGlobalSearchResults);
+        els.globalSearchInput.addEventListener("keydown", (event) => {
+          if (event.key === "Escape") closeGlobalSearch();
+          if (event.key === "Enter") {
+            const first = els.globalSearchResults.querySelector(".search-result-row");
+            if (first) first.click();
+          }
+        });
         els.settingsBtn.addEventListener("click", openSettings);
         els.settingsClose.addEventListener("click", closeSettings);
         els.settingsCancel.addEventListener("click", closeSettings);
@@ -2485,7 +2618,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function renderModelPickers() {
         ensureActiveModel();
         ["hero", "thread"].forEach((scope) => {
-          els[`${scope}ModelLabel`].textContent = state.activeModel;
+          els[`${scope}ModelLabel`].textContent = state.activeModel || "Model";
           renderComposerModelDropdown(scope);
         });
       }
@@ -2499,19 +2632,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           dropdown.classList.add("open");
           els[`${scope}ModelTrigger`].setAttribute("aria-expanded", "true");
           renderComposerModelDropdown(scope);
+          positionComposerModelDropdown(scope);
         }
       }
 
       function closeComposerModelDropdowns() {
         ["hero", "thread"].forEach((scope) => {
-          els[`${scope}ModelDropdown`].classList.remove("open");
+          els[`${scope}ModelDropdown`].classList.remove("open", "open-up");
           els[`${scope}ModelTrigger`].setAttribute("aria-expanded", "false");
         });
       }
 
       function modelChoices() {
         const seen = new Set();
-        return [state.activeModel, ...state.models, ...fetchedModels, "glm-4-flash"]
+        return [state.activeModel, ...state.models, ...fetchedModels]
           .filter(Boolean)
           .filter((model) => {
             if (seen.has(model)) return false;
@@ -2523,14 +2657,27 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function renderComposerModelDropdown(scope) {
         const dropdown = els[`${scope}ModelDropdown`];
         const models = modelChoices();
-        dropdown.innerHTML = models
-          .map((model) => modelOptionHTML(model))
-          .join("");
+        dropdown.innerHTML = models.length
+          ? models.map((model) => modelOptionHTML(model)).join("")
+          : `<div class="model-empty">先在设置中获取或填写模型。</div>`;
         dropdown.querySelectorAll(".model-option").forEach((btn) => {
           btn.addEventListener("click", () => {
             selectModel(btn.dataset.model);
             closeComposerModelDropdowns();
           });
+        });
+      }
+
+      function positionComposerModelDropdown(scope) {
+        const trigger = els[`${scope}ModelTrigger`];
+        const dropdown = els[`${scope}ModelDropdown`];
+        dropdown.classList.remove("open-up");
+        requestAnimationFrame(() => {
+          const triggerRect = trigger.getBoundingClientRect();
+          const dropdownRect = dropdown.getBoundingClientRect();
+          const below = window.innerHeight - triggerRect.bottom - 10;
+          const above = triggerRect.top - 10;
+          if (below < dropdownRect.height && above > below) dropdown.classList.add("open-up");
         });
       }
 
@@ -2543,12 +2690,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderSidebar() {
-        const query = (els.historySearchInput?.value || "").trim().toLowerCase();
         const folders = [...new Set(chatIndex.map((chat) => chat.folder).filter(Boolean))].sort((a, b) => a.localeCompare(b));
         els.folderList.innerHTML = folders.length
           ? folders.map((folder) => `
               <button class="folder-row${folder === activeFolder ? " active" : ""}" data-folder="${esc(folder)}">
-                <span class="sidebar-icon">▱</span><span class="folder-name">${esc(folder)}</span>
+                <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span>
               </button>`).join("")
           : `<div class="empty-row">No folders</div>`;
         els.folderList.querySelectorAll(".folder-row").forEach((btn) => {
@@ -2558,11 +2704,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           });
         });
 
-        const matches = chatIndex.filter((chat) => {
-          const folderMatch = !activeFolder || chat.folder === activeFolder;
-          const queryMatch = !query || `${chat.title}\n${chat.text}`.toLowerCase().includes(query);
-          return folderMatch && queryMatch;
-        });
+        const matches = chatIndex.filter((chat) => !activeFolder || chat.folder === activeFolder);
         const pinned = matches.filter((chat) => chat.pinned);
         const recents = matches.filter((chat) => !chat.pinned);
         els.pinnedList.innerHTML = pinned.length ? pinned.map(chatRowHTML).join("") : emptySidebarRow("No pinned chats");
@@ -2580,6 +2722,47 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             <span class="chat-title">${esc(chat.title)}</span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
           </button>`;
+      }
+
+      function openGlobalSearch() {
+        els.searchOverlay.classList.add("open");
+        els.globalSearchInput.value = "";
+        renderGlobalSearchResults();
+        setTimeout(() => els.globalSearchInput.focus(), 30);
+      }
+
+      function closeGlobalSearch() {
+        els.searchOverlay.classList.remove("open");
+      }
+
+      function renderGlobalSearchResults() {
+        const query = els.globalSearchInput.value.trim().toLowerCase();
+        const rows = chatIndex
+          .filter((chat) => !query || `${chat.title}\n${chat.text}\n${chat.folder}`.toLowerCase().includes(query))
+          .slice(0, 24);
+        els.globalSearchResults.innerHTML = rows.length
+          ? rows.map((chat) => `
+              <button class="search-result-row${chat.slug === currentChat?.slug ? " active" : ""}" data-slug="${esc(chat.slug)}">
+                <span class="search-result-title">${esc(chat.title)}</span>
+                <span class="search-result-time">${esc(relativeTime(chat.updatedAt))}</span>
+              </button>`).join("")
+          : `<div class="empty-row">No matching chats</div>`;
+        els.globalSearchResults.querySelectorAll(".search-result-row").forEach((row) => {
+          row.addEventListener("click", async () => {
+            closeGlobalSearch();
+            const slug = row.dataset.slug;
+            location.hash = `chat/${encodeURIComponent(slug)}`;
+            await loadChatBySlug(slug);
+          });
+        });
+      }
+
+      function relativeTime(value) {
+        const ts = Number(value) || Date.now();
+        const diff = Date.now() - ts;
+        if (diff < 7 * 24 * 60 * 60 * 1000) return "Past week";
+        if (diff < 31 * 24 * 60 * 60 * 1000) return "Past month";
+        return "Older";
       }
 
       function bindChatRows() {
@@ -2827,10 +3010,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               <div class="assistant-id"><span class="assistant-mark">L</span> Linsoo</div>
               <div class="message-actions">
                 <button class="mini-btn copy-btn" title="复制" aria-label="复制">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
                 </button>
                 <button class="mini-btn retry-btn" title="重试" aria-label="重试">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>
                 </button>
               </div>
             </div>
@@ -2991,6 +3174,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function callChat(assistantId, signal) {
         const modelList = modelChoices();
+        if (!modelList.length) {
+          openSettings();
+          throw new Error("请先在设置中选择模型。");
+        }
         let lastError;
         for (const model of modelList) {
           try {
@@ -3246,7 +3433,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!state.models.length) {
           const empty = document.createElement("div");
           empty.className = "field-hint";
-          empty.textContent = "未添加模型时默认使用 glm-4-flash。";
+          empty.textContent = "未添加模型。聚焦模型输入框可从当前 Base URL 获取列表。";
           els.modelList.appendChild(empty);
           return;
         }
