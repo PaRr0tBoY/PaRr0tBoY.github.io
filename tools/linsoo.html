@@ -204,31 +204,6 @@
         text-align: center;
       }
 
-      .eyebrow {
-        display: inline-flex;
-        align-items: center;
-        gap: 7px;
-        margin-bottom: 20px;
-        background: var(--ivory);
-        box-shadow: var(--shadow-ring);
-        color: var(--muted);
-        border-radius: 999px;
-        padding: 7px 13px;
-        font-size: 12px;
-        font-weight: 500;
-        letter-spacing: 0.12px;
-      }
-
-      .eyebrow-mark {
-        display: inline-block;
-        width: 7px;
-        height: 7px;
-        border-radius: 50%;
-        background: var(--olive);
-        box-shadow: 0 0 0 4px var(--olive-soft);
-        font-size: 0;
-      }
-
       h1 {
         font-family: "Newsreader", Georgia, serif;
         font-size: clamp(39px, 6vw, 66px);
@@ -241,15 +216,6 @@
       h1 em {
         color: var(--accent);
         font-style: normal;
-      }
-
-      .hero-sub {
-        max-width: 660px;
-        margin: 20px auto 0;
-        color: var(--muted);
-        font-size: clamp(17px, 2vw, 20px);
-        line-height: 1.6;
-        text-wrap: balance;
       }
 
       .composer-panel {
@@ -312,18 +278,25 @@
         min-width: 0;
       }
 
-      .mode-chip {
-        height: 34px;
+      .composer-tools,
+      .composer-actions {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        min-width: 0;
+      }
+
+      .tool-btn,
+      .model-trigger,
+      .message-action-btn {
         display: inline-flex;
         align-items: center;
-        gap: 6px;
+        justify-content: center;
+        gap: 7px;
         border: none;
         border-radius: 12px;
         background: transparent;
         color: var(--muted);
-        padding: 0 11px;
-        font-size: 12px;
-        font-weight: 500;
         cursor: pointer;
         transition:
           background var(--speed),
@@ -331,21 +304,150 @@
           box-shadow var(--speed);
       }
 
-      .mode-chip:hover {
+      .tool-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .tool-btn:hover,
+      .message-action-btn:hover {
         background: var(--sand-2);
         color: var(--ink);
       }
 
-      .mode-chip.active {
-        background: var(--sand);
-        box-shadow: var(--shadow-ring);
+      .model-picker {
+        position: relative;
+      }
+
+      .model-trigger {
+        min-width: 142px;
+        max-width: 220px;
+        height: 36px;
+        justify-content: flex-start;
+        padding: 0 10px;
+        font-size: 13px;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .model-trigger:hover,
+      .model-trigger[aria-expanded="true"] {
+        background: var(--sand-2);
         color: var(--ink);
       }
 
-      .mode-chip b {
-        font-family: "Newsreader", Georgia, serif;
+      .model-trigger-text {
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+
+      .model-trigger-caret {
+        color: var(--faint);
+        flex-shrink: 0;
+      }
+
+      .model-dropdown {
+        position: absolute;
+        right: 0;
+        bottom: calc(100% + 8px);
+        z-index: 40;
+        width: min(320px, calc(100vw - 32px));
+        max-height: 260px;
+        overflow-y: auto;
+        border: 1px solid var(--line-strong);
+        border-radius: 16px;
+        background: var(--ivory);
+        box-shadow: var(--shadow-soft), 0 18px 70px rgba(20, 20, 19, 0.1);
+        padding: 6px;
+        display: none;
+      }
+
+      .model-dropdown.open {
+        display: block;
+      }
+
+      .model-option {
+        width: 100%;
+        min-height: 36px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 8px 10px;
+        font-size: 13px;
+        text-align: left;
+      }
+
+      .model-option:hover,
+      .model-option.active {
+        background: var(--sand);
+      }
+
+      .model-option-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        flex: 1;
+        font-family: "DM Mono", ui-monospace, monospace;
+        font-size: 12px;
+      }
+
+      .model-option-check {
+        color: var(--accent);
+        flex-shrink: 0;
+      }
+
+      .model-empty {
+        padding: 10px 11px;
+        color: var(--faint);
+        font-size: 12px;
+        line-height: 1.45;
+      }
+
+      .attachment-strip {
+        display: none;
+        flex-wrap: wrap;
+        gap: 6px;
+        padding: 0 4px;
+      }
+
+      .attachment-strip.visible {
+        display: flex;
+      }
+
+      .attachment-chip {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        max-width: 100%;
+        border-radius: 999px;
+        background: var(--sand);
+        box-shadow: var(--shadow-ring);
+        color: var(--text-strong);
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+
+      .attachment-chip span {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
+      .attachment-chip button {
+        border: none;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
         font-size: 14px;
-        font-weight: 500;
+        line-height: 1;
       }
 
       .send-btn {
@@ -523,13 +625,6 @@
         display: flex;
         align-items: center;
         gap: 6px;
-        opacity: 0;
-        transition: opacity var(--speed);
-      }
-
-      .message:hover .message-actions,
-      .message-actions:focus-within {
-        opacity: 1;
       }
 
       .mini-btn {
@@ -554,6 +649,20 @@
         color: var(--ink);
         background: var(--white);
         box-shadow: var(--shadow-ring-deep);
+      }
+
+      .assistant-footer {
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 12px;
+      }
+
+      .message-action-btn {
+        min-height: 32px;
+        padding: 0 10px;
+        font-size: 12px;
+        font-weight: 500;
       }
 
       .answer {
@@ -604,11 +713,87 @@
         padding: 14px;
       }
 
+      .code-block {
+        margin: 14px 0 18px;
+        overflow: hidden;
+        border: 1px solid var(--charcoal);
+        border-radius: var(--radius-md);
+        background: var(--ink);
+      }
+
+      .code-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        min-height: 38px;
+        border-bottom: 1px solid var(--charcoal);
+        padding: 0 10px 0 13px;
+        color: var(--silver);
+        font-size: 12px;
+      }
+
+      .code-lang {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: "DM Mono", ui-monospace, monospace;
+      }
+
+      .code-copy {
+        border: none;
+        border-radius: 8px;
+        background: transparent;
+        color: var(--silver);
+        cursor: pointer;
+        padding: 5px 8px;
+        font-size: 12px;
+      }
+
+      .code-copy:hover {
+        background: var(--charcoal);
+        color: var(--ivory);
+      }
+
+      .code-block pre {
+        margin: 0;
+        border: none;
+        border-radius: 0;
+      }
+
       .answer pre code {
         border: none;
         background: transparent;
         color: inherit;
         padding: 0;
+      }
+
+      .answer blockquote {
+        margin: 12px 0 14px;
+        border-left: 3px solid var(--line-strong);
+        padding: 2px 0 2px 14px;
+        color: var(--muted);
+      }
+
+      .answer table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 12px 0 16px;
+        font-size: 14px;
+      }
+
+      .answer th,
+      .answer td {
+        border: 1px solid var(--line-strong);
+        padding: 8px 10px;
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .answer th {
+        background: var(--sand);
+        color: var(--ink);
+        font-weight: 600;
       }
 
       .answer a {
@@ -958,6 +1143,36 @@
         flex: 1;
       }
 
+      .settings-model-wrap {
+        position: relative;
+        flex: 1;
+      }
+
+      .settings-model-wrap .input {
+        border-radius: 12px 12px 0 0;
+      }
+
+      .settings-model-dd {
+        position: absolute;
+        top: calc(100% - 1px);
+        left: 0;
+        right: 0;
+        z-index: 70;
+        max-height: 220px;
+        overflow-y: auto;
+        border: 1px solid var(--line-strong);
+        border-top: none;
+        border-radius: 0 0 12px 12px;
+        background: var(--ivory);
+        box-shadow: 0 16px 34px rgba(20, 20, 19, 0.08);
+        display: none;
+        padding: 4px;
+      }
+
+      .settings-model-dd.open {
+        display: block;
+      }
+
       .model-list {
         display: flex;
         flex-wrap: wrap;
@@ -1015,8 +1230,9 @@
           grid-template-columns: 1fr;
         }
 
-        .mode-chip span {
-          display: none;
+        .model-trigger {
+          min-width: 112px;
+          max-width: 146px;
         }
 
         .composer-input {
@@ -1026,10 +1242,6 @@
         h1 {
           font-size: clamp(35px, 10vw, 44px);
           line-height: 1.15;
-        }
-
-        .hero-sub {
-          font-size: 17px;
         }
 
         .messages {
@@ -1064,27 +1276,36 @@
       <main class="main">
         <section class="hero" id="hero">
           <div class="hero-copy">
-            <div class="eyebrow"><i class="eyebrow-mark" aria-hidden="true">&nbsp;</i>直接对话，不再预判搜索词</div>
             <h1>研究任何问题。<br /><em>Linsoo</em> 直接回答。</h1>
-            <p class="hero-sub">
-              像打开一页安静的笔记：输入问题，进入搜索对话，保留上下文继续追问。来源、推理和下一步都留在同一个阅读节奏里。
-            </p>
           </div>
           <div class="composer-panel">
             <div class="composer-shell">
               <textarea
                 class="composer-input"
                 id="heroInput"
-                placeholder="搜索或提问，例如：最近有哪些值得关注的浏览器 UI 设计趋势？"
+                placeholder="How can I help you today?"
                 spellcheck="false"
               ></textarea>
+              <div class="attachment-strip" id="heroAttachments"></div>
               <div class="composer-row">
-                <div class="mode-strip" id="heroModes"></div>
-                <button class="send-btn" id="heroSendBtn" title="发送" aria-label="发送">
-                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-                    <path d="M12 19V5M5 12l7-7 7 7" />
-                  </svg>
-                </button>
+                <div class="composer-tools">
+                  <button class="tool-btn upload-btn" data-input="heroFileInput" title="上传文件" aria-label="上传文件">+</button>
+                  <input id="heroFileInput" class="file-input" type="file" multiple hidden />
+                </div>
+                <div class="composer-actions">
+                  <div class="model-picker" id="heroModelPicker">
+                    <button class="model-trigger" id="heroModelTrigger" aria-expanded="false" title="选择模型">
+                      <span class="model-trigger-text" id="heroModelLabel"></span>
+                      <span class="model-trigger-caret">⌄</span>
+                    </button>
+                    <div class="model-dropdown" id="heroModelDropdown"></div>
+                  </div>
+                  <button class="send-btn" id="heroSendBtn" title="发送" aria-label="发送">
+                    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                      <path d="M12 19V5M5 12l7-7 7 7" />
+                    </svg>
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -1107,16 +1328,29 @@
           <textarea
             class="composer-input"
             id="threadInput"
-            placeholder="继续追问，或输入新的搜索问题…"
+            placeholder="Ask anything"
             spellcheck="false"
           ></textarea>
+          <div class="attachment-strip" id="threadAttachments"></div>
           <div class="composer-row">
-            <div class="mode-strip" id="threadModes"></div>
-            <button class="send-btn" id="threadSendBtn" title="发送" aria-label="发送">
-              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
-                <path d="M12 19V5M5 12l7-7 7 7" />
-              </svg>
-            </button>
+            <div class="composer-tools">
+              <button class="tool-btn upload-btn" data-input="threadFileInput" title="上传文件" aria-label="上传文件">+</button>
+              <input id="threadFileInput" class="file-input" type="file" multiple hidden />
+            </div>
+            <div class="composer-actions">
+              <div class="model-picker" id="threadModelPicker">
+                <button class="model-trigger" id="threadModelTrigger" aria-expanded="false" title="选择模型">
+                  <span class="model-trigger-text" id="threadModelLabel"></span>
+                  <span class="model-trigger-caret">⌄</span>
+                </button>
+                <div class="model-dropdown" id="threadModelDropdown"></div>
+              </div>
+              <button class="send-btn" id="threadSendBtn" title="发送" aria-label="发送">
+                <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round">
+                  <path d="M12 19V5M5 12l7-7 7 7" />
+                </svg>
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -1153,10 +1387,13 @@
             <div class="field">
               <div class="field-label">Models</div>
               <div class="model-row">
-                <input class="input mono" id="cfgModelInput" type="text" placeholder="glm-4-flash" autocomplete="off" spellcheck="false" />
-                <button class="primary-btn" id="addModelBtn">添加</button>
+                <div class="settings-model-wrap">
+                  <input class="input mono" id="cfgModelInput" type="text" placeholder="聚焦后自动获取模型列表" autocomplete="off" spellcheck="false" />
+                  <div class="settings-model-dd" id="settingsModelDropdown"></div>
+                </div>
+                <button class="primary-btn" id="refreshModelsBtn">刷新</button>
               </div>
-              <div class="field-hint">第一个模型优先调用；请求失败会自动尝试下一个模型。</div>
+              <div class="field-hint">模型列表来自当前 Base URL 的 /models 端点，并按 Base URL 缓存在本地。</div>
               <div class="model-list" id="modelList"></div>
             </div>
           </div>
@@ -1182,6 +1419,8 @@
       const DEFAULT_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
       const STORAGE_KEY = "linsoo_v1";
       const LINSO_STORAGE_KEY = "linso_v3";
+      const MODEL_CACHE_KEY = "linsoo_model_cache_v1";
+      const MAX_FILE_CHARS = 12000;
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
 Your job:
@@ -1193,12 +1432,6 @@ Your job:
 - For Chinese questions, answer in Chinese unless the user asks otherwise.
 
 Output normal Markdown. Do not output JSON unless the user asks for it.`;
-
-      const MODES = [
-        { id: "search", icon: "⌕", label: "搜索", hint: "answer with sources when possible" },
-        { id: "deep", icon: "◇", label: "深挖", hint: "compare, reason, expand context" },
-        { id: "quick", icon: "↯", label: "快速", hint: "short answer first" },
-      ];
 
       const SUGGESTIONS = [
         {
@@ -1227,11 +1460,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         baseUrl: "",
         apiKey: "",
         models: [],
+        activeModel: "",
         prompt: DEFAULT_PROMPT,
         mode: "search",
       };
 
       let messages = [];
+      let attachments = {
+        hero: [],
+        thread: [],
+      };
+      let modelCache = {};
+      let fetchedModels = [];
       let running = false;
       let aborter = null;
       let autoFollow = true;
@@ -1242,7 +1482,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function boot() {
         cacheEls();
         loadState();
-        renderModes();
+        loadModelCache();
+        hydrateModelsFromCache();
+        ensureActiveModel();
+        renderModelPickers();
+        renderAttachments("hero");
+        renderAttachments("thread");
         renderSuggestions();
         renderModelList();
         bindEvents();
@@ -1262,11 +1507,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "messages",
           "heroInput",
           "threadInput",
+          "heroAttachments",
+          "threadAttachments",
           "heroSendBtn",
           "threadSendBtn",
           "threadComposer",
-          "heroModes",
-          "threadModes",
+          "heroFileInput",
+          "threadFileInput",
+          "heroModelTrigger",
+          "threadModelTrigger",
+          "heroModelLabel",
+          "threadModelLabel",
+          "heroModelDropdown",
+          "threadModelDropdown",
           "suggestions",
           "settingsBtn",
           "settingsOverlay",
@@ -1279,7 +1532,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "cfgBaseUrl",
           "cfgApiKey",
           "cfgModelInput",
-          "addModelBtn",
+          "refreshModelsBtn",
+          "settingsModelDropdown",
           "modelList",
           "cfgPrompt",
           "resetPromptBtn",
@@ -1314,9 +1568,44 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {}
       }
 
+      function loadModelCache() {
+        try {
+          modelCache = JSON.parse(localStorage.getItem(MODEL_CACHE_KEY) || "{}");
+        } catch (e) {
+          modelCache = {};
+        }
+      }
+
+      function saveModelCache() {
+        try {
+          localStorage.setItem(MODEL_CACHE_KEY, JSON.stringify(modelCache));
+        } catch (e) {}
+      }
+
+      function modelCacheUrl() {
+        return (state.baseUrl || DEFAULT_BASE_URL).trim();
+      }
+
+      function hydrateModelsFromCache() {
+        const cached = modelCache[modelCacheUrl()];
+        if (cached && Array.isArray(cached.models)) {
+          fetchedModels = cached.models;
+          if (!state.models.length) state.models = cached.models.slice(0, 8);
+        }
+      }
+
+      function ensureActiveModel() {
+        if (state.activeModel) return;
+        state.activeModel = state.models[0] || fetchedModels[0] || "glm-4-flash";
+      }
+
       function bindEvents() {
         bindComposer(els.heroInput, els.heroSendBtn);
         bindComposer(els.threadInput, els.threadSendBtn);
+        bindFileInput("hero");
+        bindFileInput("thread");
+        bindModelPicker("hero");
+        bindModelPicker("thread");
 
         els.settingsBtn.addEventListener("click", openSettings);
         els.settingsClose.addEventListener("click", closeSettings);
@@ -1335,19 +1624,30 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           tab.addEventListener("click", () => switchTab(tab.dataset.tab));
         });
 
-        els.addModelBtn.addEventListener("click", () => {
-          addModel(els.cfgModelInput.value.trim());
-          els.cfgModelInput.value = "";
+        els.refreshModelsBtn.addEventListener("click", () => fetchModels({ force: true, open: true }));
+        els.cfgModelInput.addEventListener("focus", () => {
+          els.cfgModelInput.select();
+          fetchModels({ open: true, filter: "" });
         });
+        els.cfgModelInput.addEventListener("input", () => renderSettingsModelDropdown(els.cfgModelInput.value));
         els.cfgModelInput.addEventListener("keydown", (event) => {
           if (event.key === "Enter") {
             event.preventDefault();
-            addModel(els.cfgModelInput.value.trim());
-            els.cfgModelInput.value = "";
+            selectModel(els.cfgModelInput.value.trim());
           }
+          if (event.key === "Escape") {
+            closeSettingsModelDropdown();
+          }
+        });
+        els.cfgModelInput.addEventListener("blur", () => {
+          setTimeout(closeSettingsModelDropdown, 140);
         });
         els.resetPromptBtn.addEventListener("click", () => {
           els.cfgPrompt.value = DEFAULT_PROMPT;
+        });
+
+        document.addEventListener("click", (event) => {
+          if (!event.target.closest(".model-picker")) closeComposerModelDropdowns();
         });
 
         window.addEventListener("scroll", () => {
@@ -1379,23 +1679,129 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         input.style.height = Math.min(input.scrollHeight, 210) + "px";
       }
 
-      function renderModes() {
-        [els.heroModes, els.threadModes].forEach((mount) => {
-          mount.innerHTML = "";
-          MODES.forEach((mode) => {
-            const btn = document.createElement("button");
-            btn.className = "mode-chip" + (state.mode === mode.id ? " active" : "");
-            btn.title = mode.hint;
-            btn.dataset.mode = mode.id;
-            btn.innerHTML = `<b>${esc(mode.icon)}</b><span>${esc(mode.label)}</span>`;
-            btn.addEventListener("click", () => {
-              state.mode = mode.id;
-              saveState();
-              renderModes();
-            });
-            mount.appendChild(btn);
+      function bindFileInput(scope) {
+        const input = els[`${scope}FileInput`];
+        input.addEventListener("change", async () => {
+          await addFiles(scope, [...input.files]);
+          input.value = "";
+        });
+        document.querySelectorAll(`.upload-btn[data-input="${input.id}"]`).forEach((btn) => {
+          btn.addEventListener("click", () => input.click());
+        });
+      }
+
+      async function addFiles(scope, files) {
+        for (const file of files) {
+          const item = {
+            id: window.crypto?.randomUUID ? window.crypto.randomUUID() : String(Date.now() + Math.random()),
+            name: file.name,
+            type: file.type || "file",
+            size: file.size,
+            text: "",
+          };
+          if (isReadableTextFile(file)) {
+            try {
+              item.text = (await file.text()).slice(0, MAX_FILE_CHARS);
+            } catch (e) {
+              item.text = "";
+            }
+          }
+          attachments[scope].push(item);
+        }
+        renderAttachments(scope);
+      }
+
+      function isReadableTextFile(file) {
+        return (
+          file.type.startsWith("text/") ||
+          file.type.includes("json") ||
+          file.type.includes("xml") ||
+          /\.(md|txt|json|csv|tsv|xml|html|css|js|ts|tsx|jsx|py|rb|go|rs|java|c|cpp|h|yaml|yml)$/i.test(file.name)
+        );
+      }
+
+      function renderAttachments(scope) {
+        const mount = els[`${scope}Attachments`];
+        mount.innerHTML = "";
+        attachments[scope].forEach((file) => {
+          const chip = document.createElement("span");
+          chip.className = "attachment-chip";
+          chip.innerHTML = `<span>${esc(file.name)}</span><button title="移除" aria-label="移除">×</button>`;
+          chip.querySelector("button").addEventListener("click", () => {
+            attachments[scope] = attachments[scope].filter((item) => item.id !== file.id);
+            renderAttachments(scope);
+          });
+          mount.appendChild(chip);
+        });
+        mount.classList.toggle("visible", attachments[scope].length > 0);
+      }
+
+      function bindModelPicker(scope) {
+        const trigger = els[`${scope}ModelTrigger`];
+        trigger.addEventListener("click", (event) => {
+          event.stopPropagation();
+          toggleComposerModelDropdown(scope);
+        });
+      }
+
+      function renderModelPickers() {
+        ensureActiveModel();
+        ["hero", "thread"].forEach((scope) => {
+          els[`${scope}ModelLabel`].textContent = state.activeModel;
+          renderComposerModelDropdown(scope);
+        });
+      }
+
+      function toggleComposerModelDropdown(scope) {
+        const dropdown = els[`${scope}ModelDropdown`];
+        const isOpen = dropdown.classList.contains("open");
+        closeComposerModelDropdowns();
+        if (!isOpen) {
+          fetchModels({ open: false });
+          dropdown.classList.add("open");
+          els[`${scope}ModelTrigger`].setAttribute("aria-expanded", "true");
+          renderComposerModelDropdown(scope);
+        }
+      }
+
+      function closeComposerModelDropdowns() {
+        ["hero", "thread"].forEach((scope) => {
+          els[`${scope}ModelDropdown`].classList.remove("open");
+          els[`${scope}ModelTrigger`].setAttribute("aria-expanded", "false");
+        });
+      }
+
+      function modelChoices() {
+        const seen = new Set();
+        return [state.activeModel, ...state.models, ...fetchedModels, "glm-4-flash"]
+          .filter(Boolean)
+          .filter((model) => {
+            if (seen.has(model)) return false;
+            seen.add(model);
+            return true;
+          });
+      }
+
+      function renderComposerModelDropdown(scope) {
+        const dropdown = els[`${scope}ModelDropdown`];
+        const models = modelChoices();
+        dropdown.innerHTML = models
+          .map((model) => modelOptionHTML(model))
+          .join("");
+        dropdown.querySelectorAll(".model-option").forEach((btn) => {
+          btn.addEventListener("click", () => {
+            selectModel(btn.dataset.model);
+            closeComposerModelDropdowns();
           });
         });
+      }
+
+      function modelOptionHTML(model) {
+        return `
+          <button class="model-option${model === state.activeModel ? " active" : ""}" data-model="${esc(model)}">
+            <span class="model-option-name">${esc(model)}</span>
+            ${model === state.activeModel ? '<span class="model-option-check">✓</span>' : ""}
+          </button>`;
       }
 
       function renderSuggestions() {
@@ -1424,8 +1830,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         input.value = "";
         autosize(input);
+        const scope = input === els.heroInput ? "hero" : "thread";
+        const activeAttachments = attachments[scope].slice();
+        attachments[scope] = [];
+        renderAttachments(scope);
         startThread();
-        pushMessage({ role: "user", content: text });
+        pushMessage({ role: "user", content: text, attachments: activeAttachments });
         runAssistant();
       }
 
@@ -1466,7 +1876,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         node.dataset.id = message.id;
 
         if (message.role === "user") {
-          node.innerHTML = `<div class="bubble">${esc(message.content)}</div>`;
+          const files = (message.attachments || [])
+            .map((file) => `<span class="attachment-chip"><span>${esc(file.name)}</span></span>`)
+            .join("");
+          node.innerHTML = `<div class="bubble">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>`;
         } else {
           node.innerHTML = `
             <div class="assistant-head">
@@ -1480,7 +1893,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
                 </button>
               </div>
             </div>
-            <div class="bubble"><div class="sources"></div><div class="answer"></div></div>`;
+            <div class="bubble"><div class="sources"></div><div class="answer"></div><div class="assistant-footer"></div></div>`;
           node.querySelector(".copy-btn").addEventListener("click", () => copyText(message.content || ""));
           node.querySelector(".retry-btn").addEventListener("click", () => retryFrom(message.id));
           renderAssistantContent(node, message);
@@ -1500,6 +1913,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function renderAssistantContent(node, message) {
         const sources = node.querySelector(".sources");
         const answer = node.querySelector(".answer");
+        const footer = node.querySelector(".assistant-footer");
         const sourceItems = extractSources(message);
         sources.innerHTML = sourceItems.map((source, i) => `
           <a class="source-chip" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
@@ -1510,9 +1924,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
         if (message.loading && !message.content) {
           answer.innerHTML = `<div class="loading-line"><span class="dots"><span></span><span></span><span></span></span><span>正在检索和组织答案…</span></div>`;
+          footer.innerHTML = "";
           return;
         }
         answer.innerHTML = renderMarkdown(message.content || "");
+        bindCodeCopyButtons(answer);
+        footer.innerHTML = `
+          <button class="message-action-btn copy-answer-btn">复制</button>
+          <button class="message-action-btn retry-answer-btn">重试</button>
+          <button class="message-action-btn continue-answer-btn">继续追问</button>`;
+        footer.querySelector(".copy-answer-btn").addEventListener("click", () => copyText(message.content || ""));
+        footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
+        footer.querySelector(".continue-answer-btn").addEventListener("click", () => {
+          els.threadInput.focus();
+        });
       }
 
       async function runAssistant() {
@@ -1542,7 +1967,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       async function callChat(assistantId, signal) {
-        const modelList = state.models.length ? state.models : ["glm-4-flash"];
+        const modelList = modelChoices();
         let lastError;
         for (const model of modelList) {
           try {
@@ -1560,7 +1985,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           { role: "system", content: buildSystemPrompt() },
           ...messages
             .filter((m) => !(m.role === "assistant" && m.id === assistantId))
-            .map((m) => ({ role: m.role, content: m.content })),
+            .map((m) => ({ role: m.role, content: serializeMessageContent(m) })),
         ];
 
         const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
@@ -1636,6 +2061,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}`;
       }
 
+      function serializeMessageContent(message) {
+        const files = message.attachments || [];
+        if (!files.length) return message.content;
+        const fileContext = files
+          .map((file) => {
+            const body = file.text
+              ? `\n${file.text}`
+              : "\n[This file was attached, but its contents are not readable as plain text in the browser.]";
+            return `<file name="${file.name}" type="${file.type}" size="${file.size}">${body}\n</file>`;
+          })
+          .join("\n\n");
+        return `${message.content}\n\nAttached files:\n${fileContext}`;
+      }
+
       function extractDelta(json) {
         const choice = json.choices?.[0];
         return choice?.delta?.content || choice?.delta?.reasoning_content || choice?.message?.content || "";
@@ -1675,6 +2114,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function openSettings() {
         els.cfgBaseUrl.value = state.baseUrl;
         els.cfgApiKey.value = state.apiKey;
+        els.cfgModelInput.value = state.activeModel || state.models[0] || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         renderModelList();
         switchTab("api");
@@ -1686,10 +2126,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function saveSettings() {
+        const oldUrl = state.baseUrl;
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
+        if (els.cfgModelInput.value.trim()) selectModel(els.cfgModelInput.value.trim(), { silent: true });
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
+        if (oldUrl !== state.baseUrl) {
+          fetchedModels = [];
+          hydrateModelsFromCache();
+        }
+        ensureActiveModel();
         saveState();
+        renderModelPickers();
+        renderModelList();
         closeSettings();
         showToast("设置已保存。");
       }
@@ -1702,11 +2151,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.tabPrompt.style.display = id === "prompt" ? "" : "none";
       }
 
-      function addModel(model) {
-        if (!model || state.models.includes(model)) return;
-        state.models.push(model);
+      function selectModel(model, opts = {}) {
+        if (!model) return;
+        if (!state.models.includes(model)) state.models.unshift(model);
+        state.activeModel = model;
         saveState();
+        renderModelPickers();
         renderModelList();
+        renderSettingsModelDropdown(els.cfgModelInput.value);
+        if (!opts.silent) showToast(`已选择模型：${model}`);
       }
 
       function renderModelList() {
@@ -1731,6 +2184,91 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      async function fetchModels({ force = false, open = false, filter = null } = {}) {
+        const url = (els.cfgBaseUrl?.value.trim() || state.baseUrl || DEFAULT_BASE_URL).trim();
+        const key = els.cfgApiKey?.value.trim() || state.apiKey;
+        const cached = modelCache[url];
+        if (!force && cached && Array.isArray(cached.models)) {
+          fetchedModels = cached.models;
+          if (!state.models.length) state.models = fetchedModels.slice(0, 8);
+          renderModelList();
+          renderModelPickers();
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
+          return fetchedModels;
+        }
+        if (!key) {
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, "填写 API Key 后可获取模型列表。");
+          return [];
+        }
+
+        if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, "正在获取模型列表…");
+        const modelsUrl = buildModelsUrl(url);
+        try {
+          const response = await fetch(modelsUrl, {
+            headers: { Authorization: `Bearer ${key}` },
+          });
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const data = await response.json();
+          fetchedModels = normalizeModels(data);
+          modelCache[url] = {
+            models: fetchedModels,
+            savedAt: Date.now(),
+          };
+          saveModelCache();
+          if (!state.models.length && fetchedModels.length) state.models = fetchedModels.slice(0, 8);
+          ensureActiveModel();
+          saveState();
+          renderModelList();
+          renderModelPickers();
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
+          return fetchedModels;
+        } catch (error) {
+          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, `获取失败：${error.message}`);
+          return [];
+        }
+      }
+
+      function buildModelsUrl(baseUrl) {
+        let url = baseUrl || DEFAULT_BASE_URL;
+        url = url.replace(/\/chat\/completions\/?$/i, "/models");
+        if (!/\/models\/?$/i.test(url)) url = url.replace(/\/$/, "") + "/models";
+        return url;
+      }
+
+      function normalizeModels(data) {
+        const list = Array.isArray(data?.data) ? data.data : Array.isArray(data?.models) ? data.models : [];
+        return list
+          .map((item) => (typeof item === "string" ? item : item.id || item.name))
+          .filter(Boolean)
+          .sort((a, b) => a.localeCompare(b));
+      }
+
+      function renderSettingsModelDropdown(filter = "", message = "") {
+        const dropdown = els.settingsModelDropdown;
+        const needle = filter.trim().toLowerCase();
+        const models = modelChoices().filter((model) => !needle || model.toLowerCase().includes(needle));
+        if (message) {
+          dropdown.innerHTML = `<div class="model-empty">${esc(message)}</div>`;
+        } else if (!models.length) {
+          dropdown.innerHTML = `<div class="model-empty">没有匹配的模型；按 Enter 可使用当前输入。</div>`;
+        } else {
+          dropdown.innerHTML = models.map((model) => modelOptionHTML(model)).join("");
+          dropdown.querySelectorAll(".model-option").forEach((btn) => {
+            btn.addEventListener("mousedown", (event) => {
+              event.preventDefault();
+              els.cfgModelInput.value = btn.dataset.model;
+              selectModel(btn.dataset.model, { silent: true });
+              closeSettingsModelDropdown();
+            });
+          });
+        }
+        dropdown.classList.add("open");
+      }
+
+      function closeSettingsModelDropdown() {
+        els.settingsModelDropdown.classList.remove("open");
+      }
+
       function extractSources(message) {
         const fromMetadata = Array.isArray(message.sources) ? message.sources : [];
         const links = [];
@@ -1747,31 +2285,181 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderMarkdown(text) {
-        let html = esc(text);
+        const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
+        const html = [];
+        let i = 0;
 
-        html = html.replace(/```([\s\S]*?)```/g, (_, code) => `<pre><code>${code.trim()}</code></pre>`);
-        html = html.replace(/`([^`]+)`/g, "<code>$1</code>");
-        html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-        html = html.replace(/^### (.*)$/gm, "<h3>$1</h3>");
-        html = html.replace(/^## (.*)$/gm, "<h2>$1</h2>");
-        html = html.replace(/^\s*[-*] (.*)$/gm, "<li>$1</li>");
-        html = html.replace(/(<li>[\s\S]*?<\/li>)(?!\s*<li>)/g, "<ul>$1</ul>");
-        html = html.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+        while (i < lines.length) {
+          const line = lines[i];
+          if (!line.trim()) {
+            i++;
+            continue;
+          }
 
-        const blocks = html.split(/\n{2,}/).map((block) => {
-          const trimmed = block.trim();
-          if (!trimmed) return "";
-          if (/^<(h2|h3|ul|pre)/.test(trimmed)) return trimmed;
-          return `<p>${trimmed.replace(/\n/g, "<br>")}</p>`;
+          const fence = line.match(/^```([A-Za-z0-9_+.-]*)\s*$/);
+          if (fence) {
+            const lang = fence[1] || "text";
+            const codeLines = [];
+            i++;
+            while (i < lines.length && !/^```\s*$/.test(lines[i])) {
+              codeLines.push(lines[i]);
+              i++;
+            }
+            if (i < lines.length) i++;
+            html.push(renderCodeBlock(codeLines.join("\n"), lang));
+            continue;
+          }
+
+          const table = collectTable(lines, i);
+          if (table) {
+            html.push(renderTable(table.rows));
+            i = table.next;
+            continue;
+          }
+
+          const heading = line.match(/^(#{1,4})\s+(.+)$/);
+          if (heading) {
+            const level = Math.min(Math.max(heading[1].length, 2), 4);
+            html.push(`<h${level}>${inlineMarkdown(heading[2])}</h${level}>`);
+            i++;
+            continue;
+          }
+
+          if (/^>\s?/.test(line)) {
+            const quote = [];
+            while (i < lines.length && /^>\s?/.test(lines[i])) {
+              quote.push(lines[i].replace(/^>\s?/, ""));
+              i++;
+            }
+            html.push(`<blockquote>${quote.map(inlineMarkdown).join("<br>")}</blockquote>`);
+            continue;
+          }
+
+          if (/^\s*[-*]\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && /^\s*[-*]\s+/.test(lines[i])) {
+              items.push(lines[i].replace(/^\s*[-*]\s+/, ""));
+              i++;
+            }
+            html.push(`<ul>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</ul>`);
+            continue;
+          }
+
+          if (/^\s*\d+\.\s+/.test(line)) {
+            const items = [];
+            while (i < lines.length && /^\s*\d+\.\s+/.test(lines[i])) {
+              items.push(lines[i].replace(/^\s*\d+\.\s+/, ""));
+              i++;
+            }
+            html.push(`<ol>${items.map((item) => `<li>${inlineMarkdown(item)}</li>`).join("")}</ol>`);
+            continue;
+          }
+
+          const paragraph = [line];
+          i++;
+          while (
+            i < lines.length &&
+            lines[i].trim() &&
+            !/^```/.test(lines[i]) &&
+            !/^(#{1,4})\s+/.test(lines[i]) &&
+            !/^>\s?/.test(lines[i]) &&
+            !/^\s*[-*]\s+/.test(lines[i]) &&
+            !/^\s*\d+\.\s+/.test(lines[i]) &&
+            !collectTable(lines, i)
+          ) {
+            paragraph.push(lines[i]);
+            i++;
+          }
+          html.push(`<p>${paragraph.map(inlineMarkdown).join("<br>")}</p>`);
+        }
+
+        return html.join("");
+      }
+
+      function renderCodeBlock(code, lang) {
+        return `
+          <div class="code-block">
+            <div class="code-head">
+              <span class="code-lang">${esc(lang || "text")}</span>
+              <button class="code-copy" type="button">复制</button>
+            </div>
+            <pre><code>${esc(code)}</code></pre>
+          </div>`;
+      }
+
+      function collectTable(lines, start) {
+        if (start + 1 >= lines.length) return null;
+        if (!/^\s*\|.+\|\s*$/.test(lines[start])) return null;
+        if (!/^\s*\|?\s*:?-{3,}:?\s*(\|\s*:?-{3,}:?\s*)+\|?\s*$/.test(lines[start + 1])) return null;
+        const rows = [splitTableRow(lines[start])];
+        let i = start + 2;
+        while (i < lines.length && /^\s*\|.+\|\s*$/.test(lines[i])) {
+          rows.push(splitTableRow(lines[i]));
+          i++;
+        }
+        return { rows, next: i };
+      }
+
+      function splitTableRow(line) {
+        return line.trim().replace(/^\|/, "").replace(/\|$/, "").split("|").map((cell) => cell.trim());
+      }
+
+      function renderTable(rows) {
+        const [head, ...body] = rows;
+        return `
+          <table>
+            <thead><tr>${head.map((cell) => `<th>${inlineMarkdown(cell)}</th>`).join("")}</tr></thead>
+            <tbody>${body.map((row) => `<tr>${row.map((cell) => `<td>${inlineMarkdown(cell)}</td>`).join("")}</tr>`).join("")}</tbody>
+          </table>`;
+      }
+
+      function inlineMarkdown(text) {
+        return esc(text)
+          .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
+          .replace(/`([^`]+)`/g, "<code>$1</code>")
+          .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>")
+          .replace(/__([^_]+)__/g, "<strong>$1</strong>")
+          .replace(/\*([^*]+)\*/g, "<em>$1</em>")
+          .replace(/_([^_]+)_/g, "<em>$1</em>");
+      }
+
+      function bindCodeCopyButtons(root) {
+        root.querySelectorAll(".code-copy").forEach((button) => {
+          button.addEventListener("click", () => {
+            const code = button.closest(".code-block")?.querySelector("code")?.innerText || "";
+            copyText(code);
+          });
         });
-        return blocks.join("");
       }
 
       function copyText(text) {
-        navigator.clipboard?.writeText(text).then(
-          () => showToast("已复制答案。"),
-          () => showToast("复制失败，浏览器不允许访问剪贴板。"),
+        if (!navigator.clipboard) {
+          fallbackCopyText(text);
+          return;
+        }
+        navigator.clipboard.writeText(text).then(
+          () => showToast("已复制。"),
+          () => fallbackCopyText(text),
         );
+      }
+
+      function fallbackCopyText(text) {
+        const area = document.createElement("textarea");
+        area.value = text;
+        area.setAttribute("readonly", "");
+        area.style.position = "fixed";
+        area.style.left = "-9999px";
+        area.style.top = "0";
+        document.body.appendChild(area);
+        area.select();
+        try {
+          const ok = document.execCommand("copy");
+          showToast(ok ? "已复制。" : "复制失败，浏览器不允许访问剪贴板。");
+        } catch (e) {
+          showToast("复制失败，浏览器不允许访问剪贴板。");
+        } finally {
+          area.remove();
+        }
       }
 
       function showToast(text) {
