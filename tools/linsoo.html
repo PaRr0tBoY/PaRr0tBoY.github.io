@@ -2111,6 +2111,10 @@
         .conversation-rail {
           display: none !important;
         }
+
+        .theme-float {
+          display: none !important;
+        }
       }
     </style>
   </head>
@@ -2136,6 +2140,12 @@
             </button>
             <button class="sidebar-action" id="settingsBtn" title="设置">
               <span class="sidebar-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3h0m0 18h0m7.8-13.5h0M4.2 16.5h0m15.6 0h0M4.2 7.5h0"/><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Z"/><path d="M12 3v3M12 18v3M4.2 7.5l2.6 1.5M17.2 15l2.6 1.5M19.8 7.5 17.2 9M6.8 15l-2.6 1.5"/></svg></span><span class="sidebar-label">Settings</span>
+            </button>
+              <button class="sidebar-action" id="sidebarThemeBtn" title="切换主题">
+              <span class="sidebar-icon">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8z" /></svg>
+              </span>
+              <span class="sidebar-label">Appearance</span>
             </button>
           </section>
           <section class="sidebar-section">
@@ -2728,6 +2738,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.settingsSave.addEventListener("click", saveSettings);
         els.newChatBtn.addEventListener("click", newChat);
         els.themeBtn.addEventListener("click", toggleTheme);
+        document.getElementById('sidebarThemeBtn')?.addEventListener('click', toggleTheme);
         els.scrollBtn.addEventListener("click", () => {
           autoFollow = true;
           scrollToBottom();
