@@ -30,7 +30,8 @@
         },
       };
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js"></script>
+    <script id="markdownItScript" defer src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
+    <script id="highlightScript" defer src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js"></script>
     <style>
       :root {
         --paper: #f5f4ed;
@@ -734,6 +735,10 @@
         padding: clamp(26px, 5vw, 70px) clamp(16px, 3vw, 28px) 24px;
         margin-left: 288px;
         transition: margin-left var(--speed);
+      }
+
+      body.chat-active .main {
+        padding-top: 76px;
       }
 
       body.sidebar-collapsed .main {
@@ -1754,6 +1759,13 @@
         color: var(--muted);
       }
 
+      .answer hr {
+        height: 1px;
+        border: none;
+        background: var(--line-strong);
+        margin: 18px 0;
+      }
+
       .answer table {
         width: 100%;
         border-collapse: collapse;
@@ -2015,6 +2027,33 @@
         text-align: left;
       }
 
+      .source-panel-group {
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--paper);
+      }
+
+      .source-panel-group + .source-panel-group {
+        margin-top: 10px;
+      }
+
+      .source-panel-group .search-group-card {
+        border: none;
+        border-radius: 0;
+        background: transparent;
+      }
+
+      .source-panel-group-body {
+        display: none;
+        border-top: 1px solid var(--line);
+        padding: 12px 10px 0;
+      }
+
+      .source-panel-group.open .source-panel-group-body {
+        display: block;
+      }
+
       .search-group-card.active {
         border-color: var(--ring);
         background: var(--ivory);
@@ -2074,16 +2113,17 @@
 
       .top-view-tabs {
         position: fixed;
-        top: 20px;
-        left: 50%;
-        z-index: 60;
+        top: 18px;
+        left: calc(288px + (100vw - 288px) / 2);
+        z-index: 22;
         display: none;
         transform: translateX(-50%);
-        gap: 6px;
+        gap: 4px;
         border: 1px solid var(--line);
-        border-radius: 13px;
-        background: color-mix(in srgb, var(--ivory) 92%, transparent);
-        box-shadow: var(--shadow-soft);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--paper) 86%, transparent);
+        box-shadow: 0 8px 24px rgba(20, 20, 19, 0.08);
+        backdrop-filter: blur(14px);
         padding: 4px;
       }
 
@@ -2091,9 +2131,13 @@
         display: flex;
       }
 
+      body.sidebar-collapsed .top-view-tabs {
+        left: calc(56px + (100vw - 56px) / 2);
+      }
+
       .view-tab {
-        min-width: 86px;
-        min-height: 36px;
+        min-width: 92px;
+        min-height: 34px;
         display: inline-flex;
         align-items: center;
         justify-content: center;
@@ -2105,6 +2149,12 @@
         cursor: pointer;
         font-size: 13px;
         font-weight: 650;
+      }
+
+      .view-tab svg {
+        width: 15px;
+        height: 15px;
+        stroke-width: 2.15;
       }
 
       .view-tab.active {
@@ -2122,12 +2172,24 @@
       .search-page {
         display: none;
         min-height: 100dvh;
-        flex: 1;
-        padding: 96px clamp(22px, 10vw, 320px) 70px;
+        width: calc(100% - 288px);
+        margin-left: 288px;
+        padding: 88px clamp(16px, 3vw, 28px) 70px;
+        transition: margin-left var(--speed);
       }
 
       body.search-view .search-page {
         display: block;
+      }
+
+      body.sidebar-collapsed .search-page {
+        width: calc(100% - 56px);
+        margin-left: 56px;
+      }
+
+      #searchPageContent {
+        width: min(100%, 820px);
+        margin: 0 auto;
       }
 
       .search-page-head {
@@ -2162,18 +2224,67 @@
 
       .search-page-results {
         display: grid;
-        gap: 22px;
+        gap: 36px;
+      }
+
+      .search-query-section {
+        border-top: 1px solid var(--line);
+        padding-top: 26px;
+      }
+
+      .search-query-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 24px;
+      }
+
+      .search-query-title {
+        color: var(--ink);
+        font-size: 20px;
+        font-weight: 750;
+        line-height: 1.3;
+      }
+
+      .search-query-google {
+        flex-shrink: 0;
+        color: #8ec7ff;
+        font-size: 16px;
+        font-weight: 750;
+        text-decoration: none;
       }
 
       .search-page-result {
         display: grid;
-        grid-template-columns: 28px minmax(0, 1fr);
-        gap: 13px;
+        grid-template-columns: 42px minmax(0, 1fr);
+        gap: 16px;
         color: var(--text-strong);
         text-decoration: none;
+        margin-bottom: 24px;
+      }
+
+      .search-page-result .source-favicon {
+        width: 30px;
+        height: 30px;
+        align-self: start;
+        margin-top: 3px;
+      }
+
+      .search-page-result-site {
+        display: grid;
+        gap: 2px;
+        margin-bottom: 9px;
+      }
+
+      .search-page-site-name {
+        color: var(--text-strong);
+        font-size: 14px;
+        font-weight: 650;
       }
 
       .search-page-result-title {
+        display: block;
         color: #2d6cdf;
         font-size: 18px;
         font-weight: 650;
@@ -2188,6 +2299,7 @@
       }
 
       .search-page-result-snippet {
+        display: block;
         margin-top: 5px;
         color: var(--text-strong);
         font-size: 14px;
@@ -2563,6 +2675,11 @@
         letter-spacing: 0;
       }
 
+      .setting-subtitle a {
+        color: var(--accent);
+        text-decoration: none;
+      }
+
       .field-hint {
         margin-top: 6px;
         color: var(--faint);
@@ -2865,21 +2982,22 @@
       }
 
       .model-list {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 6px;
+        display: grid;
+        gap: 8px;
         margin-top: 9px;
       }
 
       .model-token {
-        display: inline-flex;
+        min-height: 38px;
+        display: grid;
+        grid-template-columns: 22px minmax(0, 1fr) 24px;
         align-items: center;
-        gap: 6px;
-        border: none;
-        border-radius: 999px;
-        background: var(--sand);
+        gap: 8px;
+        border: 1px solid var(--line-strong);
+        border-radius: 11px;
+        background: var(--paper);
         box-shadow: var(--shadow-ring);
-        padding: 5px 9px;
+        padding: 6px 8px;
         color: var(--muted);
         font-family: "DM Mono", ui-monospace, monospace;
         font-size: 11.5px;
@@ -2888,6 +3006,26 @@
       .model-token:first-child {
         color: var(--text-strong);
         background: var(--olive-soft);
+      }
+
+      .model-token.dragging {
+        opacity: 0.62;
+      }
+
+      .model-handle {
+        border: none;
+        background: transparent;
+        color: var(--faint);
+        cursor: grab;
+        padding: 0;
+        font-size: 16px;
+      }
+
+      .model-name {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
 
       .model-token button {
@@ -3066,6 +3204,50 @@
           padding: 72px 8px 22px;
         }
 
+        body.chat-active .main,
+        body.sidebar-collapsed.chat-active .main {
+          padding-top: 72px;
+        }
+
+        body.chat-active.sidebar-collapsed .sidebar-head {
+          justify-content: flex-end;
+        }
+
+        body.chat-active.sidebar-collapsed .brand {
+          display: none;
+        }
+
+        body.chat-active:not(.sidebar-collapsed) .top-view-tabs {
+          display: none;
+        }
+
+        .top-view-tabs,
+        body.sidebar-collapsed .top-view-tabs {
+          top: 6px;
+          left: 50%;
+          right: auto;
+          z-index: 31;
+          width: 158px;
+          justify-content: center;
+          border-radius: 14px;
+          transform: translateX(-50%);
+          box-shadow: 0 4px 18px rgba(20, 20, 19, 0.08);
+        }
+
+        .view-tab {
+          min-width: 0;
+          flex: 1;
+          min-height: 34px;
+          font-size: 12.5px;
+        }
+
+        .search-page,
+        body.sidebar-collapsed .search-page {
+          width: 100%;
+          margin-left: 0;
+          padding: 72px 14px 70px;
+        }
+
         .thread-composer,
         body.sidebar-collapsed .thread-composer {
           left: 50%;
@@ -3150,18 +3332,33 @@
           display: none !important;
         }
       }
+
+      @media (max-width: 360px) {
+        .top-view-tabs,
+        body.sidebar-collapsed .top-view-tabs {
+          width: 146px;
+        }
+      }
     </style>
   </head>
   <body>
-    <nav class="top-view-tabs" id="topViewTabs" aria-label="View">
-      <button class="view-tab active" id="chatViewBtn" type="button" data-view="chat">
-        <span>◎</span><span>聊天</span>
-      </button>
-      <button class="view-tab" id="searchViewBtn" type="button" data-view="search">
-        <span>◉</span><span>搜索</span>
-      </button>
-    </nav>
     <div class="shell">
+      <nav class="top-view-tabs" id="topViewTabs" aria-label="View">
+        <button class="view-tab active" id="chatViewBtn" type="button" data-view="chat" aria-pressed="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 6.5A4.5 4.5 0 0 1 9.5 2h5A4.5 4.5 0 0 1 19 6.5v4A4.5 4.5 0 0 1 14.5 15H11l-4.5 4v-4.4A4.5 4.5 0 0 1 5 11V6.5Z" />
+            <path d="M9 7h6M9 10.5h4" />
+          </svg>
+          <span>聊天</span>
+        </button>
+        <button class="view-tab" id="searchViewBtn" type="button" data-view="search" aria-pressed="false">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <circle cx="10.5" cy="10.5" r="6.5" />
+            <path d="m16 16 4 4" />
+          </svg>
+          <span>搜索</span>
+        </button>
+      </nav>
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-head">
           <button class="brand" id="homeBtn" aria-label="Linsoo 主页">
@@ -3381,6 +3578,7 @@
             <button class="tab" data-tab="ai">AI 设置</button>
             <button class="tab" data-tab="search">搜索设置</button>
             <button class="tab" data-tab="appearance">外观设置</button>
+            <button class="tab" data-tab="about">关于</button>
           </div>
           <div id="tabGeneral">
             <div class="setting-row">
@@ -3414,22 +3612,6 @@
                 <div class="setting-subtitle">单个模型失败或空输出时，按 1s、2s、3s 间隔重试。</div>
               </div>
               <label class="switch"><input id="cfgRetryOnFailure" type="checkbox" /><span></span></label>
-            </div>
-            <div class="field" style="margin-top: 16px">
-              <div class="field-label">配置</div>
-              <div class="inline-actions">
-                <button class="outline-btn" id="exportConfigBtn">导出配置</button>
-                <button class="outline-btn" id="importConfigBtn">导入配置</button>
-                <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
-              </div>
-            </div>
-            <div class="field">
-              <div class="field-label">消息记录</div>
-              <div class="inline-actions">
-                <button class="outline-btn" id="exportChatsBtn">导出消息记录</button>
-                <button class="outline-btn" id="importChatsBtn">导入消息记录</button>
-                <input id="importChatsInput" type="file" accept="application/json,.json" hidden />
-              </div>
             </div>
           </div>
           <div id="tabAI" style="display: none">
@@ -3502,6 +3684,26 @@
                 <button type="button" data-theme-mode="dark">暗色</button>
                 <button type="button" data-theme-mode="auto">Auto</button>
               </div>
+            </div>
+          </div>
+          <div id="tabAbout" style="display: none">
+            <div class="field">
+              <div class="field-label">配置</div>
+              <div class="inline-actions">
+                <button class="outline-btn" id="exportConfigBtn">导出配置</button>
+                <button class="outline-btn" id="importConfigBtn">导入配置</button>
+                <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
+              </div>
+              <div class="field-hint">导出或导入当前 Linsoo 配置，包括模型、Provider、搜索和界面设置。</div>
+            </div>
+            <div class="field">
+              <div class="field-label">消息记录</div>
+              <div class="inline-actions">
+                <button class="outline-btn" id="exportChatsBtn">导出消息记录</button>
+                <button class="outline-btn" id="importChatsBtn">导入消息记录</button>
+                <input id="importChatsInput" type="file" accept="application/json,.json" hidden />
+              </div>
+              <div class="field-hint">消息记录保存在浏览器 OPFS/localStorage 中，导入会合并到当前本地记录。</div>
             </div>
           </div>
           <div class="modal-foot">
@@ -3647,6 +3849,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let running = false;
       let aborter = null;
       let autoFollow = true;
+      let userScrollPauseUntil = 0;
       let toastTimer = null;
       let mobileComposerTimer = null;
       let scrollSettleTimer = null;
@@ -3654,6 +3857,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let opfsReady = false;
       let saveTimer = null;
       let mathJaxReady = null;
+      let markdownReady = null;
+      let markdownRenderer = null;
+      let highlightReady = null;
       let railActiveIndex = -1;
       let activeRun = null;
 
@@ -3668,6 +3874,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         applyTheme();
         applyGeneralSettings();
         applySidebarState();
+        loadMarkdownIt();
+        loadHighlightJs();
         loadMathJax();
         renderHeroLine();
         await loadChatIndex();
@@ -3801,6 +4009,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "tabAI",
           "tabSearch",
           "tabAppearance",
+          "tabAbout",
         ].forEach((id) => {
           els[id] = document.getElementById(id);
         });
@@ -4287,9 +4496,21 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           document.querySelectorAll(".answer").forEach(highlightCodeBlocks);
         }, { once: true });
 
+        window.addEventListener("wheel", (event) => {
+          if (event.deltaY < 0) pauseAutoFollowForUserScroll();
+        }, { passive: true });
+        let touchStartY = 0;
+        window.addEventListener("touchstart", (event) => {
+          touchStartY = event.touches?.[0]?.clientY || 0;
+        }, { passive: true });
+        window.addEventListener("touchmove", (event) => {
+          const y = event.touches?.[0]?.clientY || 0;
+          if (touchStartY && y - touchStartY > 8) pauseAutoFollowForUserScroll();
+        }, { passive: true });
+
         window.addEventListener("scroll", () => {
           const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
-          autoFollow = distance < 120;
+          autoFollow = Date.now() < userScrollPauseUntil ? distance < 12 : distance < 120;
           updateScrollButtonVisibility(distance);
           handleMobileComposerScroll(distance);
           updateRailActive();
@@ -4503,6 +4724,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         document.body.classList.toggle("search-view", search);
         els.chatViewBtn.classList.toggle("active", !search);
         els.searchViewBtn.classList.toggle("active", search);
+        els.chatViewBtn.setAttribute("aria-pressed", String(!search));
+        els.searchViewBtn.setAttribute("aria-pressed", String(search));
         if (search) {
           renderSearchPage();
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -4515,6 +4738,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         document.body.classList.remove("search-view");
         els.chatViewBtn?.classList.add("active");
         els.searchViewBtn?.classList.remove("active");
+        els.chatViewBtn?.setAttribute("aria-pressed", "true");
+        els.searchViewBtn?.setAttribute("aria-pressed", "false");
       }
 
       function renderWebSearchControls() {
@@ -5261,7 +5486,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         sources.style.display = sourceItems.length ? "" : "none";
 
         if (message.loading && !message.content && !message.thinking) {
-          answer.innerHTML = renderSearchStatus(message) + loadingDotsHTML();
+          answer.innerHTML = renderSearchStatus(message);
           bindSourceListActions(sources, sourceItems, previousUserPromptFor(message.id));
           footer.innerHTML = sourceItems.length
             ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>`
@@ -5270,7 +5495,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           return;
         }
         const thinking = renderThinking(message);
-        const body = message.content ? renderMarkdown(message.content) : loadingDotsHTML();
+        const body = message.content ? renderMarkdown(message.content) : "";
         answer.innerHTML = (message.loading ? renderSearchStatus(message) : "") + thinking + body;
         bindThinking(answer, message);
         highlightCodeBlocks(answer);
@@ -5287,8 +5512,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderSearchStatus(message) {
-        const text = String(message.searchStatus || "").trim();
-        return text ? `<div class="search-status">${esc(text)}</div>` : "";
+        const text = String(message.searchStatus || (message.loading ? "正在生成回答..." : "")).trim();
+        return text ? `<div class="search-status" aria-live="polite">${esc(text)}</div>` : "";
       }
 
       function renderThinking(message) {
@@ -5304,7 +5529,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function loadingDotsHTML() {
-        return `<div class="loading-line" aria-label="loading"><span class="dots"><span></span><span></span><span></span></span></div>`;
+        return "";
       }
 
       function formatMessageTime(value) {
@@ -5368,6 +5593,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const search = message.searchContext || message.search || null;
         const sources = extractSources(message);
         const title = search?.query || previousUserPromptFor(message.id) || "搜索结果";
+        const groups = search?.groups?.length ? search.groups : [{ query: title, provider: search?.provider || "", results: sources }];
         els.searchPageContent.innerHTML = `
           <div class="search-page-head">
             <div>
@@ -5376,11 +5602,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             </div>
             <div class="search-page-provider">${esc(searchProviderSummary(search) || `${sources.length} sources`)}</div>
           </div>
-          ${search?.groups?.length ? renderSearchGroups(search, "page") : ""}
-          <div class="search-page-results" id="searchPageResults">
-            ${search?.groups?.length ? renderSearchPageResults(search.groups[0].results || []) : renderSearchPageResults(sources)}
+          <div class="search-page-results">
+            ${groups.map((group, index) => renderSearchQuerySection(group, index)).join("")}
           </div>`;
-        if (search?.groups?.length) bindSearchGroupCards(els.searchPageContent, search, "page");
+      }
+
+      function renderSearchQuerySection(group, index = 0) {
+        const query = group?.query || `搜索 ${index + 1}`;
+        return `
+          <section class="search-query-section">
+            <div class="search-query-head">
+              <div>
+                <div class="search-query-title">“${esc(query)}”的搜索结果</div>
+                ${group?.provider ? `<div class="search-page-provider">${esc(providerLabel(group.provider))} · ${(group.results || []).length} 条结果</div>` : ""}
+              </div>
+              <a class="search-query-google" href="${esc(googleSearchUrl(query))}" target="_blank" rel="noopener noreferrer">Google ↗</a>
+            </div>
+            ${renderSearchPageResults(group?.results || [])}
+          </section>`;
       }
 
       function renderSearchPageResults(sources) {
@@ -5389,12 +5628,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             <a class="search-page-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
               ${sourceFaviconHTML(source, index)}
               <span>
-                <span class="search-page-result-url">${esc(domainOf(source.url))}</span>
+                <span class="search-page-result-site">
+                  <span class="search-page-site-name">${esc(source.siteName || domainOf(source.url))}</span>
+                  <span class="search-page-result-url">${esc(prettySourceUrl(source.url))}</span>
+                </span>
                 <span class="search-page-result-title">${esc(normalizeSourceTitle(source, index))}</span>
                 ${source.snippet ? `<span class="search-page-result-snippet">${esc(source.snippet)}</span>` : ""}
               </span>
             </a>`).join("")
           : `<div class="empty-row">没有来源</div>`;
+      }
+
+      function prettySourceUrl(url = "") {
+        try {
+          const parsed = new URL(url);
+          return `${parsed.hostname.replace(/^www\./, "")}${parsed.pathname === "/" ? "" : parsed.pathname}`;
+        } catch (error) {
+          return url;
+        }
       }
 
       function searchProviderSummary(search) {
@@ -5442,23 +5693,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function renderSourcePanelBody(search, sources) {
         if (search?.groups?.length) {
-          return `
-            ${renderSearchGroups(search, "panel")}
-            <div class="source-panel-results" id="sourcePanelResults">${renderGroupResults(search.groups[0])}</div>`;
+          return renderSearchPanelGroups(search);
         }
         return sources.length ? sources.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
       }
 
-      function renderSearchGroups(search, context = "panel") {
+      function renderSearchPanelGroups(search) {
         return `<div class="search-group-list">${(search.groups || []).map((group, index) => `
-          <button class="search-group-card${index === 0 ? " active" : ""}" type="button" data-search-group="${index}" data-context="${esc(context)}">
-            <span class="search-group-icon">⌕</span>
-            <span>
-              <span class="search-group-meta">Searched web · ${esc(providerLabel(group.provider))}</span>
-              <span class="search-group-query">${esc(group.query)}</span>
-            </span>
-            <span class="search-group-count">${group.results?.length || 0}</span>
-          </button>`).join("")}</div>`;
+          <section class="source-panel-group${index === 0 ? " open" : ""}" data-search-group="${index}">
+            <button class="search-group-card${index === 0 ? " active" : ""}" type="button">
+              <span class="search-group-icon">⌕</span>
+              <span>
+                <span class="search-group-meta">Searched web · ${esc(providerLabel(group.provider))}</span>
+                <span class="search-group-query">${esc(group.query)}</span>
+              </span>
+              <span class="search-group-count">${group.results?.length || 0}</span>
+            </button>
+            <div class="source-panel-group-body">${renderGroupResults(group)}</div>
+          </section>`).join("")}</div>`;
       }
 
       function renderGroupResults(group) {
@@ -5466,13 +5718,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return results.length ? results.map(sourceResultHTML).join("") : `<div class="empty-row">这个搜索词没有返回结果</div>`;
       }
 
-      function bindSearchGroupCards(root, search, context = "panel") {
-        root.querySelectorAll(`.search-group-card[data-context="${CSS.escape(context)}"]`).forEach((button) => {
+      function bindSearchGroupCards(root) {
+        root.querySelectorAll(".source-panel-group .search-group-card").forEach((button) => {
           button.addEventListener("click", () => {
-            const idx = Number(button.dataset.searchGroup || 0);
-            root.querySelectorAll(`.search-group-card[data-context="${CSS.escape(context)}"]`).forEach((item) => item.classList.toggle("active", item === button));
-            const target = context === "page" ? root.querySelector("#searchPageResults") : root.querySelector("#sourcePanelResults");
-            if (target) target.innerHTML = context === "page" ? renderSearchPageResults(search.groups[idx]?.results || []) : renderGroupResults(search.groups[idx]);
+            const group = button.closest(".source-panel-group");
+            if (!group) return;
+            group.classList.toggle("open");
+            button.classList.toggle("active", group.classList.contains("open"));
           });
         });
       }
@@ -5649,19 +5901,21 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (mode === "off") return;
         const prompt = latestUserPrompt(run.messages || messages, assistantId);
         if (!prompt.trim()) return;
+        const planningContext = buildSearchPlanningContext(run.messages || messages, assistantId);
+        const fallbackQuery = contextualSearchFallbackQuery(prompt, run.messages || messages, assistantId);
 
         let decision = {
           shouldSearch: mode === "on",
-          query: prompt,
-          queries: [prompt],
+          query: fallbackQuery,
+          queries: [fallbackQuery],
           intent: inferSearchIntent(prompt),
           preferredProvider: "",
         };
         updateRunMessage(run, assistantId, { searchStatus: mode === "auto" ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
         if (mode === "auto" || mode === "on") {
-          decision = await decideWebSearch(prompt, model, signal, mode === "on").catch(() => {
+          decision = await decideWebSearch(prompt, planningContext, model, signal, mode === "on").catch(() => {
             const intent = inferSearchIntent(prompt);
-            return { shouldSearch: mode === "on" || intent === "fresh", query: prompt, queries: [prompt], intent, preferredProvider: "" };
+            return { shouldSearch: mode === "on" || intent === "fresh", query: fallbackQuery, queries: [fallbackQuery], intent, preferredProvider: "" };
           });
         }
         if (!decision.shouldSearch) {
@@ -5696,7 +5950,71 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return "";
       }
 
-      async function decideWebSearch(prompt, model, signal, forceSearch = false) {
+      function buildSearchPlanningContext(runMessages, assistantId) {
+        const items = runMessages || [];
+        const assistantIndex = items.findIndex((message) => message.id === assistantId);
+        const end = assistantIndex >= 0 ? assistantIndex : items.length;
+        const currentIndex = findLatestUserIndexBefore(items, end);
+        const current = currentIndex >= 0 ? items[currentIndex] : null;
+        const history = items
+          .slice(Math.max(0, currentIndex - 6), currentIndex)
+          .filter((message) => message.role === "user" || message.role === "assistant")
+          .map((message) => `${message.role === "user" ? "User" : "Assistant"}: ${clipText(message.content || message.thinking || "", 700)}`)
+          .filter((line) => !/:\s*$/.test(line))
+          .join("\n");
+        return [
+          history ? `Recent conversation:\n${history}` : "Recent conversation: (none)",
+          `Current user request:\n${current?.content || latestUserPrompt(items, assistantId)}`,
+          "Search planning rule: if the current request is a follow-up, short phrase, pronoun, price refinement, comparison refinement, or says things like cheaper/better/that/it/this/有没有/便宜/贵/推荐/还有, infer the missing subject from the recent conversation and include that subject in every search query.",
+        ].join("\n\n");
+      }
+
+      function findLatestUserIndexBefore(items, end) {
+        for (let i = end - 1; i >= 0; i--) {
+          if (items[i]?.role === "user") return i;
+        }
+        return -1;
+      }
+
+      function contextualSearchFallbackQuery(prompt, runMessages, assistantId) {
+        const clean = String(prompt || "").replace(/\s+/g, " ").trim();
+        if (!isLikelyFollowUpSearch(clean)) return clean;
+        const items = runMessages || [];
+        const assistantIndex = items.findIndex((message) => message.id === assistantId);
+        const end = assistantIndex >= 0 ? assistantIndex : items.length;
+        const currentIndex = findLatestUserIndexBefore(items, end);
+        for (let i = currentIndex - 1; i >= Math.max(0, currentIndex - 6); i--) {
+          const message = items[i];
+          if (!message || message.role !== "user") continue;
+          const topic = extractSearchTopic(message.content || "");
+          if (topic) return `${topic} ${clean}`;
+        }
+        return clean;
+      }
+
+      function isLikelyFollowUpSearch(prompt) {
+        const text = String(prompt || "").trim();
+        if (!text) return false;
+        if (text.length <= 18) return true;
+        return /(便宜|贵|更好|哪个好|有没有|还有|这个|那个|它|他们|推荐|对比|价格|预算|cheap|cheaper|affordable|budget|that|it|those|them|more|better|price)/i.test(text);
+      }
+
+      function extractSearchTopic(text) {
+        const clean = String(text || "")
+          .replace(/https?:\/\/\S+/g, " ")
+          .replace(/[？?！!,，。；;：:]/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        if (!clean) return "";
+        const withoutPolite = clean
+          .replace(/^(请|帮我|给我|能不能|可以|麻烦|please|can you|could you)\s*/i, "")
+          .replace(/(推荐|介绍|查找|搜索|帮我找|有没有|哪些|什么|怎么样|如何|一下|一些|几个|几把|几款|几种|吗|呢|吧)/g, " ")
+          .replace(/\s+/g, " ")
+          .trim();
+        return (withoutPolite || clean).split(" ").slice(0, 8).join(" ").slice(0, 80);
+      }
+
+      async function decideWebSearch(prompt, planningContext, model, signal, forceSearch = false) {
         const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
           method: "POST",
           headers: {
@@ -5708,9 +6026,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             messages: [
               {
                 role: "system",
-                content: `Decide and plan browser-side web search for this user request. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful."}`,
+                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful."} Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
               },
-              { role: "user", content: prompt },
+              { role: "user", content: planningContext },
             ],
             temperature: 0,
             max_tokens: 520,
@@ -5733,9 +6051,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function normalizeSearchQueries(decision, fallback) {
         const items = [
+          fallback,
           ...(Array.isArray(decision.queries) ? decision.queries : []),
           decision.query,
-          fallback,
         ];
         const seen = new Set();
         return items
@@ -6208,11 +6526,14 @@ ${lines}`;
         const resolved = mode === "auto" ? (prefersDark ? "dark" : "light") : mode;
         state.theme = resolved;
         document.body.dataset.theme = resolved === "dark" ? "dark" : "light";
+        document.documentElement.style.colorScheme = resolved === "dark" ? "dark" : "light";
         renderThemeButtons();
+        renderThemeMode();
       }
 
       function toggleTheme() {
-        state.themeMode = (state.themeMode || state.theme) === "dark" ? "light" : "dark";
+        const resolved = document.body.dataset.theme === "dark" ? "dark" : "light";
+        state.themeMode = resolved === "dark" ? "light" : "dark";
         applyTheme();
         saveState();
       }
@@ -6259,17 +6580,87 @@ ${lines}`;
         saveState();
       }
 
+      function loadMarkdownIt() {
+        markdownReady = new Promise((resolve) => {
+          const configure = () => {
+            if (!window.markdownit) {
+              resolve(false);
+              return;
+            }
+            markdownRenderer = window.markdownit({
+              html: false,
+              linkify: true,
+              breaks: true,
+            });
+            resolve(true);
+            rerenderAssistantMarkdown();
+          };
+          if (window.markdownit) {
+            configure();
+            return;
+          }
+          const existing = document.getElementById("markdownItScript") || document.querySelector('script[src*="markdown-it"]');
+          if (existing) {
+            existing.addEventListener("load", configure, { once: true });
+            existing.addEventListener("error", () => resolve(false), { once: true });
+            setTimeout(() => {
+              if (!markdownRenderer && window.markdownit) configure();
+              else resolve(!!markdownRenderer);
+            }, 4000);
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js";
+          script.async = true;
+          script.onload = configure;
+          script.onerror = () => resolve(false);
+          document.head.appendChild(script);
+        });
+      }
+
+      function rerenderAssistantMarkdown() {
+        if (!els.messages) return;
+        messages
+          .filter((message) => message.role === "assistant")
+          .forEach((message) => {
+            const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
+            if (node) renderAssistantContent(node, message);
+          });
+      }
+
+      function loadHighlightJs() {
+        highlightReady = new Promise((resolve) => {
+          if (window.hljs) {
+            resolve(true);
+            return;
+          }
+          const existing = document.getElementById("highlightScript") || document.querySelector('script[src*="highlight.js"]');
+          if (existing) {
+            existing.addEventListener("load", () => resolve(true), { once: true });
+            existing.addEventListener("error", () => resolve(false), { once: true });
+            setTimeout(() => resolve(!!window.hljs), 4000);
+            return;
+          }
+          const script = document.createElement("script");
+          script.src = "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js";
+          script.async = true;
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
+          document.head.appendChild(script);
+        });
+      }
+
       function loadMathJax() {
-        if (!/^https?:$/.test(location.protocol)) {
-          mathJaxReady = Promise.resolve();
+        if (window.MathJax?.typesetPromise) {
+          mathJaxReady = Promise.resolve(true);
           return;
         }
         mathJaxReady = new Promise((resolve) => {
           const script = document.createElement("script");
           script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
           script.async = true;
-          script.onload = resolve;
-          script.onerror = resolve;
+          script.onload = () => resolve(true);
+          script.onerror = () => resolve(false);
           document.head.appendChild(script);
         });
       }
@@ -6282,6 +6673,7 @@ ${lines}`;
         els.tabAI.style.display = id === "ai" ? "" : "none";
         els.tabSearch.style.display = id === "search" ? "" : "none";
         els.tabAppearance.style.display = id === "appearance" ? "" : "none";
+        els.tabAbout.style.display = id === "about" ? "" : "none";
       }
 
       function renderSearchProviderSettings() {
@@ -6295,7 +6687,7 @@ ${lines}`;
             const def = SEARCH_PROVIDER_DEFS[id];
             const cfg = state.searchProviders[id];
             return `
-              <section class="search-provider-card" data-search-provider="${esc(id)}" draggable="true">
+              <section class="search-provider-card" data-search-provider="${esc(id)}">
                 <button class="search-provider-handle" type="button" title="拖拽排序" aria-label="拖拽排序">⠿</button>
                 <div>
                   <div class="search-provider-head">
@@ -6329,16 +6721,15 @@ ${lines}`;
       function bindSearchProviderDrag() {
         let dragging = null;
         els.searchProviderList.querySelectorAll(".search-provider-card").forEach((card) => {
-          card.addEventListener("dragstart", (event) => {
-            if (!event.target.closest(".search-provider-handle")) {
-              event.preventDefault();
-              return;
-            }
+          const handle = card.querySelector(".search-provider-handle");
+          if (handle) handle.draggable = true;
+          handle?.addEventListener("dragstart", (event) => {
             dragging = card;
             card.classList.add("dragging");
             event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", card.dataset.searchProvider || "");
           });
-          card.addEventListener("dragend", () => {
+          handle?.addEventListener("dragend", () => {
             card.classList.remove("dragging");
             dragging = null;
             persistSearchProviderSettings();
@@ -6573,13 +6964,46 @@ ${lines}`;
         ensureActiveModel();
         els.modelList.innerHTML = state.modelQueue.length
           ? state.modelQueue.map((model, index) => `
-              <span class="model-token" title="${index === 0 ? "优先调用" : "队列候选"}">
-                <span>${index + 1}. ${esc(model)}</span>
+              <div class="model-token" data-model="${esc(model)}" title="${index === 0 ? "优先调用" : "队列候选"}">
+                <button class="model-handle" type="button" title="拖拽排序" aria-label="拖拽排序">⠿</button>
+                <span class="model-name">${esc(model)}</span>
                 <button type="button" data-remove-model="${esc(model)}" title="移除" aria-label="移除 ${esc(model)}">×</button>
-              </span>`).join("")
+              </div>`).join("")
           : `<div class="model-empty">还没有调用模型。按 Enter 或点击候选模型添加。</div>`;
         els.modelList.querySelectorAll("[data-remove-model]").forEach((button) => {
           button.addEventListener("click", () => removeModelFromQueue(button.dataset.removeModel));
+        });
+        bindModelQueueDrag();
+      }
+
+      function bindModelQueueDrag() {
+        let dragging = null;
+        els.modelList.querySelectorAll(".model-token").forEach((card) => {
+          const handle = card.querySelector(".model-handle");
+          if (handle) handle.draggable = true;
+          handle?.addEventListener("dragstart", (event) => {
+            dragging = card;
+            card.classList.add("dragging");
+            event.dataTransfer.effectAllowed = "move";
+            event.dataTransfer.setData("text/plain", card.dataset.model || "");
+          });
+          handle?.addEventListener("dragend", () => {
+            card.classList.remove("dragging");
+            dragging = null;
+            state.modelQueue = [...els.modelList.querySelectorAll(".model-token")]
+              .map((item) => item.dataset.model)
+              .filter(Boolean);
+            ensureActiveModel();
+            saveState();
+            renderModelPickers();
+          });
+          card.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            if (!dragging || dragging === card) return;
+            const rect = card.getBoundingClientRect();
+            const after = event.clientY > rect.top + rect.height / 2;
+            card.parentNode.insertBefore(dragging, after ? card.nextSibling : card);
+          });
         });
       }
 
@@ -6747,6 +7171,83 @@ ${lines}`;
       }
 
       function renderMarkdown(text) {
+        if (markdownRenderer) return renderMarkdownWithLibrary(text);
+        if (markdownReady) {
+          markdownReady.then(() => {
+            if (markdownRenderer) rerenderAssistantMarkdown();
+          });
+        }
+        return renderMarkdownFallback(text);
+      }
+
+      function renderMarkdownWithLibrary(text) {
+        const stashed = stashMathBlocks(stashInlineMathForMarkdownIt(text));
+        const template = document.createElement("template");
+        template.innerHTML = markdownRenderer.render(stashed.text);
+        restoreMarkdownItMath(template, stashed.math);
+        template.content.querySelectorAll("a[href]").forEach((link) => {
+          const href = link.getAttribute("href") || "";
+          if (/^https?:\/\//i.test(href)) {
+            link.target = "_blank";
+            link.rel = "noopener noreferrer";
+          }
+        });
+        template.content.querySelectorAll("pre > code").forEach((code) => {
+          const pre = code.parentElement;
+          if (!pre || pre.closest(".code-block")) return;
+          const languageClass = [...code.classList].find((name) => name.startsWith("language-")) || "";
+          const language = languageClass.replace(/^language-/, "") || "text";
+          const wrapper = document.createElement("div");
+          wrapper.className = "code-block";
+          const head = document.createElement("div");
+          head.className = "code-head";
+          const label = document.createElement("span");
+          label.className = "code-lang";
+          label.textContent = language;
+          const copy = document.createElement("button");
+          copy.className = "code-copy";
+          copy.type = "button";
+          copy.textContent = "复制";
+          head.append(label, copy);
+          pre.replaceWith(wrapper);
+          wrapper.append(head, pre);
+        });
+        return template.innerHTML;
+      }
+
+      function stashInlineMathForMarkdownIt(text) {
+        const math = [];
+        const source = stashInlineMath(text, math);
+        return { text: source, math };
+      }
+
+      function stashMathBlocks(stashed) {
+        let source = String(stashed.text || "");
+        const math = stashed.math || [];
+        source = source
+          .replace(/\$\$([\s\S]+?)\$\$/g, (_, formula) => {
+            const key = `@@MATH${math.length}@@`;
+            math.push(`<div class="math-display">\\[${esc(formula.trim())}\\]</div>`);
+            return `\n\n${key}\n\n`;
+          })
+          .replace(/\\\[([\s\S]+?)\\\]/g, (_, formula) => {
+            const key = `@@MATH${math.length}@@`;
+            math.push(`<div class="math-display">\\[${esc(formula.trim())}\\]</div>`);
+            return `\n\n${key}\n\n`;
+          });
+        return { text: source, math };
+      }
+
+      function restoreMarkdownItMath(template, math) {
+        let html = template.innerHTML;
+        math.forEach((formula, index) => {
+          const key = `@@MATH${index}@@`;
+          html = html.replace(new RegExp(`<p>\\s*${key}\\s*</p>`, "g"), formula).replaceAll(key, formula);
+        });
+        template.innerHTML = html;
+      }
+
+      function renderMarkdownFallback(text) {
         const lines = String(text || "").replace(/\r\n/g, "\n").split("\n");
         const html = [];
         let i = 0;
@@ -6769,6 +7270,12 @@ ${lines}`;
             }
             if (i < lines.length) i++;
             html.push(renderCodeBlock(codeLines.join("\n"), lang));
+            continue;
+          }
+
+          if (/^\s{0,3}(?:-{3,}|\*{3,}|_{3,})\s*$/.test(line)) {
+            html.push("<hr>");
+            i++;
             continue;
           }
 
@@ -6848,6 +7355,9 @@ ${lines}`;
             i < lines.length &&
             lines[i].trim() &&
             !/^```/.test(lines[i]) &&
+            !/^\s{0,3}(?:-{3,}|\*{3,}|_{3,})\s*$/.test(lines[i]) &&
+            !/^\s*\$\$\s*$/.test(lines[i]) &&
+            !/^\\\[\s*$/.test(lines[i]) &&
             !/^(#{1,4})\s+/.test(lines[i]) &&
             !/^>\s?/.test(lines[i]) &&
             !/^\s*[-*]\s+/.test(lines[i]) &&
@@ -6940,6 +7450,7 @@ ${lines}`;
         if (!mathJaxReady) return;
         mathJaxReady.then(() => {
           if (!window.MathJax?.typesetPromise) return;
+          if (window.MathJax.typesetClear) window.MathJax.typesetClear([root]);
           window.MathJax.typesetPromise([root]).catch(() => {});
         });
       }
@@ -6954,11 +7465,19 @@ ${lines}`;
       }
 
       function highlightCodeBlocks(root) {
-        if (!window.hljs) return;
-        root.querySelectorAll(".code-block code").forEach((code) => {
-          try {
-            window.hljs.highlightElement(code);
-          } catch (e) {}
+        const run = () => {
+          if (!window.hljs) return;
+          root.querySelectorAll(".code-block code").forEach((code) => {
+            if (code.dataset.highlighted) return;
+            try {
+              window.hljs.highlightElement(code);
+            } catch (e) {}
+          });
+        };
+        run();
+        if (window.hljs || !highlightReady) return;
+        highlightReady.then(() => {
+          run();
         });
       }
 
@@ -7024,6 +7543,15 @@ ${lines}`;
         requestAnimationFrame(() => {
           window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
         });
+      }
+
+      function pauseAutoFollowForUserScroll() {
+        if (!document.body.classList.contains("chat-active")) return;
+        const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+        userScrollPauseUntil = Date.now() + 1600;
+        autoFollow = false;
+        updateScrollButtonVisibility(distance);
+        handleMobileComposerScroll(distance);
       }
 
       function updateScrollButtonVisibility(distance) {
