@@ -12,7 +12,7 @@
     <script>
       window.MathJax = {
         tex: {
-          inlineMath: [["\\(", "\\)"]],
+          inlineMath: [["\\(", "\\)"], ["$", "$"]],
           displayMath: [["$$", "$$"], ["\\[", "\\]"]],
           processEscapes: true,
         },
@@ -583,6 +583,12 @@
         background: var(--white);
         box-shadow: var(--shadow-ring-deep);
         color: var(--ink);
+      }
+
+      .icon-btn.theme-float,
+      .icon-btn.theme-float:hover {
+        background: transparent;
+        box-shadow: none;
       }
 
       .icon-btn.sidebar-collapse {
@@ -1958,10 +1964,26 @@
       }
 
       @media (max-width: 720px) {
+        html,
+        body:not(.chat-active) {
+          height: 100dvh;
+          min-height: 100dvh;
+          overflow: hidden;
+        }
+
+        body.chat-active {
+          height: auto;
+          overflow-x: hidden;
+        }
+
+        body:not(.chat-active) .shell {
+          height: 100dvh;
+          min-height: 100dvh;
+          overflow: hidden;
+        }
+
         .theme-float {
-          top: 8px;
-          right: 58px;
-          z-index: 32;
+          display: none;
         }
 
         .sidebar {
@@ -2095,7 +2117,7 @@
         }
 
         .hero {
-          min-height: calc(100vh - 94px);
+          min-height: calc(100dvh - 94px);
           padding: 0;
         }
 
@@ -2318,16 +2340,16 @@
               <input class="input mono" id="cfgApiKey" type="password" placeholder="sk-..." />
               <div class="field-hint">保存在浏览器 OPFS。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
             </div>
-            <div class="field">
-              <div class="field-label">Models</div>
+            <div class="field" style="display: none">
+              <div class="field-label">Model</div>
               <div class="model-row">
                 <div class="settings-model-wrap">
-                  <input class="input mono" id="cfgModelInput" type="text" placeholder="聚焦后自动获取模型列表" autocomplete="off" spellcheck="false" />
+                  <input class="input mono" id="cfgModelInput" type="text" placeholder="聚焦后从当前 Base URL 获取模型" autocomplete="off" spellcheck="false" />
                   <div class="settings-model-dd" id="settingsModelDropdown"></div>
                 </div>
                 <button class="primary-btn" id="refreshModelsBtn">刷新</button>
               </div>
-              <div class="field-hint">模型列表来自当前 Base URL 的 /models 端点，并按 Base URL 缓存在本地。</div>
+              <div class="field-hint">只保存一个当前模型。模型列表每次从当前 Base URL 的 /models 端点重新获取，不做本地缓存。</div>
               <div class="model-list" id="modelList"></div>
             </div>
           </div>
@@ -2353,11 +2375,9 @@
       const DEFAULT_BASE_URL = "https://open.bigmodel.cn/api/paas/v4/chat/completions";
       const STORAGE_KEY = "linsoo_v1";
       const LINSO_STORAGE_KEY = "linso_v3";
-      const MODEL_CACHE_KEY = "linsoo_model_cache_v1";
       const MAX_FILE_CHARS = 12000;
       const PASTE_ATTACHMENT_LIMIT = 800;
       const OPFS_SETTINGS_FILE = "linsoo-settings.json";
-      const OPFS_MODEL_CACHE_FILE = "linsoo-model-cache.json";
       const OPFS_CHAT_DIR = "linsoo-chats";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
@@ -2428,7 +2448,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         hero: [],
         thread: [],
       };
-      let modelCache = {};
       let fetchedModels = [];
       let running = false;
       let aborter = null;
@@ -2446,8 +2465,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         cacheEls();
         await initStorage();
         await loadState();
-        await loadModelCache();
-        hydrateModelsFromCache();
         ensureActiveModel();
         applyResponsiveSidebarDefault();
         applyTheme();
@@ -2664,11 +2681,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           const linso = JSON.parse(localStorage.getItem(LINSO_STORAGE_KEY) || "{}");
           if (!state.baseUrl && linso.baseUrl) state.baseUrl = linso.baseUrl;
           if (!state.apiKey && linso.apiKey) state.apiKey = linso.apiKey;
-          if (!state.models.length && Array.isArray(linso.models)) {
-            state.models = linso.models.slice(0, 4);
-          }
+          if (!state.activeModel && Array.isArray(linso.models)) state.activeModel = linso.models[0] || "";
         } catch (e) {}
 
+        state.models = [];
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
       }
 
@@ -2678,38 +2694,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {}
       }
 
-      async function loadModelCache() {
-        try {
-          modelCache = await readJsonFile(OPFS_MODEL_CACHE_FILE, {});
-          if (!Object.keys(modelCache).length) {
-            modelCache = JSON.parse(localStorage.getItem(MODEL_CACHE_KEY) || "{}");
-          }
-        } catch (e) {
-          modelCache = {};
-        }
-      }
-
-      async function saveModelCache() {
-        try {
-          await writeJsonFile(OPFS_MODEL_CACHE_FILE, modelCache);
-        } catch (e) {}
-      }
-
-      function modelCacheUrl() {
-        return (state.baseUrl || DEFAULT_BASE_URL).trim();
-      }
-
-      function hydrateModelsFromCache() {
-        const cached = modelCache[modelCacheUrl()];
-        if (cached && Array.isArray(cached.models)) {
-          fetchedModels = cached.models;
-          if (!state.models.length) state.models = cached.models.slice(0, 8);
-        }
-      }
-
       function ensureActiveModel() {
         if (state.activeModel) return;
-        state.activeModel = state.models[0] || fetchedModels[0] || "";
+        state.activeModel = fetchedModels[0] || "";
       }
 
       function bindEvents() {
@@ -2766,7 +2753,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.refreshModelsBtn.addEventListener("click", () => fetchModels({ force: true, open: true }));
         els.cfgModelInput.addEventListener("focus", () => {
           els.cfgModelInput.select();
-          fetchModels({ open: true, filter: "" });
+          fetchModels({ force: true, open: true, filter: "" });
         });
         els.cfgModelInput.addEventListener("input", () => renderSettingsModelDropdown(els.cfgModelInput.value));
         els.cfgModelInput.addEventListener("keydown", (event) => {
@@ -2812,6 +2799,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
         input.addEventListener("paste", (event) => handlePasteAttachment(event, input));
         input.addEventListener("keydown", (event) => {
+          if (event.isComposing || input.dataset.composing === "true") return;
           if (event.key === "Enter" && !event.shiftKey) {
             event.preventDefault();
             submitFrom(input);
@@ -2819,6 +2807,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (event.key === "Escape" && running) {
             cancelRun();
           }
+        });
+        input.addEventListener("compositionstart", () => {
+          input.dataset.composing = "true";
+        });
+        input.addEventListener("compositionend", () => {
+          input.dataset.composing = "false";
         });
         button.addEventListener("click", () => {
           if (running) {
@@ -2980,6 +2974,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function bindModelPicker(scope) {
         const trigger = els[`${scope}ModelTrigger`];
+        trigger.addEventListener("focus", () => fetchModels({ force: true, open: false }));
         trigger.addEventListener("click", (event) => {
           event.stopPropagation();
           toggleComposerModelDropdown(scope);
@@ -3006,7 +3001,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const isOpen = dropdown.classList.contains("open");
         closeComposerModelDropdowns();
         if (!isOpen) {
-          fetchModels({ open: false });
+          fetchModels({ force: true, open: false }).then(() => {
+            if (dropdown.classList.contains("open")) renderComposerModelDropdown(scope);
+          });
           dropdown.classList.add("open");
           els[`${scope}ModelTrigger`].setAttribute("aria-expanded", "true");
           renderComposerModelDropdown(scope);
@@ -3023,7 +3020,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function modelChoices() {
         const seen = new Set();
-        return [state.activeModel, ...state.models, ...fetchedModels]
+        return [state.activeModel, ...fetchedModels]
           .filter(Boolean)
           .filter((model) => {
             if (seen.has(model)) return false;
@@ -3037,7 +3034,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const models = modelChoices();
         dropdown.innerHTML = models.length
           ? models.map((model) => modelOptionHTML(model)).join("")
-          : `<div class="model-empty">先在设置中获取或填写模型。</div>`;
+          : `<div class="model-empty">正在从当前 Base URL 获取模型；也可以在设置里先填 API Key。</div>`;
         dropdown.querySelectorAll(".model-option").forEach((btn) => {
           btn.addEventListener("click", () => {
             selectModel(btn.dataset.model);
@@ -3847,7 +3844,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function openSettings() {
         els.cfgBaseUrl.value = state.baseUrl;
         els.cfgApiKey.value = state.apiKey;
-        els.cfgModelInput.value = state.activeModel || state.models[0] || "";
+        els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         renderModelList();
         switchTab("api");
@@ -3864,14 +3861,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         state.apiKey = els.cfgApiKey.value.trim();
         if (els.cfgModelInput.value.trim()) selectModel(els.cfgModelInput.value.trim(), { silent: true });
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
-        if (oldUrl !== state.baseUrl) {
-          fetchedModels = [];
-          hydrateModelsFromCache();
-        }
+        if (oldUrl !== state.baseUrl) fetchedModels = [];
         ensureActiveModel();
         await saveState();
         renderModelPickers();
-        renderModelList();
         closeSettings();
         showToast("设置已保存。");
       }
@@ -3931,49 +3924,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function selectModel(model, opts = {}) {
         if (!model) return;
-        if (!state.models.includes(model)) state.models.unshift(model);
         state.activeModel = model;
         saveState();
         renderModelPickers();
-        renderModelList();
         renderSettingsModelDropdown(els.cfgModelInput.value);
         if (!opts.silent) showToast(`已选择模型：${model}`);
       }
 
       function renderModelList() {
-        els.modelList.innerHTML = "";
-        if (!state.models.length) {
-          const empty = document.createElement("div");
-          empty.className = "field-hint";
-          empty.textContent = "未添加模型。聚焦模型输入框可从当前 Base URL 获取列表。";
-          els.modelList.appendChild(empty);
-          return;
-        }
-        state.models.forEach((model, index) => {
-          const token = document.createElement("span");
-          token.className = "model-token";
-          token.innerHTML = `<span>${esc(model)}</span><button title="移除" aria-label="移除">×</button>`;
-          token.querySelector("button").addEventListener("click", () => {
-            state.models.splice(index, 1);
-            saveState();
-            renderModelList();
-          });
-          els.modelList.appendChild(token);
-        });
+        if (els.modelList) els.modelList.innerHTML = "";
       }
 
       async function fetchModels({ force = false, open = false, filter = null } = {}) {
         const url = (els.cfgBaseUrl?.value.trim() || state.baseUrl || DEFAULT_BASE_URL).trim();
         const key = els.cfgApiKey?.value.trim() || state.apiKey;
-        const cached = modelCache[url];
-        if (!force && cached && Array.isArray(cached.models)) {
-          fetchedModels = cached.models;
-          if (!state.models.length) state.models = fetchedModels.slice(0, 8);
-          renderModelList();
-          renderModelPickers();
-          if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
-          return fetchedModels;
-        }
         if (!key) {
           if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value, "填写 API Key 后可获取模型列表。");
           return [];
@@ -3988,15 +3952,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const data = await response.json();
           fetchedModels = normalizeModels(data);
-          modelCache[url] = {
-            models: fetchedModels,
-            savedAt: Date.now(),
-          };
-          await saveModelCache();
-          if (!state.models.length && fetchedModels.length) state.models = fetchedModels.slice(0, 8);
           ensureActiveModel();
           await saveState();
-          renderModelList();
           renderModelPickers();
           if (open) renderSettingsModelDropdown(filter ?? els.cfgModelInput.value);
           return fetchedModels;
@@ -4194,6 +4151,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return `<div class="math-display">\\[${esc(formula)}\\]</div>`;
       }
 
+      function stashInlineMath(text, math) {
+        return String(text || "")
+          .replace(/\\\(([\s\S]+?)\\\)/g, (_, formula) => {
+            const key = `@@MATH${math.length}@@`;
+            math.push(`\\(${esc(formula)}\\)`);
+            return key;
+          })
+          .replace(/(^|[^\\$])\$([^$\n]+?)\$/g, (match, prefix, formula) => {
+            const key = `@@MATH${math.length}@@`;
+            math.push(`\\(${esc(formula)}\\)`);
+            return `${prefix}${key}`;
+          });
+      }
+
       function collectTable(lines, start) {
         if (start + 1 >= lines.length) return null;
         if (!/^\s*\|.+\|\s*$/.test(lines[start])) return null;
@@ -4222,11 +4193,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function inlineMarkdown(text) {
         const math = [];
-        let source = String(text || "").replace(/\\\(([\s\S]+?)\\\)/g, (_, formula) => {
-          const key = `@@MATH${math.length}@@`;
-          math.push(`\\(${esc(formula)}\\)`);
-          return key;
-        });
+        let source = stashInlineMath(text, math);
         source = esc(source)
           .replace(/\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g, '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>')
           .replace(/`([^`]+)`/g, "<code>$1</code>")
