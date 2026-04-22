@@ -30,7 +30,7 @@
         },
       };
     </script>
-    <script defer src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/lib/common.min.js"></script>
+    <script defer src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js"></script>
     <style>
       :root {
         --paper: #f5f4ed;
@@ -1062,6 +1062,34 @@
         line-height: 1;
       }
 
+      .web-search-btn {
+        position: relative;
+        font-size: 0;
+      }
+
+      .web-search-btn svg {
+        width: 18px;
+        height: 18px;
+      }
+
+      .web-search-btn .slash,
+      .web-search-btn .spark {
+        display: none;
+      }
+
+      .web-search-btn[data-mode="off"] .slash,
+      .web-search-btn[data-mode="auto"] .spark {
+        display: block;
+      }
+
+      .web-search-btn[data-mode="on"] {
+        color: var(--accent);
+      }
+
+      .web-search-btn[data-mode="auto"] {
+        color: var(--ink);
+      }
+
       .tool-btn:hover,
       .message-action-btn:hover {
         background: var(--sand-2);
@@ -1927,9 +1955,21 @@
       }
 
       .source-panel-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
         color: var(--ink);
         font-size: 16px;
         font-weight: 650;
+      }
+
+      .source-provider-badge {
+        border: 1px solid var(--line-strong);
+        border-radius: 999px;
+        color: var(--muted);
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 600;
       }
 
       .source-panel-close {
@@ -1952,6 +1992,206 @@
 
       .source-panel .source-result-title {
         font-size: 15px;
+      }
+
+      .search-group-list {
+        display: grid;
+        gap: 10px;
+        margin-bottom: 18px;
+      }
+
+      .search-group-card {
+        width: 100%;
+        display: grid;
+        grid-template-columns: 20px minmax(0, 1fr) auto;
+        gap: 10px;
+        align-items: center;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        background: var(--paper);
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 10px;
+        text-align: left;
+      }
+
+      .search-group-card.active {
+        border-color: var(--ring);
+        background: var(--ivory);
+      }
+
+      .search-group-icon {
+        color: var(--muted);
+        line-height: 0;
+      }
+
+      .search-group-meta {
+        color: var(--faint);
+        font-size: 11px;
+        line-height: 1.2;
+      }
+
+      .search-group-query {
+        margin-top: 2px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: "DM Mono", ui-monospace, monospace;
+        font-size: 13px;
+      }
+
+      .search-group-count {
+        border: 1px solid var(--line-strong);
+        border-radius: 6px;
+        color: var(--muted);
+        padding: 2px 7px;
+        font-size: 11px;
+      }
+
+      .search-status {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px;
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.4;
+      }
+
+      .search-status::before {
+        content: "";
+        width: 14px;
+        height: 14px;
+        border: 2px solid var(--line-strong);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        animation: spin 0.9s linear infinite;
+      }
+
+      @keyframes spin {
+        to { transform: rotate(360deg); }
+      }
+
+      .top-view-tabs {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        z-index: 60;
+        display: none;
+        transform: translateX(-50%);
+        gap: 6px;
+        border: 1px solid var(--line);
+        border-radius: 13px;
+        background: color-mix(in srgb, var(--ivory) 92%, transparent);
+        box-shadow: var(--shadow-soft);
+        padding: 4px;
+      }
+
+      body.chat-active .top-view-tabs {
+        display: flex;
+      }
+
+      .view-tab {
+        min-width: 86px;
+        min-height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        border: none;
+        border-radius: 10px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .view-tab.active {
+        background: var(--accent);
+        color: var(--ivory);
+      }
+
+      body.search-view .main,
+      body.search-view .conversation-rail,
+      body.search-view .thread-composer,
+      body.search-view .scroll-btn {
+        display: none !important;
+      }
+
+      .search-page {
+        display: none;
+        min-height: 100dvh;
+        flex: 1;
+        padding: 96px clamp(22px, 10vw, 320px) 70px;
+      }
+
+      body.search-view .search-page {
+        display: block;
+      }
+
+      .search-page-head {
+        display: flex;
+        align-items: end;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 22px;
+      }
+
+      .search-page-kicker {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+        text-transform: uppercase;
+      }
+
+      .search-page-title {
+        margin-top: 6px;
+        color: var(--ink);
+        font-family: "Newsreader", Georgia, serif;
+        font-size: 27px;
+        font-weight: 600;
+        line-height: 1.2;
+      }
+
+      .search-page-provider {
+        color: var(--muted);
+        font-size: 13px;
+        font-weight: 650;
+      }
+
+      .search-page-results {
+        display: grid;
+        gap: 22px;
+      }
+
+      .search-page-result {
+        display: grid;
+        grid-template-columns: 28px minmax(0, 1fr);
+        gap: 13px;
+        color: var(--text-strong);
+        text-decoration: none;
+      }
+
+      .search-page-result-title {
+        color: #2d6cdf;
+        font-size: 18px;
+        font-weight: 650;
+        line-height: 1.25;
+      }
+
+      .search-page-result-url {
+        margin-top: 1px;
+        color: var(--muted);
+        font-size: 12px;
+        line-height: 1.3;
+      }
+
+      .search-page-result-snippet {
+        margin-top: 5px;
+        color: var(--text-strong);
+        font-size: 14px;
+        line-height: 1.45;
       }
 
       .loading-line {
@@ -2659,6 +2899,71 @@
         line-height: 1;
       }
 
+      .web-mode-group {
+        min-width: 178px;
+      }
+
+      .search-provider-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .search-provider-card {
+        display: grid;
+        grid-template-columns: 18px minmax(0, 1fr);
+        gap: 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--paper);
+        padding: 12px;
+      }
+
+      .search-provider-card.dragging {
+        opacity: 0.62;
+      }
+
+      .search-provider-handle {
+        align-self: stretch;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        background: transparent;
+        color: var(--faint);
+        cursor: grab;
+        padding: 0;
+        font-size: 17px;
+        line-height: 1;
+      }
+
+      .search-provider-handle:active {
+        cursor: grabbing;
+      }
+
+      .search-provider-head {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 10px;
+      }
+
+      .search-provider-name {
+        color: var(--text-strong);
+        font-size: 13.5px;
+        font-weight: 650;
+      }
+
+      .search-provider-controls {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr);
+        gap: 8px;
+      }
+
+      .search-provider-controls .input {
+        min-width: 0;
+      }
+
       @media (max-width: 720px) {
         html {
           min-height: 100%;
@@ -2848,6 +3153,14 @@
     </style>
   </head>
   <body>
+    <nav class="top-view-tabs" id="topViewTabs" aria-label="View">
+      <button class="view-tab active" id="chatViewBtn" type="button" data-view="chat">
+        <span>◎</span><span>聊天</span>
+      </button>
+      <button class="view-tab" id="searchViewBtn" type="button" data-view="search">
+        <span>◉</span><span>搜索</span>
+      </button>
+    </nav>
     <div class="shell">
       <aside class="sidebar" id="sidebar">
         <div class="sidebar-head">
@@ -2916,6 +3229,7 @@
                 <div class="composer-tools">
                   <button class="tool-btn upload-btn" data-input="heroFileInput" title="上传文件" aria-label="上传文件">+</button>
                   <input id="heroFileInput" class="file-input" type="file" multiple hidden />
+                  <button class="tool-btn web-search-btn" id="heroWebSearchBtn" type="button" title="Web Search: Auto" aria-label="Web Search: Auto"></button>
                 </div>
                 <div class="composer-actions">
                   <div class="model-picker" id="heroModelPicker">
@@ -2944,6 +3258,10 @@
         </section>
       </main>
 
+      <section class="search-page" id="searchPage" aria-label="搜索结果">
+        <div id="searchPageContent"></div>
+      </section>
+
       <button class="icon-btn scroll-btn" id="scrollBtn" title="回到底部" aria-label="回到底部">
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
           <path d="M12 5v14M5 12l7 7 7-7" />
@@ -2966,7 +3284,7 @@
 
       <aside class="source-panel" id="sourcePanel" aria-label="来源" aria-hidden="true">
         <div class="source-panel-head">
-          <div class="source-panel-title">来源</div>
+          <div class="source-panel-title" id="sourcePanelTitle">来源</div>
           <button class="source-panel-close" id="sourcePanelClose" type="button" title="关闭" aria-label="关闭">×</button>
         </div>
         <div class="source-panel-body" id="sourcePanelBody"></div>
@@ -2985,6 +3303,7 @@
             <div class="composer-tools">
               <button class="tool-btn upload-btn" data-input="threadFileInput" title="上传文件" aria-label="上传文件">+</button>
               <input id="threadFileInput" class="file-input" type="file" multiple hidden />
+              <button class="tool-btn web-search-btn" id="threadWebSearchBtn" type="button" title="Web Search: Auto" aria-label="Web Search: Auto"></button>
             </div>
             <div class="composer-actions">
               <div class="model-picker" id="threadModelPicker">
@@ -3060,15 +3379,20 @@
           <div class="tabs">
             <button class="tab active" data-tab="general">General</button>
             <button class="tab" data-tab="ai">AI 设置</button>
+            <button class="tab" data-tab="search">搜索设置</button>
             <button class="tab" data-tab="appearance">外观设置</button>
           </div>
           <div id="tabGeneral">
             <div class="setting-row">
               <div>
                 <div class="setting-title">Web Search</div>
-                <div class="setting-subtitle">暂时只保留前端开关，后续接具体搜索实现。</div>
+                <div class="setting-subtitle">控制每次对话是否调用浏览器端搜索 Provider。</div>
               </div>
-              <label class="switch"><input id="cfgWebSearch" type="checkbox" /><span></span></label>
+              <div class="segmented web-mode-group" id="webSearchModeGroup">
+                <button type="button" data-web-search-mode="on">On</button>
+                <button type="button" data-web-search-mode="auto">Auto</button>
+                <button type="button" data-web-search-mode="off">Off</button>
+              </div>
             </div>
             <div class="setting-row">
               <div>
@@ -3163,6 +3487,13 @@
               <div class="field-hint">这个提示词用于“搜索回答”模式，不再要求模型输出查询词 JSON。</div>
             </div>
           </div>
+          <div id="tabSearch" style="display: none">
+            <div class="field">
+              <div class="field-label">Search Providers</div>
+              <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会保存在浏览器 OPFS/localStorage。部分服务可能因 CORS 拒绝前端请求。</div>
+            </div>
+            <div class="search-provider-list" id="searchProviderList"></div>
+          </div>
           <div id="tabAppearance" style="display: none">
             <div class="field">
               <div class="field-label">Theme</div>
@@ -3234,6 +3565,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
       const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
       const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
+      const ICON_WEB_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/><path class="slash" d="M4 20 20 4"/><path class="spark" d="M18.5 2.8v3M17 4.3h3M5.7 17.8v2.4M4.5 19h2.4"/></svg>';
       const PROVIDERS = {
         glm: {
           label: "GLM",
@@ -3258,6 +3590,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       };
       const CUSTOM_PROVIDER_VALUE = "__custom_new__";
       const DEFAULT_CUSTOM_PROVIDER = { id: "custom-default", name: "Custom", baseUrl: "", keyUrl: "", apiKey: "" };
+      const SEARCH_PROVIDER_DEFS = {
+        tavily: { label: "Tavily", keyUrl: "https://app.tavily.com/" },
+        exa: { label: "Exa", keyUrl: "https://dashboard.exa.ai/api-keys" },
+        serper: { label: "Serper", keyUrl: "https://serper.dev/" },
+        serpapi: { label: "SerpAPI", keyUrl: "https://serpapi.com/manage-api-key" },
+      };
+      const SEARCH_PROVIDER_IDS = ["tavily", "exa", "serper", "serpapi"];
       const HERO_LINES = [
         "Linsoo 这一块",
         "Linsoo, 欸没搜呢",
@@ -3277,7 +3616,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         mode: "search",
         theme: "light",
         themeMode: "light",
-        webSearch: true,
+        webSearchMode: "auto",
+        searchProviders: {},
         railEnabled: true,
         queueFallback: false,
         retryOnFailure: true,
@@ -3336,6 +3676,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderAttachments("thread");
         renderSidebar();
         renderModelList();
+        renderWebSearchControls();
+        renderSearchPage();
         bindEvents();
         updateSendState();
 
@@ -3367,6 +3709,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "messages",
           "heroInput",
           "threadInput",
+          "topViewTabs",
+          "chatViewBtn",
+          "searchViewBtn",
+          "searchPage",
+          "searchPageContent",
           "heroAttachments",
           "threadAttachments",
           "heroSendBtn",
@@ -3374,6 +3721,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "threadComposer",
           "heroFileInput",
           "threadFileInput",
+          "heroWebSearchBtn",
+          "threadWebSearchBtn",
           "heroModelTrigger",
           "threadModelTrigger",
           "heroModelLabel",
@@ -3414,6 +3763,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "railPreviewRole",
           "railPreviewText",
           "sourcePanel",
+          "sourcePanelTitle",
           "sourcePanelBody",
           "sourcePanelClose",
           "toast",
@@ -3435,7 +3785,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "providerKeyLink",
           "toggleKeyBtn",
           "testApiKeyBtn",
-          "cfgWebSearch",
+          "webSearchModeGroup",
+          "searchProviderList",
           "cfgRail",
           "cfgQueueFallback",
           "cfgRetryOnFailure",
@@ -3448,6 +3799,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "themeModeGroup",
           "tabGeneral",
           "tabAI",
+          "tabSearch",
           "tabAppearance",
         ].forEach((id) => {
           els[id] = document.getElementById(id);
@@ -3738,7 +4090,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         state.modelQueue = uniqueModels(state.modelQueue);
         state.activeModel = state.modelQueue[0] || state.activeModel || "";
         if (!state.themeMode) state.themeMode = state.theme || "light";
-        state.webSearch = state.webSearch !== false;
+        normalizeWebSearchState();
         state.railEnabled = state.railEnabled !== false;
         state.queueFallback = state.queueFallback === true;
         state.retryOnFailure = state.retryOnFailure !== false;
@@ -3748,6 +4100,23 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!state.modelCache || !Array.isArray(state.modelCache.models)) state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
         hydrateModelsFromCache();
+      }
+
+      function normalizeWebSearchState() {
+        if (!["on", "auto", "off"].includes(state.webSearchMode)) {
+          state.webSearchMode = state.webSearch === false ? "off" : "auto";
+        }
+        delete state.webSearch;
+        const existing = state.searchProviders && typeof state.searchProviders === "object" ? state.searchProviders : {};
+        state.searchProviders = {};
+        SEARCH_PROVIDER_IDS.forEach((id, index) => {
+          const provider = existing[id] || {};
+          state.searchProviders[id] = {
+            enabled: provider.enabled !== false,
+            order: Number.isFinite(Number(provider.order)) ? Number(provider.order) : index + 1,
+            apiKey: String(provider.apiKey || ""),
+          };
+        });
       }
 
       function hydrateModelsFromCache() {
@@ -3792,7 +4161,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         bindFileInput("thread");
         bindModelPicker("hero");
         bindModelPicker("thread");
+        bindWebSearchButtons();
 
+        els.chatViewBtn.addEventListener("click", () => setActiveView("chat"));
+        els.searchViewBtn.addEventListener("click", () => setActiveView("search"));
         els.homeBtn.addEventListener("click", goHome);
         els.sidebarToggle.addEventListener("click", toggleSidebar);
         els.searchHistoryBtn.addEventListener("click", openGlobalSearch);
@@ -3846,6 +4218,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.exportChatsBtn.addEventListener("click", exportChats);
         els.importChatsBtn.addEventListener("click", () => els.importChatsInput.click());
         els.importChatsInput.addEventListener("change", importChats);
+        els.webSearchModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setWebSearchMode(button.dataset.webSearchMode, { toast: false }));
+        });
         els.themeModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => {
             state.themeMode = button.dataset.themeMode;
@@ -4115,6 +4490,68 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           event.stopPropagation();
           toggleComposerModelDropdown(scope);
         });
+      }
+
+      function bindWebSearchButtons() {
+        ["hero", "thread"].forEach((scope) => {
+          els[`${scope}WebSearchBtn`]?.addEventListener("click", () => cycleWebSearchMode());
+        });
+      }
+
+      function setActiveView(view) {
+        const search = view === "search";
+        document.body.classList.toggle("search-view", search);
+        els.chatViewBtn.classList.toggle("active", !search);
+        els.searchViewBtn.classList.toggle("active", search);
+        if (search) {
+          renderSearchPage();
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else if (autoFollow) {
+          scrollToBottom();
+        }
+      }
+
+      function resetActiveView() {
+        document.body.classList.remove("search-view");
+        els.chatViewBtn?.classList.add("active");
+        els.searchViewBtn?.classList.remove("active");
+      }
+
+      function renderWebSearchControls() {
+        const mode = normalizeWebSearchMode(state.webSearchMode);
+        const label = `Web Search: ${modeLabel(mode)}`;
+        ["hero", "thread"].forEach((scope) => {
+          const button = els[`${scope}WebSearchBtn`];
+          if (!button) return;
+          button.innerHTML = ICON_WEB_SEARCH;
+          button.dataset.mode = mode;
+          button.title = label;
+          button.setAttribute("aria-label", label);
+        });
+        els.webSearchModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.webSearchMode === mode);
+        });
+      }
+
+      function normalizeWebSearchMode(mode) {
+        return ["on", "auto", "off"].includes(mode) ? mode : "auto";
+      }
+
+      function modeLabel(mode) {
+        return mode === "on" ? "On" : mode === "off" ? "Off" : "Auto";
+      }
+
+      function cycleWebSearchMode() {
+        const order = ["on", "auto", "off"];
+        const current = normalizeWebSearchMode(state.webSearchMode);
+        setWebSearchMode(order[(order.indexOf(current) + 1) % order.length], { toast: true });
+      }
+
+      async function setWebSearchMode(mode, opts = {}) {
+        state.webSearchMode = normalizeWebSearchMode(mode);
+        renderWebSearchControls();
+        await saveState();
+        if (opts.toast) showToast(`Web Search: ${modeLabel(state.webSearchMode)}`);
       }
 
       function renderModelPickers() {
@@ -4490,6 +4927,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         closeChatMenu();
         closeDeleteConfirm();
         document.body.classList.remove("chat-active");
+        resetActiveView();
         els.messages.innerHTML = "";
         els.hero.classList.remove("hidden");
         els.thread.classList.remove("active");
@@ -4580,6 +5018,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         messages = normalizeLoadedMessages(Array.isArray(chat.messages) ? chat.messages : []);
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
+        renderSearchPage();
         startThread();
         updateSendState();
         renderSidebar();
@@ -4763,6 +5202,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
           if (node && message.role === "assistant") renderAssistantContent(node, message);
           renderConversationRail();
+          renderSearchPage();
           scheduleSaveChat();
         }
       }
@@ -4821,13 +5261,17 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         sources.style.display = sourceItems.length ? "" : "none";
 
         if (message.loading && !message.content && !message.thinking) {
-          answer.innerHTML = loadingDotsHTML();
-          footer.innerHTML = "";
+          answer.innerHTML = renderSearchStatus(message) + loadingDotsHTML();
+          bindSourceListActions(sources, sourceItems, previousUserPromptFor(message.id));
+          footer.innerHTML = sourceItems.length
+            ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>`
+            : "";
+          footer.querySelector(".source-drawer-btn")?.addEventListener("click", () => openSourcePanel(message));
           return;
         }
         const thinking = renderThinking(message);
         const body = message.content ? renderMarkdown(message.content) : loadingDotsHTML();
-        answer.innerHTML = thinking + body;
+        answer.innerHTML = (message.loading ? renderSearchStatus(message) : "") + thinking + body;
         bindThinking(answer, message);
         highlightCodeBlocks(answer);
         bindCodeCopyButtons(answer);
@@ -4838,8 +5282,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           ${sourceItems.length ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>` : ""}`;
         footer.querySelector(".copy-answer-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
-        footer.querySelector(".source-drawer-btn")?.addEventListener("click", () => openSourcePanel(sourceItems));
+        footer.querySelector(".source-drawer-btn")?.addEventListener("click", () => openSourcePanel(message));
         queueMathTypeset(answer);
+      }
+
+      function renderSearchStatus(message) {
+        const text = String(message.searchStatus || "").trim();
+        return text ? `<div class="search-status">${esc(text)}</div>` : "";
       }
 
       function renderThinking(message) {
@@ -4879,6 +5328,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return `<span class="source-favicon"><img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`;
       }
 
+      function sourceFaviconHTML(source, index = 0) {
+        const url = source.favicon || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domainOf(source.url))}&sz=32`;
+        return `<span class="source-favicon"><img src="${esc(url)}" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`;
+      }
+
       function sourceButtonIcons(sources) {
         return `<span class="source-btn-icons">${sources.slice(0, 3).map((source, index) => `<span class="source-mini-icon"><img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domainOf(source.url))}&sz=32" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`).join("")}</span>`;
       }
@@ -4896,11 +5350,67 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         `;
       }
 
+      function latestSearchMessage() {
+        for (let i = messages.length - 1; i >= 0; i--) {
+          const message = messages[i];
+          if (message?.role === "assistant" && (message.searchContext?.groups?.length || message.search?.groups?.length || extractSources(message).length)) return message;
+        }
+        return null;
+      }
+
+      function renderSearchPage() {
+        if (!els.searchPageContent) return;
+        const message = latestSearchMessage();
+        if (!message) {
+          els.searchPageContent.innerHTML = `<div class="empty-row">还没有搜索结果。</div>`;
+          return;
+        }
+        const search = message.searchContext || message.search || null;
+        const sources = extractSources(message);
+        const title = search?.query || previousUserPromptFor(message.id) || "搜索结果";
+        els.searchPageContent.innerHTML = `
+          <div class="search-page-head">
+            <div>
+              <div class="search-page-kicker">Search</div>
+              <div class="search-page-title">${esc(title)}</div>
+            </div>
+            <div class="search-page-provider">${esc(searchProviderSummary(search) || `${sources.length} sources`)}</div>
+          </div>
+          ${search?.groups?.length ? renderSearchGroups(search, "page") : ""}
+          <div class="search-page-results" id="searchPageResults">
+            ${search?.groups?.length ? renderSearchPageResults(search.groups[0].results || []) : renderSearchPageResults(sources)}
+          </div>`;
+        if (search?.groups?.length) bindSearchGroupCards(els.searchPageContent, search, "page");
+      }
+
+      function renderSearchPageResults(sources) {
+        return (sources || []).length
+          ? sources.map((source, index) => `
+            <a class="search-page-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
+              ${sourceFaviconHTML(source, index)}
+              <span>
+                <span class="search-page-result-url">${esc(domainOf(source.url))}</span>
+                <span class="search-page-result-title">${esc(normalizeSourceTitle(source, index))}</span>
+                ${source.snippet ? `<span class="search-page-result-snippet">${esc(source.snippet)}</span>` : ""}
+              </span>
+            </a>`).join("")
+          : `<div class="empty-row">没有来源</div>`;
+      }
+
+      function searchProviderSummary(search) {
+        const providers = [...new Set((search?.groups || []).map((group) => group.provider).filter(Boolean))];
+        return providers.map(providerLabel).join(" / ");
+      }
+
+      function providerLabel(id) {
+        return SEARCH_PROVIDER_DEFS[id]?.label || id || "Search";
+      }
+
       function sourceResultHTML(source, index = 0, opts = {}) {
         const snippet = source.snippet || source.description || source.text || "";
         return `
           <a class="source-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
-            ${faviconHTML(source.url, index)}
+            ${sourceFaviconHTML(source, index)}
             <span>
               ${opts.compact ? "" : `<span class="source-result-domain">${esc(domainOf(source.url))}</span>`}
               <span class="source-result-title">${esc(normalizeSourceTitle(source, index))}</span>
@@ -4920,9 +5430,51 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function openSourcePanel(sources) {
-        els.sourcePanelBody.innerHTML = sources.length ? sources.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
+        const message = Array.isArray(sources) ? { sources } : sources;
+        const sourceItems = Array.isArray(sources) ? sources : extractSources(message || {});
+        const search = message?.searchContext || message?.search || null;
+        els.sourcePanelTitle.innerHTML = `来源${searchProviderSummary(search) ? `<span class="source-provider-badge">${esc(searchProviderSummary(search))}</span>` : ""}`;
+        els.sourcePanelBody.innerHTML = renderSourcePanelBody(search, sourceItems);
         els.sourcePanel.classList.add("open");
         els.sourcePanel.setAttribute("aria-hidden", "false");
+        if (search?.groups?.length) bindSearchGroupCards(els.sourcePanelBody, search, "panel");
+      }
+
+      function renderSourcePanelBody(search, sources) {
+        if (search?.groups?.length) {
+          return `
+            ${renderSearchGroups(search, "panel")}
+            <div class="source-panel-results" id="sourcePanelResults">${renderGroupResults(search.groups[0])}</div>`;
+        }
+        return sources.length ? sources.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
+      }
+
+      function renderSearchGroups(search, context = "panel") {
+        return `<div class="search-group-list">${(search.groups || []).map((group, index) => `
+          <button class="search-group-card${index === 0 ? " active" : ""}" type="button" data-search-group="${index}" data-context="${esc(context)}">
+            <span class="search-group-icon">⌕</span>
+            <span>
+              <span class="search-group-meta">Searched web · ${esc(providerLabel(group.provider))}</span>
+              <span class="search-group-query">${esc(group.query)}</span>
+            </span>
+            <span class="search-group-count">${group.results?.length || 0}</span>
+          </button>`).join("")}</div>`;
+      }
+
+      function renderGroupResults(group) {
+        const results = group?.results || [];
+        return results.length ? results.map(sourceResultHTML).join("") : `<div class="empty-row">这个搜索词没有返回结果</div>`;
+      }
+
+      function bindSearchGroupCards(root, search, context = "panel") {
+        root.querySelectorAll(`.search-group-card[data-context="${CSS.escape(context)}"]`).forEach((button) => {
+          button.addEventListener("click", () => {
+            const idx = Number(button.dataset.searchGroup || 0);
+            root.querySelectorAll(`.search-group-card[data-context="${CSS.escape(context)}"]`).forEach((item) => item.classList.toggle("active", item === button));
+            const target = context === "page" ? root.querySelector("#searchPageResults") : root.querySelector("#sourcePanelResults");
+            if (target) target.innerHTML = context === "page" ? renderSearchPageResults(search.groups[idx]?.results || []) : renderGroupResults(search.groups[idx]);
+          });
+        });
       }
 
       function closeSourcePanel() {
@@ -5037,6 +5589,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           openSettings();
           throw new Error("请先在设置中添加调用模型。");
         }
+        await prepareSearchForRun(assistantId, modelList[0], signal, run);
         const queue = state.queueFallback === true ? modelList : modelList.slice(0, 1);
         let lastError;
         for (const model of queue) {
@@ -5089,10 +5642,336 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      async function prepareSearchForRun(assistantId, model, signal, run = activeRun) {
+        if (!run || run.searchPrepared) return;
+        run.searchPrepared = true;
+        const mode = normalizeWebSearchMode(state.webSearchMode);
+        if (mode === "off") return;
+        const prompt = latestUserPrompt(run.messages || messages, assistantId);
+        if (!prompt.trim()) return;
+
+        let decision = {
+          shouldSearch: mode === "on",
+          query: prompt,
+          queries: [prompt],
+          intent: inferSearchIntent(prompt),
+          preferredProvider: "",
+        };
+        updateRunMessage(run, assistantId, { searchStatus: mode === "auto" ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
+        if (mode === "auto" || mode === "on") {
+          decision = await decideWebSearch(prompt, model, signal, mode === "on").catch(() => {
+            const intent = inferSearchIntent(prompt);
+            return { shouldSearch: mode === "on" || intent === "fresh", query: prompt, queries: [prompt], intent, preferredProvider: "" };
+          });
+        }
+        if (!decision.shouldSearch) {
+          updateRunMessage(run, assistantId, { searchStatus: "" });
+          return;
+        }
+
+        const queries = normalizeSearchQueries(decision, prompt);
+        if (!queries.length) return;
+        try {
+          updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
+          const search = await runSearchRouter(queries, decision, signal, (status) => updateRunMessage(run, assistantId, { searchStatus: status }));
+          run.searchContext = search;
+          if (search.results.length) {
+            updateRunMessage(run, assistantId, { sources: search.results, searchContext: search, searchStatus: `正在阅读 ${search.results.length} 条网页结果...` });
+          } else if (search.errors.length) {
+            showToast(`搜索失败：${search.errors[0]}`);
+            updateRunMessage(run, assistantId, { searchStatus: "" });
+          }
+        } catch (error) {
+          if (error.name === "AbortError") throw error;
+          showToast(`搜索失败：${error.message || error}`);
+          updateRunMessage(run, assistantId, { searchStatus: "" });
+        }
+      }
+
+      function latestUserPrompt(runMessages, assistantId) {
+        const idx = (runMessages || []).findIndex((message) => message.id === assistantId);
+        for (let i = (idx >= 0 ? idx : runMessages.length) - 1; i >= 0; i--) {
+          if (runMessages[i]?.role === "user") return runMessages[i].content || "";
+        }
+        return "";
+      }
+
+      async function decideWebSearch(prompt, model, signal, forceSearch = false) {
+        const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: [
+              {
+                role: "system",
+                content: `Decide and plan browser-side web search for this user request. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful."}`,
+              },
+              { role: "user", content: prompt },
+            ],
+            temperature: 0,
+            max_tokens: 520,
+            stream: false,
+          }),
+          signal,
+        });
+        if (!response.ok) throw new Error(`Auto search decision HTTP ${response.status}`);
+        const raw = extractContentFromResponse(await response.json());
+        const parsed = parseJsonObject(raw);
+        return {
+          shouldSearch: parsed.shouldSearch === true,
+          query: String(parsed.query || prompt).trim(),
+          queries: Array.isArray(parsed.queries) ? parsed.queries : [],
+          intent: ["fresh", "research", "general"].includes(parsed.intent) ? parsed.intent : inferSearchIntent(prompt),
+          preferredProvider: SEARCH_PROVIDER_IDS.includes(parsed.preferredProvider) ? parsed.preferredProvider : "",
+          complex: parsed.complex === true,
+        };
+      }
+
+      function normalizeSearchQueries(decision, fallback) {
+        const items = [
+          ...(Array.isArray(decision.queries) ? decision.queries : []),
+          decision.query,
+          fallback,
+        ];
+        const seen = new Set();
+        return items
+          .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+          .filter(Boolean)
+          .filter((item) => {
+            const key = item.toLowerCase();
+            if (seen.has(key)) return false;
+            seen.add(key);
+            return true;
+          })
+          .slice(0, decision.complex ? 5 : 3);
+      }
+
+      function parseJsonObject(text) {
+        const raw = String(text || "").trim();
+        try {
+          return JSON.parse(raw);
+        } catch (e) {
+          const match = raw.match(/\{[\s\S]*\}/);
+          if (!match) throw e;
+          return JSON.parse(match[0]);
+        }
+      }
+
+      function inferSearchIntent(prompt) {
+        const text = String(prompt || "").toLowerCase();
+        if (/(latest|today|yesterday|tomorrow|current|recent|news|price|stock|schedule|score|release|version|现在|今天|昨天|明天|最新|新闻|价格|股价|汇率|发布|版本)/i.test(text)) return "fresh";
+        if (/(research|compare|sources|paper|literature|survey|deep|资料|研究|论文|来源|对比|综述|调研)/i.test(text)) return "research";
+        return "general";
+      }
+
+      async function runSearchRouter(queryInput, decision, signal, onStatus = null) {
+        const queries = Array.isArray(queryInput) ? queryInput : [queryInput];
+        const providers = orderedSearchProviders(decision);
+        if (!providers.length) throw new Error("没有启用且已填写 API Key 的搜索 Provider。");
+        const errors = [];
+        const all = [];
+        const groups = [];
+        for (const query of queries) {
+          let matched = false;
+          for (const id of providers) {
+            try {
+              onStatus?.(`正在用 ${providerLabel(id)} 搜索：${query}`);
+              const results = dedupeSources(await SEARCH_ADAPTERS[id].search(query, searchProviderConfig(id).apiKey, signal)).slice(0, 8);
+              groups.push({ query, provider: id, results, errors: [] });
+              all.push(...results);
+              matched = true;
+              break;
+            } catch (error) {
+              if (error.name === "AbortError") throw error;
+              errors.push(`${SEARCH_PROVIDER_DEFS[id].label}: ${error.message || error}`);
+            }
+          }
+          if (!matched) groups.push({ query, provider: "", results: [], errors: errors.slice(-providers.length) });
+        }
+        return {
+          query: queries[0] || "",
+          queries,
+          providerOrder: providers,
+          groups,
+          results: dedupeSources(all).slice(0, 8),
+          errors,
+        };
+      }
+
+      function orderedSearchProviders(decision = {}) {
+        normalizeWebSearchState();
+        const enabled = SEARCH_PROVIDER_IDS
+          .map((id) => ({ id, cfg: searchProviderConfig(id) }))
+          .filter((item) => item.cfg.enabled && item.cfg.apiKey)
+          .sort((a, b) => Number(a.cfg.order || 0) - Number(b.cfg.order || 0))
+          .map((item) => item.id);
+        const intentOrder = decision.intent === "fresh"
+          ? ["serper", "serpapi", "tavily", "exa"]
+          : decision.intent === "research"
+            ? ["exa", "tavily", "serper", "serpapi"]
+            : enabled;
+        const preferred = SEARCH_PROVIDER_IDS.includes(decision.preferredProvider) ? [decision.preferredProvider] : [];
+        return uniqueModels([...preferred, ...intentOrder, ...enabled]).filter((id) => enabled.includes(id));
+      }
+
+      function searchProviderConfig(id) {
+        normalizeWebSearchState();
+        return state.searchProviders[id] || { enabled: false, order: 99, apiKey: "" };
+      }
+
+      function dedupeSources(sources) {
+        const map = new Map();
+        (sources || []).forEach((source) => {
+          const url = normalizeSourceUrl(source.url);
+          if (!url || map.has(url)) return;
+          map.set(url, { ...source, url });
+        });
+        return [...map.values()];
+      }
+
+      function normalizeSourceUrl(url) {
+        try {
+          const parsed = new URL(url);
+          parsed.hash = "";
+          parsed.hostname = parsed.hostname.replace(/^www\./, "");
+          return parsed.toString().replace(/\/$/, "");
+        } catch (e) {
+          return String(url || "").trim();
+        }
+      }
+
+      const SEARCH_ADAPTERS = {
+        tavily: {
+          async search(query, apiKey, signal) {
+            const response = await fetch("https://api.tavily.com/search", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${apiKey}`,
+              },
+              body: JSON.stringify({ query, search_depth: "basic", max_results: 6, include_favicon: true }),
+              signal,
+            });
+            const data = await readSearchJson(response, "Tavily");
+            return (data.results || []).map((item) => normalizeSearchResult(item, {
+              provider: "tavily",
+              title: item.title,
+              url: item.url,
+              snippet: item.content,
+              score: item.score,
+              favicon: item.favicon,
+            }));
+          },
+        },
+        exa: {
+          async search(query, apiKey, signal) {
+            const response = await fetch("https://api.exa.ai/search", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-api-key": apiKey,
+              },
+              body: JSON.stringify({ query, type: "auto", numResults: 6, contents: { highlights: { maxCharacters: 500 } } }),
+              signal,
+            });
+            const data = await readSearchJson(response, "Exa");
+            return (data.results || []).map((item) => normalizeSearchResult(item, {
+              provider: "exa",
+              title: item.title,
+              url: item.url || item.id,
+              snippet: Array.isArray(item.highlights) ? item.highlights.join(" ") : item.summary || item.text,
+              score: Array.isArray(item.highlightScores) ? item.highlightScores[0] : item.score,
+              favicon: item.favicon,
+            }));
+          },
+        },
+        serper: {
+          async search(query, apiKey, signal) {
+            const response = await fetch("https://google.serper.dev/search", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "X-API-KEY": apiKey,
+              },
+              body: JSON.stringify({ q: query, num: 6 }),
+              signal,
+            });
+            const data = await readSearchJson(response, "Serper");
+            return (data.organic || []).map((item) => normalizeSearchResult(item, {
+              provider: "serper",
+              title: item.title,
+              url: item.link,
+              snippet: item.snippet,
+              score: item.position ? 1 / Number(item.position) : undefined,
+            }));
+          },
+        },
+        serpapi: {
+          async search(query, apiKey, signal) {
+            const url = new URL("https://serpapi.com/search.json");
+            url.searchParams.set("engine", "google");
+            url.searchParams.set("q", query);
+            url.searchParams.set("api_key", apiKey);
+            url.searchParams.set("num", "6");
+            let response;
+            try {
+              response = await fetch(url.toString(), { signal });
+            } catch (error) {
+              if (error.name === "TypeError") {
+                throw new Error("浏览器直连被 CORS 拦截；SerpAPI 通常需要后端代理。");
+              }
+              throw error;
+            }
+            const data = await readSearchJson(response, "SerpAPI");
+            return (data.organic_results || []).map((item) => normalizeSearchResult(item, {
+              provider: "serpapi",
+              title: item.title,
+              url: item.link,
+              snippet: item.snippet,
+              score: item.position ? 1 / Number(item.position) : undefined,
+            }));
+          },
+        },
+      };
+
+      async function readSearchJson(response, provider) {
+        if (!response.ok) {
+          let detail = "";
+          try {
+            const data = await response.json();
+            detail = data?.error || data?.message || data?.detail || "";
+          } catch (e) {}
+          throw new Error(`${provider} HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+        }
+        return response.json();
+      }
+
+      function normalizeSearchResult(raw, fields) {
+        return {
+          title: String(fields.title || domainOf(fields.url || "") || "Untitled").trim(),
+          url: String(fields.url || "").trim(),
+          snippet: clipText(fields.snippet, 420),
+          source: fields.provider,
+          score: Number.isFinite(Number(fields.score)) ? Number(fields.score) : undefined,
+          favicon: fields.favicon || "",
+          raw,
+        };
+      }
+
+      function clipText(text, limit = 420) {
+        const clean = String(text || "").replace(/\s+/g, " ").trim();
+        return clean.length > limit ? `${clean.slice(0, limit - 1)}...` : clean;
+      }
+
       async function callChatModel(model, assistantId, signal, run = activeRun) {
         const runMessages = run?.messages || messages;
         const bodyMessages = [
           { role: "system", content: buildSystemPrompt() },
+          ...(run?.searchContext?.results?.length ? [{ role: "system", content: buildSearchContextPrompt(run.searchContext) }] : []),
           ...runMessages
             .filter((m) => !(m.role === "assistant" && m.id === assistantId))
             .map((m) => ({ role: m.role, content: serializeMessageContent(m) })),
@@ -5190,6 +6069,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}`;
       }
 
+      function buildSearchContextPrompt(search) {
+        const lines = (search.groups?.length ? search.groups : [{ query: search.query, provider: "", results: search.results || [] }])
+          .map((group) => {
+            const results = (group.results || []).map((source, index) => {
+              const title = source.title || domainOf(source.url);
+              const snippet = source.snippet ? `\nSnippet: ${source.snippet}` : "";
+              return `[${index + 1}] ${title}\nURL: ${source.url}${snippet}`;
+            }).join("\n\n");
+            return `Search query: ${group.query}\nProvider: ${providerLabel(group.provider)}\nResults:\n${results || "(no results)"}`;
+          })
+          .join("\n\n---\n\n");
+        return `Live web search results for query: ${search.query}
+
+Use these results only when they are relevant. Cite claims with Markdown links to the exact URLs. Do not invent sources and do not mention unavailable providers.
+
+${lines}`;
+      }
+
       function serializeMessageContent(message) {
         const files = message.attachments || [];
         if (!files.length) return message.content;
@@ -5231,6 +6128,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         messages = messages.slice(0, idx);
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
+        renderSearchPage();
         runAssistant();
       }
 
@@ -5258,7 +6156,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.cfgApiKey.value = state.apiKey;
         els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
-        els.cfgWebSearch.checked = state.webSearch !== false;
+        renderWebSearchControls();
         els.cfgRail.checked = state.railEnabled !== false;
         els.cfgQueueFallback.checked = state.queueFallback === true;
         els.cfgRetryOnFailure.checked = state.retryOnFailure !== false;
@@ -5267,6 +6165,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderProviderFields();
         renderThemeMode();
         renderModelList();
+        renderSearchProviderSettings();
         switchTab("general");
         els.settingsOverlay.classList.add("open");
       }
@@ -5282,7 +6181,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {
           return;
         }
-        state.webSearch = els.cfgWebSearch.checked;
+        persistSearchProviderSettings();
         state.railEnabled = els.cfgRail.checked;
         state.queueFallback = els.cfgQueueFallback.checked;
         state.retryOnFailure = els.cfgRetryOnFailure.checked;
@@ -5298,6 +6197,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         applyGeneralSettings();
         await saveState();
         renderModelPickers();
+        renderWebSearchControls();
         closeSettings();
         showToast("设置已保存。");
       }
@@ -5380,7 +6280,77 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
         els.tabGeneral.style.display = id === "general" ? "" : "none";
         els.tabAI.style.display = id === "ai" ? "" : "none";
+        els.tabSearch.style.display = id === "search" ? "" : "none";
         els.tabAppearance.style.display = id === "appearance" ? "" : "none";
+      }
+
+      function renderSearchProviderSettings() {
+        normalizeWebSearchState();
+        const ordered = SEARCH_PROVIDER_IDS
+          .map((id) => ({ id, cfg: state.searchProviders[id] }))
+          .sort((a, b) => Number(a.cfg.order || 0) - Number(b.cfg.order || 0))
+          .map((item) => item.id);
+        els.searchProviderList.innerHTML = ordered
+          .map((id) => {
+            const def = SEARCH_PROVIDER_DEFS[id];
+            const cfg = state.searchProviders[id];
+            return `
+              <section class="search-provider-card" data-search-provider="${esc(id)}" draggable="true">
+                <button class="search-provider-handle" type="button" title="拖拽排序" aria-label="拖拽排序">⠿</button>
+                <div>
+                  <div class="search-provider-head">
+                    <div>
+                      <div class="search-provider-name">${esc(def.label)}</div>
+                      <div class="setting-subtitle"><a href="${esc(def.keyUrl)}" target="_blank" rel="noopener noreferrer">get key</a>${id === "serpapi" ? " · 浏览器直连可能被 CORS 拦截" : ""}</div>
+                    </div>
+                    <label class="switch"><input class="search-provider-enabled" type="checkbox" ${cfg.enabled ? "checked" : ""} /><span></span></label>
+                  </div>
+                  <div class="search-provider-controls">
+                    <input class="input mono search-provider-key" type="password" value="${esc(cfg.apiKey)}" placeholder="${esc(def.label)} API Key" autocomplete="off" spellcheck="false" />
+                  </div>
+                </div>
+              </section>`;
+          })
+          .join("");
+        bindSearchProviderDrag();
+      }
+
+      function persistSearchProviderSettings() {
+        normalizeWebSearchState();
+        els.searchProviderList?.querySelectorAll(".search-provider-card").forEach((card, index) => {
+          const id = card.dataset.searchProvider;
+          if (!state.searchProviders[id]) return;
+          state.searchProviders[id].enabled = !!card.querySelector(".search-provider-enabled")?.checked;
+          state.searchProviders[id].order = index + 1;
+          state.searchProviders[id].apiKey = card.querySelector(".search-provider-key")?.value.trim() || "";
+        });
+      }
+
+      function bindSearchProviderDrag() {
+        let dragging = null;
+        els.searchProviderList.querySelectorAll(".search-provider-card").forEach((card) => {
+          card.addEventListener("dragstart", (event) => {
+            if (!event.target.closest(".search-provider-handle")) {
+              event.preventDefault();
+              return;
+            }
+            dragging = card;
+            card.classList.add("dragging");
+            event.dataTransfer.effectAllowed = "move";
+          });
+          card.addEventListener("dragend", () => {
+            card.classList.remove("dragging");
+            dragging = null;
+            persistSearchProviderSettings();
+          });
+          card.addEventListener("dragover", (event) => {
+            event.preventDefault();
+            if (!dragging || dragging === card) return;
+            const rect = card.getBoundingClientRect();
+            const after = event.clientY > rect.top + rect.height / 2;
+            card.parentNode.insertBefore(dragging, after ? card.nextSibling : card);
+          });
+        });
       }
 
       function renderProviderSelect() {
@@ -5539,10 +6509,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!data) return;
           Object.assign(state, data.state || data);
           state.models = [];
+          normalizeWebSearchState();
           ensureActiveModel();
           await saveState();
           applyTheme();
           applyGeneralSettings();
+          renderWebSearchControls();
           renderModelPickers();
           openSettings();
           showToast("配置已导入。");
@@ -5760,7 +6732,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
         const map = new Map();
         [...fromMetadata, ...links].forEach((source) => {
-          if (source.url && !map.has(source.url)) map.set(source.url, source);
+          const key = normalizeSourceUrl(source.url);
+          if (key && !map.has(key)) map.set(key, { ...source, url: key });
         });
         return [...map.values()].slice(0, 8);
       }
