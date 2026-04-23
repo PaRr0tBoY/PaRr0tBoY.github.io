@@ -436,6 +436,10 @@
         pointer-events: auto;
       }
 
+      .mobile-row-actions {
+        display: none;
+      }
+
       .chat-menu {
         position: fixed;
         z-index: 90;
@@ -2606,6 +2610,8 @@
         display: flex;
         flex-direction: column;
         overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
         padding: 18px 20px 20px;
       }
 
@@ -3030,7 +3036,7 @@
 
       .modal-foot {
         position: sticky;
-        bottom: -20px;
+        bottom: 0;
         z-index: 2;
         display: flex;
         justify-content: flex-end;
@@ -3287,6 +3293,70 @@
             box-shadow var(--speed);
         }
 
+        .chat-row {
+          min-height: 46px;
+          overflow: hidden;
+          touch-action: pan-y;
+          transition:
+            background var(--speed),
+            color var(--speed),
+            padding-right 0.2s ease;
+        }
+
+        .chat-row.mobile-swiped {
+          padding-right: 178px;
+          background: var(--sand);
+        }
+
+        .chat-row .chat-menu-btn {
+          opacity: 1;
+          pointer-events: auto;
+        }
+
+        .chat-row.mobile-swiped .chat-menu-btn {
+          opacity: 0;
+          pointer-events: none;
+        }
+
+        .mobile-row-actions {
+          position: absolute;
+          top: 5px;
+          right: 5px;
+          bottom: 5px;
+          display: inline-flex;
+          align-items: stretch;
+          gap: 4px;
+          opacity: 0;
+          pointer-events: none;
+          transform: translateX(16px);
+          transition:
+            opacity var(--speed),
+            transform var(--speed);
+        }
+
+        .chat-row.mobile-swiped .mobile-row-actions {
+          opacity: 1;
+          pointer-events: auto;
+          transform: translateX(0);
+        }
+
+        .mobile-row-actions button {
+          min-width: 42px;
+          border: none;
+          border-radius: 10px;
+          background: var(--ivory);
+          color: var(--text-strong);
+          box-shadow: var(--shadow-ring);
+          font-size: 12px;
+          font-weight: 650;
+          padding: 0 8px;
+        }
+
+        .mobile-row-actions button.danger {
+          background: var(--danger);
+          color: var(--ivory);
+        }
+
         body.sidebar-collapsed .sidebar {
           top: 0;
           left: 0;
@@ -3507,6 +3577,23 @@
           left: 50%;
           top: 12vh;
           width: min(calc(100vw - 24px), 672px);
+        }
+
+        .overlay {
+          padding: 10px;
+        }
+
+        .modal {
+          width: 100%;
+          height: min(88dvh, 642px);
+          max-height: calc(100dvh - 20px);
+          border-radius: 18px;
+        }
+
+        .modal-body {
+          max-height: none;
+          overflow-y: auto;
+          touch-action: pan-y;
         }
 
         body.sidebar-collapsed .sidebar-label,
@@ -3955,7 +4042,7 @@
                 <button class="outline-btn" id="importConfigBtn">导入配置</button>
                 <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
               </div>
-              <div class="field-hint">导出或导入当前 Linsoo 配置，包括模型、Provider、搜索和界面设置。</div>
+              <div class="field-hint">导出或导入 AI Provider、模型列表、System Prompt 和搜索 Provider；不会覆盖通用与外观设置。</div>
             </div>
             <div class="field">
               <div class="field-label">消息记录</div>
@@ -4066,6 +4153,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       };
       const SEARCH_PROVIDER_IDS = ["tavily", "exa", "serper", "serpapi"];
       const SEARCH_PROVIDER_TIMEOUT_MS = 18000;
+      const MOBILE_ROW_LONG_PRESS_MS = 520;
+      const MOBILE_ROW_SWIPE_PX = 42;
+      const CONFIG_EXPORT_KEYS = [
+        "baseUrl",
+        "apiKey",
+        "activeModel",
+        "modelQueue",
+        "prompt",
+        "provider",
+        "customName",
+        "customProviders",
+        "webSearchMode",
+        "searchProviders",
+      ];
       const HERO_LINES = [
         "Linsoo 这一块",
         "Linsoo, 欸没搜呢",
@@ -4121,6 +4222,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let autoFollow = true;
       let userScrollPauseUntil = 0;
       let mobileComposerExpandedUntil = 0;
+      let mobileComposerRevealClickUntil = 0;
+      let mobileSidebarOpenUntil = 0;
       let toastTimer = null;
       let mobileComposerTimer = null;
       let scrollSettleTimer = null;
@@ -4845,12 +4948,23 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.threadComposer.addEventListener("pointerdown", (event) => {
           if (isMobileViewport() && els.threadComposer.classList.contains("composer-hidden")) {
             event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
             mobileComposerExpandedUntil = Date.now() + MOBILE_COMPOSER_EXPAND_LOCK_MS;
+            mobileComposerRevealClickUntil = Date.now() + 500;
             showThreadComposer();
             els.scrollBtn.classList.remove("visible");
             focusThreadInputSoon();
           }
-        });
+        }, { capture: true });
+        els.threadComposer.addEventListener("click", (event) => {
+          if (isMobileViewport() && Date.now() < mobileComposerRevealClickUntil) {
+            event.preventDefault();
+            event.stopPropagation();
+            event.stopImmediatePropagation();
+            mobileComposerRevealClickUntil = 0;
+          }
+        }, { capture: true });
         els.threadInput.addEventListener("blur", () => {
           mobileComposerExpandedUntil = 0;
           scheduleMobileComposerCollapse();
@@ -4868,6 +4982,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         document.addEventListener("touchmove", (event) => {
           if (!isMobileViewport() || document.body.classList.contains("sidebar-collapsed")) return;
           if (event.target.closest(".sidebar-body")) return;
+          if (event.target.closest(".modal, .search-modal, .delete-dialog, .folder-dialog, .source-panel, .chat-menu")) return;
           event.preventDefault();
         }, { passive: false, capture: true });
 
@@ -4901,6 +5016,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!event.target.closest(".model-picker")) closeComposerModelDropdowns();
           if (!event.target.closest(".provider-select")) closeProviderDropdown();
           if (!event.target.closest(".chat-menu") && !event.target.closest(".chat-menu-btn")) closeChatMenu();
+          if (!event.target.closest(".chat-row")) closeMobileRowActions();
         });
         document.addEventListener("keydown", (event) => {
           if (event.key === "Escape") closeDeleteConfirm();
@@ -5388,10 +5504,17 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function chatRowHTML(chat) {
+        const folderAction = chat.folder ? "remove-folder" : "folder";
+        const folderLabel = chat.folder ? "移出" : "文件夹";
         return `
           <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0" draggable="true">
             <span class="chat-title">${esc(chat.title)}</span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
+            <span class="mobile-row-actions" aria-hidden="true">
+              <button type="button" data-mobile-action="pin">${chat.pinned ? "取消" : "固定"}</button>
+              <button type="button" data-mobile-action="${folderAction}">${folderLabel}</button>
+              <button type="button" class="danger" data-mobile-action="delete">删除</button>
+            </span>
           </div>`;
       }
 
@@ -5439,7 +5562,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function bindChatRows() {
         document.querySelectorAll(".chat-row").forEach((row) => {
           const open = async (event) => {
-            if (event.target.closest(".chat-menu-btn") || event.target.closest(".rename-input")) return;
+            if (event.target.closest(".chat-menu-btn") || event.target.closest(".rename-input") || event.target.closest(".mobile-row-actions")) return;
+            if (Number(row.dataset.mobileSuppressClickUntil || 0) > Date.now()) return;
+            if (row.classList.contains("mobile-swiped")) {
+              closeMobileRowActions();
+              return;
+            }
             const slug = row.dataset.slug;
             location.hash = `chat/${encodeURIComponent(slug)}`;
             await loadChatBySlug(slug);
@@ -5464,11 +5592,83 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             row.classList.remove("dragging");
             clearSidebarDragState();
           });
+          bindMobileChatRow(row);
+          row.querySelectorAll("[data-mobile-action]").forEach((button) => {
+            button.addEventListener("click", (event) => {
+              event.preventDefault();
+              event.stopPropagation();
+              closeMobileRowActions();
+              activeChatMenuSlug = row.dataset.slug;
+              handleChatMenu(button.dataset.mobileAction);
+            });
+          });
         });
         document.querySelectorAll(".chat-row .chat-menu-btn[data-menu]").forEach((btn) => {
           btn.addEventListener("click", (event) => {
             event.stopPropagation();
             openChatMenu(btn.dataset.menu, btn.getBoundingClientRect());
+          });
+        });
+      }
+
+      function closeMobileRowActions(except = null) {
+        document.querySelectorAll(".chat-row.mobile-swiped").forEach((row) => {
+          if (row !== except) row.classList.remove("mobile-swiped");
+        });
+      }
+
+      function bindMobileChatRow(row) {
+        let startX = 0;
+        let startY = 0;
+        let longPressTimer = 0;
+        let didLongPress = false;
+        const clearLongPress = () => {
+          clearTimeout(longPressTimer);
+          longPressTimer = 0;
+        };
+        row.addEventListener("pointerdown", (event) => {
+          if (!isMobileViewport() || event.pointerType === "mouse") return;
+          if (event.target.closest("button, input, textarea, select, .chat-menu-btn, .mobile-row-actions")) return;
+          startX = event.clientX;
+          startY = event.clientY;
+          didLongPress = false;
+          clearLongPress();
+          longPressTimer = setTimeout(() => {
+            didLongPress = true;
+            row.dataset.mobileSuppressClickUntil = String(Date.now() + 450);
+            closeMobileRowActions();
+            openChatMenu(row.dataset.slug, row.getBoundingClientRect());
+            try {
+              navigator.vibrate?.(8);
+            } catch (e) {}
+          }, MOBILE_ROW_LONG_PRESS_MS);
+        });
+        row.addEventListener("pointermove", (event) => {
+          if (!longPressTimer && !startX) return;
+          const dx = event.clientX - startX;
+          const dy = event.clientY - startY;
+          if (Math.abs(dy) > 28) {
+            clearLongPress();
+            return;
+          }
+          if (dx < -MOBILE_ROW_SWIPE_PX && Math.abs(dy) < 24) {
+            clearLongPress();
+            closeMobileRowActions(row);
+            row.classList.add("mobile-swiped");
+            row.dataset.mobileSuppressClickUntil = String(Date.now() + 300);
+          }
+          if (dx > MOBILE_ROW_SWIPE_PX) {
+            clearLongPress();
+            row.classList.remove("mobile-swiped");
+          }
+          if (Math.abs(dx) > 10 || Math.abs(dy) > 10) clearLongPress();
+        });
+        ["pointerup", "pointercancel", "lostpointercapture"].forEach((type) => {
+          row.addEventListener(type, () => {
+            clearLongPress();
+            startX = 0;
+            startY = 0;
+            if (didLongPress) row.dataset.mobileSuppressClickUntil = String(Date.now() + 450);
           });
         });
       }
@@ -7531,8 +7731,11 @@ ${lines}
       }
 
       function toggleSidebar() {
+        const wasComposerHidden = isMobileViewport() && els.threadComposer?.classList.contains("composer-hidden");
         state.sidebarCollapsed = !state.sidebarCollapsed;
+        mobileSidebarOpenUntil = state.sidebarCollapsed ? 0 : Date.now() + 700;
         applySidebarState();
+        if (wasComposerHidden) els.threadComposer?.classList.add("composer-hidden");
         saveState();
       }
 
@@ -7846,20 +8049,57 @@ ${lines}
         return file.text().then((text) => JSON.parse(text));
       }
 
+      function configClone(value) {
+        if (value === undefined) return undefined;
+        return JSON.parse(JSON.stringify(value));
+      }
+
+      function exportedConfigState() {
+        try {
+          if (els.settingsOverlay.classList.contains("open")) {
+            persistProviderDraft({ validate: false });
+            persistSearchProviderSettings();
+            state.webSearchMode = normalizeWebSearchMode(els.webSearchModeGroup.querySelector(".active")?.dataset.webSearchMode || state.webSearchMode);
+          }
+        } catch (e) {}
+        ensureActiveModel();
+        normalizeWebSearchState();
+        return CONFIG_EXPORT_KEYS.reduce((out, key) => {
+          out[key] = configClone(state[key]);
+          return out;
+        }, {});
+      }
+
+      function applyImportedConfigState(config) {
+        const source = config && typeof config === "object" ? config : {};
+        CONFIG_EXPORT_KEYS.forEach((key) => {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            state[key] = configClone(source[key]);
+          }
+        });
+        state.models = [];
+        if (!Array.isArray(state.modelQueue)) state.modelQueue = [];
+        if (!Array.isArray(state.customProviders)) state.customProviders = [];
+        if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
+        normalizeWebSearchState();
+        ensureActiveModel();
+      }
+
       function exportConfig() {
-        downloadJson("linsoo-config.json", { version: 1, state });
+        downloadJson("linsoo-config.json", {
+          version: 2,
+          scope: "ai-search",
+          exportedAt: Date.now(),
+          state: exportedConfigState(),
+        });
       }
 
       async function importConfig() {
         try {
           const data = await readSelectedJson(els.importConfigInput);
           if (!data) return;
-          Object.assign(state, data.state || data);
-          state.models = [];
-          normalizeWebSearchState();
-          ensureActiveModel();
+          applyImportedConfigState(data.state || data);
           await saveState();
-          applyTheme();
           applyGeneralSettings();
           renderWebSearchControls();
           renderModelPickers();
@@ -8510,6 +8750,10 @@ ${lines}
         const shouldShow = chatActive && !autoFollow && enoughDistance && messages.length > 0;
         clearTimeout(scrollSettleTimer);
         if (isMobileViewport()) {
+          if (!document.body.classList.contains("sidebar-collapsed")) {
+            els.scrollBtn.classList.remove("visible");
+            return;
+          }
           const composerHidden = els.threadComposer?.classList.contains("composer-hidden");
           els.scrollBtn.classList.toggle("visible", chatActive && composerHidden && enoughDistance && messages.length > 0);
           return;
@@ -8573,6 +8817,7 @@ ${lines}
           showThreadComposer();
           return;
         }
+        if (!document.body.classList.contains("sidebar-collapsed") || Date.now() < mobileSidebarOpenUntil) return;
         if (running) return;
         if (distance < 80) {
           showThreadComposer();
