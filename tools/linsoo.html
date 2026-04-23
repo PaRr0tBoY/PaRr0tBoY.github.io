@@ -1126,6 +1126,20 @@
         color: var(--muted) !important;
       }
 
+      .web-search-btn.locked {
+        color: var(--faint) !important;
+        opacity: 0.48;
+        cursor: default;
+      }
+
+      .setting-row.disabled {
+        opacity: 0.48;
+      }
+
+      .setting-row.disabled .segmented {
+        pointer-events: none;
+      }
+
       .tool-btn:hover,
       .message-action-btn:hover {
         background: var(--sand-2);
@@ -1426,8 +1440,10 @@
       .thread {
         display: none;
         width: min(100%, 820px);
+        max-width: 100%;
         margin: 0 auto;
         flex: 1;
+        min-width: 0;
         min-height: calc(100vh - 88px);
         flex-direction: column;
       }
@@ -1441,11 +1457,15 @@
         display: flex;
         flex-direction: column;
         gap: 34px;
+        min-width: 0;
+        max-width: 100%;
         padding: 10px 0 168px;
       }
 
       .message {
         display: grid;
+        min-width: 0;
+        max-width: 100%;
         gap: 9px;
         animation: messageIn 0.2s ease both;
       }
@@ -1467,6 +1487,8 @@
 
       .bubble {
         max-width: min(92%, 720px);
+        min-width: 0;
+        overflow-wrap: anywhere;
         border-radius: 16px;
         padding: 13px 15px;
         line-height: 1.6;
@@ -1483,6 +1505,8 @@
 
       .assistant .bubble {
         max-width: 100%;
+        width: 100%;
+        min-width: 0;
         padding: 0 2px;
         border-radius: 0;
         color: var(--ink);
@@ -1655,6 +1679,10 @@
       }
 
       .answer {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: break-word;
         color: var(--text-strong);
         font-size: 16.5px;
         line-height: 1.72;
@@ -1694,6 +1722,7 @@
 
       .code-block {
         position: relative;
+        max-width: 100%;
         margin: 16px 0 20px;
         overflow: visible;
         border: 1px solid color-mix(in srgb, var(--line-strong) 42%, transparent);
@@ -1798,7 +1827,10 @@
       }
 
       .answer table {
+        display: block;
         width: 100%;
+        max-width: 100%;
+        overflow-x: auto;
         border-collapse: collapse;
         margin: 12px 0 16px;
         font-size: 14px;
@@ -1826,6 +1858,7 @@
       }
 
       .math-display {
+        max-width: 100%;
         overflow-x: auto;
         margin: 14px 0 16px;
         padding: 2px 0;
@@ -1872,6 +1905,7 @@
         display: grid;
         grid-template-columns: 22px minmax(0, 1fr);
         gap: 10px;
+        min-width: 0;
         color: var(--muted);
         text-decoration: none;
       }
@@ -2138,6 +2172,31 @@
         animation: spin 0.9s linear infinite;
       }
 
+      .search-status.done::before {
+        border-color: var(--accent);
+        border-top-color: var(--accent);
+        animation: none;
+      }
+
+      .search-query-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin: 9px 0 8px;
+      }
+
+      .search-query-chip {
+        max-width: 100%;
+        overflow: hidden;
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        color: var(--muted);
+        padding: 4px 9px;
+        font-size: 12px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+
       @keyframes spin {
         to { transform: rotate(360deg); }
       }
@@ -2193,10 +2252,23 @@
         color: var(--ivory);
       }
 
+      .view-tab:disabled {
+        color: var(--faint);
+        cursor: default;
+        opacity: 0.55;
+      }
+
+      .top-view-tabs.classic-order #searchViewBtn {
+        order: -1;
+      }
+
       body.search-view .main,
       body.search-view .conversation-rail,
-      body.search-view .thread-composer,
       body.search-view .scroll-btn {
+        display: none !important;
+      }
+
+      body.search-view:not(.classic-mode) .thread-composer {
         display: none !important;
       }
 
@@ -2205,7 +2277,7 @@
         min-height: 100dvh;
         width: calc(100% - 288px);
         margin-left: 288px;
-        padding: 88px clamp(16px, 3vw, 28px) 70px;
+        padding: 88px clamp(16px, 3vw, 28px) 180px;
         transition: margin-left var(--speed);
       }
 
@@ -2265,7 +2337,7 @@
 
       .search-query-head {
         display: flex;
-        align-items: center;
+        align-items: flex-start;
         justify-content: space-between;
         gap: 18px;
         margin-bottom: 24px;
@@ -2276,6 +2348,10 @@
         font-size: 20px;
         font-weight: 750;
         line-height: 1.3;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
 
       .search-query-google {
@@ -2290,6 +2366,7 @@
         display: grid;
         grid-template-columns: 42px minmax(0, 1fr);
         gap: 16px;
+        min-width: 0;
         color: var(--text-strong);
         text-decoration: none;
         margin-bottom: 24px;
@@ -2330,11 +2407,14 @@
       }
 
       .search-page-result-snippet {
-        display: block;
+        display: -webkit-box;
         margin-top: 5px;
         color: var(--text-strong);
         font-size: 14px;
         line-height: 1.45;
+        overflow: hidden;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
       }
 
       .loading-line {
@@ -3198,6 +3278,8 @@
           box-shadow: 0 20px 90px rgba(20, 20, 19, 0.22);
           padding: 15px 12px 14px;
           overflow: hidden;
+          overscroll-behavior: contain;
+          touch-action: pan-y;
           transition:
             max-height var(--speed),
             padding var(--speed),
@@ -3247,13 +3329,32 @@
           max-height: calc(88vh - 62px);
           padding-top: 10px;
           overflow-y: auto;
+          overscroll-behavior: contain;
+          -webkit-overflow-scrolling: touch;
+        }
+
+        body:not(.sidebar-collapsed) {
+          height: 100dvh;
+          overflow: hidden;
         }
 
         .main,
         body.sidebar-collapsed .main {
           margin-left: 0;
           width: 100%;
+          max-width: 100vw;
+          min-width: 0;
           padding: 72px 8px 22px;
+        }
+
+        .thread,
+        .messages,
+        .message,
+        .assistant .bubble,
+        .answer,
+        .sources {
+          max-width: 100%;
+          min-width: 0;
         }
 
         body.chat-active .main,
@@ -3297,7 +3398,7 @@
         body.sidebar-collapsed .search-page {
           width: 100%;
           margin-left: 0;
-          padding: 72px 14px 70px;
+          padding: 72px 14px 210px;
         }
 
         .thread-composer,
@@ -3321,9 +3422,9 @@
         body.sidebar-collapsed .thread-composer.composer-hidden {
           left: 8px;
           bottom: 18px;
-          width: 54px;
-          height: 54px;
-          max-height: 54px;
+          width: 40px;
+          height: 40px;
+          max-height: 40px;
           opacity: 1;
           pointer-events: auto;
           transform: none;
@@ -3342,7 +3443,8 @@
         }
 
         .thread-composer.composer-hidden .composer-shell {
-          height: 54px;
+          min-height: 40px;
+          height: 40px;
           border-radius: 50%;
           padding: 0;
         }
@@ -3361,10 +3463,10 @@
           position: absolute;
           left: 50%;
           top: 50%;
-          width: 24px;
-          height: 18px;
+          width: 20px;
+          height: 15px;
           border: 2px solid var(--accent);
-          border-radius: 8px;
+          border-radius: 7px;
           box-sizing: border-box;
           opacity: 0;
           transform: translate(-50%, -50%);
@@ -3374,15 +3476,15 @@
         .thread-composer .composer-shell:not(.drop-active)::after {
           content: "";
           position: absolute;
-          left: 19px;
-          bottom: 15px;
-          width: 8px;
-          height: 8px;
-          border-left: 2px solid var(--accent);
+          left: 17px;
+          bottom: 10px;
+          width: 7px;
+          height: 7px;
+          border-right: 2px solid var(--accent);
           border-bottom: 2px solid var(--accent);
           background: var(--ivory);
           opacity: 0;
-          transform: rotate(-35deg);
+          transform: rotate(38deg);
           transition: opacity 0.14s ease 0.08s;
         }
 
@@ -3394,7 +3496,7 @@
         .scroll-btn,
         body.sidebar-collapsed .scroll-btn {
           left: 72px;
-          bottom: 25px;
+          bottom: 18px;
           z-index: 17;
           border-radius: 50%;
           transform: none;
@@ -3465,6 +3567,14 @@
 
         .composer-input {
           font-size: 16px;
+        }
+
+        input,
+        textarea,
+        select,
+        .search-head input,
+        .rename-input {
+          font-size: 16px !important;
         }
 
         h1 {
@@ -3724,6 +3834,16 @@
           <div id="tabGeneral">
             <div class="setting-row">
               <div>
+                <div class="setting-title">模式</div>
+                <div class="setting-subtitle">对话模式会搜索后调用 AI 总结；传统模式只展示搜索结果。</div>
+              </div>
+              <div class="segmented web-mode-group" id="interactionModeGroup">
+                <button type="button" data-interaction-mode="chat">对话</button>
+                <button type="button" data-interaction-mode="classic">传统</button>
+              </div>
+            </div>
+            <div class="setting-row" id="webSearchSettingRow">
+              <div>
                 <div class="setting-title">Web Search</div>
                 <div class="setting-subtitle">控制每次对话是否调用浏览器端搜索 Provider。</div>
               </div>
@@ -3866,13 +3986,16 @@
       const MOBILE_COMPOSER_EXPAND_LOCK_MS = 1400;
       const OPFS_SETTINGS_FILE = "linsoo-settings.json";
       const OPFS_CHAT_DIR = "linsoo-chats";
+      const DEFAULT_PAGE_TITLE = "Linsoo — AI 搜索对话";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
 Your job:
 - Answer the user's search question directly, then help them continue the investigation.
 - Prefer current, source-grounded answers when the selected model has web/search access.
 - If you do not have live web access, say that clearly and answer from available knowledge without pretending you browsed.
-- When sources are available in the model output or tool results, cite them with Markdown links near the claims.
+- When sources are available in tool results, cite claims with normal clickable Markdown links near the claims.
+- Citation format must be a Markdown link using the source title, for example [Source title](https://example.com/page). Do not use bare citation markers such as 【1】, [1], [5], [^6], footnotes, or bracket-only references without URLs.
+- If citing several sources for one sentence, use multiple Markdown links separated by spaces.
 - Keep the answer structured, concrete, and concise.
 - For Chinese questions, answer in Chinese unless the user asks otherwise.
 
@@ -3942,6 +4065,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         serpapi: { label: "SerpAPI", keyUrl: "https://serpapi.com/manage-api-key" },
       };
       const SEARCH_PROVIDER_IDS = ["tavily", "exa", "serper", "serpapi"];
+      const SEARCH_PROVIDER_TIMEOUT_MS = 18000;
       const HERO_LINES = [
         "Linsoo 这一块",
         "Linsoo, 欸没搜呢",
@@ -3959,6 +4083,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         modelQueue: [],
         prompt: DEFAULT_PROMPT,
         mode: "search",
+        interactionMode: "chat",
         theme: "light",
         themeMode: "light",
         webSearchMode: "auto",
@@ -4031,6 +4156,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderSidebar();
         renderModelList();
         renderWebSearchControls();
+        renderInteractionModeControls();
         renderSearchPage();
         bindEvents();
         updateSendState();
@@ -4084,6 +4210,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "threadModelLabel",
           "heroModelDropdown",
           "threadModelDropdown",
+          "interactionModeGroup",
           "homeBtn",
           "sidebarToggle",
           "searchHistoryBtn",
@@ -4142,6 +4269,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "toggleKeyBtn",
           "testApiKeyBtn",
           "webSearchModeGroup",
+          "webSearchSettingRow",
           "searchProviderList",
           "cfgRail",
           "cfgQueueFallback",
@@ -4293,6 +4421,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (currentChat?.slug === slug) {
             currentChat.title = next;
             currentChat.titlePending = false;
+            updatePageTitle();
           }
           const idx = chatIndex.findIndex((item) => item.slug === slug);
           if (idx >= 0) chatIndex[idx] = chatSummary(target);
@@ -4533,6 +4662,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           slug: chat.slug,
           title: chat.title || chat.slug,
           pinned: !!chat.pinned,
+          interactionMode: normalizeInteractionMode(chat.interactionMode),
+          activeView: normalizeActiveView(chat.activeView, normalizeInteractionMode(chat.interactionMode) === "classic" ? "search" : "chat"),
           folder: chat.folder || "",
           createdAt: chat.createdAt || 0,
           updatedAt: chat.updatedAt || 0,
@@ -4571,6 +4702,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
         if (!state.provider) state.provider = state.baseUrl ? inferProviderFromBaseUrl(state.baseUrl) || "glm" : "custom-default";
         if (!state.modelCache || !Array.isArray(state.modelCache.models)) state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
+        state.interactionMode = normalizeInteractionMode(state.interactionMode);
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
         hydrateModelsFromCache();
       }
@@ -4694,6 +4826,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.webSearchModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setWebSearchMode(button.dataset.webSearchMode, { toast: false }));
         });
+        els.interactionModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setInteractionMode(button.dataset.interactionMode, { toast: false }));
+        });
         els.themeModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => {
             state.themeMode = button.dataset.themeMode;
@@ -4707,13 +4842,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           autoFollow = true;
           scrollToBottom();
         });
-        els.threadComposer.addEventListener("click", () => {
+        els.threadComposer.addEventListener("pointerdown", (event) => {
           if (isMobileViewport() && els.threadComposer.classList.contains("composer-hidden")) {
+            event.preventDefault();
             mobileComposerExpandedUntil = Date.now() + MOBILE_COMPOSER_EXPAND_LOCK_MS;
             showThreadComposer();
             els.scrollBtn.classList.remove("visible");
-            requestAnimationFrame(() => els.threadInput.focus());
+            focusThreadInputSoon();
           }
+        });
+        els.threadInput.addEventListener("blur", () => {
+          mobileComposerExpandedUntil = 0;
+          scheduleMobileComposerCollapse();
         });
         els.railPrev.addEventListener("click", () => jumpUserPrompt(-1));
         els.railNext.addEventListener("click", () => jumpUserPrompt(1));
@@ -4725,6 +4865,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!isMobileViewport()) return;
           event.preventDefault();
         }, { passive: false });
+        document.addEventListener("touchmove", (event) => {
+          if (!isMobileViewport() || document.body.classList.contains("sidebar-collapsed")) return;
+          if (event.target.closest(".sidebar-body")) return;
+          event.preventDefault();
+        }, { passive: false, capture: true });
 
         document.querySelectorAll(".tab").forEach((tab) => {
           tab.addEventListener("click", () => switchTab(tab.dataset.tab));
@@ -4990,18 +5135,25 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
-      function setActiveView(view) {
-        const search = view === "search";
+      function setActiveView(view, opts = {}) {
+        const activeView = normalizeActiveView(view);
+        if (activeView === "chat" && isClassicSearchInProgress()) return;
+        const search = activeView === "search";
         document.body.classList.toggle("search-view", search);
         els.chatViewBtn.classList.toggle("active", !search);
         els.searchViewBtn.classList.toggle("active", search);
         els.chatViewBtn.setAttribute("aria-pressed", String(!search));
         els.searchViewBtn.setAttribute("aria-pressed", String(search));
+        if (currentChat && opts.persist !== false && currentChat.activeView !== activeView) {
+          currentChat.activeView = activeView;
+          persistCurrentChatView();
+        }
         if (search) {
           renderSearchPage();
           window.scrollTo({ top: 0, behavior: "smooth" });
-        } else if (autoFollow) {
-          scrollToBottom();
+        } else {
+          if (opts.allowClassicAnswer !== false) maybeAnswerClassicSearch();
+          if (autoFollow) scrollToBottom();
         }
       }
 
@@ -5013,7 +5165,31 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.searchViewBtn?.setAttribute("aria-pressed", "false");
       }
 
+      function isClassicSearchInProgress() {
+        return activeInteractionMode() === "classic" && running && activeRun?.searchOnly === true;
+      }
+
+      function normalizeActiveView(view, fallback = "chat") {
+        if (view === "search" || view === "chat") return view;
+        return fallback === "search" ? "search" : "chat";
+      }
+
+      async function persistCurrentChatView() {
+        if (!currentChat?.slug) return;
+        try {
+          await writeJsonFile(`${OPFS_CHAT_DIR}/${currentChat.slug}.json`, {
+            ...currentChat,
+            interactionMode: activeInteractionMode(),
+            activeView: normalizeActiveView(currentChat.activeView),
+            messages,
+          });
+          const idx = chatIndex.findIndex((chat) => chat.slug === currentChat.slug);
+          if (idx >= 0) chatIndex[idx] = chatSummary({ ...currentChat, messages });
+        } catch (e) {}
+      }
+
       function renderWebSearchControls() {
+        const locked = false;
         const mode = normalizeWebSearchMode(state.webSearchMode);
         const label = `Web Search: ${modeLabel(mode)}`;
         ["hero", "thread"].forEach((scope) => {
@@ -5021,13 +5197,42 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!button) return;
           button.innerHTML = ICON_WEB_SEARCH;
           button.dataset.mode = mode;
+          button.classList.toggle("locked", locked);
+          button.disabled = locked;
           button.style.color = mode === "auto" ? "var(--accent)" : "var(--muted)";
           button.title = label;
           button.setAttribute("aria-label", label);
         });
         els.webSearchModeGroup?.querySelectorAll("button").forEach((button) => {
           button.classList.toggle("active", button.dataset.webSearchMode === mode);
+          button.disabled = locked;
         });
+        els.webSearchSettingRow?.classList.toggle("disabled", locked);
+      }
+
+      function normalizeInteractionMode(mode) {
+        return mode === "classic" ? "classic" : "chat";
+      }
+
+      function activeInteractionMode() {
+        return normalizeInteractionMode(currentChat?.interactionMode || state.interactionMode);
+      }
+
+      function renderInteractionModeControls() {
+        const mode = activeInteractionMode();
+        els.interactionModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.interactionMode === normalizeInteractionMode(state.interactionMode));
+        });
+        els.topViewTabs?.classList.toggle("classic-order", mode === "classic");
+      }
+
+      async function setInteractionMode(mode, opts = {}) {
+        state.interactionMode = normalizeInteractionMode(mode);
+        document.body.classList.toggle("classic-mode", activeInteractionMode() === "classic");
+        renderInteractionModeControls();
+        renderWebSearchControls();
+        await saveState();
+        if (opts.toast) showToast(state.interactionMode === "classic" ? "模式：传统" : "模式：对话");
       }
 
       function normalizeWebSearchMode(mode) {
@@ -5260,7 +5465,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             clearSidebarDragState();
           });
         });
-        document.querySelectorAll(".chat-menu-btn").forEach((btn) => {
+        document.querySelectorAll(".chat-row .chat-menu-btn[data-menu]").forEach((btn) => {
           btn.addEventListener("click", (event) => {
             event.stopPropagation();
             openChatMenu(btn.dataset.menu, btn.getBoundingClientRect());
@@ -5314,6 +5519,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function openChatMenu(slug, rect) {
         activeFolderMenuName = "";
         activeChatMenuSlug = slug;
+        els.chatMenu.dataset.menuType = "chat";
+        els.chatMenu.dataset.chatSlug = slug;
+        delete els.chatMenu.dataset.folderName;
         const chat = chatIndex.find((item) => item.slug === slug);
         if (!chat) return;
         els.chatMenu.innerHTML = `
@@ -5334,6 +5542,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function openFolderMenu(folder, rect) {
         activeChatMenuSlug = "";
         activeFolderMenuName = folder;
+        els.chatMenu.dataset.menuType = "folder";
+        els.chatMenu.dataset.folderName = folder;
+        delete els.chatMenu.dataset.chatSlug;
         els.chatMenu.innerHTML = `
           <button data-action="rename"><span class="menu-icon">${ICON_EDIT}</span><span>重命名</span></button>
           <hr>
@@ -5353,10 +5564,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         document.querySelectorAll(".chat-menu-btn.open").forEach((btn) => btn.classList.remove("open"));
         activeChatMenuSlug = "";
         activeFolderMenuName = "";
+        delete els.chatMenu.dataset.menuType;
+        delete els.chatMenu.dataset.chatSlug;
+        delete els.chatMenu.dataset.folderName;
       }
 
       function handleFolderMenu(action) {
-        const folder = activeFolderMenuName;
+        const folder = els.chatMenu.dataset.folderName || activeFolderMenuName;
         if (!folder) return;
         closeChatMenu();
         if (action === "rename") {
@@ -5425,7 +5639,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           return;
         }
         if (!text && !attachments[scope].length) return;
-        if (!state.apiKey) {
+        const fallbackView = normalizeInteractionMode(currentChat?.interactionMode || state.interactionMode) === "classic" ? "search" : "chat";
+        const submitView = currentChat ? normalizeActiveView(currentChat.activeView, fallbackView) : fallbackView;
+        if (submitView === "chat" && !state.apiKey) {
           openSettings();
           showToast("先填 API Key，然后就能直接进入 AI 搜索对话。");
           return;
@@ -5438,8 +5654,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderAttachments(scope);
         startThread();
         ensureCurrentChat(text, activeAttachments);
-        pushMessage({ role: "user", content: text || "请阅读附件。", attachments: activeAttachments });
-        runAssistant();
+        const userMessage = pushMessage({ role: "user", content: text || "请阅读附件。", attachments: activeAttachments });
+        currentChat.activeView = submitView;
+        if (submitView === "search") {
+          setActiveView("search", { allowClassicAnswer: false });
+          runSearchOnly(userMessage.id);
+        } else {
+          setActiveView("chat", { allowClassicAnswer: false });
+          runAssistant();
+        }
       }
 
       function startThread() {
@@ -5487,6 +5710,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!opts.preserveHash) history.pushState(null, "", location.pathname);
         collapseMobileSidebar();
         renderSidebar();
+        applyGeneralSettings();
+        updatePageTitle();
         updateSendState();
         setTimeout(() => els.heroInput.focus(), 60);
       }
@@ -5513,6 +5738,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           slug,
           title: seed.slice(0, 64),
           titlePending: true,
+          interactionMode: normalizeInteractionMode(state.interactionMode),
+          activeView: "chat",
           pinned: false,
           folder: "",
           createdAt: Date.now(),
@@ -5521,6 +5748,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         history.replaceState(null, "", `${location.pathname}#chat/${encodeURIComponent(slug)}`);
         chatIndex.unshift(chatSummary({ ...currentChat, messages: [] }));
         renderSidebar();
+        applyGeneralSettings();
+        updatePageTitle();
         return currentChat;
       }
 
@@ -5550,6 +5779,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           slug: chat.slug,
           title: chat.title || chat.slug,
           titlePending: !!chat.titlePending,
+          interactionMode: normalizeInteractionMode(chat.interactionMode),
+          activeView: normalizeActiveView(chat.activeView, normalizeInteractionMode(chat.interactionMode) === "classic" ? "search" : "chat"),
           pinned: !!chat.pinned,
           folder: chat.folder || "",
           createdAt: chat.createdAt || Date.now(),
@@ -5562,14 +5793,34 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         startThread();
         updateSendState();
         renderSidebar();
-        scrollToBottom();
+        applyGeneralSettings();
+        updatePageTitle();
+        restoreLoadedChatView();
+      }
+
+      function updatePageTitle() {
+        const title = currentChat?.title?.trim();
+        document.title = title ? `${title} — Linsoo` : DEFAULT_PAGE_TITLE;
+      }
+
+      function restoreLoadedChatView() {
+        const fallback = activeInteractionMode() === "classic" ? "search" : "chat";
+        const view = normalizeActiveView(currentChat?.activeView, fallback);
+        if (view === "search") {
+          setActiveView("search", { allowClassicAnswer: false, persist: false });
+        } else {
+          setActiveView("chat", { allowClassicAnswer: false, persist: false });
+          scrollToBottom();
+        }
       }
 
       function normalizeLoadedMessages(items) {
         return items.map((message) => {
-          if (!message?.loading) return message;
-          const next = { ...message, loading: false };
-          if (!next.content) next.content = "生成已中断。";
+          const next = { ...message };
+          if (next.searchStatus && !/^已找到/.test(String(next.searchStatus))) next.searchStatus = "";
+          if (!next?.loading) return next;
+          next.loading = false;
+          if (!next.content && next.role === "assistant") next.content = "生成已中断。";
           return next;
         });
       }
@@ -5584,6 +5835,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         currentChat.updatedAt = Date.now();
         await writeJsonFile(`${OPFS_CHAT_DIR}/${currentChat.slug}.json`, {
           ...currentChat,
+          interactionMode: activeInteractionMode(),
+          activeView: normalizeActiveView(currentChat.activeView),
           messages,
         });
         const idx = chatIndex.findIndex((chat) => chat.slug === currentChat.slug);
@@ -5699,6 +5952,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             </div>`;
           node.querySelector(".copy-user-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
           node.querySelector(".edit-user-btn").addEventListener("click", () => editUserMessage(message.id));
+          if (message.searchStatus || message.searchContext || message.search) renderSearchPage();
         } else {
           node.innerHTML = `
             <div class="assistant-head">
@@ -5751,6 +6005,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!run?.chat?.slug) return;
         const chat = {
           ...run.chat,
+          activeView: currentChat?.slug === run.chat.slug ? normalizeActiveView(currentChat.activeView) : normalizeActiveView(run.chat.activeView),
           updatedAt: Date.now(),
           messages: run.messages,
         };
@@ -5761,11 +6016,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             slug: chat.slug,
             title: chat.title || chat.slug,
             titlePending: !!chat.titlePending,
+            interactionMode: normalizeInteractionMode(chat.interactionMode),
+            activeView: normalizeActiveView(chat.activeView),
             pinned: !!chat.pinned,
             folder: chat.folder || "",
             createdAt: chat.createdAt || Date.now(),
             updatedAt: chat.updatedAt || Date.now(),
           };
+          updatePageTitle();
         }
         const idx = chatIndex.findIndex((item) => item.slug === chat.slug);
         const summary = chatSummary(chat);
@@ -5773,6 +6031,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         else chatIndex.unshift(summary);
         chatIndex.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
         renderSidebar();
+        applyGeneralSettings();
       }
 
       function editUserMessage(id) {
@@ -5828,7 +6087,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function renderSearchStatus(message) {
         const text = String(message.searchStatus || (message.loading ? "正在生成回答..." : "")).trim();
-        return text ? `<div class="search-status" aria-live="polite">${esc(text)}</div>` : "";
+        const done = /^已找到/.test(text);
+        return text ? `<div class="search-status${done ? " done" : ""}" aria-live="polite">${esc(text)}</div>` : "";
       }
 
       function renderThinking(message) {
@@ -5890,56 +6150,107 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         `;
       }
 
-      function latestSearchMessage() {
-        for (let i = messages.length - 1; i >= 0; i--) {
-          const message = messages[i];
-          if (message?.role === "assistant" && (message.searchContext?.groups?.length || message.search?.groups?.length || extractSources(message).length)) return message;
-        }
-        return null;
-      }
-
       function renderSearchPage() {
         if (!els.searchPageContent) return;
-        const message = latestSearchMessage();
-        if (!message) {
+        const records = searchPageRecords();
+        if (!records.length) {
           els.searchPageContent.innerHTML = `<div class="empty-row">还没有搜索结果。</div>`;
           return;
         }
-        const search = message.searchContext || message.search || null;
-        const sources = extractSources(message);
-        const title = search?.query || previousUserPromptFor(message.id) || "搜索结果";
-        const groups = search?.groups?.length ? search.groups : [{ query: title, provider: search?.provider || "", results: sources }];
         els.searchPageContent.innerHTML = `
           <div class="search-page-head">
             <div>
               <div class="search-page-kicker">Search</div>
-              <div class="search-page-title">${esc(title)}</div>
+              <div class="search-page-title">搜索结果</div>
             </div>
-            <div class="search-page-provider">${esc(searchProviderSummary(search) || `${sources.length} sources`)}</div>
+            <div class="search-page-provider">${records.length} prompts</div>
           </div>
           <div class="search-page-results">
-            ${groups.map((group, index) => renderSearchQuerySection(group, index)).join("")}
+            ${records.map(renderSearchPromptSection).join("")}
           </div>`;
       }
 
-      function renderSearchQuerySection(group, index = 0) {
-        const query = group?.query || `搜索 ${index + 1}`;
+      function searchPageRecords() {
+        return messages
+          .map((message, index) => ({ message, index }))
+          .filter(({ message, index }) => !isReusedSearchRecord(message, index) && (message?.searchStatus || message?.searchContext || message?.search))
+          .map(({ message, index }) => {
+            const search = message.searchContext || message.search || null;
+            const sources = search?.results?.length
+              ? search.results
+              : dedupeSources((search?.groups || []).flatMap((group) => group.results || []));
+            return {
+              id: message.id,
+              index,
+              prompt: message.role === "user" ? message.content || "搜索" : previousUserPromptFor(message.id) || "搜索",
+              status: message.searchStatus || "",
+              search,
+              sources,
+            };
+          })
+          .filter((record) => record.status || record.sources.length)
+          .sort((a, b) => b.index - a.index);
+      }
+
+      function isReusedSearchRecord(message, index) {
+        if (!message || message.role !== "assistant") return false;
+        if (message.searchContextReused) return true;
+        const search = message.searchContext || message.search || null;
+        if (!search) return false;
+        for (let i = index - 1; i >= 0; i--) {
+          const previous = messages[i];
+          if (!previous) continue;
+          if (previous.role === "assistant") return false;
+          if (previous.role !== "user") continue;
+          return sameSearchContext(search, previous.searchContext || previous.search || null);
+        }
+        return false;
+      }
+
+      function sameSearchContext(a, b) {
+        if (!a || !b) return false;
+        const aUrls = searchContextUrls(a);
+        const bUrls = searchContextUrls(b);
+        if (!aUrls.length || !bUrls.length || aUrls.length !== bUrls.length) return false;
+        return aUrls.every((url, index) => url === bUrls[index]);
+      }
+
+      function searchContextUrls(search) {
+        return dedupeSources(
+          search?.results?.length ? search.results : (search?.groups || []).flatMap((group) => group.results || [])
+        ).map((source) => normalizeSourceUrl(source.url)).filter(Boolean).sort();
+      }
+
+      function renderSearchPromptSection(record) {
         return `
           <section class="search-query-section">
             <div class="search-query-head">
               <div>
-                <div class="search-query-title">“${esc(query)}”的搜索结果</div>
-                ${group?.provider ? `<div class="search-page-provider">${esc(providerLabel(group.provider))} · ${(group.results || []).length} 条结果</div>` : ""}
+                <div class="search-query-title">${esc(record.prompt)}</div>
+                ${renderSearchQueryList(record.search)}
+                <div class="search-page-provider">${esc(searchProviderSummary(record.search) || `${record.sources.length} 条结果`)}</div>
               </div>
-              <a class="search-query-google" href="${esc(googleSearchUrl(query))}" target="_blank" rel="noopener noreferrer">Google ↗</a>
+              <a class="search-query-google" href="${esc(googleSearchUrl(record.prompt))}" target="_blank" rel="noopener noreferrer">Google ↗</a>
             </div>
-            ${renderSearchPageResults(group?.results || [])}
+            ${record.status ? `<div class="search-status${/^已找到/.test(record.status) ? " done" : ""}">${esc(record.status)}</div>` : ""}
+            ${renderSearchPageResults(record.sources)}
           </section>`;
       }
 
+      function renderSearchQueryList(search) {
+        const queries = search?.queries?.length
+          ? search.queries
+          : (search?.groups || []).map((group) => group.query).filter(Boolean);
+        const unique = [...new Set(queries.map((query) => String(query || "").trim()).filter(Boolean))];
+        return unique.length
+          ? `<div class="search-query-list">${unique.map((query) => `<span class="search-query-chip">${esc(query)}</span>`).join("")}</div>`
+          : "";
+      }
+
       function renderSearchPageResults(sources) {
-        return (sources || []).length
-          ? sources.map((source, index) => `
+        const unique = dedupeSources(sources || []);
+        return unique.length
+          ? unique.map((source, index) => `
             <a class="search-page-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
               ${sourceFaviconHTML(source, index)}
               <span>
@@ -6010,11 +6321,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (search?.groups?.length) {
           return renderSearchPanelGroups(search);
         }
-        return sources.length ? sources.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
+        const unique = dedupeSources(sources || []);
+        return unique.length ? unique.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
       }
 
       function renderSearchPanelGroups(search) {
-        return `<div class="search-group-list">${(search.groups || []).map((group, index) => `
+        return `<div class="search-group-list">${dedupeSearchGroups(search.groups || []).map((group, index) => `
           <section class="source-panel-group${index === 0 ? " open" : ""}" data-search-group="${index}">
             <button class="search-group-card${index === 0 ? " active" : ""}" type="button">
               <span class="search-group-icon">⌕</span>
@@ -6029,8 +6341,22 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderGroupResults(group) {
-        const results = group?.results || [];
+        const results = dedupeSources(group?.results || []);
         return results.length ? results.map(sourceResultHTML).join("") : `<div class="empty-row">这个搜索词没有返回结果</div>`;
+      }
+
+      function dedupeSearchGroups(groups) {
+        const seen = new Set();
+        return (groups || []).map((group) => {
+          const results = [];
+          for (const source of group.results || []) {
+            const key = normalizeSourceUrl(source.url);
+            if (!key || seen.has(key)) continue;
+            seen.add(key);
+            results.push(source);
+          }
+          return { ...group, results };
+        }).filter((group) => group.results.length || group.errors?.length);
       }
 
       function bindSearchGroupCards(root) {
@@ -6054,8 +6380,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           root.innerHTML = `
             ${sources.map((source, index) => sourceResultHTML(source, index, { compact: true })).join("")}
             <div class="source-actions">
+              <button class="source-action-btn collapse-sources" type="button">收起链接</button>
               <a class="source-action-btn" href="${esc(googleSearchUrl(prompt))}" target="_blank" rel="noopener noreferrer">搜索 Google</a>
             </div>`;
+          bindSourceListActions(root, sources, prompt);
+        });
+        root.querySelector(".collapse-sources")?.addEventListener("click", () => {
+          root.innerHTML = renderSourceResults(sources, { limit: 3, prompt });
+          bindSourceListActions(root, sources, prompt);
         });
       }
 
@@ -6088,7 +6420,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           maybeGenerateTitle(run);
         } catch (error) {
           if (error.name === "AbortError") {
-            updateRunMessage(run, assistant.id, { content: "已停止生成。", loading: false });
+            updateRunMessage(run, assistant.id, { content: "已停止生成。", loading: false, searchStatus: "" });
           } else {
             updateRunMessage(run, assistant.id, {
               content: `请求失败：${error.message || error}\n\n请检查 Base URL、API Key、模型名，或换一个支持搜索/联网的模型。`,
@@ -6102,6 +6434,89 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           updateSendState();
           await saveRunChat(run);
       }
+      }
+
+      function latestClassicSearchForAnswer() {
+        if (activeInteractionMode() !== "classic") return null;
+        for (let i = messages.length - 1; i >= 0; i--) {
+          const message = messages[i];
+          if (message.role === "assistant") return null;
+          if (message.role === "user" && message.searchContext?.results?.length) return message;
+        }
+        return null;
+      }
+
+      function maybeAnswerClassicSearch() {
+        if (running) return;
+        const userMessage = latestClassicSearchForAnswer();
+        if (!userMessage) return;
+        const assistant = pushMessage({
+          role: "assistant",
+          content: "",
+          loading: true,
+          sources: userMessage.searchContext.results || [],
+          searchContext: userMessage.searchContext,
+          searchContextReused: true,
+        });
+        const run = {
+          chat: currentChat ? { ...currentChat } : null,
+          messages,
+          assistantId: assistant.id,
+          searchContext: userMessage.searchContext,
+          searchPrepared: true,
+          skipSearch: true,
+        };
+        activeRun = run;
+        running = true;
+        aborter = new AbortController();
+        updateSendState();
+        callChat(assistant.id, aborter.signal, run)
+          .then((content) => {
+            updateRunMessage(run, assistant.id, { content, loading: false });
+            maybeGenerateTitle(run);
+          })
+          .catch((error) => {
+            updateRunMessage(run, assistant.id, { content: error.name === "AbortError" ? "已停止生成。" : `请求失败：${error.message || error}`, loading: false, searchStatus: "" });
+          })
+          .finally(async () => {
+            if (activeRun === run) activeRun = null;
+            running = false;
+            aborter = null;
+            updateSendState();
+            await saveRunChat(run);
+          });
+      }
+
+      async function runSearchOnly(userMessageId) {
+        const run = {
+          chat: currentChat ? { ...currentChat } : null,
+          messages,
+          userMessageId,
+          searchOnly: true,
+        };
+        activeRun = run;
+        running = true;
+        aborter = new AbortController();
+        updateSendState();
+        try {
+          await prepareSearchForRun(userMessageId, requestModelQueue()[0] || "", aborter.signal, run, { forceSearch: true, skipPlanner: true });
+          const userMessage = run.messages.find((message) => message.id === userMessageId);
+          if (!userMessage?.searchContext?.results?.length && userMessage?.searchContext?.errors?.length) {
+            showToast(`搜索失败：${userMessage.searchContext.errors[0]}`);
+          }
+        } catch (error) {
+          if (error.name === "AbortError") {
+            updateRunMessage(run, userMessageId, { searchStatus: "" });
+          } else {
+            showToast(`搜索失败：${error.message || error}`);
+          }
+        } finally {
+          if (activeRun === run) activeRun = null;
+          running = false;
+          aborter = null;
+          updateSendState();
+          await saveRunChat(run);
+        }
       }
 
       async function maybeGenerateTitle(run = activeRun) {
@@ -6140,6 +6555,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             if (currentChat?.slug === chat.slug) {
               currentChat.title = chat.title;
               currentChat.titlePending = false;
+              updatePageTitle();
               scheduleSaveChat();
             } else {
               await saveRunChat(run);
@@ -6155,7 +6571,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           openSettings();
           throw new Error("请先在设置中添加调用模型。");
         }
-        await prepareSearchForRun(assistantId, modelList[0], signal, run);
+        if (!run?.skipSearch) await prepareSearchForRun(assistantId, modelList[0], signal, run);
         const queue = state.queueFallback === true ? modelList : modelList.slice(0, 1);
         let lastError;
         for (const model of queue) {
@@ -6208,67 +6624,81 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
-      async function prepareSearchForRun(assistantId, model, signal, run = activeRun) {
+      async function prepareSearchForRun(targetMessageId, model, signal, run = activeRun, opts = {}) {
         if (!run || run.searchPrepared) return;
         run.searchPrepared = true;
         const mode = normalizeWebSearchMode(state.webSearchMode);
-        if (mode === "off") return;
-        const prompt = latestUserPrompt(run.messages || messages, assistantId);
+        const forceSearch = opts.forceSearch === true;
+        if (mode === "off" && !forceSearch) return;
+        const prompt = latestUserPrompt(run.messages || messages, targetMessageId);
         if (!prompt.trim()) return;
-        const planningContext = buildSearchPlanningContext(run.messages || messages, assistantId);
-        const fallbackQuery = contextualSearchFallbackQuery(prompt, run.messages || messages, assistantId);
+        if (mode === "auto" && !forceSearch && !shouldConsiderAutoSearch(prompt)) {
+          updateRunMessage(run, targetMessageId, { searchStatus: "" });
+          return;
+        }
+        const planningContext = buildSearchPlanningContext(run.messages || messages, targetMessageId);
+        const fallbackQuery = contextualSearchFallbackQuery(prompt, run.messages || messages, targetMessageId);
 
         let decision = {
-          shouldSearch: mode === "on",
-          query: fallbackQuery,
-          queries: [fallbackQuery],
+          shouldSearch: forceSearch || mode === "on",
+          query: searchFallbackQuery(prompt, fallbackQuery),
+          queries: [searchFallbackQuery(prompt, fallbackQuery)],
           intent: inferSearchIntent(prompt),
           preferredProvider: "",
         };
-        updateRunMessage(run, assistantId, { searchStatus: mode === "auto" ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
-        if (mode === "auto" || mode === "on") {
-          decision = await decideWebSearch(prompt, planningContext, model, signal, mode === "on").catch(() => {
+        if (opts.skipPlanner) {
+          decision = buildTraditionalSearchDecision(prompt, fallbackQuery);
+        }
+        updateRunMessage(run, targetMessageId, { searchStatus: mode === "auto" && !forceSearch ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
+        if (!opts.skipPlanner && (mode === "auto" || mode === "on" || forceSearch)) {
+          decision = await decideWebSearch(prompt, planningContext, model, signal, forceSearch || mode === "on").catch(() => {
             const intent = inferSearchIntent(prompt);
-            return { shouldSearch: mode === "on" || intent === "fresh", query: fallbackQuery, queries: [fallbackQuery], intent, preferredProvider: "" };
+            const query = searchFallbackQuery(prompt, fallbackQuery);
+            return { shouldSearch: forceSearch || mode === "on" || intent === "fresh", query, queries: [query], intent, preferredProvider: "", complex: false };
           });
+          decision = refineSearchDecision(decision, prompt);
         }
         if (!decision.shouldSearch) {
-          updateRunMessage(run, assistantId, { searchStatus: "" });
+          updateRunMessage(run, targetMessageId, { searchStatus: "" });
           return;
         }
 
         const queries = normalizeSearchQueries(decision, prompt);
         if (!queries.length) return;
         try {
-          updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
-          const search = await runSearchRouter(queries, decision, signal, (status) => updateRunMessage(run, assistantId, { searchStatus: status }));
+          updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
+          const search = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
+            updateRunMessage(run, targetMessageId, partialSearch ? { searchStatus: status, searchContext: partialSearch, sources: partialSearch.results } : { searchStatus: status });
+          });
           run.searchContext = search;
           if (search.results.length) {
-            updateRunMessage(run, assistantId, { sources: search.results, searchContext: search, searchStatus: `正在阅读 ${search.results.length} 条网页结果...` });
+            const doneStatus = run.searchOnly ? `已找到 ${search.results.length} 条网页结果。` : "";
+            updateRunMessage(run, targetMessageId, { sources: search.results, searchContext: search, searchStatus: doneStatus });
           } else if (search.errors.length) {
             showToast(`搜索失败：${search.errors[0]}`);
-            updateRunMessage(run, assistantId, { searchStatus: "" });
+            updateRunMessage(run, targetMessageId, { searchStatus: "" });
           }
         } catch (error) {
           if (error.name === "AbortError") throw error;
           showToast(`搜索失败：${error.message || error}`);
-          updateRunMessage(run, assistantId, { searchStatus: "" });
+          updateRunMessage(run, targetMessageId, { searchStatus: "" });
         }
       }
 
-      function latestUserPrompt(runMessages, assistantId) {
-        const idx = (runMessages || []).findIndex((message) => message.id === assistantId);
-        for (let i = (idx >= 0 ? idx : runMessages.length) - 1; i >= 0; i--) {
-          if (runMessages[i]?.role === "user") return runMessages[i].content || "";
+      function latestUserPrompt(runMessages, targetMessageId) {
+        const items = runMessages || [];
+        const idx = items.findIndex((message) => message.id === targetMessageId);
+        if (items[idx]?.role === "user") return items[idx].content || "";
+        for (let i = (idx >= 0 ? idx : items.length) - 1; i >= 0; i--) {
+          if (items[i]?.role === "user") return items[i].content || "";
         }
         return "";
       }
 
-      function buildSearchPlanningContext(runMessages, assistantId) {
+      function buildSearchPlanningContext(runMessages, targetMessageId) {
         const items = runMessages || [];
-        const assistantIndex = items.findIndex((message) => message.id === assistantId);
-        const end = assistantIndex >= 0 ? assistantIndex : items.length;
-        const currentIndex = findLatestUserIndexBefore(items, end);
+        const targetIndex = items.findIndex((message) => message.id === targetMessageId);
+        const currentIndex = items[targetIndex]?.role === "user" ? targetIndex : findLatestUserIndexBefore(items, targetIndex >= 0 ? targetIndex : items.length);
         const current = currentIndex >= 0 ? items[currentIndex] : null;
         const history = items
           .slice(Math.max(0, currentIndex - 6), currentIndex)
@@ -6278,8 +6708,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           .join("\n");
         return [
           history ? `Recent conversation:\n${history}` : "Recent conversation: (none)",
-          `Current user request:\n${current?.content || latestUserPrompt(items, assistantId)}`,
-          "Search planning rule: if the current request is a follow-up, short phrase, pronoun, price refinement, comparison refinement, or says things like cheaper/better/that/it/this/有没有/便宜/贵/推荐/还有, infer the missing subject from the recent conversation and include that subject in every search query.",
+          `Current user request:\n${current?.content || latestUserPrompt(items, targetMessageId)}`,
+          "Search planning rule: Produce concise search-engine queries, not a copy of the full user sentence unless it is already a short, explicit query. Mark complex=true only when the request needs multiple distinct searches; simple live facts such as one location's weather, one exchange rate, one current price, or one score should be complex=false and use one query. If the current request is a follow-up, infer the missing subject from recent conversation and include it in every query.",
         ].join("\n\n");
       }
 
@@ -6290,13 +6720,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return -1;
       }
 
-      function contextualSearchFallbackQuery(prompt, runMessages, assistantId) {
+      function contextualSearchFallbackQuery(prompt, runMessages, targetMessageId) {
         const clean = String(prompt || "").replace(/\s+/g, " ").trim();
         if (!isLikelyFollowUpSearch(clean)) return clean;
         const items = runMessages || [];
-        const assistantIndex = items.findIndex((message) => message.id === assistantId);
-        const end = assistantIndex >= 0 ? assistantIndex : items.length;
-        const currentIndex = findLatestUserIndexBefore(items, end);
+        const targetIndex = items.findIndex((message) => message.id === targetMessageId);
+        const currentIndex = items[targetIndex]?.role === "user" ? targetIndex : findLatestUserIndexBefore(items, targetIndex >= 0 ? targetIndex : items.length);
         for (let i = currentIndex - 1; i >= Math.max(0, currentIndex - 6); i--) {
           const message = items[i];
           if (!message || message.role !== "user") continue;
@@ -6304,6 +6733,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (topic) return `${topic} ${clean}`;
         }
         return clean;
+      }
+
+      function searchFallbackQuery(prompt, fallback = "") {
+        const clean = String(fallback || prompt || "").replace(/\s+/g, " ").trim();
+        if (isPromptSearchReady(clean)) return clean;
+        return extractSearchTopic(clean).slice(0, 96) || clean.slice(0, 96);
+      }
+
+      function isPromptSearchReady(text) {
+        const clean = String(text || "").trim();
+        if (!clean || clean.length > 72) return false;
+        if (/[。！？.!?；;]/.test(clean)) return false;
+        if (/(请|帮我|能不能|可以|如何|怎么样|怎么|吗|呢|please|can you|could you|how do|what is|what are)/i.test(clean)) return false;
+        return true;
       }
 
       function isLikelyFollowUpSearch(prompt) {
@@ -6322,10 +6765,28 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!clean) return "";
         const withoutPolite = clean
           .replace(/^(请|帮我|给我|能不能|可以|麻烦|please|can you|could you)\s*/i, "")
-          .replace(/(推荐|介绍|查找|搜索|帮我找|有没有|哪些|什么|怎么样|如何|一下|一些|几个|几把|几款|几种|吗|呢|吧)/g, " ")
+          .replace(/^(搜索一下|查找一下|查一下|帮我找|找一下|介绍一下|分析一下|详细分析|推荐一下)\s*/i, "")
+          .replace(/^(搜索|查找|介绍|推荐)(\s+|[:：])+/i, "")
+          .replace(/(是)?怎么做的$/i, "")
+          .replace(/(是)?如何(做|实现|工作的)?$/i, "")
+          .replace(/(是)?什么(东西)?$/i, "")
+          .replace(/(有哪些|怎么样|应该怎么做|怎么实现|怎么工作)$/i, "")
+          .replace(/(吗|呢|吧)$/i, "")
           .replace(/\s+/g, " ")
           .trim();
-        return (withoutPolite || clean).split(" ").slice(0, 8).join(" ").slice(0, 80);
+        return normalizeSearchTopicText(withoutPolite || clean);
+      }
+
+      function normalizeSearchTopicText(text) {
+        return String(text || "")
+          .replace(/、/g, " ")
+          .replace(/\s+(和|与|及|以及)\s+/g, " ")
+          .replace(/\s+/g, " ")
+          .trim()
+          .split(" ")
+          .slice(0, 8)
+          .join(" ")
+          .slice(0, 80);
       }
 
       async function decideWebSearch(prompt, planningContext, model, signal, forceSearch = false) {
@@ -6340,7 +6801,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             messages: withRealtimeMessagePrefix([
               {
                 role: "system",
-                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful."} Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
+                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} Write concise search-engine queries that capture the user's meaning. Do not copy a long user prompt unless it is already an excellent short query. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
               },
               { role: "user", content: planningContext },
             ]),
@@ -6355,7 +6816,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const parsed = parseJsonObject(raw);
         return {
           shouldSearch: parsed.shouldSearch === true,
-          query: String(parsed.query || prompt).trim(),
+          query: String(parsed.query || "").trim(),
           queries: Array.isArray(parsed.queries) ? parsed.queries : [],
           intent: ["fresh", "research", "general"].includes(parsed.intent) ? parsed.intent : inferSearchIntent(prompt),
           preferredProvider: SEARCH_PROVIDER_IDS.includes(parsed.preferredProvider) ? parsed.preferredProvider : "",
@@ -6364,14 +6825,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function normalizeSearchQueries(decision, fallback) {
-        const items = [
-          fallback,
+        const planned = [
           ...(Array.isArray(decision.queries) ? decision.queries : []),
           decision.query,
-        ];
+        ].filter(Boolean);
+        const items = planned.length ? planned : [searchFallbackQuery(fallback)];
         const seen = new Set();
         return items
           .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+          .map((item) => shouldCleanSearchQuery(item) ? searchFallbackQuery(item) : item)
           .filter(Boolean)
           .filter((item) => {
             const key = item.toLowerCase();
@@ -6379,7 +6841,64 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             seen.add(key);
             return true;
           })
-          .slice(0, decision.complex ? 5 : 3);
+          .slice(0, decision.complex ? 5 : 1);
+      }
+
+      function shouldCleanSearchQuery(query) {
+        const text = String(query || "").trim();
+        return text.length > 96 || /[。！？!?；;]/.test(text) || /^(请|帮我|给我|麻烦|please|can you|could you)\b/i.test(text);
+      }
+
+      function refineSearchDecision(decision, prompt) {
+        const next = { ...decision };
+        if (shouldUseMultipleSearches(prompt)) next.complex = true;
+        let queries = Array.isArray(next.queries) ? next.queries.filter(Boolean) : [];
+        if (next.query) queries.unshift(next.query);
+        queries = [...new Set(queries.map((query) => String(query || "").trim()).filter(Boolean))];
+        if (next.complex && queries.length <= 1) {
+          queries = expandSearchQueries(prompt, queries[0] || searchFallbackQuery(prompt));
+        }
+        next.queries = queries;
+        next.query = queries[0] || next.query || "";
+        return next;
+      }
+
+      function buildTraditionalSearchDecision(prompt, fallback = "") {
+        const query = searchFallbackQuery(prompt, fallback);
+        const queries = expandSearchQueries(prompt, query).slice(0, 4);
+        return {
+          shouldSearch: true,
+          query: queries[0] || query,
+          queries,
+          intent: inferSearchIntent(prompt),
+          preferredProvider: "",
+          complex: true,
+        };
+      }
+
+      function shouldUseMultipleSearches(prompt) {
+        const text = String(prompt || "").toLowerCase();
+        if (/(天气|weather|汇率|exchange rate|股价|stock price|比分|score|几点|时间|today.*weather|current.*weather)/i.test(text)) return false;
+        return /(compare|comparison|vs\.?|versus|best|top|recommend|recommendation|review|reviews|price|cheap|budget|guide|research|sources|资料|研究|对比|比较|推荐|排行|评测|价格|便宜|预算|攻略|路线|住宿|餐饮|来源|出处|资料)/i.test(text);
+      }
+
+      function expandSearchQueries(prompt, primary) {
+        const base = searchFallbackQuery(primary || prompt);
+        const topic = extractSearchTopic(prompt) || base;
+        const intent = inferSearchIntent(prompt);
+        const queries = [base || topic];
+        if (/天气|weather/i.test(prompt)) {
+          queries.push(`${topic} 天气`, `${topic} 逐小时天气`);
+        } else if (intent === "research" || /资料|研究|来源|出处|paper|sources/i.test(prompt)) {
+          queries.push(`${topic} 资料`, `${topic} 来源`, `${topic} research`);
+        } else if (/推荐|对比|比较|排行|评测|best|top|recommend|compare|review/i.test(prompt)) {
+          queries.push(`${topic} 推荐`, `${topic} 对比`, `${topic} 评测`);
+        } else if (/怎么做|如何|原理|机制|实现|工作|纠正|预测|how|mechanism|implementation/i.test(prompt)) {
+          queries.push(`${topic} 原理`, `${topic} 实现`, `${topic} 算法`);
+        } else {
+          queries.push(`${topic} 最新`, `${topic} 指南`);
+        }
+        return [...new Set(queries.map((query) => searchFallbackQuery(query)).filter(Boolean))];
       }
 
       function parseJsonObject(text) {
@@ -6395,9 +6914,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function inferSearchIntent(prompt) {
         const text = String(prompt || "").toLowerCase();
-        if (/(latest|today|yesterday|tomorrow|current|recent|news|price|stock|schedule|score|release|version|现在|今天|昨天|明天|最新|新闻|价格|股价|汇率|发布|版本)/i.test(text)) return "fresh";
+        if (/(latest|today|yesterday|tomorrow|current|recent|news|price|stock|schedule|score|weather|release|version|现在|今天|昨天|明天|最新|新闻|价格|股价|汇率|天气|发布|版本)/i.test(text)) return "fresh";
         if (/(research|compare|sources|paper|literature|survey|deep|资料|研究|论文|来源|对比|综述|调研)/i.test(text)) return "research";
         return "general";
+      }
+
+      function shouldConsiderAutoSearch(prompt) {
+        const text = String(prompt || "").toLowerCase();
+        return /(latest|today|yesterday|tomorrow|current|recent|news|price|stock|schedule|score|weather|release|version|source|sources|search|find|recommend|compare|现在|今天|昨天|明天|最新|新闻|价格|股价|汇率|天气|赛程|比分|发布|版本|来源|出处|搜索|查|找|推荐|对比|排行|附近)/i.test(text);
       }
 
       async function runSearchRouter(queryInput, decision, signal, onStatus = null) {
@@ -6412,9 +6936,17 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           for (const id of providers) {
             try {
               onStatus?.(`正在用 ${providerLabel(id)} 搜索：${query}`);
-              const results = dedupeSources(await SEARCH_ADAPTERS[id].search(query, searchProviderConfig(id).apiKey, signal)).slice(0, 8);
+              const results = dedupeSources(await runSearchProviderWithTimeout(id, query, signal)).slice(0, 8);
               groups.push({ query, provider: id, results, errors: [] });
               all.push(...results);
+              onStatus?.(`已获取 ${dedupeSources(all).length} 条搜索结果`, {
+                query: queries[0] || "",
+                queries,
+                providerOrder: providers,
+                groups: groups.slice(),
+                results: dedupeSources(all).slice(0, 24),
+                errors: errors.slice(),
+              });
               matched = true;
               break;
             } catch (error) {
@@ -6429,9 +6961,27 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           queries,
           providerOrder: providers,
           groups,
-          results: dedupeSources(all).slice(0, 8),
+          results: dedupeSources(all).slice(0, 24),
           errors,
         };
+      }
+
+      async function runSearchProviderWithTimeout(id, query, parentSignal) {
+        const controller = new AbortController();
+        const abort = () => controller.abort();
+        if (parentSignal?.aborted) throw new DOMException("Aborted", "AbortError");
+        parentSignal?.addEventListener("abort", abort, { once: true });
+        const timer = setTimeout(() => controller.abort(new DOMException("Search timed out", "TimeoutError")), SEARCH_PROVIDER_TIMEOUT_MS);
+        try {
+          return await SEARCH_ADAPTERS[id].search(query, searchProviderConfig(id).apiKey, controller.signal);
+        } catch (error) {
+          if (parentSignal?.aborted) throw new DOMException("Aborted", "AbortError");
+          if (controller.signal.aborted) throw new Error(`${providerLabel(id)} 搜索超时`);
+          throw error;
+        } finally {
+          clearTimeout(timer);
+          parentSignal?.removeEventListener("abort", abort);
+        }
       }
 
       function orderedSearchProviders(decision = {}) {
@@ -6722,30 +7272,66 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             const results = (group.results || []).map((source, index) => {
               const title = source.title || domainOf(source.url);
               const snippet = source.snippet ? `\nSnippet: ${source.snippet}` : "";
-              return `[${index + 1}] ${title}\nURL: ${source.url}${snippet}`;
+              return `[${index + 1}] [${title}](${source.url})\nURL: ${source.url}${snippet}`;
             }).join("\n\n");
             return `Search query: ${group.query}\nProvider: ${providerLabel(group.provider)}\nResults:\n${results || "(no results)"}`;
           })
           .join("\n\n---\n\n");
         return `Live web search results for query: ${search.query}
 
-Use these results only when they are relevant. Cite claims with Markdown links to the exact URLs. Do not invent sources and do not mention unavailable providers.
+Use these results only when they are relevant. Cite claims with normal clickable Markdown links to exact result URLs.
+
+Citation rules:
+- Use this format only: [Source title](https://source-url.example/path).
+- Do not use bare citation markers like 【1】, [1], [5], or [^6].
+- Do not cite a source unless the citation itself contains a full Markdown URL.
+- Prefer the provided source titles as link text.
 
 ${lines}`;
       }
 
       function serializeMessageContent(message) {
         const files = message.attachments || [];
-        if (!files.length) return message.content;
-        const fileContext = files
-          .map((file) => {
-            const body = file.text
-              ? `\n${file.text}`
-              : "\n[This file was attached, but its contents are not readable as plain text in the browser.]";
-            return `<file name="${file.name}" type="${file.type}" size="${file.size}">${body}\n</file>`;
-          })
-          .join("\n\n");
-        return `${message.content}\n\nAttached files:\n${fileContext}`;
+        const parts = [message.content || ""];
+        const searchMemory = buildMessageSearchMemory(message);
+        if (searchMemory) parts.push(searchMemory);
+        if (files.length) {
+          const fileContext = files
+            .map((file) => {
+              const body = file.text
+                ? `\n${file.text}`
+                : "\n[This file was attached, but its contents are not readable as plain text in the browser.]";
+              return `<file name="${file.name}" type="${file.type}" size="${file.size}">${body}\n</file>`;
+            })
+            .join("\n\n");
+          parts.push(`Attached files:\n${fileContext}`);
+        }
+        return parts.filter(Boolean).join("\n\n");
+      }
+
+      function buildMessageSearchMemory(message) {
+        const search = message?.searchContext || message?.search || null;
+        if (!search?.results?.length && !search?.groups?.length) return "";
+        const label = message.role === "assistant"
+          ? "This assistant message was generated with these browser web search results."
+          : "This user request has these browser web search results attached.";
+        const results = dedupeSources(
+          search.results?.length ? search.results : (search.groups || []).flatMap((group) => group.results || [])
+        ).slice(0, 8);
+        if (!results.length) return "";
+        const lines = results.map((source, index) => {
+          const title = source.title || domainOf(source.url) || `Source ${index + 1}`;
+          const snippet = source.snippet ? `\nSnippet: ${clipText(source.snippet, 220)}` : "";
+          return `[${index + 1}] ${title}\nURL: ${source.url}${snippet}`;
+        }).join("\n\n");
+        const queries = (search.queries?.length ? search.queries : (search.groups || []).map((group) => group.query))
+          .filter(Boolean)
+          .join(" / ");
+        return `<web_search_memory>
+${label}
+${queries ? `Queries: ${queries}\n` : ""}Results:
+${lines}
+</web_search_memory>`;
       }
 
       function extractContentDelta(json) {
@@ -6780,7 +7366,19 @@ ${lines}`;
       }
 
       function cancelRun() {
+        const run = activeRun;
         if (aborter) aborter.abort();
+        if (run?.searchOnly && run.userMessageId) {
+          updateRunMessage(run, run.userMessageId, { searchStatus: "" });
+        }
+        if (run?.assistantId) {
+          updateRunMessage(run, run.assistantId, { content: "已停止生成。", loading: false, searchStatus: "" });
+        }
+        activeRun = null;
+        running = false;
+        aborter = null;
+        updateSendState();
+        if (run) saveRunChat(run);
       }
 
       function updateSendState() {
@@ -6795,6 +7393,9 @@ ${lines}`;
           button.title = running ? "停止生成" : "发送";
           button.setAttribute("aria-label", running ? "停止生成" : "发送");
         });
+        const lockChat = isClassicSearchInProgress();
+        els.chatViewBtn.disabled = lockChat;
+        els.chatViewBtn.title = lockChat ? "搜索完成后才能切换到聊天" : "";
       }
 
       function openSettings() {
@@ -6804,6 +7405,7 @@ ${lines}`;
         els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         renderWebSearchControls();
+        renderInteractionModeControls();
         els.cfgRail.checked = state.railEnabled !== false;
         els.cfgQueueFallback.checked = state.queueFallback === true;
         els.cfgRetryOnFailure.checked = state.retryOnFailure !== false;
@@ -6855,6 +7457,7 @@ ${lines}`;
           return;
         }
         persistSearchProviderSettings();
+        state.interactionMode = normalizeInteractionMode(els.interactionModeGroup.querySelector(".active")?.dataset.interactionMode || state.interactionMode);
         state.railEnabled = els.cfgRail.checked;
         state.queueFallback = els.cfgQueueFallback.checked;
         state.retryOnFailure = els.cfgRetryOnFailure.checked;
@@ -6866,6 +7469,7 @@ ${lines}`;
           state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
         }
         ensureActiveModel();
+        renderInteractionModeControls();
         applyTheme();
         applyGeneralSettings();
         await saveState();
@@ -6908,6 +7512,8 @@ ${lines}`;
 
       function applyGeneralSettings() {
         document.body.classList.toggle("rail-disabled", state.railEnabled === false);
+        document.body.classList.toggle("classic-mode", activeInteractionMode() === "classic");
+        renderInteractionModeControls();
       }
 
       function applySidebarState() {
@@ -7493,19 +8099,12 @@ ${lines}`;
 
       function extractSources(message) {
         const fromMetadata = Array.isArray(message.sources) ? message.sources : [];
-        const links = [];
-        const re = /\[\[([^\]]+)\]\]\((https?:\/\/[^)\s]+)\)|\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g;
-        let match;
-        while ((match = re.exec(message.content || ""))) {
-          const url = match[2] || match[4];
-          links.push({
-            title: match[1] ? domainOf(url) : match[3],
-            url,
-            snippet: sourceSnippetAround(message.content || "", match.index),
-          });
-        }
+        const search = message.searchContext || message.search || null;
+        const fromSearch = search?.results?.length
+          ? search.results
+          : (search?.groups || []).flatMap((group) => group.results || []);
         const map = new Map();
-        [...fromMetadata, ...links].forEach((source) => {
+        [...fromSearch, ...fromMetadata].forEach((source) => {
           const key = normalizeSourceUrl(source.url);
           if (key && !map.has(key)) map.set(key, { ...source, url: key });
         });
@@ -7937,11 +8536,44 @@ ${lines}`;
         els.threadComposer?.classList.remove("composer-hidden");
       }
 
+      function focusThreadInputSoon() {
+        requestAnimationFrame(() => {
+          try {
+            els.threadInput.focus({ preventScroll: true });
+          } catch (error) {
+            els.threadInput.focus();
+          }
+          setTimeout(() => {
+            if (document.activeElement !== els.threadInput) {
+              try {
+                els.threadInput.focus({ preventScroll: true });
+              } catch (error) {
+                els.threadInput.focus();
+              }
+            }
+            scheduleMobileComposerCollapse();
+          }, 40);
+        });
+      }
+
+      function scheduleMobileComposerCollapse() {
+        clearTimeout(mobileComposerTimer);
+        if (!isMobileViewport() || !document.body.classList.contains("chat-active")) return;
+        mobileComposerTimer = setTimeout(() => {
+          const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+          if (distance >= 80 && Date.now() >= mobileComposerExpandedUntil && !els.threadComposer.contains(document.activeElement)) {
+            els.threadComposer.classList.add("composer-hidden");
+            updateScrollButtonVisibility(distance);
+          }
+        }, 1800);
+      }
+
       function handleMobileComposerScroll(distance) {
         if (!isMobileViewport() || !document.body.classList.contains("chat-active")) {
           showThreadComposer();
           return;
         }
+        if (running) return;
         if (distance < 80) {
           showThreadComposer();
           return;
