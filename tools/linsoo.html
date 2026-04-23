@@ -14,7 +14,6 @@
       href="https://fonts.googleapis.com/css2?family=Newsreader:opsz,wght@6..72,400;6..72,500;6..72,600&amp;family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&amp;family=DM+Mono:wght@400;500&amp;display=swap"
       rel="stylesheet"
     />
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css" />
     <script>
       window.MathJax = {
         tex: {
@@ -30,8 +29,6 @@
         },
       };
     </script>
-    <script id="markdownItScript" defer src="https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js"></script>
-    <script id="highlightScript" defer src="https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js"></script>
     <style>
       :root {
         --paper: #f5f4ed;
@@ -1941,6 +1938,14 @@
         width: 100%;
         height: 100%;
         object-fit: cover;
+      }
+
+      .source-favicon.local,
+      .source-mini-icon.local {
+        background: var(--sand);
+        color: var(--muted);
+        font-weight: 700;
+        text-transform: uppercase;
       }
 
       .source-result-domain {
@@ -4252,7 +4257,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         applySidebarState();
         loadMarkdownIt();
         loadHighlightJs();
-        loadMathJax();
         renderHeroLine();
         await loadChatIndex();
         renderModelPickers();
@@ -6340,16 +6344,27 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function faviconHTML(url, index = 0) {
         const domain = domainOf(url);
-        return `<span class="source-favicon"><img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=32" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`;
+        return `<span class="source-favicon local">${esc(sourceIconText(domain, index))}</span>`;
       }
 
       function sourceFaviconHTML(source, index = 0) {
-        const url = source.favicon || `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domainOf(source.url))}&sz=32`;
-        return `<span class="source-favicon"><img src="${esc(url)}" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`;
+        const fallback = esc(sourceIconText(domainOf(source.url), index));
+        if (!source.favicon) return `<span class="source-favicon local">${fallback}</span>`;
+        return `<span class="source-favicon"><img src="${esc(source.favicon)}" alt="" loading="lazy" decoding="async" onerror="this.remove();this.parentElement.classList.add('local');this.parentElement.textContent='${fallback}'"></span>`;
       }
 
       function sourceButtonIcons(sources) {
-        return `<span class="source-btn-icons">${sources.slice(0, 3).map((source, index) => `<span class="source-mini-icon"><img src="https://www.google.com/s2/favicons?domain=${encodeURIComponent(domainOf(source.url))}&sz=32" alt="" onerror="this.remove();this.parentElement.textContent='${esc(String(index + 1))}'"></span>`).join("")}</span>`;
+        return `<span class="source-btn-icons">${sources.slice(0, 3).map((source, index) => {
+          const fallback = esc(sourceIconText(domainOf(source.url), index));
+          if (!source.favicon) return `<span class="source-mini-icon local">${fallback}</span>`;
+          return `<span class="source-mini-icon"><img src="${esc(source.favicon)}" alt="" loading="lazy" decoding="async" onerror="this.remove();this.parentElement.classList.add('local');this.parentElement.textContent='${fallback}'"></span>`;
+        }).join("")}</span>`;
+      }
+
+      function sourceIconText(domain, index = 0) {
+        const clean = String(domain || "").replace(/^www\./, "").trim();
+        const first = clean.match(/[A-Za-z0-9]/)?.[0];
+        return first ? first.toUpperCase() : String(index + 1);
       }
 
       function renderSourceResults(sources, opts = {}) {
@@ -7787,8 +7802,17 @@ ${lines}
           script.src = "https://cdn.jsdelivr.net/npm/markdown-it@14.1.0/dist/markdown-it.min.js";
           script.async = true;
           script.onload = configure;
-          script.onerror = () => resolve(false);
+          script.onerror = () => {
+            script.remove();
+            resolve(false);
+          };
           document.head.appendChild(script);
+          setTimeout(() => {
+            if (!markdownRenderer) {
+              script.remove();
+              resolve(false);
+            }
+          }, 5000);
         });
       }
 
@@ -7803,6 +7827,7 @@ ${lines}
       }
 
       function loadHighlightJs() {
+        loadHighlightTheme();
         highlightReady = new Promise((resolve) => {
           if (window.hljs) {
             resolve(true);
@@ -7819,24 +7844,61 @@ ${lines}
           script.src = "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/highlight.min.js";
           script.async = true;
           script.onload = () => resolve(true);
-          script.onerror = () => resolve(false);
+          script.onerror = () => {
+            script.remove();
+            resolve(false);
+          };
           document.head.appendChild(script);
+          setTimeout(() => {
+            if (!window.hljs) {
+              script.remove();
+              resolve(false);
+            }
+          }, 5000);
         });
       }
 
+      function loadHighlightTheme() {
+        if (document.getElementById("highlightTheme")) return;
+        const link = document.createElement("link");
+        link.id = "highlightTheme";
+        link.rel = "stylesheet";
+        link.href = "https://cdn.jsdelivr.net/npm/highlight.js@11.11.1/styles/github-dark.min.css";
+        link.onerror = () => link.remove();
+        document.head.appendChild(link);
+        setTimeout(() => {
+          try {
+            if (!link.sheet) link.remove();
+          } catch (e) {
+            link.remove();
+          }
+        }, 5000);
+      }
+
       function loadMathJax() {
+        if (mathJaxReady) return mathJaxReady;
         if (window.MathJax?.typesetPromise) {
           mathJaxReady = Promise.resolve(true);
-          return;
+          return mathJaxReady;
         }
         mathJaxReady = new Promise((resolve) => {
           const script = document.createElement("script");
           script.src = "https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js";
           script.async = true;
           script.onload = () => resolve(true);
-          script.onerror = () => resolve(false);
+          script.onerror = () => {
+            script.remove();
+            resolve(false);
+          };
           document.head.appendChild(script);
+          setTimeout(() => {
+            if (!window.MathJax?.typesetPromise) {
+              script.remove();
+              resolve(false);
+            }
+          }, 5000);
         });
+        return mathJaxReady;
       }
 
       function switchTab(id) {
@@ -8651,8 +8713,8 @@ ${lines}
       }
 
       function queueMathTypeset(root) {
-        if (!mathJaxReady) return;
-        mathJaxReady.then(() => {
+        if (!root?.querySelector?.(".math-display") && !/(\\\(|\\\[|\$)/.test(root?.textContent || "")) return;
+        loadMathJax().then(() => {
           if (!window.MathJax?.typesetPromise) return;
           if (window.MathJax.typesetClear) window.MathJax.typesetClear([root]);
           window.MathJax.typesetPromise([root]).catch(() => {});
