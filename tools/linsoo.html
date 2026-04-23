@@ -2210,6 +2210,153 @@
         to { transform: rotate(360deg); }
       }
 
+      .ask-panel {
+        position: fixed;
+        top: 74px;
+        right: clamp(14px, 4vw, 40px);
+        z-index: 82;
+        width: min(calc(100vw - 28px), 420px);
+        display: none;
+        border: 1px solid var(--line-strong);
+        border-radius: 18px;
+        background: color-mix(in srgb, var(--ivory) 96%, transparent);
+        box-shadow: var(--shadow-soft), 0 22px 80px rgba(20, 20, 19, 0.16);
+        backdrop-filter: blur(18px);
+        overflow: hidden;
+      }
+
+      .ask-panel.open {
+        display: block;
+        animation: modalIn 0.17s ease both;
+      }
+
+      .ask-panel-head {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 12px;
+        align-items: start;
+        border-bottom: 1px solid var(--line);
+        padding: 14px 14px 12px;
+      }
+
+      .ask-panel-kicker {
+        color: var(--muted);
+        font-size: 11px;
+        font-weight: 750;
+        text-transform: uppercase;
+      }
+
+      .ask-panel-title {
+        margin-top: 3px;
+        color: var(--ink);
+        font-size: 16px;
+        font-weight: 750;
+        line-height: 1.25;
+      }
+
+      .ask-panel-nav {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+      }
+
+      .ask-panel-nav button,
+      .ask-close {
+        width: 28px;
+        height: 28px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 17px;
+        line-height: 1;
+      }
+
+      .ask-panel-nav button:hover,
+      .ask-close:hover {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
+      .ask-panel-nav button:disabled {
+        opacity: 0.35;
+        cursor: default;
+      }
+
+      .ask-panel-body {
+        display: grid;
+        gap: 12px;
+        padding: 14px;
+      }
+
+      .ask-progress {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .ask-question-text {
+        color: var(--ink);
+        font-size: 17px;
+        font-weight: 750;
+        line-height: 1.35;
+      }
+
+      .ask-question-meta {
+        color: var(--muted);
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .ask-options {
+        display: grid;
+        gap: 8px;
+      }
+
+      .ask-option {
+        width: 100%;
+        min-height: 42px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--paper);
+        color: var(--text-strong);
+        cursor: pointer;
+        padding: 9px 11px;
+        text-align: left;
+        font-size: 14px;
+        line-height: 1.25;
+        transition:
+          background var(--speed),
+          border-color var(--speed),
+          color var(--speed);
+      }
+
+      .ask-option:hover,
+      .ask-option.selected {
+        border-color: var(--accent);
+        background: var(--accent-soft);
+        color: var(--ink);
+      }
+
+      .ask-option.selected::after {
+        content: "✓";
+        float: right;
+        color: var(--accent);
+        font-weight: 800;
+      }
+
+      .ask-panel-foot {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+        border-top: 1px solid var(--line);
+        padding: 12px 14px;
+      }
+
       .top-view-tabs {
         position: fixed;
         top: 18px;
@@ -3585,6 +3732,13 @@
           width: min(calc(100vw - 24px), 672px);
         }
 
+        .ask-panel {
+          top: 64px;
+          left: 10px;
+          right: 10px;
+          width: auto;
+        }
+
         .overlay {
           padding: 10px;
         }
@@ -3831,6 +3985,25 @@
         </div>
         <div class="source-panel-body" id="sourcePanelBody"></div>
       </aside>
+
+      <section class="ask-panel" id="askPanel" aria-live="polite" aria-hidden="true">
+        <div class="ask-panel-head">
+          <div>
+            <div class="ask-panel-kicker">Clarify</div>
+            <div class="ask-panel-title" id="askPanelTitle">再确认一下你的问题</div>
+          </div>
+          <div class="ask-panel-nav">
+            <button type="button" id="askPrevBtn" title="上一题" aria-label="上一题">‹</button>
+            <button type="button" id="askNextBtn" title="下一题" aria-label="下一题">›</button>
+            <button type="button" class="ask-close" id="askCloseBtn" title="关闭" aria-label="关闭">×</button>
+          </div>
+        </div>
+        <div class="ask-panel-body" id="askPanelBody"></div>
+        <div class="ask-panel-foot">
+          <button class="ghost-btn" type="button" id="askSkipBtn">跳过此题</button>
+          <button class="primary-btn" type="button" id="askDoneBtn">继续</button>
+        </div>
+      </section>
 
       <div class="thread-composer" id="threadComposer" style="display: none">
         <div class="composer-shell">
@@ -4237,6 +4410,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let opfsRoot = null;
       let opfsReady = false;
       let saveTimer = null;
+      let askPanelState = null;
       let mathJaxReady = null;
       let markdownReady = null;
       let markdownRenderer = null;
@@ -4358,6 +4532,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "sourcePanelTitle",
           "sourcePanelBody",
           "sourcePanelClose",
+          "askPanel",
+          "askPanelTitle",
+          "askPanelBody",
+          "askPrevBtn",
+          "askNextBtn",
+          "askCloseBtn",
+          "askSkipBtn",
+          "askDoneBtn",
           "toast",
           "cfgBaseUrl",
           "cfgApiKey",
@@ -4989,6 +5171,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           els.railPreview.classList.remove("visible");
         });
         els.sourcePanelClose.addEventListener("click", closeSourcePanel);
+        els.askCloseBtn.addEventListener("click", () => cancelRun());
+        els.askPrevBtn.addEventListener("click", () => moveAskPanel(-1));
+        els.askNextBtn.addEventListener("click", () => moveAskPanel(1));
+        els.askSkipBtn.addEventListener("click", () => skipAskPanelQuestion());
+        els.askDoneBtn.addEventListener("click", () => advanceAskPanel());
         document.addEventListener("dblclick", (event) => {
           if (!isMobileViewport()) return;
           event.preventDefault();
@@ -6632,6 +6819,152 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      function renderAskPanel() {
+        if (!askPanelState) return;
+        const { questions, answers, index } = askPanelState;
+        const item = questions[index];
+        const selected = Array.isArray(answers[index]) ? answers[index] : [];
+        els.askPanelTitle.textContent = askPanelState.title || "再确认一下你的问题";
+        els.askPanelBody.innerHTML = `
+          <div class="ask-progress">${index + 1} / ${questions.length}</div>
+          <div class="ask-question-text">${esc(item.question)}</div>
+          ${item.multiple ? `<div class="ask-question-meta">(Select all that apply)</div>` : ""}
+          <div class="ask-options">
+            ${(item.options || []).map((option, optionIndex) => `
+              <button class="ask-option${selected.includes(option) ? " selected" : ""}" type="button" data-option-index="${optionIndex}">
+                ${esc(option)}
+              </button>`).join("")}
+          </div>`;
+        els.askPrevBtn.disabled = index <= 0;
+        els.askNextBtn.disabled = index >= questions.length - 1;
+        els.askDoneBtn.textContent = index >= questions.length - 1 ? "开始搜索" : "继续";
+        els.askDoneBtn.disabled = item.multiple ? false : !selected.length;
+        els.askPanelBody.querySelectorAll(".ask-option").forEach((button) => {
+          button.addEventListener("click", () => {
+            const option = item.options[Number(button.dataset.optionIndex)] || "";
+            if (!option) return;
+            if (item.multiple) {
+              const current = Array.isArray(askPanelState.answers[index]) ? askPanelState.answers[index].slice() : [];
+              const exists = current.includes(option);
+              askPanelState.answers[index] = exists ? current.filter((value) => value !== option) : [...current, option];
+              renderAskPanel();
+              return;
+            }
+            askPanelState.answers[index] = [option];
+            if (index < questions.length - 1) {
+              askPanelState.index += 1;
+            }
+            renderAskPanel();
+          });
+        });
+      }
+
+      function openAskPanel(questionnaire) {
+        return new Promise((resolve) => {
+          const questions = normalizeAskQuestions(questionnaire?.questions);
+          if (!questions.length) {
+            resolve(null);
+            return;
+          }
+          askPanelState = {
+            title: questionnaire.title || "再确认一下你的问题",
+            questions,
+            answers: Array(questions.length).fill(""),
+            index: 0,
+            resolve,
+          };
+          els.askPanel.classList.add("open");
+          els.askPanel.setAttribute("aria-hidden", "false");
+          renderAskPanel();
+        });
+      }
+
+      function normalizeAskQuestions(items) {
+        return (items || [])
+          .map((item) => ({
+            question: String(item.question || item.text || "").trim(),
+            options: (Array.isArray(item.options) ? item.options : [])
+              .map((option) => String(option || "").trim())
+              .filter(Boolean)
+              .slice(0, 4),
+            multiple: item.multiple === true || item.multiSelect === true || item.allowMultiple === true || item.type === "multiple",
+          }))
+          .filter((item) => item.question && item.options.length >= 2)
+          .slice(0, 3);
+      }
+
+      function moveAskPanel(delta) {
+        if (!askPanelState) return;
+        askPanelState.index = Math.max(0, Math.min(askPanelState.questions.length - 1, askPanelState.index + delta));
+        renderAskPanel();
+      }
+
+      function advanceAskPanel() {
+        if (!askPanelState) return;
+        if (askPanelState.index < askPanelState.questions.length - 1) {
+          askPanelState.index += 1;
+          renderAskPanel();
+          return;
+        }
+        finishAskPanel({ closed: false });
+      }
+
+      function skipAskPanelQuestion() {
+        if (!askPanelState) return;
+        askPanelState.answers[askPanelState.index] = [];
+        if (askPanelState.index < askPanelState.questions.length - 1) {
+          askPanelState.index += 1;
+          renderAskPanel();
+        } else {
+          finishAskPanel({ closed: false });
+        }
+      }
+
+      function finishAskPanel(opts = {}) {
+        if (!askPanelState) return;
+        const stateSnapshot = askPanelState;
+        askPanelState = null;
+        els.askPanel.classList.remove("open");
+        els.askPanel.setAttribute("aria-hidden", "true");
+        if (opts.aborted) {
+          stateSnapshot.resolve(null);
+          return;
+        }
+        const answers = stateSnapshot.questions
+          .map((question, index) => ({
+            question: question.question,
+            multiple: question.multiple === true,
+            answer: Array.isArray(stateSnapshot.answers[index]) ? stateSnapshot.answers[index].slice() : [],
+          }))
+          .map((item) => ({
+            ...item,
+            answerText: item.answer.length ? item.answer.join(", ") : "[No preference]",
+          }));
+        stateSnapshot.resolve({
+          closed: opts.closed === true,
+          questions: stateSnapshot.questions,
+          answers,
+        });
+      }
+
+      function formatClarification(clarification) {
+        if (!clarification?.answers?.length) return "";
+        return clarification.answers.map((item) => {
+          const suffix = item.multiple ? "（可多选） (Select all that apply)" : "";
+          return `Q: ${item.question}${suffix}\nA: ${item.answerText || "[No preference]"}`;
+        }).join("\n\n");
+      }
+
+      function buildClarifiedPrompt(prompt, clarification) {
+        const detail = formatClarification(clarification);
+        return detail ? `${prompt}\n\nUser clarification:\n${detail}` : prompt;
+      }
+
+      function buildClarifiedSearchSeed(prompt, clarification) {
+        const answers = (clarification?.answers || []).flatMap((item) => item.answer || []).filter(Boolean).join(" ");
+        return answers ? `${prompt} ${answers}` : prompt;
+      }
+
       async function runAssistant() {
         const assistant = pushMessage({ role: "assistant", content: "", loading: true });
         const run = {
@@ -6893,7 +7226,42 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           return;
         }
 
-        const queries = normalizeSearchQueries(decision, prompt);
+        const clarification = await maybeAskUserQuestion({
+          prompt,
+          targetMessageId,
+          planningContext,
+          model,
+          signal,
+          run,
+          forceAskCheck: forceSearch || opts.skipPlanner === true || mode === "on" || mode === "auto",
+        });
+        const searchPrompt = buildClarifiedPrompt(prompt, clarification);
+        const searchSeed = buildClarifiedSearchSeed(prompt, clarification);
+        if (clarification?.answers?.length) {
+          run.clarification = clarification;
+          run.clarifiedPrompt = searchPrompt;
+          const userId = latestUserMessageId(run.messages || messages, targetMessageId);
+          if (userId) updateRunMessage(run, userId, { clarification });
+          if (opts.skipPlanner) {
+            decision = buildTraditionalSearchDecision(searchSeed, fallbackQuery);
+          } else {
+            const clarifiedContext = [
+              planningContext,
+              `Clarification:\n${formatClarification(clarification)}`,
+            ].join("\n\n");
+            decision = await decideWebSearch(searchSeed, clarifiedContext, model, signal, forceSearch || mode === "on").catch(() => ({
+              shouldSearch: true,
+              query: searchFallbackQuery(searchSeed),
+              queries: [searchFallbackQuery(searchSeed)],
+              intent: inferSearchIntent(searchSeed),
+              preferredProvider: "",
+              complex: decision.complex === true,
+            }));
+            decision = refineSearchDecision(decision, searchSeed);
+          }
+        }
+
+        const queries = normalizeSearchQueries(decision, searchSeed);
         if (!queries.length) return;
         try {
           updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
@@ -6925,6 +7293,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return "";
       }
 
+      function latestUserMessageId(runMessages, targetMessageId) {
+        const items = runMessages || [];
+        const idx = items.findIndex((message) => message.id === targetMessageId);
+        if (items[idx]?.role === "user") return items[idx].id;
+        for (let i = (idx >= 0 ? idx : items.length) - 1; i >= 0; i--) {
+          if (items[i]?.role === "user") return items[i].id;
+        }
+        return "";
+      }
+
       function buildSearchPlanningContext(runMessages, targetMessageId) {
         const items = runMessages || [];
         const targetIndex = items.findIndex((message) => message.id === targetMessageId);
@@ -6941,6 +7319,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           `Current user request:\n${current?.content || latestUserPrompt(items, targetMessageId)}`,
           "Search planning rule: Produce concise search-engine queries, not a copy of the full user sentence unless it is already a short, explicit query. Mark complex=true only when the request needs multiple distinct searches; simple live facts such as one location's weather, one exchange rate, one current price, or one score should be complex=false and use one query. If the current request is a follow-up, infer the missing subject from recent conversation and include it in every query.",
         ].join("\n\n");
+      }
+
+      async function maybeAskUserQuestion({ prompt, targetMessageId, planningContext, model, signal, run, forceAskCheck = true }) {
+        if (!forceAskCheck || !state.apiKey || !model || signal?.aborted) return null;
+        updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要补充问题..." });
+        const decision = await decideAskUserQuestion(prompt, planningContext, model, signal).catch(() => ({ shouldAsk: false, questions: [] }));
+        const questions = normalizeAskQuestions(decision.questions);
+        if (!decision.shouldAsk || !questions.length) return null;
+        updateRunMessage(run, targetMessageId, { searchStatus: "等待你补充问题信息..." });
+        const result = await openAskPanel({ title: decision.title || "再确认一下你的问题", questions });
+        if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+        updateRunMessage(run, targetMessageId, { searchStatus: "正在整理补充信息..." });
+        return result;
       }
 
       function findLatestUserIndexBefore(items, end) {
@@ -7051,6 +7442,38 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           intent: ["fresh", "research", "general"].includes(parsed.intent) ? parsed.intent : inferSearchIntent(prompt),
           preferredProvider: SEARCH_PROVIDER_IDS.includes(parsed.preferredProvider) ? parsed.preferredProvider : "",
           complex: parsed.complex === true,
+        };
+      }
+
+      async function decideAskUserQuestion(prompt, planningContext, model, signal) {
+        const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: withRealtimeMessagePrefix([
+              {
+                role: "system",
+                content: "Decide whether the current user request is too ambiguous to search well without one more clarification step. Return only compact JSON with keys: shouldAsk boolean, title string, questions array. Each question item must have question string, options array of 2-4 short answer choices, and optional multiple boolean. Use multiple=true only for genuine select-all-that-apply questions; otherwise default to single choice. Ask 1-3 questions total. Ask only when the ambiguity materially changes the search target, scope, region, timeframe, intent, or object. Do not ask for trivia. If the request is already specific enough, return shouldAsk false and an empty questions array.",
+              },
+              { role: "user", content: planningContext },
+            ]),
+            temperature: 0.1,
+            max_tokens: 420,
+            stream: false,
+          }),
+          signal,
+        });
+        if (!response.ok) throw new Error(`Ask user question HTTP ${response.status}`);
+        const raw = extractContentFromResponse(await response.json());
+        const parsed = parseJsonObject(raw);
+        return {
+          shouldAsk: parsed.shouldAsk === true,
+          title: String(parsed.title || "").trim(),
+          questions: Array.isArray(parsed.questions) ? parsed.questions : [],
         };
       }
 
@@ -7523,6 +7946,8 @@ ${lines}`;
       function serializeMessageContent(message) {
         const files = message.attachments || [];
         const parts = [message.content || ""];
+        const clarificationMemory = buildMessageClarificationMemory(message);
+        if (clarificationMemory) parts.push(clarificationMemory);
         const searchMemory = buildMessageSearchMemory(message);
         if (searchMemory) parts.push(searchMemory);
         if (files.length) {
@@ -7537,6 +7962,15 @@ ${lines}`;
           parts.push(`Attached files:\n${fileContext}`);
         }
         return parts.filter(Boolean).join("\n\n");
+      }
+
+      function buildMessageClarificationMemory(message) {
+        const clarification = message?.clarification;
+        if (!clarification?.answers?.length) return "";
+        return `<clarification>
+The user answered these clarification questions for this request:
+${formatClarification(clarification)}
+</clarification>`;
       }
 
       function buildMessageSearchMemory(message) {
@@ -7598,6 +8032,7 @@ ${lines}
       function cancelRun() {
         const run = activeRun;
         if (aborter) aborter.abort();
+        finishAskPanel({ closed: true, aborted: true });
         if (run?.searchOnly && run.userMessageId) {
           updateRunMessage(run, run.userMessageId, { searchStatus: "" });
         }
