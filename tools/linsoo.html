@@ -403,7 +403,8 @@
         font-size: 14px;
       }
 
-      .chat-row {
+      .chat-row,
+      .folder-row {
         position: relative;
         padding-right: 34px;
       }
@@ -429,6 +430,7 @@
       }
 
       .chat-row:hover .chat-menu-btn,
+      .folder-row:hover .chat-menu-btn,
       .chat-menu-btn.open {
         opacity: 1;
         pointer-events: auto;
@@ -3303,7 +3305,16 @@
           left: 8px;
           right: auto;
           width: min(calc(100% - 16px), 820px);
+          max-height: 360px;
+          overflow: hidden;
           transform: none;
+          transition:
+            left var(--speed),
+            width 0.24s ease,
+            max-height 0.24s ease,
+            bottom 0.24s ease,
+            opacity 0.2s ease,
+            transform 0.24s ease;
         }
 
         .thread-composer.composer-hidden,
@@ -3312,20 +3323,32 @@
           bottom: 18px;
           width: 54px;
           height: 54px;
+          max-height: 54px;
           opacity: 1;
           pointer-events: auto;
           transform: none;
           cursor: pointer;
         }
 
-        .thread-composer.composer-hidden .composer-shell {
-          width: 54px;
-          height: 54px;
-          display: grid;
-          place-items: center;
+        .thread-composer .composer-shell {
+          width: 100%;
+          min-height: 54px;
+          box-sizing: border-box;
           overflow: hidden;
+          transition:
+            border-radius 0.24s ease,
+            padding 0.24s ease,
+            box-shadow 0.24s ease;
+        }
+
+        .thread-composer.composer-hidden .composer-shell {
+          height: 54px;
           border-radius: 50%;
           padding: 0;
+        }
+
+        .thread-composer .composer-shell > * {
+          transition: opacity 0.14s ease;
         }
 
         .thread-composer.composer-hidden .composer-shell > * {
@@ -3333,7 +3356,7 @@
           pointer-events: none;
         }
 
-        .thread-composer.composer-hidden .composer-shell::before {
+        .thread-composer .composer-shell:not(.drop-active)::before {
           content: "";
           position: absolute;
           left: 50%;
@@ -3343,10 +3366,12 @@
           border: 2px solid var(--accent);
           border-radius: 8px;
           box-sizing: border-box;
+          opacity: 0;
           transform: translate(-50%, -50%);
+          transition: opacity 0.14s ease 0.08s;
         }
 
-        .thread-composer.composer-hidden .composer-shell::after {
+        .thread-composer .composer-shell:not(.drop-active)::after {
           content: "";
           position: absolute;
           left: 19px;
@@ -3356,12 +3381,23 @@
           border-left: 2px solid var(--accent);
           border-bottom: 2px solid var(--accent);
           background: var(--ivory);
+          opacity: 0;
           transform: rotate(-35deg);
+          transition: opacity 0.14s ease 0.08s;
+        }
+
+        .thread-composer.composer-hidden .composer-shell:not(.drop-active)::before,
+        .thread-composer.composer-hidden .composer-shell:not(.drop-active)::after {
+          opacity: 1;
         }
 
         .scroll-btn,
         body.sidebar-collapsed .scroll-btn {
-          display: none;
+          left: 72px;
+          bottom: 25px;
+          z-index: 17;
+          border-radius: 50%;
+          transform: none;
         }
 
         .search-modal,
@@ -3658,7 +3694,7 @@
     <div class="overlay" id="deleteOverlay" role="dialog" aria-modal="true" aria-labelledby="deleteDialogTitle">
       <div class="delete-dialog">
         <h2 id="deleteDialogTitle">Delete chat</h2>
-        <p>Are you sure you want to delete this chat?</p>
+        <p id="deleteDialogMessage">Are you sure you want to delete this chat?</p>
         <div class="delete-actions">
           <button type="button" id="deleteCancel">Cancel</button>
           <button type="button" class="confirm-delete" id="deleteConfirm">Delete</button>
@@ -3826,6 +3862,8 @@
       const MODEL_CACHE_TTL = 10 * 60 * 1000;
       const MAX_FILE_CHARS = 12000;
       const PASTE_ATTACHMENT_LIMIT = 800;
+      const SCROLL_BUTTON_DISTANCE = 260;
+      const MOBILE_COMPOSER_EXPAND_LOCK_MS = 1400;
       const OPFS_SETTINGS_FILE = "linsoo-settings.json";
       const OPFS_CHAT_DIR = "linsoo-chats";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
@@ -3941,7 +3979,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let activeFolder = "";
       let expandedFolder = "";
       let activeChatMenuSlug = "";
+      let activeFolderMenuName = "";
       let pendingDeleteSlug = "";
+      let pendingDeleteAction = null;
       let folderPickerSlug = "";
       let draggedChatSlug = "";
       let attachments = {
@@ -3955,6 +3995,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let aborter = null;
       let autoFollow = true;
       let userScrollPauseUntil = 0;
+      let mobileComposerExpandedUntil = 0;
       let toastTimer = null;
       let mobileComposerTimer = null;
       let scrollSettleTimer = null;
@@ -4055,6 +4096,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "folderResults",
           "folderClose",
           "deleteOverlay",
+          "deleteDialogTitle",
+          "deleteDialogMessage",
           "deleteCancel",
           "deleteConfirm",
           "folderList",
@@ -4262,6 +4305,31 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         input.addEventListener("blur", commit, { once: true });
       }
 
+      function startInlineFolderRename(folder) {
+        const row = document.querySelector(`.folder-row[data-folder="${CSS.escape(folder)}"]`);
+        if (!folder || !row) return;
+        const name = row.querySelector(".folder-name");
+        name.innerHTML = `<input class="rename-input" value="${esc(folder)}" aria-label="重命名文件夹" />`;
+        const input = name.querySelector("input");
+        input.focus();
+        input.select();
+        const commit = async () => {
+          const next = input.value.trim().slice(0, 48);
+          if (!next || next === folder) return renderSidebar();
+          if (chatIndex.some((chat) => chat.folder === next)) {
+            showToast("文件夹已存在。");
+            renderSidebar();
+            return;
+          }
+          await renameFolder(folder, next);
+        };
+        input.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") commit();
+          if (event.key === "Escape") renderSidebar();
+        });
+        input.addEventListener("blur", commit, { once: true });
+      }
+
       function openFolderPicker(slug) {
         folderPickerSlug = slug;
         els.folderOverlay.classList.add("open");
@@ -4348,20 +4416,111 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function openDeleteConfirm(slug) {
         pendingDeleteSlug = slug;
+        pendingDeleteAction = { type: "chat", id: slug, action: "delete" };
+        els.deleteDialogTitle.textContent = "Delete chat";
+        els.deleteDialogMessage.textContent = "Are you sure you want to delete this chat?";
+        els.deleteConfirm.textContent = "Delete";
+        els.deleteConfirm.classList.add("confirm-delete");
+        els.deleteOverlay.classList.add("open");
+        setTimeout(() => els.deleteCancel.focus(), 30);
+      }
+
+      function openFolderConfirm(folder, action) {
+        pendingDeleteSlug = "";
+        pendingDeleteAction = { type: "folder", id: folder, action };
+        const count = chatIndex.filter((chat) => chat.folder === folder).length;
+        if (action === "dissolve") {
+          els.deleteDialogTitle.textContent = "解散文件夹";
+          els.deleteDialogMessage.textContent = `解散“${folder}”后，里面的 ${count} 条对话会回到 Recents，并取消固定。`;
+          els.deleteConfirm.textContent = "解散";
+          els.deleteConfirm.classList.remove("confirm-delete");
+        } else {
+          els.deleteDialogTitle.textContent = "删除文件夹";
+          els.deleteDialogMessage.textContent = `删除“${folder}”会同时删除里面的 ${count} 条对话。此操作无法撤销。`;
+          els.deleteConfirm.textContent = "删除";
+          els.deleteConfirm.classList.add("confirm-delete");
+        }
         els.deleteOverlay.classList.add("open");
         setTimeout(() => els.deleteCancel.focus(), 30);
       }
 
       function closeDeleteConfirm() {
         pendingDeleteSlug = "";
+        pendingDeleteAction = null;
         els.deleteOverlay.classList.remove("open");
       }
 
       async function confirmDeleteChat() {
-        if (!pendingDeleteSlug) return;
-        const slug = pendingDeleteSlug;
+        const action = pendingDeleteAction || (pendingDeleteSlug ? { type: "chat", id: pendingDeleteSlug, action: "delete" } : null);
+        if (!action) return;
         closeDeleteConfirm();
-        await deleteChat(slug);
+        if (action.type === "chat") {
+          await deleteChat(action.id);
+          return;
+        }
+        if (action.type === "folder" && action.action === "dissolve") {
+          await dissolveFolder(action.id);
+          return;
+        }
+        if (action.type === "folder" && action.action === "delete") {
+          await deleteFolder(action.id);
+        }
+      }
+
+      async function readFullChatForSummary(summary) {
+        if (currentChat?.slug === summary.slug) return { ...currentChat, messages };
+        return readJsonFile(`${OPFS_CHAT_DIR}/${summary.slug}.json`, null);
+      }
+
+      async function renameFolder(folder, next) {
+        const targets = chatIndex.filter((chat) => chat.folder === folder);
+        for (const summary of targets) {
+          const chat = await readFullChatForSummary(summary);
+          if (!chat) continue;
+          chat.folder = next;
+          await writeJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`, chat);
+          if (currentChat?.slug === chat.slug) currentChat.folder = next;
+          const idx = chatIndex.findIndex((item) => item.slug === chat.slug);
+          if (idx >= 0) chatIndex[idx] = chatSummary(chat);
+        }
+        if (expandedFolder === folder) expandedFolder = next;
+        renderSidebar();
+      }
+
+      async function dissolveFolder(folder) {
+        const targets = chatIndex.filter((chat) => chat.folder === folder);
+        for (const summary of targets) {
+          const chat = await readFullChatForSummary(summary);
+          if (!chat) continue;
+          chat.folder = "";
+          chat.pinned = false;
+          await writeJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`, chat);
+          if (currentChat?.slug === chat.slug) {
+            currentChat.folder = "";
+            currentChat.pinned = false;
+          }
+          const idx = chatIndex.findIndex((item) => item.slug === chat.slug);
+          if (idx >= 0) chatIndex[idx] = chatSummary(chat);
+        }
+        if (expandedFolder === folder) expandedFolder = "";
+        chatIndex.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+        renderSidebar();
+      }
+
+      async function deleteFolder(folder) {
+        const targets = chatIndex.filter((chat) => chat.folder === folder);
+        const deletingCurrent = targets.some((chat) => chat.slug === currentChat?.slug);
+        for (const chat of targets) {
+          await deleteJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`);
+        }
+        chatIndex = chatIndex.filter((chat) => chat.folder !== folder);
+        if (expandedFolder === folder) expandedFolder = "";
+        if (deletingCurrent) {
+          newChat({ preserveHash: true });
+          history.replaceState(null, "", location.pathname);
+          return;
+        }
+        renderSidebar();
       }
 
       function chatSummary(chat) {
@@ -4550,7 +4709,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
         els.threadComposer.addEventListener("click", () => {
           if (isMobileViewport() && els.threadComposer.classList.contains("composer-hidden")) {
+            mobileComposerExpandedUntil = Date.now() + MOBILE_COMPOSER_EXPAND_LOCK_MS;
             showThreadComposer();
+            els.scrollBtn.classList.remove("visible");
+            requestAnimationFrame(() => els.threadInput.focus());
           }
         });
         els.railPrev.addEventListener("click", () => jumpUserPrompt(-1));
@@ -4620,8 +4782,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         window.addEventListener("scroll", () => {
           const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
           autoFollow = Date.now() < userScrollPauseUntil ? distance < 12 : distance < 120;
-          updateScrollButtonVisibility(distance);
           handleMobileComposerScroll(distance);
+          updateScrollButtonVisibility(distance);
           updateRailActive();
         }, { passive: true });
         window.addEventListener("resize", updateScrollButtonOffset, { passive: true });
@@ -4983,16 +5145,27 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               const open = folder === expandedFolder;
               const chats = chatIndex.filter((chat) => chat.folder === folder);
               return `
-                <button class="folder-row${open ? " open active" : ""}" data-folder="${esc(folder)}" data-drop-folder="${esc(folder)}">
-                  <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span><span class="folder-caret">›</span>
-                </button>
+                <div class="folder-row${open ? " open active" : ""}" data-folder="${esc(folder)}" data-drop-folder="${esc(folder)}" role="button" tabindex="0">
+                  <span class="sidebar-icon">${ICON_FOLDER}</span><span class="folder-name">${esc(folder)}</span><span class="folder-caret">›</span><span class="chat-menu-btn" data-folder-menu="${esc(folder)}" title="更多" aria-label="更多">•••</span>
+                </div>
                 ${open ? `<div class="folder-chat-list" data-drop-folder="${esc(folder)}">${chats.map(chatRowHTML).join("")}</div>` : ""}`;
             }).join("")
           : `<div class="empty-row">空</div>`;
-        els.folderList.querySelectorAll(".folder-row").forEach((btn) => {
-          btn.addEventListener("click", () => {
-            expandedFolder = btn.dataset.folder === expandedFolder ? "" : btn.dataset.folder;
+        els.folderList.querySelectorAll(".folder-row").forEach((row) => {
+          const toggle = (event) => {
+            if (event.target.closest(".chat-menu-btn") || event.target.closest(".rename-input")) return;
+            expandedFolder = row.dataset.folder === expandedFolder ? "" : row.dataset.folder;
             renderSidebar();
+          };
+          row.addEventListener("click", toggle);
+          row.addEventListener("keydown", (event) => {
+            if (event.key === "Enter") toggle(event);
+          });
+        });
+        els.folderList.querySelectorAll("[data-folder-menu]").forEach((btn) => {
+          btn.addEventListener("click", (event) => {
+            event.stopPropagation();
+            openFolderMenu(btn.dataset.folderMenu, btn.getBoundingClientRect());
           });
         });
 
@@ -5139,6 +5312,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function openChatMenu(slug, rect) {
+        activeFolderMenuName = "";
         activeChatMenuSlug = slug;
         const chat = chatIndex.find((item) => item.slug === slug);
         if (!chat) return;
@@ -5157,10 +5331,41 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      function openFolderMenu(folder, rect) {
+        activeChatMenuSlug = "";
+        activeFolderMenuName = folder;
+        els.chatMenu.innerHTML = `
+          <button data-action="rename"><span class="menu-icon">${ICON_EDIT}</span><span>重命名</span></button>
+          <hr>
+          <button data-action="dissolve"><span class="menu-icon">${ICON_FOLDER}</span><span>解散</span></button>
+          <button class="danger" data-action="delete"><span class="menu-icon">${ICON_TRASH}</span><span>删除</span></button>`;
+        els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, rect.right + 6)}px`;
+        els.chatMenu.style.top = `${Math.min(window.innerHeight - 144, rect.top)}px`;
+        els.chatMenu.classList.add("open");
+        document.querySelectorAll(".chat-menu-btn").forEach((item) => item.classList.toggle("open", item.dataset.folderMenu === folder));
+        els.chatMenu.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => handleFolderMenu(button.dataset.action));
+        });
+      }
+
       function closeChatMenu() {
         els.chatMenu.classList.remove("open");
         document.querySelectorAll(".chat-menu-btn.open").forEach((btn) => btn.classList.remove("open"));
         activeChatMenuSlug = "";
+        activeFolderMenuName = "";
+      }
+
+      function handleFolderMenu(action) {
+        const folder = activeFolderMenuName;
+        if (!folder) return;
+        closeChatMenu();
+        if (action === "rename") {
+          startInlineFolderRename(folder);
+          return;
+        }
+        if (action === "dissolve" || action === "delete") {
+          openFolderConfirm(folder, action);
+        }
       }
 
       async function handleChatMenu(action) {
@@ -5917,10 +6122,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             },
             body: JSON.stringify({
               model: titleModel,
-              messages: [
+              messages: withRealtimeMessagePrefix([
                 { role: "system", content: "Create a concise conversation title. Return only the title, no quotes." },
                 { role: "user", content: `${firstUser.content}\n\n${firstAssistant.content.slice(0, 1200)}` },
-              ],
+              ]),
               temperature: 0.2,
               max_tokens: 24,
               stream: false,
@@ -6132,13 +6337,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           },
           body: JSON.stringify({
             model,
-            messages: [
+            messages: withRealtimeMessagePrefix([
               {
                 role: "system",
                 content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful."} Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
               },
               { role: "user", content: planningContext },
-            ],
+            ]),
             temperature: 0,
             max_tokens: 520,
             stream: false,
@@ -6403,6 +6608,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             .filter((m) => !(m.role === "assistant" && m.id === assistantId))
             .map((m) => ({ role: m.role, content: serializeMessageContent(m) })),
         ];
+        const requestMessages = withRealtimeMessagePrefix(bodyMessages);
 
         const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
           method: "POST",
@@ -6412,7 +6618,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           },
           body: JSON.stringify({
             model,
-            messages: bodyMessages,
+            messages: requestMessages,
             temperature: state.mode === "quick" ? 0.15 : 0.35,
             max_tokens: state.mode === "quick" ? 1400 : 3800,
             stream: true,
@@ -6494,6 +6700,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           quick: "Mode: quick. Start with the answer in 2-4 sentences, then include only essential detail.",
         }[state.mode];
         return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}`;
+      }
+
+      function currentRealtimePromptPrefix() {
+        const now = new Date();
+        const pad = (value) => String(value).padStart(2, "0");
+        return `当前实时日期时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+      }
+
+      function withRealtimeMessagePrefix(items) {
+        const prefix = currentRealtimePromptPrefix();
+        return items.map((item) => ({
+          ...item,
+          content: `${prefix}\n\n${item.content || ""}`,
+        }));
       }
 
       function buildSearchContextPrompt(search) {
@@ -7670,6 +7890,7 @@ ${lines}`;
 
       function scrollToBottom() {
         showThreadComposer();
+        els.scrollBtn.classList.remove("visible");
         requestAnimationFrame(() => {
           window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
         });
@@ -7680,18 +7901,25 @@ ${lines}`;
         const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
         userScrollPauseUntil = Date.now() + 1600;
         autoFollow = false;
-        updateScrollButtonVisibility(distance);
         handleMobileComposerScroll(distance);
+        updateScrollButtonVisibility(distance);
       }
 
       function updateScrollButtonVisibility(distance) {
-        const shouldShow = !autoFollow && messages.length > 0;
+        const enoughDistance = distance >= SCROLL_BUTTON_DISTANCE;
+        const chatActive = document.body.classList.contains("chat-active");
+        const shouldShow = chatActive && !autoFollow && enoughDistance && messages.length > 0;
         clearTimeout(scrollSettleTimer);
         if (isMobileViewport()) {
+          const composerHidden = els.threadComposer?.classList.contains("composer-hidden");
+          els.scrollBtn.classList.toggle("visible", chatActive && composerHidden && enoughDistance && messages.length > 0);
+          return;
+        }
+        if (!chatActive) {
           els.scrollBtn.classList.remove("visible");
           return;
         }
-        if (!isMobileViewport() || !document.body.classList.contains("chat-active")) {
+        if (!isMobileViewport()) {
           els.scrollBtn.classList.toggle("visible", shouldShow);
           return;
         }
@@ -7699,7 +7927,7 @@ ${lines}`;
         if (!shouldShow) return;
         scrollSettleTimer = setTimeout(() => {
           const latestDistance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
-          const settledAwayFromBottom = latestDistance >= 120;
+          const settledAwayFromBottom = latestDistance >= SCROLL_BUTTON_DISTANCE;
           els.scrollBtn.classList.toggle("visible", settledAwayFromBottom && messages.length > 0);
         }, 280);
       }
@@ -7718,12 +7946,20 @@ ${lines}`;
           showThreadComposer();
           return;
         }
+        if (Date.now() < mobileComposerExpandedUntil || els.threadComposer.contains(document.activeElement)) {
+          els.threadComposer.classList.remove("composer-hidden");
+          return;
+        }
         els.threadComposer.classList.add("composer-hidden");
         clearTimeout(mobileComposerTimer);
       }
 
       function updateScrollButtonOffset() {
         if (!els.threadComposer || !els.scrollBtn) return;
+        if (isMobileViewport()) {
+          els.scrollBtn.style.bottom = "";
+          return;
+        }
         const visible = els.threadComposer.style.display !== "none";
         const height = visible ? els.threadComposer.getBoundingClientRect().height : 0;
         els.scrollBtn.style.bottom = `${Math.max(120, height + 34)}px`;
