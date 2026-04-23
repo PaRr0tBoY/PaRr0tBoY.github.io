@@ -116,6 +116,16 @@
         touch-action: manipulation;
       }
 
+      * {
+        scrollbar-width: none;
+      }
+
+      *::-webkit-scrollbar {
+        width: 0;
+        height: 0;
+        display: none;
+      }
+
       body::before {
         content: "";
         position: fixed;
@@ -670,17 +680,6 @@
         height: var(--sidebar-icon-size, 19px);
       }
 
-      .theme-float {
-        position: fixed;
-        top: 16px;
-        right: 18px;
-        z-index: 35;
-      }
-
-      body.chat-active .theme-float {
-        display: none;
-      }
-
       .icon-btn,
       .pill-btn {
         display: inline-flex;
@@ -717,12 +716,6 @@
         background: var(--white);
         box-shadow: var(--shadow-ring-deep);
         color: var(--ink);
-      }
-
-      .icon-btn.theme-float,
-      .icon-btn.theme-float:hover {
-        background: transparent;
-        box-shadow: none;
       }
 
       .icon-btn.sidebar-collapse {
@@ -1087,6 +1080,20 @@
         height: 18px;
       }
 
+      .web-search-btn::after {
+        content: "";
+        position: absolute;
+        right: 2px;
+        bottom: 2px;
+        display: none;
+        color: var(--accent);
+        font-size: 7px;
+        font-weight: 800;
+        letter-spacing: 0;
+        line-height: 1;
+        text-transform: uppercase;
+      }
+
       .web-search-btn .slash,
       .web-search-btn .spark {
         display: none;
@@ -1097,12 +1104,24 @@
         display: block;
       }
 
-      .web-search-btn[data-mode="on"] {
+      .web-search-btn[data-mode="auto"] {
         color: var(--accent);
       }
 
-      .web-search-btn[data-mode="auto"] {
-        color: var(--ink);
+      .web-search-btn[data-mode="auto"]::after {
+        content: "auto";
+        display: block;
+      }
+
+      .web-search-btn[data-mode="auto"] .spark {
+        stroke-width: 2.8;
+        transform: scale(1.45);
+        transform-box: fill-box;
+        transform-origin: center;
+      }
+
+      .web-search-btn[data-mode="on"] {
+        color: var(--muted) !important;
       }
 
       .tool-btn:hover,
@@ -3162,10 +3181,6 @@
           overflow: hidden;
         }
 
-        .theme-float {
-          display: none;
-        }
-
         .sidebar {
           top: 0;
           left: 0;
@@ -3285,19 +3300,21 @@
 
         .thread-composer,
         body.sidebar-collapsed .thread-composer {
-          left: 50%;
+          left: 8px;
+          right: auto;
           width: min(calc(100% - 16px), 820px);
+          transform: none;
         }
 
         .thread-composer.composer-hidden,
         body.sidebar-collapsed .thread-composer.composer-hidden {
-          left: 50%;
+          left: 8px;
           bottom: 18px;
           width: 54px;
           height: 54px;
           opacity: 1;
           pointer-events: auto;
-          transform: translateX(-50%);
+          transform: none;
           cursor: pointer;
         }
 
@@ -3317,16 +3334,29 @@
         }
 
         .thread-composer.composer-hidden .composer-shell::before {
-          content: "L";
+          content: "";
           position: absolute;
-          inset: 0;
-          display: grid;
-          place-items: center;
-          color: var(--accent);
-          font-family: "Newsreader", Georgia, serif;
-          font-size: 27px;
-          font-weight: 500;
-          line-height: 1;
+          left: 50%;
+          top: 50%;
+          width: 24px;
+          height: 18px;
+          border: 2px solid var(--accent);
+          border-radius: 8px;
+          box-sizing: border-box;
+          transform: translate(-50%, -50%);
+        }
+
+        .thread-composer.composer-hidden .composer-shell::after {
+          content: "";
+          position: absolute;
+          left: 19px;
+          bottom: 15px;
+          width: 8px;
+          height: 8px;
+          border-left: 2px solid var(--accent);
+          border-bottom: 2px solid var(--accent);
+          background: var(--ivory);
+          transform: rotate(-35deg);
         }
 
         .scroll-btn,
@@ -3483,12 +3513,6 @@
           </section>
         </div>
       </aside>
-
-      <button class="icon-btn theme-float" id="themeBtn" title="切换暗色模式" aria-label="切换暗色模式">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-          <path d="M21 12.8A8.5 8.5 0 1 1 11.2 3 6.8 6.8 0 0 0 21 12.8z" />
-        </svg>
-      </button>
 
       <main class="main">
         <section class="hero" id="hero">
@@ -3848,7 +3872,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
       const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
       const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
-      const ICON_WEB_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/><path class="slash" d="M4 20 20 4"/><path class="spark" d="M18.5 2.8v3M17 4.3h3M5.7 17.8v2.4M4.5 19h2.4"/></svg>';
+      const ICON_WEB_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/><path class="slash" d="M4 20 20 4"/><path class="spark" d="M18.4 2.6l.5 1.25 1.35.1-1.04.86.32 1.32-1.15-.72-1.16.72.33-1.32-1.04-.86 1.34-.1.5-1.25Z"/></svg>';
       const PROVIDERS = {
         glm: {
           label: "GLM",
@@ -4043,7 +4067,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "settingsCancel",
           "settingsSave",
           "newChatBtn",
-          "themeBtn",
           "scrollBtn",
           "conversationRail",
           "railInner",
@@ -4520,7 +4543,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           });
         });
         els.newChatBtn.addEventListener("click", newChat);
-        els.themeBtn.addEventListener("click", toggleTheme);
         document.getElementById('sidebarThemeBtn')?.addEventListener('click', toggleTheme);
         els.scrollBtn.addEventListener("click", () => {
           autoFollow = true;
@@ -4837,6 +4859,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           if (!button) return;
           button.innerHTML = ICON_WEB_SEARCH;
           button.dataset.mode = mode;
+          button.style.color = mode === "auto" ? "var(--accent)" : "var(--muted)";
           button.title = label;
           button.setAttribute("aria-label", label);
         });
@@ -6583,7 +6606,24 @@ ${lines}`;
         const modal = els.settingsOverlay.querySelector(".modal");
         if (!modal) return;
         modal.style.height = "auto";
+        const previous = {
+          general: els.tabGeneral.style.display,
+          ai: els.tabAI.style.display,
+          search: els.tabSearch.style.display,
+          appearance: els.tabAppearance.style.display,
+          about: els.tabAbout.style.display,
+        };
+        els.tabGeneral.style.display = "none";
+        els.tabAI.style.display = "none";
+        els.tabSearch.style.display = "";
+        els.tabAppearance.style.display = "none";
+        els.tabAbout.style.display = "none";
         const height = Math.min(Math.floor(window.innerHeight * 0.88), Math.ceil(modal.scrollHeight));
+        els.tabGeneral.style.display = previous.general;
+        els.tabAI.style.display = previous.ai;
+        els.tabSearch.style.display = previous.search;
+        els.tabAppearance.style.display = previous.appearance;
+        els.tabAbout.style.display = previous.about;
         modal.style.height = `${height}px`;
       }
 
@@ -6637,11 +6677,6 @@ ${lines}`;
         const isDark = document.body.dataset.theme === "dark";
         const icon = isDark ? ICON_SUN : ICON_MOON;
         const label = isDark ? "切换亮色模式" : "切换暗色模式";
-        if (els.themeBtn) {
-          els.themeBtn.innerHTML = icon;
-          els.themeBtn.title = label;
-          els.themeBtn.setAttribute("aria-label", label);
-        }
         const sidebarThemeBtn = document.getElementById("sidebarThemeBtn");
         const sidebarIcon = sidebarThemeBtn?.querySelector(".sidebar-icon");
         if (sidebarIcon) sidebarIcon.innerHTML = icon;
@@ -7685,7 +7720,6 @@ ${lines}`;
         }
         els.threadComposer.classList.add("composer-hidden");
         clearTimeout(mobileComposerTimer);
-        mobileComposerTimer = setTimeout(showThreadComposer, 1000);
       }
 
       function updateScrollButtonOffset() {
