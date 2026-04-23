@@ -3475,6 +3475,7 @@
         body.sidebar-collapsed .thread-composer {
           left: 8px;
           right: auto;
+          bottom: var(--mobile-composer-bottom, 18px);
           width: min(calc(100% - 16px), 820px);
           max-height: 360px;
           overflow: hidden;
@@ -3491,7 +3492,7 @@
         .thread-composer.composer-hidden,
         body.sidebar-collapsed .thread-composer.composer-hidden {
           left: 8px;
-          bottom: 18px;
+          bottom: var(--mobile-composer-bottom, 18px);
           width: 40px;
           height: 40px;
           max-height: 40px;
@@ -3565,8 +3566,8 @@
 
         .scroll-btn,
         body.sidebar-collapsed .scroll-btn {
-          left: 72px;
-          bottom: 18px;
+          left: 64px;
+          bottom: var(--mobile-composer-bottom, 18px);
           z-index: 17;
           border-radius: 50%;
           transform: none;
@@ -4224,6 +4225,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let mobileComposerExpandedUntil = 0;
       let mobileComposerRevealClickUntil = 0;
       let mobileSidebarOpenUntil = 0;
+      let mobileUserScrollUntil = 0;
       let toastTimer = null;
       let mobileComposerTimer = null;
       let scrollSettleTimer = null;
@@ -4968,6 +4970,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.threadInput.addEventListener("blur", () => {
           mobileComposerExpandedUntil = 0;
           scheduleMobileComposerCollapse();
+          setTimeout(updateMobileViewportInsets, 80);
+        });
+        els.threadInput.addEventListener("focus", () => {
+          mobileComposerExpandedUntil = Date.now() + MOBILE_COMPOSER_EXPAND_LOCK_MS;
+          updateMobileViewportInsets();
+          setTimeout(updateMobileViewportInsets, 80);
+          setTimeout(updateMobileViewportInsets, 260);
+          setTimeout(updateMobileViewportInsets, 600);
         });
         els.railPrev.addEventListener("click", () => jumpUserPrompt(-1));
         els.railNext.addEventListener("click", () => jumpUserPrompt(1));
@@ -5029,7 +5039,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }, { once: true });
 
         window.addEventListener("wheel", (event) => {
-          if (event.deltaY < 0) pauseAutoFollowForUserScroll();
+          if (Math.abs(event.deltaY) > 2) pauseAutoFollowForUserScroll();
         }, { passive: true });
         let touchStartY = 0;
         window.addEventListener("touchstart", (event) => {
@@ -5037,17 +5047,22 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }, { passive: true });
         window.addEventListener("touchmove", (event) => {
           const y = event.touches?.[0]?.clientY || 0;
-          if (touchStartY && y - touchStartY > 8) pauseAutoFollowForUserScroll();
+          if (touchStartY && Math.abs(y - touchStartY) > 8) pauseAutoFollowForUserScroll();
         }, { passive: true });
 
         window.addEventListener("scroll", () => {
           const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
           autoFollow = Date.now() < userScrollPauseUntil ? distance < 12 : distance < 120;
-          handleMobileComposerScroll(distance);
+          handleMobileComposerScroll(distance, { forceCollapse: Date.now() < mobileUserScrollUntil });
           updateScrollButtonVisibility(distance);
           updateRailActive();
         }, { passive: true });
-        window.addEventListener("resize", updateScrollButtonOffset, { passive: true });
+        window.addEventListener("resize", () => {
+          updateMobileViewportInsets();
+          updateScrollButtonOffset();
+        }, { passive: true });
+        window.visualViewport?.addEventListener("resize", updateMobileViewportInsets, { passive: true });
+        window.visualViewport?.addEventListener("scroll", updateMobileViewportInsets, { passive: true });
 
         window.addEventListener("hashchange", async () => {
           const route = parseRoute();
@@ -8738,9 +8753,10 @@ ${lines}
       function pauseAutoFollowForUserScroll() {
         if (!document.body.classList.contains("chat-active")) return;
         const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
+        mobileUserScrollUntil = Date.now() + 900;
         userScrollPauseUntil = Date.now() + 1600;
         autoFollow = false;
-        handleMobileComposerScroll(distance);
+        handleMobileComposerScroll(distance, { forceCollapse: true });
         updateScrollButtonVisibility(distance);
       }
 
@@ -8782,6 +8798,7 @@ ${lines}
 
       function focusThreadInputSoon() {
         requestAnimationFrame(() => {
+          updateMobileViewportInsets();
           try {
             els.threadInput.focus({ preventScroll: true });
           } catch (error) {
@@ -8795,6 +8812,9 @@ ${lines}
                 els.threadInput.focus();
               }
             }
+            updateMobileViewportInsets();
+            setTimeout(updateMobileViewportInsets, 180);
+            setTimeout(updateMobileViewportInsets, 600);
             scheduleMobileComposerCollapse();
           }, 40);
         });
@@ -8812,12 +8832,26 @@ ${lines}
         }, 1800);
       }
 
-      function handleMobileComposerScroll(distance) {
+      function forceCollapseMobileComposer(distance) {
+        if (!isMobileViewport() || !document.body.classList.contains("chat-active")) return false;
+        if (distance < 36) return false;
+        mobileComposerExpandedUntil = 0;
+        mobileComposerRevealClickUntil = 0;
+        if (els.threadComposer?.contains(document.activeElement)) {
+          document.activeElement.blur();
+        }
+        els.threadComposer?.classList.add("composer-hidden");
+        clearTimeout(mobileComposerTimer);
+        return true;
+      }
+
+      function handleMobileComposerScroll(distance, opts = {}) {
         if (!isMobileViewport() || !document.body.classList.contains("chat-active")) {
           showThreadComposer();
           return;
         }
         if (!document.body.classList.contains("sidebar-collapsed") || Date.now() < mobileSidebarOpenUntil) return;
+        if (opts.forceCollapse && forceCollapseMobileComposer(distance)) return;
         if (running) return;
         if (distance < 80) {
           showThreadComposer();
@@ -8829,6 +8863,19 @@ ${lines}
         }
         els.threadComposer.classList.add("composer-hidden");
         clearTimeout(mobileComposerTimer);
+      }
+
+      function updateMobileViewportInsets() {
+        if (!isMobileViewport()) {
+          document.documentElement.style.removeProperty("--mobile-composer-bottom");
+          return;
+        }
+        const viewport = window.visualViewport;
+        const keyboardInset = viewport
+          ? Math.max(0, window.innerHeight - viewport.height - viewport.offsetTop)
+          : 0;
+        const bottom = Math.round(Math.max(18, keyboardInset + 10));
+        document.documentElement.style.setProperty("--mobile-composer-bottom", `${bottom}px`);
       }
 
       function updateScrollButtonOffset() {
