@@ -7247,6 +7247,28 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const existingMeta = els.askPanel.querySelector(".ask-panel-foot-meta");
         if (existingMeta) existingMeta.remove();
         els.askPanel.querySelector(".ask-panel-foot")?.prepend(footerMeta);
+        const syncAskOtherUi = () => {
+          const currentCustom = String(askPanelState.customAnswers?.[index] || "");
+          const currentSelected = Array.isArray(askPanelState.answers[index]) ? askPanelState.answers[index] : [];
+          const count = currentSelected.length + (currentCustom.trim() ? 1 : 0);
+          const label = item.multiple ? `已选 ${count} 项` : "点击选项或填写其它答案后继续";
+          const metaNode = els.askPanel.querySelector(".ask-panel-foot-meta");
+          if (metaNode) metaNode.textContent = label;
+          els.askDoneBtn.disabled = item.multiple ? false : !(currentSelected.length || currentCustom.trim());
+          const otherWrap = els.askPanelBody.querySelector(".ask-option-other");
+          const otherIndex = otherWrap?.querySelector(".ask-option-index");
+          otherWrap?.classList.toggle("selected", !!currentCustom.trim());
+          if (otherIndex) {
+            otherIndex.textContent = item.multiple ? (currentCustom.trim() ? "✓" : "") : String(regularOptions.length + 1);
+          }
+          if (!item.multiple && currentCustom.trim()) {
+            els.askPanelBody.querySelectorAll(".ask-option:not(.ask-option-other)").forEach((button) => {
+              button.classList.remove("selected");
+              const trail = button.querySelector(".ask-option-trail");
+              if (trail) trail.textContent = "";
+            });
+          }
+        };
         els.askPanelBody.querySelectorAll(".ask-option").forEach((button) => {
           button.addEventListener("click", () => {
             const option = regularOptions[Number(button.dataset.optionIndex)] || "";
@@ -7283,12 +7305,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             askPanelState.customAnswers[index] = value;
             askPanelState.focusOther = { index, pos: otherInput.selectionStart ?? value.length };
             if (!item.multiple && value.trim()) askPanelState.answers[index] = [];
-            renderAskPanel();
+            syncAskOtherUi();
           });
           otherInput.addEventListener("focus", () => {
             askPanelState.focusOther = { index, pos: otherInput.selectionStart ?? otherInput.value.length };
             if (!item.multiple) {
               askPanelState.answers[index] = [];
+              syncAskOtherUi();
             }
           });
         }
@@ -7332,6 +7355,29 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           })
           .filter((item) => item.question && item.options.length >= 2)
           .slice(0, 3);
+      }
+
+      function isRedundantGeoQuestion(item, amapContext) {
+        const geo = amapContext?.geo;
+        if (!geo?.formattedAddress) return false;
+        const question = String(item?.question || "");
+        return /(哪个位置|哪个城市|哪里|哪儿|哪座城市|哪个地区|哪一个地方|什么地方)/.test(question)
+          && /(天气|附近|路线|导航|旅游|旅行|出行)/.test(question);
+      }
+
+      function localReferencePattern() {
+        return /(本地|当地|这里|这边|当前位置|当前所在位置|我这里|我这边|我附近|附近|周边)/g;
+      }
+
+      function concreteGeoLabel(amapContext) {
+        const geo = amapContext?.geo || {};
+        return geo.city && geo.district ? `${geo.city}${geo.district}` : geo.city || geo.formattedAddress || "";
+      }
+
+      function resolveLocalReferenceText(text, amapContext) {
+        const label = concreteGeoLabel(amapContext);
+        if (!label) return String(text || "");
+        return String(text || "").replace(localReferencePattern(), label);
       }
 
       function normalizeAskPanelTitle(title) {
@@ -7654,6 +7700,39 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           || trip.test(text);
       }
 
+      async function decideAmapUsage(prompt, planningContext, model, signal) {
+        if (!state.apiKey || !model || signal?.aborted) return { shouldUse: false, kind: "", skipClarification: false };
+        const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${state.apiKey}`,
+          },
+          body: JSON.stringify({
+            model,
+            messages: withRealtimeMessagePrefix([
+              {
+                role: "system",
+                content: "判断当前用户请求是否应该优先调用高德地图位置服务。只返回紧凑 JSON，字段仅限 shouldUse、kind、skipClarification。kind 只能是 weather、nearby、route、trip、empty。规则：只有当问题和用户当前地理位置、附近搜索、天气、路线、出行、周边旅游强相关时，shouldUse 才为 true。若高德返回的数据通常就足够直接回答该请求，例如当前位置天气、附近找店、从当前位置去某地的路线，则 skipClarification 设为 true；否则为 false。不要输出任何解释。",
+              },
+              { role: "user", content: planningContext },
+            ]),
+            temperature: 0,
+            max_tokens: 160,
+            stream: false,
+          }),
+          signal,
+        });
+        if (!response.ok) throw new Error(`AMap decision HTTP ${response.status}`);
+        const raw = extractContentFromResponse(await response.json());
+        const parsed = parseJsonObject(raw);
+        return {
+          shouldUse: parsed.shouldUse === true,
+          kind: ["weather", "nearby", "route", "trip"].includes(parsed.kind) ? parsed.kind : "",
+          skipClarification: parsed.skipClarification === true,
+        };
+      }
+
       function inferAmapIntent(prompt) {
         const text = String(prompt || "").replace(/\s+/g, " ").trim();
         if (!shouldUseAmapForPrompt(text)) return null;
@@ -7665,7 +7744,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
                 : "walking";
         const destination = extractAmapDestination(text);
         if (destination) return { kind: /(旅游|旅行|行程|去哪玩|目的地)/.test(text) ? "trip" : "route", mode: routeMode, destination };
-        if (/(附近|周边|离我|周围|我附近|我这)/.test(text) || /(旅游|旅行|去哪玩|周末去哪)/.test(text)) {
+        if (/(附近|周边|周遭|离我|周围|我附近|我这)/.test(text) || /(旅游|旅行|去哪玩|周末去哪)/.test(text)) {
           return { kind: /(旅游|旅行|去哪玩|周末去哪)/.test(text) ? "trip" : "nearby", keyword: extractNearbyKeyword(text) };
         }
         return null;
@@ -7687,11 +7766,12 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function extractNearbyKeyword(text) {
         const cleaned = String(text || "")
-          .replace(/(附近|周边|离我最近|离我近|我附近|我这附近|我这里|当前位置|这里|周围|找|推荐|有没有|帮我|请问)/g, " ")
+          .replace(/(附近|周边|周遭|离我最近|离我近|我附近|我这附近|我这里|当前位置|这里|周围|找|推荐|有没有|帮我|请问)/g, " ")
           .replace(/(旅游|旅行|去哪玩|周末去哪|怎么玩)/g, " 景点 ")
           .replace(/\s+/g, " ")
           .trim();
         if (!cleaned) return "便利店";
+        if (/好玩|玩|逛|散步|周末|休闲|打发时间|约会|拍照/.test(cleaned)) return "景点";
         if (/吃|餐|饭|火锅|烧烤|小吃/.test(cleaned)) return "餐厅";
         if (/咖啡/.test(cleaned)) return "咖啡厅";
         if (/药/.test(cleaned)) return "药店";
@@ -7731,38 +7811,32 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
-      async function resolveAmapContext(prompt, signal) {
-        const intent = inferAmapIntent(prompt);
+      async function resolveAmapContext(prompt, signal, amapDecision = null) {
+        const intent = amapDecision?.kind
+          ? { ...(inferAmapIntent(prompt) || {}), kind: amapDecision.kind }
+          : inferAmapIntent(prompt);
         if (!intent || !state.amapKey) return null;
-        const coords = await requestBrowserLocation(signal).catch(async () => {
-          const ip = await amapRequest("/v3/ip", {}, signal).catch(() => null);
-          if (!ip?.adcode) throw new Error("定位失败，请允许浏览器读取位置。");
-          return { lat: null, lng: null, ipOnly: true, adcode: ip.adcode, province: ip.province, city: ip.city };
+        if ((intent.kind === "nearby" || intent.kind === "trip") && !intent.keyword) {
+          intent.keyword = extractNearbyKeyword(prompt);
+        }
+        const coords = await requestBrowserLocation(signal).catch(() => {
+          throw new Error("未能获取到你的精确地理位置；请允许浏览器读取位置后再试。");
         });
-        const location = coords.ipOnly
-          ? {
-            adcode: coords.adcode,
-            city: coords.city || coords.province || "",
-            district: "",
-            formattedAddress: `${coords.province || ""}${coords.city || ""}`,
-            lat: null,
-            lng: null,
-          }
-          : await amapRequest("/v3/geocode/regeo", {
-            location: `${coords.lng},${coords.lat}`,
-            extensions: "base",
-            radius: 1000,
-          }, signal).then((data) => {
-            const comp = data.regeocode?.addressComponent || {};
-            return {
-              adcode: comp.adcode || "",
-              city: Array.isArray(comp.city) ? comp.province || "" : comp.city || comp.province || "",
-              district: comp.district || "",
-              formattedAddress: data.regeocode?.formatted_address || "",
-              lat: coords.lat,
-              lng: coords.lng,
-            };
-          });
+        const location = await amapRequest("/v3/geocode/regeo", {
+          location: `${coords.lng},${coords.lat}`,
+          extensions: "base",
+          radius: 1000,
+        }, signal).then((data) => {
+          const comp = data.regeocode?.addressComponent || {};
+          return {
+            adcode: comp.adcode || "",
+            city: Array.isArray(comp.city) ? comp.province || "" : comp.city || comp.province || "",
+            district: comp.district || "",
+            formattedAddress: data.regeocode?.formatted_address || "",
+            lat: coords.lat,
+            lng: coords.lng,
+          };
+        });
         if (intent.kind === "weather") return buildAmapWeatherContext(location, signal);
         if (intent.kind === "nearby") return buildAmapNearbyContext(location, intent.keyword, signal);
         if (intent.kind === "route" || intent.kind === "trip") return buildAmapRouteContext(location, intent, signal);
@@ -7774,6 +7848,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const live = (data.lives || [])[0] || {};
         return {
           kind: "weather",
+          geo: location,
           title: `${location.city || ""}${location.district || ""}天气`,
           subtitle: location.formattedAddress || "基于当前位置获取",
           metrics: [
@@ -7797,6 +7872,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const pois = data.pois?.poi || data.pois || [];
         return {
           kind: "nearby",
+          geo: location,
           title: `附近${keyword || "地点"}`,
           subtitle: location.formattedAddress || "基于当前位置获取",
           metrics: [
@@ -7863,6 +7939,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
         return {
           kind: intent.kind,
+          geo: location,
           title: `${intent.destination}出行建议`,
           subtitle: `${location.city || ""}${location.district || ""} → ${dest.formatted_address || intent.destination}`,
           metrics,
@@ -7900,7 +7977,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!context) return "";
         const metrics = (context.metrics || []).map((item) => `${item.label}: ${item.value}`).join("\n");
         const items = (context.items || []).map((item, index) => `[${index + 1}] ${item.title}${item.meta ? `\nMeta: ${item.meta}` : ""}${item.snippet ? `\nNote: ${item.snippet}` : ""}`).join("\n\n");
+        const geo = context.geo || {};
         return `高德地图位置服务结果（基于用户当前地理位置）：
+用户所在城市：${geo.city || "未知"}
+用户所在区域：${geo.district || "未知"}
+用户当前地址：${geo.formattedAddress || "未知"}
 标题：${context.title || ""}
 说明：${context.subtitle || ""}
 ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
@@ -7916,32 +7997,21 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         const prompt = latestUserPrompt(run.messages || messages, targetMessageId);
         if (!prompt.trim()) return;
         const planningContext = buildSearchPlanningContext(run.messages || messages, targetMessageId);
-        const clarification = await maybeAskUserQuestion({
-          prompt,
-          targetMessageId,
-          planningContext,
-          model,
-          signal,
-          run,
-          forceAskCheck: true,
-        });
-        const searchPrompt = buildClarifiedPrompt(prompt, clarification);
-        const searchSeed = buildClarifiedSearchSeed(prompt, clarification);
-        const clarifiedContext = clarification?.answers?.length
-          ? [planningContext, `Clarification:\n${formatClarification(clarification)}`].join("\n\n")
-          : planningContext;
-        if (clarification?.answers?.length) {
-          run.clarification = clarification;
-          run.clarifiedPrompt = searchPrompt;
-          const userId = latestUserMessageId(run.messages || messages, targetMessageId);
-          if (userId) updateRunMessage(run, userId, { clarification });
+        let amapDecision = { shouldUse: false, kind: "", skipClarification: false };
+        let amapContext = null;
+        if (state.amapKey) {
+          amapDecision = await decideAmapUsage(prompt, planningContext, model, signal).catch(() => ({
+            shouldUse: shouldUseAmapForPrompt(prompt),
+            kind: inferAmapIntent(prompt)?.kind || "",
+            skipClarification: false,
+          }));
         }
-        if (shouldUseAmapForPrompt(searchSeed) && !state.amapKey) {
+        if (amapDecision.shouldUse && !state.amapKey) {
           showToast("这个问题需要位置服务，请先在设置-搜索中填写高德地图 Key。");
-        } else if (shouldUseAmapForPrompt(searchSeed)) {
+        } else if (amapDecision.shouldUse) {
           updateRunMessage(run, targetMessageId, { searchStatus: "正在获取当前位置与高德位置服务..." });
           try {
-            const amapContext = await resolveAmapContext(searchSeed, signal);
+            amapContext = await resolveAmapContext(prompt, signal, amapDecision);
             if (amapContext) {
               run.amapContext = amapContext;
               updateRunMessage(run, targetMessageId, { amapContext });
@@ -7952,6 +8022,30 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             if (error.name === "AbortError") throw error;
             showToast(error.message || "高德位置服务调用失败。");
           }
+        }
+        const planningContextWithGeo = [planningContext, amapContext ? buildAmapContextPrompt(amapContext) : ""].filter(Boolean).join("\n\n");
+        const clarification = amapDecision.skipClarification === true
+          ? null
+          : await maybeAskUserQuestion({
+            prompt,
+            targetMessageId,
+            planningContext: planningContextWithGeo,
+            model,
+            signal,
+            run,
+            amapContext,
+            forceAskCheck: true,
+          });
+        const searchPrompt = buildClarifiedPrompt(prompt, clarification);
+        const searchSeed = buildClarifiedSearchSeed(prompt, clarification);
+        const clarifiedContext = clarification?.answers?.length
+          ? [planningContextWithGeo, `Clarification:\n${formatClarification(clarification)}`].join("\n\n")
+          : planningContextWithGeo;
+        if (clarification?.answers?.length) {
+          run.clarification = clarification;
+          run.clarifiedPrompt = searchPrompt;
+          const userId = latestUserMessageId(run.messages || messages, targetMessageId);
+          if (userId) updateRunMessage(run, userId, { clarification });
         }
         if (mode === "off" && !forceSearch) {
           updateRunMessage(run, targetMessageId, { searchStatus: "" });
@@ -8043,17 +8137,28 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         ].join("\n\n");
       }
 
-      async function maybeAskUserQuestion({ prompt, targetMessageId, planningContext, model, signal, run, forceAskCheck = true }) {
+      async function maybeAskUserQuestion({ prompt, targetMessageId, planningContext, model, signal, run, amapContext = null, forceAskCheck = true }) {
         if (!forceAskCheck || !state.apiKey || !model || signal?.aborted) return null;
         updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要补充问题..." });
         const decision = await decideAskUserQuestion(prompt, planningContext, model, signal).catch(() => ({ shouldAsk: false, questions: [] }));
-        const questions = normalizeAskQuestions(decision.questions);
+        const questions = normalizeAskQuestions(decision.questions).filter((item) => !isRedundantGeoQuestion(item, amapContext));
         if (!decision.shouldAsk || !questions.length) return null;
         updateRunMessage(run, targetMessageId, { searchStatus: "等待你补充问题信息..." });
         const result = await openAskPanel({ title: decision.title || "再确认一下你的问题", questions });
         if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
         updateRunMessage(run, targetMessageId, { searchStatus: "正在整理补充信息..." });
-        return result;
+        if (!result?.answers?.length) return result;
+        return {
+          ...result,
+          answers: result.answers.map((item) => {
+            const answer = (item.answer || []).map((value) => resolveLocalReferenceText(value, amapContext));
+            return {
+              ...item,
+              answer,
+              answerText: answer.length ? answer.join(", ") : "[No preference]",
+            };
+          }),
+        };
       }
 
       function findLatestUserIndexBefore(items, end) {
@@ -8144,7 +8249,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             messages: withRealtimeMessagePrefix([
               {
                 role: "system",
-                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} Write concise search-engine queries that capture the user's meaning. Do not copy a long user prompt unless it is already an excellent short query. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
+                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} If the context already contains enough structured location-service data from AMap to answer the request directly, set shouldSearch to false unless the user explicitly asks for broader web sources, comparisons, reviews, or external references. Write concise search-engine queries that capture the user's meaning. Do not copy a long user prompt unless it is already an excellent short query. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
               },
               { role: "user", content: planningContext },
             ]),
@@ -8179,7 +8284,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             messages: withRealtimeMessagePrefix([
               {
                 role: "system",
-                content: "判断当前用户问题是否仍然不够明确，是否需要先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。只有真正需要多选时才设置 multiple=true。仅当歧义会实质影响对象、范围、地区、时间、意图、型号、预算、用途或搜索方向时才提问；如果当前信息已经足够明确，返回 shouldAsk=false 和空 questions 数组。",
+                content: "判断当前用户问题是否仍然不够明确，是否需要先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。只有真正需要多选时才设置 multiple=true。仅当歧义会实质影响对象、范围、地区、时间、意图、型号、预算、用途或搜索方向时才提问；如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。若当前信息已经足够明确，返回 shouldAsk=false 和空 questions 数组。",
               },
               { role: "user", content: planningContext },
             ]),
@@ -8527,7 +8632,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       async function callChatModel(model, assistantId, signal, run = activeRun) {
         const runMessages = run?.messages || messages;
         const bodyMessages = [
-          { role: "system", content: buildSystemPrompt() },
+          { role: "system", content: buildSystemPrompt(run) },
           ...(run?.amapContext ? [{ role: "system", content: buildAmapContextPrompt(run.amapContext) }] : []),
           ...(run?.searchContext?.results?.length ? [{ role: "system", content: buildSearchContextPrompt(run.searchContext) }] : []),
           ...runMessages
@@ -8619,7 +8724,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         return content.trim();
       }
 
-      function buildSystemPrompt() {
+      function buildSystemPrompt(run = activeRun) {
         const modeHint = {
           search: "Mode: search. Prioritize grounded answer, citations, and follow-up research directions.",
           deep: "Mode: deep. Compare possibilities, explain tradeoffs, and include a compact research map.",
@@ -8630,7 +8735,15 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 - You can ask the user 1-3 clarifying questions with askuserquestion when the request is ambiguous, under-specified, or missing key constraints.
 - If clarifying answers are available, incorporate them together with the original prompt.
 - Do not claim that you lack search or askuserquestion capability unless the app explicitly reports a runtime failure.`;
-        return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}`;
+        const geo = run?.amapContext?.geo;
+        const geoHint = geo?.formattedAddress
+          ? `Current user location confirmed by browser geolocation and AMap:
+- City: ${geo.city || "Unknown"}
+- District: ${geo.district || "Unknown"}
+- Address: ${geo.formattedAddress}
+Treat this as the user's actual current location unless the user explicitly says otherwise.`
+          : "Current user location is not confirmed. If location permission or AMap data was not obtained, do not guess the user's city, district, or nearby places. State clearly that location data was not available.";
+        return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${geoHint}`;
       }
 
       function currentRealtimePromptPrefix() {
