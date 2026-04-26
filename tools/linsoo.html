@@ -11495,9 +11495,13 @@ ${formatClarification(clarification)}
         return file.text().then((text) => JSON.parse(text));
       }
 
-      function configClone(value) {
+      function cloneValue(value) {
         if (value === undefined) return undefined;
         return JSON.parse(JSON.stringify(value));
+      }
+
+      function configClone(value) {
+        return cloneValue(value);
       }
 
       function exportedConfigState() {
