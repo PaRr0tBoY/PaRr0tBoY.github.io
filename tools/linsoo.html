@@ -1536,19 +1536,17 @@
       }
 
       .message-edit-panel {
-        margin-top: 12px;
         display: grid;
         gap: 12px;
-        border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
-        border-radius: 14px;
-        background: color-mix(in srgb, var(--paper) 94%, transparent);
-        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 14%, transparent);
-        padding: 10px;
+      }
+
+      .bubble.editing {
+        padding: 18px;
       }
 
       .message-edit-input {
         width: 100%;
-        min-height: 110px;
+        min-height: 160px;
         resize: vertical;
         border: 1px solid var(--line-strong);
         border-radius: 12px;
@@ -1564,6 +1562,14 @@
         color: var(--muted);
         font-size: 13px;
         line-height: 1.45;
+      }
+
+      .message-edit-panel .attachment-strip {
+        padding-top: 0;
+      }
+
+      .segmented.is-disabled {
+        opacity: 0.44;
       }
 
       .message-edit-actions {
@@ -2872,6 +2878,12 @@
         text-decoration: none;
       }
 
+      .search-page-result-card {
+        position: relative;
+        margin-bottom: 18px;
+        padding-right: 88px;
+      }
+
       .search-page-result {
         display: grid;
         grid-template-columns: 42px minmax(0, 1fr);
@@ -2879,7 +2891,6 @@
         min-width: 0;
         color: var(--text-strong);
         text-decoration: none;
-        margin-bottom: 24px;
       }
 
       .search-page-result .source-favicon {
@@ -2887,6 +2898,41 @@
         height: 30px;
         align-self: start;
         margin-top: 3px;
+      }
+
+      .search-page-result-actions {
+        position: absolute;
+        top: 0;
+        right: 0;
+        display: inline-flex;
+        gap: 6px;
+      }
+
+      .search-pref-btn {
+        width: 34px;
+        height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid var(--line-strong);
+        border-radius: 11px;
+        background: var(--paper);
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 18px;
+        line-height: 1;
+      }
+
+      .search-pref-btn:hover {
+        color: var(--ink);
+        border-color: var(--ring);
+        background: var(--white);
+      }
+
+      .search-pref-btn.active {
+        border-color: color-mix(in srgb, var(--accent) 38%, var(--line-strong));
+        background: color-mix(in srgb, var(--accent-soft) 62%, var(--paper));
+        color: var(--accent);
       }
 
       .search-page-result-site {
@@ -2899,6 +2945,21 @@
         color: var(--text-strong);
         font-size: 14px;
         font-weight: 650;
+      }
+
+      .source-pref-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 5px;
+        width: fit-content;
+        border: 1px solid color-mix(in srgb, var(--accent) 24%, var(--line));
+        border-radius: 999px;
+        background: color-mix(in srgb, var(--accent-soft) 70%, transparent);
+        color: var(--accent);
+        margin-top: 3px;
+        padding: 2px 8px;
+        font-size: 11px;
+        font-weight: 700;
       }
 
       .search-page-result-title {
@@ -3200,6 +3261,7 @@
 
       .tabs {
         display: flex;
+        flex-wrap: wrap;
         gap: 4px;
         border-radius: var(--radius-md);
         background: var(--sand);
@@ -3208,7 +3270,7 @@
       }
 
       .tab {
-        flex: 1;
+        flex: 1 1 96px;
         border: none;
         border-radius: 10px;
         background: transparent;
@@ -3698,7 +3760,7 @@
 
       .search-provider-card {
         display: grid;
-        grid-template-columns: 18px minmax(0, 1fr);
+        grid-template-columns: 18px minmax(0, 1fr) 20px;
         gap: 10px;
         border: 1px solid var(--line-strong);
         border-radius: 12px;
@@ -3748,8 +3810,127 @@
         gap: 8px;
       }
 
+      .search-provider-toggle {
+        align-self: start;
+        width: 20px;
+        height: 20px;
+        border: none;
+        background: transparent;
+        color: var(--faint);
+        cursor: pointer;
+        padding: 0;
+        font-size: 16px;
+        line-height: 1;
+        transition: transform var(--speed), color var(--speed);
+      }
+
+      .search-provider-toggle:hover {
+        color: var(--ink);
+      }
+
+      .search-provider-card.collapsed .search-provider-controls {
+        display: none;
+      }
+
+      .search-provider-card.collapsed .search-provider-toggle {
+        transform: rotate(-90deg);
+      }
+
       .search-provider-controls .input {
         min-width: 0;
+      }
+
+      .source-pref-entry {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        gap: 8px;
+      }
+
+      .source-pref-entry .primary-btn,
+      .source-pref-entry .outline-btn {
+        min-width: 72px;
+      }
+
+      .source-pref-list {
+        display: grid;
+        gap: 8px;
+        margin-top: 10px;
+      }
+
+      .source-pref-empty {
+        border: 1px dashed var(--line-strong);
+        border-radius: 12px;
+        color: var(--faint);
+        padding: 12px;
+        font-size: 12px;
+      }
+
+      .source-pref-chip {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: var(--paper);
+        padding: 10px 12px;
+      }
+
+      .source-pref-chip.boosted {
+        border-color: color-mix(in srgb, var(--accent) 30%, var(--line-strong));
+        background: color-mix(in srgb, var(--accent-soft) 35%, var(--paper));
+      }
+
+      .source-pref-chip.blocked {
+        border-color: color-mix(in srgb, var(--danger) 24%, var(--line-strong));
+        background: color-mix(in srgb, var(--danger) 7%, var(--paper));
+      }
+
+      .source-pref-chip-main {
+        min-width: 0;
+        display: grid;
+        gap: 2px;
+      }
+
+      .source-pref-chip-domain {
+        overflow: hidden;
+        color: var(--text-strong);
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        font-family: "DM Mono", ui-monospace, monospace;
+        font-size: 12px;
+      }
+
+      .source-pref-remove {
+        width: 28px;
+        height: 28px;
+        border: none;
+        border-radius: 9px;
+        background: transparent;
+        color: var(--muted);
+        cursor: pointer;
+        font-size: 15px;
+        line-height: 1;
+      }
+
+      .source-pref-remove:hover {
+        background: var(--sand);
+        color: var(--ink);
+      }
+
+      .source-pref-more {
+        width: fit-content;
+        border: none;
+        background: transparent;
+        color: var(--accent);
+        cursor: pointer;
+        padding: 0;
+        font-size: 12px;
+        font-weight: 650;
+      }
+
+      .source-pref-more:hover {
+        color: var(--accent-2);
       }
 
       @media (max-width: 720px) {
@@ -4534,6 +4715,16 @@
             </div>
             <div class="setting-row">
               <div>
+                <div class="setting-title">工具调用</div>
+                <div class="setting-subtitle">流程模式沿用当前脚本判断；自动模式会把搜索、高德、网页抓取、补充问题和搜索词构建作为真正的 tool call 提供给模型。</div>
+              </div>
+              <div class="segmented web-mode-group" id="toolCallModeGroup">
+                <button type="button" data-tool-call-mode="flow">流程</button>
+                <button type="button" data-tool-call-mode="auto">自动</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div>
                 <div class="setting-title">对话记录条</div>
                 <div class="setting-subtitle">长对话右侧的消息位置索引。</div>
               </div>
@@ -4604,7 +4795,7 @@
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 20 20 4"/></svg>
                 </button>
               </div>
-              <div class="field-hint">保存在浏览器 OPFS 或 IndexedDB。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
+              <div class="field-hint">优先保存在浏览器 OPFS 或 IndexedDB；若两者都不可用，则继续回退到 localStorage。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
             </div>
             <div class="field">
               <button class="outline-btn" id="testApiKeyBtn">测试 API Key</button>
@@ -4633,7 +4824,7 @@
           <div id="tabSearch" style="display: none">
             <div class="field">
               <div class="field-label">Search Providers</div>
-              <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会保存在浏览器 OPFS/IndexedDB。部分服务可能因 CORS 拒绝前端请求。</div>
+              <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会优先保存在浏览器 OPFS/IndexedDB，必要时回退到 localStorage。部分服务可能因 CORS 拒绝前端请求。</div>
             </div>
             <div class="field">
               <div class="field-label">单次搜索返回条数</div>
@@ -4645,11 +4836,39 @@
               <div class="field-hint">分别对应 3 / 6 / 9 条结果。</div>
             </div>
             <div class="field">
+              <div class="field-label">搜索国家/地区代码</div>
+              <input class="input mono" id="cfgSearchCountry" type="text" placeholder="例如 US / GB / CN" autocomplete="off" spellcheck="false" maxlength="2" />
+              <div class="field-hint">Exa 会作为 <code>userLocation</code> 使用，Serper / SerpAPI 会作为国家地区代码使用；Tavily 会尽量同步映射到国家参数。建议填写两位 ISO 代码。</div>
+            </div>
+            <div class="field">
               <div class="field-label">高德地图 Key</div>
               <input class="input mono" id="cfgAmapKey" type="password" placeholder="用于天气、附近、路线等位置服务" autocomplete="off" spellcheck="false" />
               <div class="field-hint">当问题涉及当前位置、附近、出行路线或基于你所在位置的天气时，会先请求浏览器定位权限，再调用高德 Web 服务 API。</div>
             </div>
+            <div class="field">
+              <div class="field-label">Jina Reader API Key</div>
+              <input class="input mono" id="cfgJinaApiKey" type="password" placeholder="用于提权域名的完整正文抓取" autocomplete="off" spellcheck="false" />
+              <div class="field-hint">当本地正文提取链路失败时，会回退到 Jina Reader 抓取提权网页的完整正文；未填写时仍会尝试匿名访问。</div>
+            </div>
             <div class="search-provider-list" id="searchProviderList"></div>
+            <div class="field">
+              <div class="field-label">来源提权</div>
+              <div class="source-pref-entry">
+                <input class="input mono" id="boostedDomainInput" type="text" placeholder="例如 theverge.com, techcrunch.com" autocomplete="off" spellcheck="false" />
+                <button class="primary-btn" id="addBoostedDomainBtn" type="button">添加</button>
+              </div>
+              <div class="field-hint">提权域名会在未来搜索结果中优先排序，并把命中网页的完整正文作为高权重上下文发送给 AI。</div>
+              <div class="source-pref-list" id="boostedDomainList"></div>
+            </div>
+            <div class="field">
+              <div class="field-label">来源屏蔽</div>
+              <div class="source-pref-entry">
+                <input class="input mono" id="blockedDomainInput" type="text" placeholder="例如 pinterest.com, quora.com" autocomplete="off" spellcheck="false" />
+                <button class="outline-btn" id="addBlockedDomainBtn" type="button">添加</button>
+              </div>
+              <div class="field-hint">屏蔽域名会从未来 Web Search 结果中直接剔除，也不会出现在来源面板、搜索页或发送给 AI 的搜索上下文里。</div>
+              <div class="source-pref-list" id="blockedDomainList"></div>
+            </div>
           </div>
           <div id="tabAppearance" style="display: none">
             <div class="field">
@@ -4668,7 +4887,7 @@
                 <button type="button" data-persistence-mode="opfs">OPFS</button>
                 <button type="button" data-persistence-mode="indexeddb">IndexedDB</button>
               </div>
-              <div class="field-hint" id="persistenceModeHint">默认优先使用 OPFS；若浏览器不支持稳定读写，则会自动回退到 IndexedDB。</div>
+              <div class="field-hint" id="persistenceModeHint">默认优先使用 OPFS；若 OPFS 或 IndexedDB 不可用，则会继续自动回退。</div>
             </div>
             <div class="field">
               <div class="field-label">配置</div>
@@ -4677,7 +4896,7 @@
                 <button class="outline-btn" id="importConfigBtn">导入配置</button>
                 <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
               </div>
-              <div class="field-hint">导出或导入 AI Provider、模型列表、System Prompt、搜索 Provider 和高德地图 Key；不会覆盖通用与外观设置。</div>
+              <div class="field-hint">导出或导入 AI Provider、模型列表、System Prompt、搜索 Provider、高德地图 Key、Jina Reader Key 与来源偏好；不会覆盖通用与外观设置。</div>
             </div>
             <div class="field">
               <div class="field-label">消息记录</div>
@@ -4686,7 +4905,7 @@
                 <button class="outline-btn" id="importChatsBtn">导入消息记录</button>
                 <input id="importChatsInput" type="file" accept="application/json,.json" hidden />
               </div>
-              <div class="field-hint">消息记录保存在浏览器 OPFS/IndexedDB 中，导入会合并到当前本地记录。</div>
+              <div class="field-hint">消息记录会优先保存在浏览器 OPFS/IndexedDB 中；若两者都不可用，则回退到 localStorage。导入会合并到当前本地记录。</div>
             </div>
           </div>
           <div class="modal-foot">
@@ -4711,7 +4930,9 @@
       const STORAGE_MODE_BOOTSTRAP_KEY = "linsoo-storage-mode";
       const IDB_NAME = "linsoo-storage";
       const IDB_STORE = "files";
-      const PERSISTENCE_MODES = ["opfs", "indexeddb"];
+      const LOCALSTORAGE_FILE_PREFIX = "linsoo-file:";
+      const PERSISTENCE_MODES = ["opfs", "indexeddb", "localstorage"];
+      const CONFIGURABLE_PERSISTENCE_MODES = ["opfs", "indexeddb"];
       const DEFAULT_PAGE_TITLE = "Linsoo — AI 搜索对话";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
@@ -4792,8 +5013,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         serper: { label: "Serper", keyUrl: "https://serper.dev/" },
         serpapi: { label: "SerpAPI", keyUrl: "https://serpapi.com/manage-api-key" },
       };
+      const SOURCE_EXTRACTION_PROXIES = [
+        "https://corsproxy.io/?",
+        "https://api.allorigins.win/raw?url=",
+      ];
       const SEARCH_PROVIDER_IDS = ["tavily", "exa", "serper", "serpapi"];
       const SEARCH_PROVIDER_TIMEOUT_MS = 18000;
+      const BOOSTED_SOURCE_FETCH_TIMEOUT_MS = 22000;
+      const JINA_READER_BASE = "https://r.jina.ai/";
+      const TOOL_AGENT_MAX_STEPS = 8;
       const MOBILE_ROW_LONG_PRESS_MS = 520;
       const MOBILE_ROW_SWIPE_PX = 42;
       const CONFIG_EXPORT_KEYS = [
@@ -4807,7 +5035,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         "customProviders",
         "webSearchMode",
         "searchProviders",
+        "searchCountry",
         "amapKey",
+        "jinaApiKey",
+        "sourcePreferences",
       ];
       const HERO_LINES = [
         "Linsoo 这一块",
@@ -4827,6 +5058,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         prompt: DEFAULT_PROMPT,
         mode: "search",
         interactionMode: "chat",
+        toolCallMode: "flow",
         theme: "light",
         themeMode: "light",
         webSearchMode: "auto",
@@ -4835,7 +5067,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         searchResultCountMode: "balanced",
         persistenceMode: "opfs",
         searchProviders: {},
+        searchCountry: "",
         amapKey: "",
+        jinaApiKey: "",
+        sourcePreferences: { boosted: [], blocked: [] },
         railEnabled: true,
         queueFallback: false,
         retryOnFailure: true,
@@ -4879,12 +5114,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let opfsReady = false;
       let idbDb = null;
       let idbReady = false;
-      let storageMode = "indexeddb";
+      let localStorageReady = false;
+      let storageMode = "localstorage";
+      let persistencePreference = "opfs";
       let saveTimer = null;
       let askPanelState = null;
       let mathJaxReady = null;
       let markdownReady = null;
       let markdownRenderer = null;
+      let readabilityReady = null;
+      let readabilityCtor = null;
+      let turndownReady = null;
+      let turndownCtor = null;
       let highlightReady = null;
       let railActiveIndex = -1;
       let activeRun = null;
@@ -4897,6 +5138,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let suppressScrollCapture = false;
       const viewScrollState = { chat: 0, search: 0 };
       let editingMessageId = "";
+      const jinaReaderCache = new Map();
+      const sourcePrefExpanded = { boosted: false, blocked: false };
+      const searchProviderCollapsed = { tavily: false, exa: true, serper: true, serpapi: true };
 
       const els = {};
 
@@ -5024,6 +5268,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "cfgBaseUrl",
           "cfgApiKey",
           "cfgAmapKey",
+          "cfgSearchCountry",
+          "cfgJinaApiKey",
           "cfgModelInput",
           "refreshModelsBtn",
           "settingsModelDropdown",
@@ -5041,11 +5287,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "toggleKeyBtn",
           "testApiKeyBtn",
           "webSearchModeGroup",
+          "toolCallModeGroup",
           "searchResultCountModeGroup",
           "searchPlanningModeGroup",
           "clarifyQuestionsModeGroup",
           "webSearchSettingRow",
           "searchProviderList",
+          "boostedDomainInput",
+          "blockedDomainInput",
+          "boostedDomainList",
+          "blockedDomainList",
+          "addBoostedDomainBtn",
+          "addBlockedDomainBtn",
           "cfgRail",
           "cfgQueueFallback",
           "cfgRetryOnFailure",
@@ -5070,25 +5323,125 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       async function initStorage() {
+        localStorageReady = probeLocalStorageSupport();
         await initIndexedDb();
         opfsReady = await probeOpfsSupport();
-        const bootMode = normalizePersistenceMode(localStorage.getItem(STORAGE_MODE_BOOTSTRAP_KEY));
-        storageMode = resolvePersistenceMode(bootMode || "opfs");
-        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, storageMode);
+        const bootMode = normalizeConfigurablePersistenceMode(localStorageReadRaw(STORAGE_MODE_BOOTSTRAP_KEY));
+        persistencePreference = bootMode || "opfs";
+        storageMode = resolvePersistenceMode(persistencePreference);
+        localStorageWriteRaw(STORAGE_MODE_BOOTSTRAP_KEY, persistencePreference);
       }
 
       function normalizePersistenceMode(mode) {
         return PERSISTENCE_MODES.includes(mode) ? mode : "";
       }
 
+      function normalizeConfigurablePersistenceMode(mode) {
+        return CONFIGURABLE_PERSISTENCE_MODES.includes(mode) ? mode : "";
+      }
+
+      function effectiveConfigurablePersistenceMode() {
+        if (opfsReady) return "opfs";
+        if (idbReady) return "indexeddb";
+        return "";
+      }
+
       function resolvePersistenceMode(mode = "opfs") {
         if (mode === "opfs" && opfsReady) return "opfs";
+        if (mode === "indexeddb" && idbReady) return "indexeddb";
+        if (opfsReady) return "opfs";
         if (idbReady) return "indexeddb";
-        return opfsReady ? "opfs" : "indexeddb";
+        if (localStorageReady) return "localstorage";
+        return "";
       }
 
       function isPersistenceModeAvailable(mode) {
-        return mode === "opfs" ? opfsReady : mode === "indexeddb" ? idbReady : false;
+        return mode === "opfs" ? opfsReady : mode === "indexeddb" ? idbReady : mode === "localstorage" ? localStorageReady : false;
+      }
+
+      function probeLocalStorageSupport() {
+        try {
+          const key = `${LOCALSTORAGE_FILE_PREFIX}__probe__`;
+          localStorage.setItem(key, "1");
+          const ok = localStorage.getItem(key) === "1";
+          localStorage.removeItem(key);
+          return ok;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function localStorageReadRaw(key) {
+        if (!localStorageReady) return "";
+        try {
+          return localStorage.getItem(key) || "";
+        } catch (e) {
+          return "";
+        }
+      }
+
+      function localStorageWriteRaw(key, value) {
+        if (!localStorageReady) return false;
+        try {
+          localStorage.setItem(key, String(value));
+          return true;
+        } catch (e) {
+          return false;
+        }
+      }
+
+      function localStorageDeleteRaw(key) {
+        if (!localStorageReady) return;
+        try {
+          localStorage.removeItem(key);
+        } catch (e) {}
+      }
+
+      function localStorageFileKey(path) {
+        return `${LOCALSTORAGE_FILE_PREFIX}${path}`;
+      }
+
+      async function localStorageReadJson(path, fallback) {
+        const raw = localStorageReadRaw(localStorageFileKey(path)) || localStorageReadRaw(path);
+        if (!raw) return fallback;
+        try {
+          return cloneValue(JSON.parse(raw));
+        } catch (e) {
+          return fallback;
+        }
+      }
+
+      async function localStorageWriteJson(path, data) {
+        const payload = JSON.stringify(data);
+        const primary = localStorageWriteRaw(localStorageFileKey(path), payload);
+        const legacy = localStorageWriteRaw(path, payload);
+        if (!primary && !legacy) throw new Error("localStorage write failed");
+      }
+
+      async function localStorageDeleteJson(path) {
+        localStorageDeleteRaw(localStorageFileKey(path));
+        localStorageDeleteRaw(path);
+      }
+
+      async function localStorageListEntries(prefix = "") {
+        if (!localStorageReady) return [];
+        const entries = new Map();
+        const fullPrefix = localStorageFileKey(prefix);
+        try {
+          for (let i = 0; i < localStorage.length; i++) {
+            const key = localStorage.key(i);
+            if (!key) continue;
+            const isPrefixed = key.startsWith(LOCALSTORAGE_FILE_PREFIX);
+            const path = isPrefixed ? key.slice(LOCALSTORAGE_FILE_PREFIX.length) : key;
+            if (!isPrefixed && (!prefix || !path.startsWith(prefix))) continue;
+            if (isPrefixed && fullPrefix && !key.startsWith(fullPrefix)) continue;
+            const value = await localStorageReadJson(path, undefined);
+            if (value !== undefined && !entries.has(path)) entries.set(path, { key: path, value });
+          }
+        } catch (e) {
+          return [];
+        }
+        return [...entries.values()];
       }
 
       async function initIndexedDb() {
@@ -5102,10 +5455,34 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             request.onsuccess = () => resolve(request.result);
             request.onerror = () => reject(request.error);
           });
-          idbReady = true;
+          idbReady = await probeIndexedDbSupport();
         } catch (e) {
+          try {
+            idbDb?.close?.();
+          } catch (closeError) {}
           idbDb = null;
           idbReady = false;
+        }
+      }
+
+      async function probeIndexedDbSupport() {
+        if (!idbDb) return false;
+        const probePath = `${OPFS_CHAT_DIR}/.linsoo-idb-probe`;
+        const probeValue = { ok: true, ts: Date.now() };
+        try {
+          await idbWriteJson(probePath, probeValue);
+          const readBack = await idbReadJson(probePath, null);
+          await idbDeleteJson(probePath);
+          return !!readBack && readBack.ok === true && readBack.ts === probeValue.ts;
+        } catch (e) {
+          try {
+            await idbDeleteJson(probePath);
+          } catch (deleteError) {}
+          try {
+            idbDb?.close?.();
+          } catch (closeError) {}
+          idbDb = null;
+          return false;
         }
       }
 
@@ -5218,7 +5595,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             return fallback;
           }
         }
-        return idbReadJson(path, fallback);
+        if (mode === "indexeddb") return idbReadJson(path, fallback);
+        return localStorageReadJson(path, fallback);
       }
 
       async function writeJsonFile(path, data) {
@@ -5233,7 +5611,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           await writable.close();
           return;
         }
-        await idbWriteJson(path, data);
+        if (mode === "indexeddb") {
+          await idbWriteJson(path, data);
+          return;
+        }
+        if (mode === "localstorage") {
+          await localStorageWriteJson(path, data);
+          return;
+        }
+        throw new Error("No persistence backend available");
       }
 
       async function deleteJsonFile(path) {
@@ -5249,7 +5635,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           await dir.removeEntry(name).catch(() => {});
           return;
         }
-        await idbDeleteJson(path);
+        if (mode === "indexeddb") {
+          await idbDeleteJson(path);
+          return;
+        }
+        if (mode === "localstorage") {
+          await localStorageDeleteJson(path);
+          return;
+        }
       }
 
       async function getOpfsFile(path, opts = {}) {
@@ -5294,8 +5687,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
                 chatIndex.push(chatSummary(chat));
               } catch (e) {}
             }
-          } else {
+          } else if (storageMode === "indexeddb") {
             const rows = await idbListEntries(`${OPFS_CHAT_DIR}/`);
+            rows.forEach(({ key, value }) => {
+              if (!String(key).endsWith(".json") || !value || typeof value !== "object") return;
+              try {
+                chatIndex.push(chatSummary(value));
+              } catch (e) {}
+            });
+          } else {
+            const rows = await localStorageListEntries(`${OPFS_CHAT_DIR}/`);
             rows.forEach(({ key, value }) => {
               if (!String(key).endsWith(".json") || !value || typeof value !== "object") return;
               try {
@@ -5584,18 +5985,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function loadState() {
         try {
-          const stored = await readJsonFile(OPFS_SETTINGS_FILE, null);
-          const fallbackStored = !stored && storageMode !== "indexeddb" ? await readJsonFileFrom("indexeddb", OPFS_SETTINGS_FILE, null) : null;
-          const finalStored = stored || fallbackStored;
+          const candidates = [storageMode, "opfs", "indexeddb", "localstorage"]
+            .map((mode) => normalizePersistenceMode(mode))
+            .filter((mode, index, list) => mode && list.indexOf(mode) === index);
+          let finalStored = null;
+          for (const mode of candidates) {
+            if (!isPersistenceModeAvailable(mode)) continue;
+            finalStored = await readJsonFileFrom(mode, OPFS_SETTINGS_FILE, null);
+            if (finalStored) break;
+          }
           if (finalStored) Object.assign(state, finalStored);
           if (!finalStored) {
-            const rawLegacy = localStorage.getItem(STORAGE_KEY);
+            const rawLegacy = localStorageReadRaw(STORAGE_KEY);
             if (rawLegacy) Object.assign(state, JSON.parse(rawLegacy));
           }
         } catch (e) {}
 
         try {
-          const linso = JSON.parse(localStorage.getItem(LINSO_STORAGE_KEY) || "{}");
+          const linso = JSON.parse(localStorageReadRaw(LINSO_STORAGE_KEY) || "{}");
           if (!state.baseUrl && linso.baseUrl) state.baseUrl = linso.baseUrl;
           if (!state.apiKey && linso.apiKey) state.apiKey = linso.apiKey;
           if (!state.activeModel && Array.isArray(linso.models)) state.activeModel = linso.models[0] || "";
@@ -5619,11 +6026,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!state.provider) state.provider = state.baseUrl ? inferProviderFromBaseUrl(state.baseUrl) || "glm" : "custom-default";
         if (!state.modelCache || !Array.isArray(state.modelCache.models)) state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
         state.interactionMode = normalizeInteractionMode(state.interactionMode);
+        state.toolCallMode = normalizeToolCallMode(state.toolCallMode);
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
+        state.searchCountry = normalizeSearchCountryCode(state.searchCountry);
         state.amapKey = String(state.amapKey || "");
-        state.persistenceMode = resolvePersistenceMode(normalizePersistenceMode(state.persistenceMode) || storageMode || "opfs");
-        storageMode = state.persistenceMode;
-        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, storageMode);
+        state.jinaApiKey = String(state.jinaApiKey || "");
+        normalizeSourcePreferenceState();
+        const storedPreference = normalizeConfigurablePersistenceMode(state.persistenceMode) || persistencePreference || "opfs";
+        storageMode = resolvePersistenceMode(storedPreference);
+        const effectiveMode = effectiveConfigurablePersistenceMode();
+        persistencePreference = effectiveMode || storedPreference;
+        state.persistenceMode = effectiveMode;
+        if (effectiveMode) localStorageWriteRaw(STORAGE_MODE_BOOTSTRAP_KEY, effectiveMode);
         hydrateModelsFromCache();
       }
 
@@ -5644,6 +6058,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
       }
 
+      function normalizeSourcePreferenceState() {
+        const input = state.sourcePreferences && typeof state.sourcePreferences === "object" ? state.sourcePreferences : {};
+        state.sourcePreferences = {
+          boosted: sortedUniqueDomains(input.boosted || []),
+          blocked: sortedUniqueDomains(input.blocked || []),
+        };
+        state.sourcePreferences.boosted = state.sourcePreferences.boosted.filter((domain) => !state.sourcePreferences.blocked.includes(domain));
+      }
+
       function hydrateModelsFromCache() {
         const cache = state.modelCache || {};
         if (cache.baseUrl === (state.baseUrl || "") && Array.isArray(cache.models)) {
@@ -5653,32 +6076,54 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
       }
 
+      function saveLegacyStateSnapshot(snapshot) {
+        if (!localStorageReady) return;
+        try {
+          localStorageWriteRaw(OPFS_SETTINGS_FILE, JSON.stringify(snapshot));
+          localStorageWriteRaw(STORAGE_KEY, JSON.stringify(snapshot));
+        } catch (e) {}
+      }
+
       async function saveState() {
         try {
-          state.persistenceMode = resolvePersistenceMode(state.persistenceMode || storageMode || "opfs");
-          await writeJsonFile(OPFS_SETTINGS_FILE, state);
-          localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, state.persistenceMode);
-        } catch (e) {}
+          persistencePreference = normalizeConfigurablePersistenceMode(state.persistenceMode || persistencePreference || effectiveConfigurablePersistenceMode() || "opfs") || "opfs";
+          state.persistenceMode = normalizeConfigurablePersistenceMode(state.persistenceMode) || effectiveConfigurablePersistenceMode();
+          const snapshot = cloneValue(state);
+          snapshot.persistenceMode = persistencePreference;
+          await writeJsonFile(OPFS_SETTINGS_FILE, snapshot);
+          localStorageWriteRaw(STORAGE_MODE_BOOTSTRAP_KEY, persistencePreference);
+          saveLegacyStateSnapshot(snapshot);
+          return true;
+        } catch (e) {
+          return false;
+        }
       }
 
       async function migratePersistenceData(targetMode) {
         const nextMode = resolvePersistenceMode(targetMode);
         if (nextMode === storageMode) return true;
         if (!isPersistenceModeAvailable(nextMode)) return false;
-        const settingsSnapshot = cloneValue(state);
-        settingsSnapshot.persistenceMode = nextMode;
-        await writeJsonFileTo(nextMode, OPFS_SETTINGS_FILE, settingsSnapshot);
-        for (const item of chatIndex) {
-          const chat = currentChat?.slug === item.slug
-            ? { ...currentChat, messages: cloneValue(messages) }
-            : await readJsonFileFrom(storageMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, null);
-          if (!chat) continue;
-          await writeJsonFileTo(nextMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, chat);
+        try {
+          const settingsSnapshot = cloneValue(state);
+          settingsSnapshot.persistenceMode = normalizeConfigurablePersistenceMode(state.persistenceMode || persistencePreference || effectiveConfigurablePersistenceMode() || "opfs") || "opfs";
+          await writeJsonFileTo(nextMode, OPFS_SETTINGS_FILE, settingsSnapshot);
+          for (const item of chatIndex) {
+            const chat = currentChat?.slug === item.slug
+              ? { ...currentChat, messages: cloneValue(messages) }
+              : await readJsonFileFrom(storageMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, null);
+            if (!chat) continue;
+            await writeJsonFileTo(nextMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, chat);
+          }
+          storageMode = nextMode;
+          const effectiveMode = effectiveConfigurablePersistenceMode();
+          persistencePreference = normalizeConfigurablePersistenceMode(state.persistenceMode || persistencePreference || effectiveMode || "opfs") || "opfs";
+          state.persistenceMode = effectiveMode;
+          if (effectiveMode) localStorageWriteRaw(STORAGE_MODE_BOOTSTRAP_KEY, effectiveMode);
+          saveLegacyStateSnapshot(settingsSnapshot);
+          return true;
+        } catch (e) {
+          return false;
         }
-        storageMode = nextMode;
-        state.persistenceMode = nextMode;
-        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, nextMode);
-        return true;
       }
 
       function ensureActiveModel() {
@@ -5774,6 +6219,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.webSearchModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setWebSearchMode(button.dataset.webSearchMode, { toast: false }));
         });
+        els.toolCallModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setToolCallMode(button.dataset.toolCallMode, { toast: false }));
+        });
         els.searchResultCountModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setSearchResultCountMode(button.dataset.searchResultCountMode, { toast: false }));
         });
@@ -5782,6 +6230,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         });
         els.clarifyQuestionsModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setClarifyQuestionsMode(button.dataset.clarifyQuestionsMode, { toast: false }));
+        });
+        els.addBoostedDomainBtn?.addEventListener("click", () => addSourcePreferenceFromInput("boosted"));
+        els.addBlockedDomainBtn?.addEventListener("click", () => addSourcePreferenceFromInput("blocked"));
+        els.boostedDomainInput?.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            addSourcePreferenceFromInput("boosted");
+          }
+        });
+        els.blockedDomainInput?.addEventListener("keydown", (event) => {
+          if (event.key === "Enter") {
+            event.preventDefault();
+            addSourcePreferenceFromInput("blocked");
+          }
         });
         els.interactionModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setInteractionMode(button.dataset.interactionMode, { toast: false }));
@@ -6313,6 +6775,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return ["on", "auto", "off"].includes(mode) ? mode : "auto";
       }
 
+      function normalizeToolCallMode(mode) {
+        return mode === "auto" ? "auto" : "flow";
+      }
+
       function normalizeSearchPlanningMode(mode) {
         return ["advanced", "auto", "simple"].includes(mode) ? mode : "auto";
       }
@@ -6326,7 +6792,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function persistenceModeLabel(mode = storageMode) {
-        return mode === "opfs" ? "OPFS" : "IndexedDB";
+        return mode === "opfs" ? "OPFS" : mode === "indexeddb" ? "IndexedDB" : "localStorage";
       }
 
       function searchResultCountValue(mode = state.searchResultCountMode) {
@@ -6354,6 +6820,20 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (opts.toast) showToast(`Web Search: ${modeLabel(state.webSearchMode)}`);
       }
 
+      function renderToolCallModeControls() {
+        const mode = normalizeToolCallMode(state.toolCallMode);
+        els.toolCallModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.toolCallMode === mode);
+        });
+      }
+
+      async function setToolCallMode(mode, opts = {}) {
+        state.toolCallMode = normalizeToolCallMode(mode);
+        renderToolCallModeControls();
+        await saveState();
+        if (opts.toast) showToast(`工具调用：${state.toolCallMode === "auto" ? "自动" : "流程"}`);
+      }
+
       function renderSearchResultCountModeControls() {
         const mode = normalizeSearchResultCountMode(state.searchResultCountMode);
         els.searchResultCountModeGroup?.querySelectorAll("button").forEach((button) => {
@@ -6369,18 +6849,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderPersistenceModeControls() {
-        const active = resolvePersistenceMode(state.persistenceMode || storageMode || "opfs");
+        const active = resolvePersistenceMode(state.persistenceMode || storageMode || persistencePreference || "opfs");
+        const rowDisabled = !opfsReady && !idbReady;
+        els.persistenceModeGroup?.classList.toggle("is-disabled", rowDisabled);
+        els.persistenceModeGroup?.setAttribute("aria-disabled", rowDisabled ? "true" : "false");
         els.persistenceModeGroup?.querySelectorAll("button").forEach((button) => {
-          const mode = normalizePersistenceMode(button.dataset.persistenceMode);
+          const mode = normalizeConfigurablePersistenceMode(button.dataset.persistenceMode);
           button.classList.toggle("active", mode === active);
           button.disabled = !isPersistenceModeAvailable(mode);
           button.title = !isPersistenceModeAvailable(mode) ? `${persistenceModeLabel(mode)} 当前不可用` : "";
         });
         if (els.persistenceModeHint) {
-          const unavailableOpfs = !opfsReady;
-          els.persistenceModeHint.textContent = unavailableOpfs
-            ? `当前正在使用 ${persistenceModeLabel(active)}。浏览器未通过 OPFS 稳定读写检测，已自动回退到 IndexedDB。`
-            : `当前正在使用 ${persistenceModeLabel(active)}。默认优先使用 OPFS；若浏览器不支持稳定读写，则会自动回退到 IndexedDB。`;
+          if (active === "localstorage" || !active) {
+            els.persistenceModeHint.textContent = `当前正在使用 localStorage。浏览器未通过 OPFS 和 IndexedDB 稳定读写检测，已自动回退到 localStorage。`;
+          } else if (active === "indexeddb") {
+            els.persistenceModeHint.textContent = `当前正在使用 IndexedDB。浏览器未通过 OPFS 稳定读写检测，已自动回退到 IndexedDB。`;
+          } else {
+            els.persistenceModeHint.textContent = `当前正在使用 OPFS。若 OPFS 不可用则自动切到 IndexedDB，如两者都不可用则继续回退到 localStorage。`;
+          }
         }
       }
 
@@ -7032,6 +7518,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           updatedAt: chat.updatedAt || Date.now(),
         };
         messages = normalizeLoadedMessages(Array.isArray(chat.messages) ? chat.messages : []);
+        applySourcePreferencesToExistingResults();
         editingMessageId = "";
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
@@ -7347,17 +7834,19 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           .map((file) => attachmentCardHTML(file, false))
           .join("");
         const editing = editingMessageId === message.id;
-        bubble.innerHTML = `
-          <div class="user-bubble-body">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>
-          ${editing ? `
+        bubble.classList.toggle("editing", editing);
+        bubble.innerHTML = editing
+          ? `
             <div class="message-edit-panel">
               <textarea class="message-edit-input" spellcheck="false">${esc(message.content || "")}</textarea>
+              ${files ? `<div class="attachment-strip visible">${files}</div>` : ""}
               <div class="message-edit-note">保存后会丢弃这条消息以下的后续对话，并从这里重新生成回答。</div>
               <div class="message-edit-actions">
                 <button class="message-edit-btn" type="button" data-edit-action="cancel">取消</button>
                 <button class="message-edit-btn primary" type="button" data-edit-action="save">保存</button>
               </div>
-            </div>` : ""}`;
+            </div>`
+          : `<div class="user-bubble-body">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>`;
         if (!editing) return;
         const input = bubble.querySelector(".message-edit-input");
         const saveBtn = bubble.querySelector('[data-edit-action="save"]');
@@ -7578,6 +8067,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           <div class="search-page-results">
             ${records.map(renderSearchPromptSection).join("")}
           </div>`;
+        bindSearchPagePreferenceActions();
       }
 
       function searchPageRecords() {
@@ -7585,7 +8075,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           .map((message, index) => ({ message, index }))
           .filter(({ message, index }) => !isReusedSearchRecord(message, index) && (message?.searchStatus || message?.searchContext || message?.search || message?.amapContext))
           .map(({ message, index }) => {
-            const search = message.searchContext || message.search || null;
+            const search = applySourcePreferencesToSearch(message.searchContext || message.search || null);
             const sources = search?.results?.length
               ? search.results
               : dedupeSources((search?.groups || []).flatMap((group) => group.results || []));
@@ -7694,18 +8184,44 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         const unique = dedupeSources(sources || []);
         return unique.length
           ? unique.map((source, index) => `
-            <a class="search-page-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
-              ${sourceFaviconHTML(source, index)}
-              <span>
-                <span class="search-page-result-site">
-                  <span class="search-page-site-name">${esc(source.siteName || domainOf(source.url))}</span>
-                  <span class="search-page-result-url">${esc(prettySourceUrl(source.url))}</span>
+            <div class="search-page-result-card">
+              <div class="search-page-result-actions">
+                <button class="search-pref-btn${source.sourcePreference === "boosted" ? " active" : ""}" type="button" data-source-boost-domain="${esc(source.domain || sourceDomain(source.url))}" title="${source.sourcePreference === "boosted" ? "已提权该域名" : "提权该域名"}" aria-label="${source.sourcePreference === "boosted" ? "已提权该域名" : "提权该域名"}">+</button>
+                <button class="search-pref-btn" type="button" data-source-block-domain="${esc(source.domain || sourceDomain(source.url))}" title="屏蔽该域名" aria-label="屏蔽该域名">−</button>
+              </div>
+              <a class="search-page-result" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
+                ${sourceFaviconHTML(source, index)}
+                <span>
+                  <span class="search-page-result-site">
+                    <span class="search-page-site-name">${esc(source.siteName || domainOf(source.url))}</span>
+                    <span class="search-page-result-url">${esc(prettySourceUrl(source.url))}</span>
+                    ${source.sourcePreference === "boosted" ? `<span class="source-pref-badge">优先来源</span>` : ""}
+                  </span>
+                  <span class="search-page-result-title">${esc(normalizeSourceTitle(source, index))}</span>
+                  ${source.snippet ? `<span class="search-page-result-snippet">${esc(source.snippet)}</span>` : ""}
                 </span>
-                <span class="search-page-result-title">${esc(normalizeSourceTitle(source, index))}</span>
-                ${source.snippet ? `<span class="search-page-result-snippet">${esc(source.snippet)}</span>` : ""}
-              </span>
-            </a>`).join("")
+              </a>
+            </div>`).join("")
           : `<div class="empty-row">没有来源</div>`;
+      }
+
+      function bindSearchPagePreferenceActions() {
+        els.searchPageContent?.querySelectorAll("[data-source-boost-domain]").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const domain = normalizeDomainName(button.dataset.sourceBoostDomain || "");
+            if (domain) setSourcePreference("boosted", domain);
+          });
+        });
+        els.searchPageContent?.querySelectorAll("[data-source-block-domain]").forEach((button) => {
+          button.addEventListener("click", (event) => {
+            event.preventDefault();
+            event.stopPropagation();
+            const domain = normalizeDomainName(button.dataset.sourceBlockDomain || "");
+            if (domain) setSourcePreference("blocked", domain);
+          });
+        });
       }
 
       function prettySourceUrl(url = "") {
@@ -7752,7 +8268,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function openSourcePanel(sources) {
         const message = Array.isArray(sources) ? { sources } : sources;
         const sourceItems = Array.isArray(sources) ? sources : extractSources(message || {});
-        const search = message?.searchContext || message?.search || null;
+        const search = applySourcePreferencesToSearch(message?.searchContext || message?.search || null);
         els.sourcePanelTitle.innerHTML = `来源${searchProviderSummary(search) ? `<span class="source-provider-badge">${esc(searchProviderSummary(search))}</span>` : ""}`;
         els.sourcePanelBody.innerHTML = renderSourcePanelBody(search, sourceItems);
         els.sourcePanel.classList.add("open");
@@ -7764,7 +8280,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (search?.groups?.length) {
           return renderSearchPanelGroups(search);
         }
-        const unique = dedupeSources(sources || []);
+        const unique = sortSourcesByPreference(dedupeSources(sources || []));
         return unique.length ? unique.map(sourceResultHTML).join("") : `<div class="empty-row">没有来源</div>`;
       }
 
@@ -7784,7 +8300,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function renderGroupResults(group) {
-        const results = dedupeSources(group?.results || []);
+        const results = sortSourcesByPreference(dedupeSources(group?.results || []));
         return results.length ? results.map(sourceResultHTML).join("") : `<div class="empty-row">这个搜索词没有返回结果</div>`;
       }
 
@@ -8271,18 +8787,384 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         } catch (e) {}
       }
 
+      function safeParseToolArgs(rawArgs) {
+        if (!rawArgs) return {};
+        try {
+          return JSON.parse(rawArgs);
+        } catch (error) {
+          try {
+            return parseJsonObject(rawArgs);
+          } catch (nestedError) {
+            return {};
+          }
+        }
+      }
+
+      function toolResultJson(payload) {
+        return JSON.stringify(payload, null, 2);
+      }
+
+      function buildSearchQueriesToolResult(args, run, assistantId) {
+        const prompt = String(args.prompt || latestUserPrompt(run?.messages || messages, assistantId) || "").trim();
+        const fallback = String(args.fallback || "").trim();
+        const decision = args.complex === true
+          ? buildTraditionalSearchDecision(prompt, fallback)
+          : refineSearchDecision({
+            shouldSearch: true,
+            query: searchFallbackQuery(prompt, fallback),
+            queries: [searchFallbackQuery(prompt, fallback)],
+            intent: inferSearchIntent(prompt),
+            preferredProvider: SEARCH_PROVIDER_IDS.includes(args.preferredProvider) ? args.preferredProvider : "",
+            complex: args.complex === true,
+          }, prompt);
+        return {
+          ok: true,
+          query: decision.query,
+          queries: normalizeSearchQueries(decision, fallback || prompt),
+          intent: decision.intent,
+          complex: decision.complex === true,
+        };
+      }
+
+      function summarizeSearchForTool(search) {
+        return {
+          query: search.query,
+          queries: search.queries || [],
+          providerOrder: search.providerOrder || [],
+          errors: search.errors || [],
+          results: (search.results || []).map((source) => ({
+            title: source.title,
+            url: source.url,
+            domain: source.domain || sourceDomain(source.url),
+            snippet: source.snippet || "",
+            sourcePreference: source.sourcePreference || "",
+            extractionMethod: source.extractionMethod || "",
+            fullMarkdown: source.fullMarkdown || "",
+            readerError: source.readerError || "",
+          })),
+        };
+      }
+
+      async function executeWebSearchTool(args, signal, run, assistantId) {
+        const queriesInput = Array.isArray(args.queries) ? args.queries : [];
+        const prompt = String(args.prompt || latestUserPrompt(run?.messages || messages, assistantId) || "").trim();
+        const fallback = String(args.fallback || "").trim();
+        const decision = {
+          shouldSearch: true,
+          query: String(args.query || queriesInput[0] || searchFallbackQuery(prompt, fallback)).trim(),
+          queries: queriesInput,
+          intent: ["fresh", "research", "general"].includes(args.intent) ? args.intent : inferSearchIntent(prompt),
+          preferredProvider: SEARCH_PROVIDER_IDS.includes(args.preferredProvider) ? args.preferredProvider : "",
+          complex: args.complex === true || queriesInput.length > 1,
+        };
+        const queries = normalizeSearchQueries(decision, fallback || prompt);
+        updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0] || decision.query}` });
+        const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
+          const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+          updateRunMessage(run, assistantId, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+        });
+        const searchPrepared = applySourcePreferencesToSearch(searchRaw);
+        const search = await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
+          updateRunMessage(run, assistantId, { searchStatus: status, searchContext: searchPrepared, sources: searchPrepared.results });
+        });
+        run.searchContext = search;
+        updateRunMessage(run, assistantId, { searchContext: search, sources: search.results, searchStatus: "" });
+        return {
+          ok: true,
+          ...summarizeSearchForTool(search),
+        };
+      }
+
+      async function resolveCurrentAmapLocation(signal) {
+        const coords = await requestBrowserLocation(signal).catch(() => {
+          throw new Error("未能获取到你的精确地理位置；请允许浏览器读取位置后再试。");
+        });
+        return amapRequest("/v3/geocode/regeo", {
+          location: `${coords.lng},${coords.lat}`,
+          extensions: "base",
+          radius: 1000,
+        }, signal).then((data) => {
+          const comp = data.regeocode?.addressComponent || {};
+          return {
+            adcode: comp.adcode || "",
+            city: Array.isArray(comp.city) ? comp.province || "" : comp.city || comp.province || "",
+            district: comp.district || "",
+            formattedAddress: data.regeocode?.formatted_address || "",
+            lat: coords.lat,
+            lng: coords.lng,
+          };
+        });
+      }
+
+      async function executeAmapTool(args, signal, run, assistantId) {
+        if (!state.amapKey) return { ok: false, error: "高德地图 Key 未填写。" };
+        const kind = ["weather", "nearby", "route", "trip"].includes(args.kind) ? args.kind : "";
+        const mode = ["walking", "cycling", "driving", "transit"].includes(args.mode) ? args.mode : "walking";
+        const keyword = String(args.keyword || "").trim();
+        const destination = String(args.destination || "").trim();
+        updateRunMessage(run, assistantId, { searchStatus: "正在获取当前位置与高德位置服务..." });
+        const location = await resolveCurrentAmapLocation(signal);
+        let context = null;
+        if (kind === "weather") context = await buildAmapWeatherContext(location, signal);
+        else if (kind === "nearby") context = await buildAmapNearbyContext(location, keyword || extractNearbyKeyword(String(args.prompt || "")), signal);
+        else if (kind === "route" || kind === "trip") {
+          if (!destination) return { ok: false, error: "路线或出行探索缺少 destination。" };
+          context = await buildAmapRouteContext(location, { kind, mode, destination }, signal);
+        } else {
+          return { ok: false, error: "amap_explore 缺少有效 kind。" };
+        }
+        run.amapContext = context;
+        updateRunMessage(run, assistantId, { amapContext: context, searchStatus: "" });
+        return { ok: true, context };
+      }
+
+      async function fetchPageContentForTool(url, signal) {
+        const annotated = annotateSource({ url, title: domainOf(url) || "Untitled" });
+        if (!annotated.url) return { ok: false, error: "无效 URL。" };
+        try {
+          const local = await extractSourceBodyLocally(annotated, signal);
+          return { ok: true, url: annotated.url, domain: annotated.domain, ...local };
+        } catch (localError) {
+          if (localError.name === "AbortError") throw localError;
+          const remote = await fetchSourceBodyWithJina(annotated, signal);
+          return { ok: true, url: annotated.url, domain: annotated.domain, ...remote };
+        }
+      }
+
+      async function executeAskUserQuestionTool(args, signal, run, assistantId) {
+        if (state.clarifyQuestionsMode === "off") return { ok: false, error: "当前设置已关闭补充问题。" };
+        const questions = normalizeAskQuestions(args.questions);
+        if (!questions.length) return { ok: false, error: "没有有效问题可展示。" };
+        updateRunMessage(run, assistantId, { searchStatus: "等待你补充问题信息..." });
+        const result = await openAskPanel({ title: normalizeAskPanelTitle(args.title), questions });
+        if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+        updateRunMessage(run, assistantId, { searchStatus: "正在整理补充信息..." });
+        if (!result?.answers?.length) {
+          updateRunMessage(run, assistantId, { searchStatus: "" });
+          return { ok: true, closed: true, answers: [] };
+        }
+        const normalized = {
+          ...result,
+          answers: result.answers.map((item) => {
+            const answer = (item.answer || []).map((value) => resolveLocalReferenceText(value, run?.amapContext || null));
+            return {
+              ...item,
+              answer,
+              answerText: answer.length ? answer.join(", ") : "[No preference]",
+            };
+          }),
+        };
+        run.clarification = normalized;
+        updateRunMessage(run, assistantId, { searchStatus: "" });
+        return { ok: true, closed: false, clarification: normalized, formatted: formatClarification(normalized) };
+      }
+
+      function buildAgentToolSchemas() {
+        return [
+          {
+            type: "function",
+            function: {
+              name: "build_search_queries",
+              description: "Construct one or more concise search-engine queries from the current user request before running web search.",
+              parameters: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  fallback: { type: "string" },
+                  preferredProvider: { type: "string", enum: ["tavily", "exa", "serper", "serpapi"] },
+                  complex: { type: "boolean" },
+                },
+                required: ["prompt"],
+              },
+            },
+          },
+          {
+            type: "function",
+            function: {
+              name: "web_search",
+              description: "Run browser-side web search across enabled providers such as Tavily, Exa, Serper, or SerpAPI.",
+              parameters: {
+                type: "object",
+                properties: {
+                  prompt: { type: "string" },
+                  fallback: { type: "string" },
+                  query: { type: "string" },
+                  queries: { type: "array", items: { type: "string" } },
+                  intent: { type: "string", enum: ["fresh", "research", "general"] },
+                  preferredProvider: { type: "string", enum: ["tavily", "exa", "serper", "serpapi"] },
+                  complex: { type: "boolean" },
+                },
+              },
+            },
+          },
+          {
+            type: "function",
+            function: {
+              name: "amap_explore",
+              description: "Use browser geolocation plus AMap to get current-location weather, nearby places, routes, or trip suggestions.",
+              parameters: {
+                type: "object",
+                properties: {
+                  kind: { type: "string", enum: ["weather", "nearby", "route", "trip"] },
+                  prompt: { type: "string" },
+                  keyword: { type: "string" },
+                  destination: { type: "string" },
+                  mode: { type: "string", enum: ["walking", "cycling", "driving", "transit"] },
+                },
+                required: ["kind"],
+              },
+            },
+          },
+          {
+            type: "function",
+            function: {
+              name: "get_webpage_content",
+              description: "Fetch the main textual content of a webpage using local extraction first, then Jina Reader fallback when needed.",
+              parameters: {
+                type: "object",
+                properties: {
+                  url: { type: "string" },
+                },
+                required: ["url"],
+              },
+            },
+          },
+          {
+            type: "function",
+            function: {
+              name: "ask_user_question",
+              description: "Ask the user 1 to 3 clarifying questions with single-select or multi-select options before answering.",
+              parameters: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  questions: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        question: { type: "string" },
+                        options: { type: "array", items: { type: "string" } },
+                        multiple: { type: "boolean" },
+                      },
+                      required: ["question", "options"],
+                    },
+                  },
+                },
+                required: ["questions"],
+              },
+            },
+          },
+        ];
+      }
+
+      async function executeAgentToolCall(toolCall, signal, run, assistantId) {
+        const name = toolCall?.function?.name || "";
+        const args = safeParseToolArgs(toolCall?.function?.arguments || "{}");
+        try {
+          if (name === "build_search_queries") return buildSearchQueriesToolResult(args, run, assistantId);
+          if (name === "web_search") return await executeWebSearchTool(args, signal, run, assistantId);
+          if (name === "amap_explore") return await executeAmapTool(args, signal, run, assistantId);
+          if (name === "get_webpage_content") return await fetchPageContentForTool(String(args.url || "").trim(), signal);
+          if (name === "ask_user_question") return await executeAskUserQuestionTool(args, signal, run, assistantId);
+          return { ok: false, error: `未知工具：${name}` };
+        } catch (error) {
+          if (error.name === "AbortError") throw error;
+          return { ok: false, error: error.message || String(error) };
+        }
+      }
+
+      async function callChatModelWithTools(model, assistantId, signal, run = activeRun) {
+        const runMessages = run?.messages || messages;
+        const requestMessages = withRealtimeMessagePrefix([
+          { role: "system", content: buildToolAgentSystemPrompt(run) },
+          ...runMessages
+            .filter((message) => !(message.role === "assistant" && message.id === assistantId))
+            .map((message) => ({ role: message.role, content: serializeMessageContent(message) })),
+        ]);
+        const tools = buildAgentToolSchemas();
+        let reasoning = "";
+
+        for (let step = 0; step < TOOL_AGENT_MAX_STEPS; step++) {
+          const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${state.apiKey}`,
+            },
+            body: JSON.stringify({
+              model,
+              messages: requestMessages,
+              tools,
+              tool_choice: "auto",
+              temperature: state.mode === "quick" ? 0.15 : 0.35,
+              max_tokens: state.mode === "quick" ? 1400 : 3800,
+              stream: false,
+            }),
+            signal,
+          });
+          if (!response.ok) {
+            let msg = `HTTP ${response.status}`;
+            try {
+              const data = await response.json();
+              msg = data?.error?.message || data?.message || msg;
+            } catch (e) {}
+            throw new Error(msg);
+          }
+          const data = await response.json();
+          const message = data?.choices?.[0]?.message || data?.message || {};
+          const content = normalizeAssistantMessageContent(message.content);
+          const toolCalls = extractToolCallsFromResponse(data);
+          const reasoningChunk = extractReasoningFromResponse(data);
+          if (reasoningChunk) {
+            reasoning = `${reasoning}${reasoning ? "\n" : ""}${reasoningChunk}`.trim();
+            updateRunMessage(run, assistantId, { thinking: reasoning, loading: true });
+          }
+          if (!toolCalls.length) {
+            if (!content) throw new Error("模型没有返回内容。");
+            updateRunMessage(run, assistantId, {
+              thinking: reasoning,
+              content,
+              loading: false,
+              searchStatus: "",
+              searchContext: run?.searchContext || null,
+              sources: run?.searchContext?.results || [],
+              amapContext: run?.amapContext || null,
+            });
+            return content;
+          }
+          requestMessages.push({
+            role: "assistant",
+            content: content || "",
+            tool_calls: toolCalls,
+          });
+          for (const toolCall of toolCalls) {
+            updateRunMessage(run, assistantId, { searchStatus: `正在调用工具：${toolCall.function.name}` });
+            const result = await executeAgentToolCall(toolCall, signal, run, assistantId);
+            requestMessages.push({
+              role: "tool",
+              tool_call_id: toolCall.id,
+              name: toolCall.function.name,
+              content: toolResultJson(result),
+            });
+          }
+        }
+        throw new Error("工具调用轮次超过上限。");
+      }
+
       async function callChat(assistantId, signal, run = activeRun) {
         const modelList = requestModelQueue();
         if (!modelList.length) {
           openSettings();
           throw new Error("请先在设置中添加调用模型。");
         }
-        if (!run?.skipSearch) await prepareSearchForRun(assistantId, modelList[0], signal, run);
+        const useToolMode = normalizeToolCallMode(state.toolCallMode) === "auto" && activeInteractionMode() !== "classic" && !run?.searchOnly;
+        if (!useToolMode && !run?.skipSearch) await prepareSearchForRun(assistantId, modelList[0], signal, run);
         const queue = state.queueFallback === true ? modelList : modelList.slice(0, 1);
         let lastError;
         for (const model of queue) {
           try {
-            return await callChatModelWithRetries(model, assistantId, signal, run);
+            return await callChatModelWithRetries(model, assistantId, signal, run, useToolMode);
           } catch (error) {
             if (error.name === "AbortError") throw error;
             lastError = error;
@@ -8296,7 +9178,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         return uniqueModels(state.modelQueue || []);
       }
 
-      async function callChatModelWithRetries(model, assistantId, signal, run = activeRun) {
+      async function callChatModelWithRetries(model, assistantId, signal, run = activeRun, useToolMode = false) {
         const delays = state.retryOnFailure === false ? [0] : [0, 1000, 2000, 3000];
         let lastError;
         for (let i = 0; i < delays.length; i++) {
@@ -8305,7 +9187,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             updateRunMessage(run, assistantId, { content: "", thinking: "", thoughtSeconds: 0, loading: true });
           }
           try {
-            const content = await callChatModel(model, assistantId, signal, run);
+            const content = useToolMode
+              ? await callChatModelWithTools(model, assistantId, signal, run)
+              : await callChatModel(model, assistantId, signal, run);
             if (!content.trim()) throw new Error("模型没有返回内容。");
             return content;
           } catch (error) {
@@ -8728,8 +9612,13 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         if (!queries.length) return;
         try {
           updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
-          const search = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
-            updateRunMessage(run, targetMessageId, partialSearch ? { searchStatus: status, searchContext: partialSearch, sources: partialSearch.results } : { searchStatus: status });
+          const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
+            const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+            updateRunMessage(run, targetMessageId, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+          });
+          const searchPrepared = applySourcePreferencesToSearch(searchRaw);
+          const search = await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
+            updateRunMessage(run, targetMessageId, { searchStatus: status, searchContext: searchPrepared, sources: searchPrepared.results });
           });
           run.searchContext = search;
           if (search.results.length) {
@@ -9137,12 +10026,137 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         return state.searchProviders[id] || { enabled: false, order: 99, apiKey: "" };
       }
 
+      function normalizeSearchCountryCode(value) {
+        const clean = String(value || "").trim().toUpperCase();
+        return /^[A-Z]{2}$/.test(clean) ? clean : "";
+      }
+
+      function searchCountryDisplayName(code = state.searchCountry) {
+        const normalized = normalizeSearchCountryCode(code);
+        if (!normalized) return "";
+        try {
+          return new Intl.DisplayNames(["en"], { type: "region" }).of(normalized) || "";
+        } catch (error) {
+          return "";
+        }
+      }
+
+      function sortedUniqueDomains(items) {
+        return [...new Set((items || []).map((item) => normalizeDomainName(item)).filter(Boolean))].sort((a, b) => a.localeCompare(b));
+      }
+
+      function parseSourcePreferenceInput(text) {
+        return sortedUniqueDomains(String(text || "").split(",").map((item) => item.trim()));
+      }
+
+      function normalizeDomainName(value) {
+        let raw = String(value || "").trim().toLowerCase();
+        if (!raw) return "";
+        if (/\s/.test(raw)) return "";
+        if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(raw) && /[/?#:]/.test(raw)) raw = `https://${raw.replace(/^\/+/, "")}`;
+        if (!/^[a-z][a-z0-9+.-]*:\/\//i.test(raw) && !raw.startsWith("//")) raw = `https://${raw}`;
+        const finalize = (host) => {
+          const clean = String(host || "").replace(/^www\./, "").replace(/:\d+$/, "").toLowerCase();
+          if (!/^[a-z0-9.-]+$/.test(clean)) return "";
+          if (!clean.includes(".") || clean.startsWith(".") || clean.endsWith(".") || clean.includes("..")) return "";
+          return clean;
+        };
+        try {
+          const parsed = new URL(raw);
+          return finalize(parsed.hostname);
+        } catch (error) {
+          return finalize(raw.replace(/^[a-z][a-z0-9+.-]*:\/\//i, "").replace(/^\/+/, "").split("/")[0]);
+        }
+      }
+
+      function sourceDomain(sourceOrUrl) {
+        const url = typeof sourceOrUrl === "string" ? sourceOrUrl : sourceOrUrl?.url;
+        return normalizeDomainName(url || "");
+      }
+
+      function sourcePreferenceStatus(domain) {
+        const clean = normalizeDomainName(domain);
+        if (!clean) return "";
+        if ((state.sourcePreferences?.blocked || []).includes(clean)) return "blocked";
+        if ((state.sourcePreferences?.boosted || []).includes(clean)) return "boosted";
+        return "";
+      }
+
+      function annotateSource(source) {
+        const domain = sourceDomain(source);
+        return {
+          ...source,
+          url: normalizeSourceUrl(source.url),
+          domain,
+          siteName: source.siteName || domain || domainOf(source.url),
+          sourcePreference: sourcePreferenceStatus(domain),
+        };
+      }
+
+      function sortSourcesByPreference(sources) {
+        return (sources || [])
+          .map((source, index) => ({ source: annotateSource(source), index }))
+          .filter((item) => item.source.sourcePreference !== "blocked")
+          .sort((a, b) => {
+            const prefA = a.source.sourcePreference === "boosted" ? 1 : 0;
+            const prefB = b.source.sourcePreference === "boosted" ? 1 : 0;
+            if (prefA !== prefB) return prefB - prefA;
+            const scoreA = Number.isFinite(Number(a.source.score)) ? Number(a.source.score) : -Infinity;
+            const scoreB = Number.isFinite(Number(b.source.score)) ? Number(b.source.score) : -Infinity;
+            if (scoreA !== scoreB) return scoreB - scoreA;
+            return a.index - b.index;
+          })
+          .map((item) => item.source);
+      }
+
+      function applySourcePreferencesToSearch(search) {
+        if (!search || typeof search !== "object") return search;
+        const next = { ...search };
+        const groups = Array.isArray(search.groups) ? search.groups : [];
+        next.groups = groups.map((group) => ({
+          ...group,
+          results: sortSourcesByPreference(dedupeSources(group.results || [])),
+        })).filter((group) => group.results.length || group.errors?.length);
+        const flat = next.groups.length ? next.groups.flatMap((group) => group.results || []) : dedupeSources(search.results || []);
+        next.results = sortSourcesByPreference(dedupeSources(flat));
+        return next;
+      }
+
+      function applySourcePreferencesToExistingResults() {
+        messages.forEach((message) => {
+          if (message.searchContext) {
+            message.searchContext = applySourcePreferencesToSearch(message.searchContext);
+            message.sources = message.searchContext.results || [];
+          }
+          if (message.search) {
+            message.search = applySourcePreferencesToSearch(message.search);
+          }
+          if (Array.isArray(message.sources)) {
+            message.sources = sortSourcesByPreference(dedupeSources(message.sources));
+          }
+        });
+        if (activeRun?.searchContext) activeRun.searchContext = applySourcePreferencesToSearch(activeRun.searchContext);
+        scheduleSearchPageRender();
+        rerenderVisibleSearchSources();
+      }
+
+      function rerenderVisibleSearchSources() {
+        if (!els.messages) return;
+        messages
+          .filter((message) => message.role === "assistant")
+          .forEach((message) => {
+            const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
+            if (node) renderAssistantContent(node, message);
+          });
+        if (els.sourcePanel?.classList.contains("open")) closeSourcePanel();
+      }
+
       function dedupeSources(sources) {
         const map = new Map();
         (sources || []).forEach((source) => {
-          const url = normalizeSourceUrl(source.url);
-          if (!url || map.has(url)) return;
-          map.set(url, { ...source, url });
+          const annotated = annotateSource(source || {});
+          if (!annotated.url || annotated.sourcePreference === "blocked" || map.has(annotated.url)) return;
+          map.set(annotated.url, annotated);
         });
         return [...map.values()];
       }
@@ -9162,13 +10176,20 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         tavily: {
           async search(query, apiKey, signal) {
             const resultCount = searchResultCountValue();
+            const countryName = searchCountryDisplayName();
             const response = await fetch("https://api.tavily.com/search", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${apiKey}`,
               },
-              body: JSON.stringify({ query, search_depth: "basic", max_results: resultCount, include_favicon: true }),
+              body: JSON.stringify({
+                query,
+                search_depth: "basic",
+                max_results: resultCount,
+                include_favicon: true,
+                ...(countryName ? { country: countryName.toLowerCase() } : {}),
+              }),
               signal,
             });
             const data = await readSearchJson(response, "Tavily");
@@ -9191,7 +10212,13 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
                 "Content-Type": "application/json",
                 "x-api-key": apiKey,
               },
-              body: JSON.stringify({ query, type: "auto", numResults: resultCount, contents: { highlights: { maxCharacters: 500 } } }),
+              body: JSON.stringify({
+                query,
+                type: "auto",
+                numResults: resultCount,
+                contents: { highlights: { maxCharacters: 500 } },
+                ...(state.searchCountry ? { userLocation: state.searchCountry } : {}),
+              }),
               signal,
             });
             const data = await readSearchJson(response, "Exa");
@@ -9214,7 +10241,11 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
                 "Content-Type": "application/json",
                 "X-API-KEY": apiKey,
               },
-              body: JSON.stringify({ q: query, num: resultCount }),
+              body: JSON.stringify({
+                q: query,
+                num: resultCount,
+                ...(state.searchCountry ? { gl: state.searchCountry, hl: "en" } : {}),
+              }),
               signal,
             });
             const data = await readSearchJson(response, "Serper");
@@ -9235,6 +10266,10 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             url.searchParams.set("q", query);
             url.searchParams.set("api_key", apiKey);
             url.searchParams.set("num", String(resultCount));
+            if (state.searchCountry) {
+              url.searchParams.set("gl", state.searchCountry.toLowerCase());
+              url.searchParams.set("hl", "en");
+            }
             let response;
             try {
               response = await fetch(url.toString(), { signal });
@@ -9269,7 +10304,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       }
 
       function normalizeSearchResult(raw, fields) {
-        return {
+        return annotateSource({
           title: String(fields.title || domainOf(fields.url || "") || "Untitled").trim(),
           url: String(fields.url || "").trim(),
           snippet: clipText(fields.snippet, 420),
@@ -9277,12 +10312,158 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           score: Number.isFinite(Number(fields.score)) ? Number(fields.score) : undefined,
           favicon: fields.favicon || "",
           raw,
-        };
+        });
       }
 
       function clipText(text, limit = 420) {
         const clean = String(text || "").replace(/\s+/g, " ").trim();
         return clean.length > limit ? `${clean.slice(0, limit - 1)}...` : clean;
+      }
+
+      function jinaReaderHeaders() {
+        const headers = {
+          Accept: "text/plain, text/markdown;q=0.9, */*;q=0.1",
+        };
+        if (state.jinaApiKey) headers.Authorization = `Bearer ${state.jinaApiKey}`;
+        return headers;
+      }
+
+      function parseJinaReaderPayload(text, fallbackUrl = "") {
+        const raw = String(text || "");
+        const title = raw.match(/^Title:\s*(.+)$/m)?.[1]?.trim() || "";
+        const sourceUrl = raw.match(/^URL(?: Source)?:\s*(.+)$/m)?.[1]?.trim() || fallbackUrl;
+        const content = raw.replace(/^(Title|URL(?: Source)?|Published Time|Markdown Content):.*$/gm, "").trim();
+        return {
+          readerTitle: title,
+          readerUrl: sourceUrl,
+          fullMarkdown: raw.trim(),
+          readerContent: content,
+        };
+      }
+
+      async function fetchTextWithTimeout(url, opts = {}, timeoutMs = BOOSTED_SOURCE_FETCH_TIMEOUT_MS) {
+        const controller = new AbortController();
+        const abort = () => controller.abort();
+        if (opts.signal?.aborted) throw new DOMException("Aborted", "AbortError");
+        opts.signal?.addEventListener("abort", abort, { once: true });
+        const timer = setTimeout(() => controller.abort(new DOMException("Timed out", "TimeoutError")), timeoutMs);
+        try {
+          return await fetch(url, { ...opts, signal: controller.signal });
+        } finally {
+          clearTimeout(timer);
+          opts.signal?.removeEventListener("abort", abort);
+        }
+      }
+
+      async function fetchSourceViaProxy(url, signal) {
+        const errors = [];
+        for (const proxyBase of SOURCE_EXTRACTION_PROXIES) {
+          try {
+            const response = await fetchTextWithTimeout(`${proxyBase}${encodeURIComponent(url)}`, { signal }, BOOSTED_SOURCE_FETCH_TIMEOUT_MS);
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const html = await response.text();
+            if (!html || html.length < 120) throw new Error("empty html");
+            return html;
+          } catch (error) {
+            if (error.name === "AbortError") throw error;
+            errors.push(`${proxyBase}: ${error.message || error}`);
+          }
+        }
+        throw new Error(errors[0] || "proxy fetch failed");
+      }
+
+      async function extractSourceBodyLocally(source, signal) {
+        const [readabilityOk, turndownOk] = await Promise.all([loadReadability(), loadTurndown()]);
+        if (!readabilityOk || !turndownOk || !readabilityCtor || !turndownCtor) {
+          throw new Error("local extractor unavailable");
+        }
+        const html = await fetchSourceViaProxy(source.url, signal);
+        const doc = new DOMParser().parseFromString(html, "text/html");
+        const reader = new readabilityCtor(doc);
+        const article = reader.parse();
+        if (!article?.content) throw new Error("Readability failed");
+        const turndown = new turndownCtor({
+          headingStyle: "atx",
+          codeBlockStyle: "fenced",
+        });
+        const markdownBody = turndown.turndown(article.content).trim();
+        if (!markdownBody) throw new Error("Turndown failed");
+        return {
+          readerTitle: String(article.title || source.title || "").trim(),
+          readerUrl: source.url,
+          fullMarkdown: markdownBody,
+          readerContent: markdownBody,
+          extractionMethod: "local",
+        };
+      }
+
+      async function fetchSourceBodyWithJina(source, signal) {
+        const response = await fetchTextWithTimeout(`${JINA_READER_BASE}${source.url}`, {
+          headers: jinaReaderHeaders(),
+          signal,
+        }, BOOSTED_SOURCE_FETCH_TIMEOUT_MS);
+        if (!response.ok) {
+          const detail = clipText(await response.text().catch(() => ""), 180);
+          throw new Error(`Jina Reader HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
+        }
+        return {
+          ...parseJinaReaderPayload(await response.text(), source.url),
+          extractionMethod: "jina",
+        };
+      }
+
+      async function fetchBoostedSourceBody(source, signal) {
+        const annotated = annotateSource(source);
+        if (annotated.sourcePreference !== "boosted" || !annotated.url) return annotated;
+        const cacheKey = annotated.url;
+        if (annotated.fullMarkdown) return annotated;
+        if (jinaReaderCache.has(cacheKey)) return { ...annotated, ...jinaReaderCache.get(cacheKey) };
+        const controller = new AbortController();
+        const abort = () => controller.abort();
+        if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+        signal?.addEventListener("abort", abort, { once: true });
+        const timer = setTimeout(() => controller.abort(new DOMException("Source extraction timed out", "TimeoutError")), BOOSTED_SOURCE_FETCH_TIMEOUT_MS);
+        try {
+          let parsed = null;
+          try {
+            parsed = await extractSourceBodyLocally(annotated, controller.signal);
+          } catch (localError) {
+            if (localError.name === "AbortError") throw localError;
+            parsed = await fetchSourceBodyWithJina(annotated, controller.signal);
+          }
+          jinaReaderCache.set(cacheKey, parsed);
+          return {
+            ...annotated,
+            ...parsed,
+          };
+        } finally {
+          clearTimeout(timer);
+          signal?.removeEventListener("abort", abort);
+        }
+      }
+
+      async function hydrateBoostedSearchContent(search, signal, onStatus = null) {
+        const next = applySourcePreferencesToSearch(search);
+        const boosted = dedupeSources(next.results || []).filter((source) => source.sourcePreference === "boosted");
+        if (!boosted.length) return next;
+        const replacements = new Map();
+        for (let i = 0; i < boosted.length; i++) {
+          const source = boosted[i];
+          onStatus?.(`正在抓取提权来源正文 ${i + 1}/${boosted.length}：${source.domain || domainOf(source.url)}`);
+          try {
+            replacements.set(source.url, await fetchBoostedSourceBody(source, signal));
+          } catch (error) {
+            if (error.name === "AbortError") throw error;
+            replacements.set(source.url, {
+              ...source,
+              readerError: error.message || String(error),
+            });
+          }
+        }
+        const patchList = (list) => dedupeSources((list || []).map((source) => replacements.get(normalizeSourceUrl(source.url)) || source));
+        next.groups = (next.groups || []).map((group) => ({ ...group, results: patchList(group.results) }));
+        next.results = patchList(next.results);
+        return next;
       }
 
       async function callChatModel(model, assistantId, signal, run = activeRun) {
@@ -9405,6 +10586,39 @@ Treat this as the user's actual current location unless the user explicitly says
         return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${timeHint}\n\n${geoHint}`;
       }
 
+      function buildToolAgentSystemPrompt(run = activeRun) {
+        const geo = run?.amapContext?.geo;
+        const geoHint = geo?.formattedAddress
+          ? `Current user location confirmed by browser geolocation and AMap:
+- City: ${geo.city || "Unknown"}
+- District: ${geo.district || "Unknown"}
+- Address: ${geo.formattedAddress}
+Treat this as the user's actual current location unless the user explicitly says otherwise.`
+          : "Current user location is not confirmed. If location-specific information is needed, call the amap_explore tool instead of guessing.";
+        const boosted = (state.sourcePreferences?.boosted || []).join(", ");
+        const blocked = (state.sourcePreferences?.blocked || []).join(", ");
+        return `${state.prompt || DEFAULT_PROMPT}
+
+You are operating inside a browser-side tool calling environment.
+- Available tools: build_search_queries, web_search, amap_explore, get_webpage_content, ask_user_question.
+- Use tools whenever current, source-grounded, webpage-specific, or location-based information is required.
+- Prefer build_search_queries before multi-query search when it helps narrow or structure search intent.
+- Use ask_user_question only when ambiguity materially affects scope, target object, constraints, location, or intended search direction.
+- Use amap_explore for current-location weather, nearby places, routes, and trip suggestions.
+- Use get_webpage_content when you need to read a specific page more deeply than snippets allow.
+- Prefer boosted domains when they appear and are relevant.
+- Do not rely on blocked domains.
+- After enough tool results are available, answer naturally and cite URLs with normal Markdown links.
+
+User source preferences:
+- Boosted domains: ${boosted || "(none)"}
+- Blocked domains: ${blocked || "(none)"}
+
+${currentRealtimePromptPrefix()}
+
+${geoHint}`;
+      }
+
       function currentRealtimePromptPrefix() {
         const now = new Date();
         const pad = (value) => String(value).padStart(2, "0");
@@ -9426,12 +10640,15 @@ Treat this as the user's actual current location unless the user explicitly says
       }
 
       function buildSearchContextPrompt(search) {
+        const boostedDomains = state.sourcePreferences?.boosted || [];
         const lines = (search.groups?.length ? search.groups : [{ query: search.query, provider: "", results: search.results || [] }])
           .map((group) => {
             const results = (group.results || []).map((source, index) => {
               const title = source.title || domainOf(source.url);
+              const pref = source.sourcePreference === "boosted" ? `\nPreference: boosted domain (${source.domain})` : "";
               const snippet = source.snippet ? `\nSnippet: ${source.snippet}` : "";
-              return `[${index + 1}] [${title}](${source.url})\nURL: ${source.url}${snippet}`;
+              const full = source.fullMarkdown ? `\nFull page markdown:\n${source.fullMarkdown}` : source.readerError ? `\nFull page markdown fetch failed: ${source.readerError}` : "";
+              return `[${index + 1}] [${title}](${source.url})\nURL: ${source.url}${pref}${snippet}${full}`;
             }).join("\n\n");
             return `Search query: ${group.query}\nProvider: ${providerLabel(group.provider)}\nResults:\n${results || "(no results)"}`;
           })
@@ -9439,6 +10656,7 @@ Treat this as the user's actual current location unless the user explicitly says
         return `Live web search results for query: ${search.query}
 
 Use these results only when they are relevant. Cite claims with normal clickable Markdown links to exact result URLs.
+${boostedDomains.length ? `\nUser source preference:\n- Prefer these domains when they appear because the user explicitly boosted them: ${boostedDomains.join(", ")}.\n- When a boosted domain appears, prioritize its evidence over ordinary search results and use the fetched full page markdown when relevant.\n- Blocked domains have already been removed from this search context.` : ""}
 
 Citation rules:
 - Use this format only: [Source title](https://source-url.example/path).
@@ -9477,6 +10695,52 @@ ${formatClarification(clarification)}
 </clarification>`;
       }
 
+      function normalizeAssistantMessageContent(content) {
+        if (Array.isArray(content)) {
+          return content.map((item) => {
+            if (typeof item === "string") return item;
+            if (item?.type === "text") return item.text || "";
+            return item?.text || item?.content || "";
+          }).join("").trim();
+        }
+        return String(content || "").trim();
+      }
+
+      function extractReasoningFromResponse(data) {
+        const choice = data?.choices?.[0];
+        return normalizeAssistantMessageContent(
+          choice?.message?.reasoning_content
+          || choice?.message?.reasoning
+          || data?.message?.reasoning_content
+          || ""
+        );
+      }
+
+      function extractToolCallsFromResponse(data) {
+        const message = data?.choices?.[0]?.message || data?.message || {};
+        if (Array.isArray(message.tool_calls) && message.tool_calls.length) {
+          return message.tool_calls.map((call, index) => ({
+            id: call.id || `tool_call_${index + 1}`,
+            type: call.type || "function",
+            function: {
+              name: call.function?.name || "",
+              arguments: typeof call.function?.arguments === "string" ? call.function.arguments : JSON.stringify(call.function?.arguments || {}),
+            },
+          })).filter((call) => call.function.name);
+        }
+        if (message.function_call?.name) {
+          return [{
+            id: "tool_call_1",
+            type: "function",
+            function: {
+              name: message.function_call.name,
+              arguments: typeof message.function_call.arguments === "string" ? message.function_call.arguments : JSON.stringify(message.function_call.arguments || {}),
+            },
+          }];
+        }
+        return [];
+      }
+
       function extractContentDelta(json) {
         const choice = json.choices?.[0];
         return choice?.delta?.content || choice?.message?.content || "";
@@ -9488,13 +10752,13 @@ ${formatClarification(clarification)}
       }
 
       function extractContentFromResponse(data) {
-        return (
+        return normalizeAssistantMessageContent(
           data?.choices?.[0]?.message?.content ||
           data?.choices?.[0]?.text ||
           data?.message?.content ||
           data?.content ||
           ""
-        ).trim();
+        );
       }
 
       function retryFrom(assistantId) {
@@ -9560,13 +10824,17 @@ ${formatClarification(clarification)}
         renderProviderSelect();
         els.cfgBaseUrl.value = state.baseUrl;
         els.cfgApiKey.value = state.apiKey;
+        els.cfgJinaApiKey.value = state.jinaApiKey || "";
+        els.cfgSearchCountry.value = state.searchCountry || "";
         els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         renderWebSearchControls();
+        renderToolCallModeControls();
         renderSearchResultCountModeControls();
         renderSearchPlanningModeControls();
         renderClarifyQuestionsModeControls();
         renderPersistenceModeControls();
+        renderSourcePreferenceManager();
         renderInteractionModeControls();
         els.cfgRail.checked = state.railEnabled !== false;
         els.cfgQueueFallback.checked = state.queueFallback === true;
@@ -9592,7 +10860,11 @@ ${formatClarification(clarification)}
 
       async function saveSettings() {
         const oldUrl = state.baseUrl;
-        const requestedPersistenceMode = resolvePersistenceMode(normalizePersistenceMode(els.persistenceModeGroup.querySelector(".active")?.dataset.persistenceMode || state.persistenceMode || storageMode || "opfs"));
+        const oldPersistencePreference = persistencePreference;
+        const requestedPersistencePreference = normalizeConfigurablePersistenceMode(
+          els.persistenceModeGroup.querySelector(".active")?.dataset.persistenceMode || state.persistenceMode || persistencePreference || "opfs"
+        ) || "opfs";
+        const requestedPersistenceMode = resolvePersistenceMode(requestedPersistencePreference);
         try {
           persistProviderDraft();
         } catch (e) {
@@ -9600,16 +10872,21 @@ ${formatClarification(clarification)}
         }
         persistSearchProviderSettings();
         state.interactionMode = normalizeInteractionMode(els.interactionModeGroup.querySelector(".active")?.dataset.interactionMode || state.interactionMode);
+        state.toolCallMode = normalizeToolCallMode(els.toolCallModeGroup.querySelector(".active")?.dataset.toolCallMode || state.toolCallMode);
         state.searchPlanningMode = normalizeSearchPlanningMode(els.searchPlanningModeGroup.querySelector(".active")?.dataset.searchPlanningMode || state.searchPlanningMode);
         state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(els.clarifyQuestionsModeGroup.querySelector(".active")?.dataset.clarifyQuestionsMode || state.clarifyQuestionsMode);
         state.railEnabled = els.cfgRail.checked;
         state.queueFallback = els.cfgQueueFallback.checked;
         state.retryOnFailure = els.cfgRetryOnFailure.checked;
+        state.searchCountry = normalizeSearchCountryCode(els.cfgSearchCountry.value);
         state.amapKey = els.cfgAmapKey.value.trim();
+        state.jinaApiKey = els.cfgJinaApiKey.value.trim();
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
-        state.persistenceMode = requestedPersistenceMode;
+        normalizeSourcePreferenceState();
+        persistencePreference = requestedPersistencePreference;
+        state.persistenceMode = requestedPersistencePreference;
         if (oldUrl !== state.baseUrl) {
           fetchedModels = [];
           state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
@@ -9622,11 +10899,16 @@ ${formatClarification(clarification)}
           const migrated = await migratePersistenceData(requestedPersistenceMode);
           if (!migrated) {
             showToast("目标持久化方式当前不可用。");
-            state.persistenceMode = storageMode;
+            persistencePreference = oldPersistencePreference;
+            state.persistenceMode = oldPersistencePreference;
           }
         }
         renderPersistenceModeControls();
-        await saveState();
+        const saved = await saveState();
+        if (!saved) {
+          showToast("设置保存失败：当前环境没有可用的持久化存储。");
+          return;
+        }
         renderModelPickers();
         renderWebSearchControls();
         closeSettings();
@@ -9740,6 +11022,82 @@ ${formatClarification(clarification)}
         });
       }
 
+      function loadReadability() {
+        if (readabilityReady) return readabilityReady;
+        readabilityReady = new Promise((resolve) => {
+          const configure = () => {
+            readabilityCtor = window.Readability || null;
+            resolve(!!readabilityCtor);
+          };
+          if (window.Readability) {
+            configure();
+            return;
+          }
+          const existing = document.getElementById("readabilityScript") || document.querySelector('script[src*="@mozilla/readability"]');
+          if (existing) {
+            existing.addEventListener("load", configure, { once: true });
+            existing.addEventListener("error", () => resolve(false), { once: true });
+            setTimeout(() => resolve(!!window.Readability), 5000);
+            return;
+          }
+          const script = document.createElement("script");
+          script.id = "readabilityScript";
+          script.src = "https://cdn.jsdelivr.net/npm/@mozilla/readability@0.5.0/Readability.min.js";
+          script.async = true;
+          script.onload = configure;
+          script.onerror = () => {
+            script.remove();
+            resolve(false);
+          };
+          document.head.appendChild(script);
+          setTimeout(() => {
+            if (!window.Readability) {
+              script.remove();
+              resolve(false);
+            }
+          }, 5000);
+        });
+        return readabilityReady;
+      }
+
+      function loadTurndown() {
+        if (turndownReady) return turndownReady;
+        turndownReady = new Promise((resolve) => {
+          const configure = () => {
+            turndownCtor = window.TurndownService || null;
+            resolve(!!turndownCtor);
+          };
+          if (window.TurndownService) {
+            configure();
+            return;
+          }
+          const existing = document.getElementById("turndownScript") || document.querySelector('script[src*="turndown"]');
+          if (existing) {
+            existing.addEventListener("load", configure, { once: true });
+            existing.addEventListener("error", () => resolve(false), { once: true });
+            setTimeout(() => resolve(!!window.TurndownService), 5000);
+            return;
+          }
+          const script = document.createElement("script");
+          script.id = "turndownScript";
+          script.src = "https://cdn.jsdelivr.net/npm/turndown@7.2.0/dist/turndown.js";
+          script.async = true;
+          script.onload = configure;
+          script.onerror = () => {
+            script.remove();
+            resolve(false);
+          };
+          document.head.appendChild(script);
+          setTimeout(() => {
+            if (!window.TurndownService) {
+              script.remove();
+              resolve(false);
+            }
+          }, 5000);
+        });
+        return turndownReady;
+      }
+
       function rerenderAssistantMarkdown() {
         if (!els.messages) return;
         messages
@@ -9846,8 +11204,9 @@ ${formatClarification(clarification)}
           .map((id) => {
             const def = SEARCH_PROVIDER_DEFS[id];
             const cfg = state.searchProviders[id];
+            const collapsed = searchProviderCollapsed[id] !== false;
             return `
-              <section class="search-provider-card" data-search-provider="${esc(id)}">
+              <section class="search-provider-card${collapsed ? " collapsed" : ""}" data-search-provider="${esc(id)}">
                 <button class="search-provider-handle" type="button" title="拖拽排序" aria-label="拖拽排序">⠿</button>
                 <div>
                   <div class="search-provider-head">
@@ -9860,11 +11219,97 @@ ${formatClarification(clarification)}
                   <div class="search-provider-controls">
                     <input class="input mono search-provider-key" type="password" value="${esc(cfg.apiKey)}" placeholder="${esc(def.label)} API Key" autocomplete="off" spellcheck="false" />
                   </div>
-                </div>
+                </div><button class="search-provider-toggle" type="button" data-search-provider-toggle="${esc(id)}" aria-label="${collapsed ? "展开" : "收起"}">⌄</button>
               </section>`;
           })
           .join("");
         bindSearchProviderDrag();
+        bindSearchProviderToggles();
+      }
+
+      function bindSearchProviderToggles() {
+        els.searchProviderList?.querySelectorAll("[data-search-provider-toggle]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const id = button.dataset.searchProviderToggle;
+            if (!id) return;
+            searchProviderCollapsed[id] = !searchProviderCollapsed[id];
+            renderSearchProviderSettings();
+          });
+        });
+      }
+
+      function renderSourcePreferenceManager() {
+        normalizeSourcePreferenceState();
+        renderSourcePreferenceList("boosted");
+        renderSourcePreferenceList("blocked");
+      }
+
+      function renderSourcePreferenceList(kind) {
+        const mount = kind === "boosted" ? els.boostedDomainList : els.blockedDomainList;
+        if (!mount) return;
+        const items = state.sourcePreferences?.[kind] || [];
+        if (!items.length) {
+          mount.innerHTML = `<div class="source-pref-empty">${kind === "boosted" ? "还没有提权域名。" : "还没有屏蔽域名。"}</div>`;
+          return;
+        }
+        const expanded = sourcePrefExpanded[kind] === true;
+        const visible = expanded ? items : items.slice(0, 5);
+        mount.innerHTML = `${visible.map((domain) => `
+          <div class="source-pref-chip ${kind}">
+            <div class="source-pref-chip-main">
+              <div class="source-pref-chip-domain">${esc(domain)}</div>
+            </div>
+            <button class="source-pref-remove" type="button" data-remove-source-pref="${esc(kind)}:${esc(domain)}" aria-label="移除 ${esc(domain)}">×</button>
+          </div>`).join("")}${items.length > 5 ? `<button class="source-pref-more" type="button" data-source-pref-more="${kind}">${expanded ? "收起" : `更多 ${items.length - 5} 个`}</button>` : ""}`;
+        mount.querySelectorAll("[data-remove-source-pref]").forEach((button) => {
+          button.addEventListener("click", () => {
+            const [prefKind, domain] = String(button.dataset.removeSourcePref || "").split(":");
+            removeSourcePreference(prefKind, domain);
+          });
+        });
+        mount.querySelector(`[data-source-pref-more="${kind}"]`)?.addEventListener("click", () => {
+          sourcePrefExpanded[kind] = !sourcePrefExpanded[kind];
+          renderSourcePreferenceList(kind);
+        });
+      }
+
+      function addSourcePreferenceFromInput(kind) {
+        const input = kind === "boosted" ? els.boostedDomainInput : els.blockedDomainInput;
+        const domains = parseSourcePreferenceInput(input?.value || "");
+        if (input) input.value = "";
+        if (!domains.length) {
+          showToast("请输入有效的 domain name，多个请用逗号分开。");
+          return;
+        }
+        setSourcePreferences(kind, domains);
+      }
+
+      function setSourcePreference(kind, domain) {
+        setSourcePreferences(kind, [domain]);
+      }
+
+      function setSourcePreferences(kind, domains) {
+        normalizeSourcePreferenceState();
+        if (!["boosted", "blocked"].includes(kind)) return;
+        const valid = sortedUniqueDomains(domains);
+        if (!valid.length) return;
+        const other = kind === "boosted" ? "blocked" : "boosted";
+        state.sourcePreferences[other] = (state.sourcePreferences[other] || []).filter((item) => !valid.includes(item));
+        state.sourcePreferences[kind] = sortedUniqueDomains([...(state.sourcePreferences[kind] || []), ...valid]);
+        renderSourcePreferenceManager();
+        applySourcePreferencesToExistingResults();
+        saveState();
+        showToast(kind === "boosted" ? `已提权 ${valid.length} 个域名` : `已屏蔽 ${valid.length} 个域名`);
+      }
+
+      function removeSourcePreference(kind, domain) {
+        normalizeSourcePreferenceState();
+        if (!["boosted", "blocked"].includes(kind)) return;
+        state.sourcePreferences[kind] = (state.sourcePreferences[kind] || []).filter((item) => item !== domain);
+        renderSourcePreferenceManager();
+        applySourcePreferencesToExistingResults();
+        saveState();
+        showToast(`已移除 ${domain}`);
       }
 
       function persistSearchProviderSettings() {
@@ -10061,10 +11506,14 @@ ${formatClarification(clarification)}
             persistProviderDraft({ validate: false });
             persistSearchProviderSettings();
             state.webSearchMode = normalizeWebSearchMode(els.webSearchModeGroup.querySelector(".active")?.dataset.webSearchMode || state.webSearchMode);
+            state.searchCountry = normalizeSearchCountryCode(els.cfgSearchCountry?.value || state.searchCountry);
+            state.amapKey = els.cfgAmapKey?.value.trim() || state.amapKey;
+            state.jinaApiKey = els.cfgJinaApiKey?.value.trim() || state.jinaApiKey;
           }
         } catch (e) {}
         ensureActiveModel();
         normalizeWebSearchState();
+        normalizeSourcePreferenceState();
         return CONFIG_EXPORT_KEYS.reduce((out, key) => {
           out[key] = configClone(state[key]);
           return out;
@@ -10083,12 +11532,16 @@ ${formatClarification(clarification)}
         if (!Array.isArray(state.customProviders)) state.customProviders = [];
         if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
         normalizeWebSearchState();
+        state.searchCountry = normalizeSearchCountryCode(state.searchCountry);
+        state.amapKey = String(state.amapKey || "");
+        state.jinaApiKey = String(state.jinaApiKey || "");
+        normalizeSourcePreferenceState();
         ensureActiveModel();
       }
 
       function exportConfig() {
         downloadJson("linsoo-config.json", {
-          version: 2,
+          version: 3,
           scope: "ai-search",
           exportedAt: Date.now(),
           state: exportedConfigState(),
@@ -10100,6 +11553,7 @@ ${formatClarification(clarification)}
           const data = await readSelectedJson(els.importConfigInput);
           if (!data) return;
           applyImportedConfigState(data.state || data);
+          applySourcePreferencesToExistingResults();
           await saveState();
           applyGeneralSettings();
           renderWebSearchControls();
@@ -10355,7 +11809,7 @@ ${formatClarification(clarification)}
             if (key && !map.has(key)) map.set(key, { ...source, url: key });
           });
         }
-        return [...map.values()].slice(0, 8);
+        return sortSourcesByPreference([...map.values()]).slice(0, 8);
       }
 
       function extractMarkdownSources(text) {
@@ -10898,11 +12352,7 @@ ${formatClarification(clarification)}
       }
 
       function domainOf(url) {
-        try {
-          return new URL(url).hostname.replace(/^www\./, "");
-        } catch (e) {
-          return url;
-        }
+        return normalizeDomainName(url) || String(url || "");
       }
 
       function esc(value) {
