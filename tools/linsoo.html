@@ -400,6 +400,31 @@
         font-size: 14px;
       }
 
+      .chat-main {
+        min-width: 0;
+        flex: 1;
+        display: flex;
+        align-items: center;
+        gap: 9px;
+      }
+
+      .chat-mode-icon {
+        width: 16px;
+        height: 16px;
+        min-width: 16px;
+        color: var(--faint);
+      }
+
+      .chat-mode-icon svg {
+        width: 100%;
+        height: 100%;
+        stroke-width: 1.9;
+      }
+
+      .chat-mode-icon.classic {
+        color: var(--accent);
+      }
+
       .chat-row,
       .folder-row {
         position: relative;
@@ -777,7 +802,7 @@
         flex-direction: column;
         align-items: flex-end;
         justify-content: center;
-        gap: 7px;
+        gap: var(--rail-gap, 7px);
         padding: 28px 0;
       }
 
@@ -1502,6 +1527,71 @@
         background: var(--sand);
         color: var(--text-strong);
         box-shadow: var(--shadow-ring);
+        white-space: normal;
+      }
+
+      .user-bubble-body {
+        display: block;
+        white-space: pre-wrap;
+      }
+
+      .message-edit-panel {
+        margin-top: 12px;
+        display: grid;
+        gap: 12px;
+        border: 1px solid color-mix(in srgb, var(--accent) 38%, var(--line));
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--paper) 94%, transparent);
+        box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 14%, transparent);
+        padding: 10px;
+      }
+
+      .message-edit-input {
+        width: 100%;
+        min-height: 110px;
+        resize: vertical;
+        border: 1px solid var(--line-strong);
+        border-radius: 12px;
+        background: color-mix(in srgb, var(--ivory) 92%, transparent);
+        color: var(--ink);
+        padding: 12px 13px;
+        font: inherit;
+        line-height: 1.6;
+        outline: none;
+      }
+
+      .message-edit-note {
+        color: var(--muted);
+        font-size: 13px;
+        line-height: 1.45;
+      }
+
+      .message-edit-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+      }
+
+      .message-edit-btn {
+        min-width: 92px;
+        height: 40px;
+        border-radius: 12px;
+        border: 1px solid var(--line-strong);
+        background: transparent;
+        color: var(--ink);
+        font: inherit;
+        cursor: pointer;
+      }
+
+      .message-edit-btn.primary {
+        border-color: transparent;
+        background: var(--ink);
+        color: var(--paper);
+      }
+
+      .message-edit-btn:disabled {
+        opacity: 0.42;
+        cursor: not-allowed;
       }
 
       .assistant .bubble {
@@ -2195,6 +2285,8 @@
       }
 
       .search-query-chip {
+        display: inline-flex;
+        align-items: center;
         max-width: 100%;
         overflow: hidden;
         border: 1px solid var(--line);
@@ -2204,6 +2296,12 @@
         font-size: 12px;
         text-overflow: ellipsis;
         white-space: nowrap;
+        text-decoration: none;
+      }
+
+      a.search-query-chip:hover {
+        color: var(--ink);
+        border-color: var(--line-strong);
       }
 
       .amap-panel {
@@ -2972,6 +3070,7 @@
         width: min(100%, 560px);
         height: min(88vh, 642px);
         max-height: 88vh;
+        position: relative;
         display: flex;
         flex-direction: column;
         overflow: hidden;
@@ -3020,7 +3119,7 @@
         overflow-y: auto;
         overscroll-behavior: contain;
         -webkit-overflow-scrolling: touch;
-        padding: 18px 20px 20px;
+        padding: 18px 20px 88px;
       }
 
       #settingsClose,
@@ -3443,16 +3542,17 @@
       }
 
       .modal-foot {
-        position: sticky;
+        position: absolute;
+        left: 0;
+        right: 0;
         bottom: 0;
         z-index: 2;
         display: flex;
         justify-content: flex-end;
         gap: 8px;
-        margin: auto -20px -20px;
         border-top: 1px solid var(--line);
         background: var(--ivory);
-        padding: 12px 20px;
+        padding: 14px 20px 16px;
       }
 
       .primary-btn,
@@ -4441,6 +4541,27 @@
             </div>
             <div class="setting-row">
               <div>
+                <div class="setting-title">搜索词构建</div>
+                <div class="setting-subtitle">开启进阶搜索后，AI 会构建多组提示词分别搜索，简易搜索只针对用户提示词作单次搜索词构建。</div>
+              </div>
+              <div class="segmented web-mode-group" id="searchPlanningModeGroup">
+                <button type="button" data-search-planning-mode="advanced">进阶</button>
+                <button type="button" data-search-planning-mode="auto">自动</button>
+                <button type="button" data-search-planning-mode="simple">简易</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div>
+                <div class="setting-title">补充问题</div>
+                <div class="setting-subtitle">如果开启补充问题，当用户的表达不明晰时，问用户 1~3 个问题，明确查询范围。</div>
+              </div>
+              <div class="segmented web-mode-group" id="clarifyQuestionsModeGroup">
+                <button type="button" data-clarify-questions-mode="auto">自动</button>
+                <button type="button" data-clarify-questions-mode="off">关</button>
+              </div>
+            </div>
+            <div class="setting-row">
+              <div>
                 <div class="setting-title">队列调用</div>
                 <div class="setting-subtitle">首选模型失败后，按模型列表顺序尝试下一个模型。</div>
               </div>
@@ -4483,7 +4604,7 @@
                   <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/><path class="slash" d="M4 20 20 4"/></svg>
                 </button>
               </div>
-              <div class="field-hint">保存在浏览器 OPFS。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
+              <div class="field-hint">保存在浏览器 OPFS 或 IndexedDB。新页面会尝试读取原 Linso 的 API 配置作为初始值。</div>
             </div>
             <div class="field">
               <button class="outline-btn" id="testApiKeyBtn">测试 API Key</button>
@@ -4512,7 +4633,16 @@
           <div id="tabSearch" style="display: none">
             <div class="field">
               <div class="field-label">Search Providers</div>
-              <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会保存在浏览器 OPFS/localStorage。部分服务可能因 CORS 拒绝前端请求。</div>
+              <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会保存在浏览器 OPFS/IndexedDB。部分服务可能因 CORS 拒绝前端请求。</div>
+            </div>
+            <div class="field">
+              <div class="field-label">单次搜索返回条数</div>
+              <div class="segmented web-mode-group" id="searchResultCountModeGroup">
+                <button type="button" data-search-result-count-mode="fewer">更少</button>
+                <button type="button" data-search-result-count-mode="balanced">适中</button>
+                <button type="button" data-search-result-count-mode="more">更多</button>
+              </div>
+              <div class="field-hint">分别对应 3 / 6 / 9 条结果。</div>
             </div>
             <div class="field">
               <div class="field-label">高德地图 Key</div>
@@ -4533,6 +4663,14 @@
           </div>
           <div id="tabAbout" style="display: none">
             <div class="field">
+              <div class="field-label">数据持久化</div>
+              <div class="segmented web-mode-group" id="persistenceModeGroup">
+                <button type="button" data-persistence-mode="opfs">OPFS</button>
+                <button type="button" data-persistence-mode="indexeddb">IndexedDB</button>
+              </div>
+              <div class="field-hint" id="persistenceModeHint">默认优先使用 OPFS；若浏览器不支持稳定读写，则会自动回退到 IndexedDB。</div>
+            </div>
+            <div class="field">
               <div class="field-label">配置</div>
               <div class="inline-actions">
                 <button class="outline-btn" id="exportConfigBtn">导出配置</button>
@@ -4548,7 +4686,7 @@
                 <button class="outline-btn" id="importChatsBtn">导入消息记录</button>
                 <input id="importChatsInput" type="file" accept="application/json,.json" hidden />
               </div>
-              <div class="field-hint">消息记录保存在浏览器 OPFS/localStorage 中，导入会合并到当前本地记录。</div>
+              <div class="field-hint">消息记录保存在浏览器 OPFS/IndexedDB 中，导入会合并到当前本地记录。</div>
             </div>
           </div>
           <div class="modal-foot">
@@ -4570,6 +4708,10 @@
       const MOBILE_COMPOSER_EXPAND_LOCK_MS = 1400;
       const OPFS_SETTINGS_FILE = "linsoo-settings.json";
       const OPFS_CHAT_DIR = "linsoo-chats";
+      const STORAGE_MODE_BOOTSTRAP_KEY = "linsoo-storage-mode";
+      const IDB_NAME = "linsoo-storage";
+      const IDB_STORE = "files";
+      const PERSISTENCE_MODES = ["opfs", "indexeddb"];
       const DEFAULT_PAGE_TITLE = "Linsoo — AI 搜索对话";
       const DEFAULT_PROMPT = `You are Linsoo, an answer-first AI search engine in the style of Perplexity and Grok.
 
@@ -4618,6 +4760,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
       const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
       const ICON_WEB_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/><path class="slash" d="M4 20 20 4"/><path class="spark" d="M18.4 2.6l.5 1.25 1.35.1-1.04.86.32 1.32-1.15-.72-1.16.72.33-1.32-1.04-.86 1.34-.1.5-1.25Z"/></svg>';
+      const ICON_CHAT_VIEW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6.5A4.5 4.5 0 0 1 9.5 2h5A4.5 4.5 0 0 1 19 6.5v4A4.5 4.5 0 0 1 14.5 15H11l-4.5 4v-4.4A4.5 4.5 0 0 1 5 11V6.5Z" /><path d="M9 7h6M9 10.5h4" /></svg>';
+      const ICON_SEARCH_VIEW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m16 16 4 4" /></svg>';
       const PROVIDERS = {
         glm: {
           label: "GLM",
@@ -4686,6 +4830,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         theme: "light",
         themeMode: "light",
         webSearchMode: "auto",
+        searchPlanningMode: "auto",
+        clarifyQuestionsMode: "auto",
+        searchResultCountMode: "balanced",
+        persistenceMode: "opfs",
         searchProviders: {},
         amapKey: "",
         railEnabled: true,
@@ -4729,6 +4877,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let scrollSettleTimer = null;
       let opfsRoot = null;
       let opfsReady = false;
+      let idbDb = null;
+      let idbReady = false;
+      let storageMode = "indexeddb";
       let saveTimer = null;
       let askPanelState = null;
       let mathJaxReady = null;
@@ -4737,6 +4888,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       let highlightReady = null;
       let railActiveIndex = -1;
       let activeRun = null;
+      let uiRenderFrame = 0;
+      let pendingRailRefresh = false;
+      let pendingSearchPageRefresh = false;
+      let pendingAssistantRenderIds = new Set();
+      let railSignature = "";
+      let searchViewNeedsTopReset = false;
+      let suppressScrollCapture = false;
+      const viewScrollState = { chat: 0, search: 0 };
+      let editingMessageId = "";
 
       const els = {};
 
@@ -4881,6 +5041,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "toggleKeyBtn",
           "testApiKeyBtn",
           "webSearchModeGroup",
+          "searchResultCountModeGroup",
+          "searchPlanningModeGroup",
+          "clarifyQuestionsModeGroup",
           "webSearchSettingRow",
           "searchProviderList",
           "cfgRail",
@@ -4892,6 +5055,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           "exportChatsBtn",
           "importChatsBtn",
           "importChatsInput",
+          "persistenceModeGroup",
+          "persistenceModeHint",
           "themeModeGroup",
           "tabGeneral",
           "tabAI",
@@ -4905,58 +5070,186 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       async function initStorage() {
+        await initIndexedDb();
+        opfsReady = await probeOpfsSupport();
+        const bootMode = normalizePersistenceMode(localStorage.getItem(STORAGE_MODE_BOOTSTRAP_KEY));
+        storageMode = resolvePersistenceMode(bootMode || "opfs");
+        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, storageMode);
+      }
+
+      function normalizePersistenceMode(mode) {
+        return PERSISTENCE_MODES.includes(mode) ? mode : "";
+      }
+
+      function resolvePersistenceMode(mode = "opfs") {
+        if (mode === "opfs" && opfsReady) return "opfs";
+        if (idbReady) return "indexeddb";
+        return opfsReady ? "opfs" : "indexeddb";
+      }
+
+      function isPersistenceModeAvailable(mode) {
+        return mode === "opfs" ? opfsReady : mode === "indexeddb" ? idbReady : false;
+      }
+
+      async function initIndexedDb() {
         try {
-          if (navigator.storage?.getDirectory) {
-            opfsRoot = await navigator.storage.getDirectory();
-            opfsReady = true;
-          }
+          idbDb = await new Promise((resolve, reject) => {
+            const request = indexedDB.open(IDB_NAME, 1);
+            request.onupgradeneeded = () => {
+              const db = request.result;
+              if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+            };
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          });
+          idbReady = true;
         } catch (e) {
-          opfsRoot = null;
-          opfsReady = false;
+          idbDb = null;
+          idbReady = false;
         }
       }
 
-      async function readJsonFile(path, fallback) {
-        if (!opfsReady) {
-          try {
-            const raw = localStorage.getItem(path);
-            return raw ? JSON.parse(raw) : fallback;
-          } catch (e) {
-            return fallback;
-          }
-        }
+      async function probeOpfsSupport() {
         try {
-          const file = await getOpfsFile(path, { create: false });
-          if (!file) return fallback;
-          return JSON.parse(await file.text());
+          if (!navigator.storage?.getDirectory) return false;
+          opfsRoot = await navigator.storage.getDirectory();
+          const probePath = `${OPFS_CHAT_DIR}/.linsoo-opfs-probe`;
+          const handle = await getOpfsHandle(probePath, { create: true });
+          const writable = await handle.createWritable();
+          await writable.write('{"ok":true}');
+          await writable.close();
+          const file = await handle.getFile();
+          const text = await file.text();
+          await deleteJsonFileFrom("opfs", probePath);
+          return /"ok":true/.test(text);
+        } catch (e) {
+          opfsRoot = null;
+          return false;
+        }
+      }
+
+      function idbStore(mode = "readonly") {
+        if (!idbDb) return null;
+        return idbDb.transaction(IDB_STORE, mode).objectStore(IDB_STORE);
+      }
+
+      async function idbReadJson(path, fallback) {
+        try {
+          const value = await new Promise((resolve, reject) => {
+            const store = idbStore("readonly");
+            if (!store) {
+              resolve(undefined);
+              return;
+            }
+            const request = store.get(path);
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+          });
+          return value === undefined ? fallback : cloneValue(value);
         } catch (e) {
           return fallback;
         }
       }
 
-      async function writeJsonFile(path, data) {
-        if (!opfsReady) {
+      async function idbWriteJson(path, data) {
+        await new Promise((resolve, reject) => {
+          const store = idbStore("readwrite");
+          if (!store) {
+            resolve();
+            return;
+          }
+          const request = store.put(cloneValue(data), path);
+          request.onsuccess = () => resolve();
+          request.onerror = () => reject(request.error);
+        });
+      }
+
+      async function idbDeleteJson(path) {
+        await new Promise((resolve) => {
+          const store = idbStore("readwrite");
+          if (!store) {
+            resolve();
+            return;
+          }
+          const request = store.delete(path);
+          request.onsuccess = () => resolve();
+          request.onerror = () => resolve();
+        });
+      }
+
+      async function idbListEntries(prefix = "") {
+        try {
+          return await new Promise((resolve, reject) => {
+            const store = idbStore("readonly");
+            if (!store) {
+              resolve([]);
+              return;
+            }
+            const rows = [];
+            const request = store.openCursor();
+            request.onsuccess = () => {
+              const cursor = request.result;
+              if (!cursor) {
+                resolve(rows);
+                return;
+              }
+              const key = String(cursor.key || "");
+              if (!prefix || key.startsWith(prefix)) rows.push({ key, value: cloneValue(cursor.value) });
+              cursor.continue();
+            };
+            request.onerror = () => reject(request.error);
+          });
+        } catch (e) {
+          return [];
+        }
+      }
+
+      async function readJsonFile(path, fallback) {
+        return readJsonFileFrom(storageMode, path, fallback);
+      }
+
+      async function readJsonFileFrom(mode, path, fallback) {
+        if (mode === "opfs") {
           try {
-            localStorage.setItem(path, JSON.stringify(data));
-          } catch (e) {}
+            const file = await getOpfsFile(path, { create: false });
+            if (!file) return fallback;
+            return JSON.parse(await file.text());
+          } catch (e) {
+            return fallback;
+          }
+        }
+        return idbReadJson(path, fallback);
+      }
+
+      async function writeJsonFile(path, data) {
+        return writeJsonFileTo(storageMode, path, data);
+      }
+
+      async function writeJsonFileTo(mode, path, data) {
+        if (mode === "opfs") {
+          const handle = await getOpfsHandle(path, { create: true });
+          const writable = await handle.createWritable();
+          await writable.write(JSON.stringify(data, null, 2));
+          await writable.close();
           return;
         }
-        const handle = await getOpfsHandle(path, { create: true });
-        const writable = await handle.createWritable();
-        await writable.write(JSON.stringify(data, null, 2));
-        await writable.close();
+        await idbWriteJson(path, data);
       }
 
       async function deleteJsonFile(path) {
-        if (!opfsReady) {
-          localStorage.removeItem(path);
+        return deleteJsonFileFrom(storageMode, path);
+      }
+
+      async function deleteJsonFileFrom(mode, path) {
+        if (mode === "opfs") {
+          const parts = path.split("/").filter(Boolean);
+          const name = parts.pop();
+          let dir = opfsRoot;
+          for (const part of parts) dir = await dir.getDirectoryHandle(part, { create: true });
+          await dir.removeEntry(name).catch(() => {});
           return;
         }
-        const parts = path.split("/").filter(Boolean);
-        const name = parts.pop();
-        let dir = opfsRoot;
-        for (const part of parts) dir = await dir.getDirectoryHandle(part, { create: true });
-        await dir.removeEntry(name).catch(() => {});
+        await idbDeleteJson(path);
       }
 
       async function getOpfsFile(path, opts = {}) {
@@ -4991,18 +5284,24 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function loadChatIndex() {
         chatIndex = [];
-        if (!opfsReady) {
-          renderSidebar();
-          return;
-        }
         try {
-          const dir = await getOpfsDirectory(OPFS_CHAT_DIR, { create: true });
-          for await (const [name, handle] of dir.entries()) {
-            if (handle.kind !== "file" || !name.endsWith(".json")) continue;
-            try {
-              const chat = JSON.parse(await (await handle.getFile()).text());
-              chatIndex.push(chatSummary(chat));
-            } catch (e) {}
+          if (storageMode === "opfs") {
+            const dir = await getOpfsDirectory(OPFS_CHAT_DIR, { create: true });
+            for await (const [name, handle] of dir.entries()) {
+              if (handle.kind !== "file" || !name.endsWith(".json")) continue;
+              try {
+                const chat = JSON.parse(await (await handle.getFile()).text());
+                chatIndex.push(chatSummary(chat));
+              } catch (e) {}
+            }
+          } else {
+            const rows = await idbListEntries(`${OPFS_CHAT_DIR}/`);
+            rows.forEach(({ key, value }) => {
+              if (!String(key).endsWith(".json") || !value || typeof value !== "object") return;
+              try {
+                chatIndex.push(chatSummary(value));
+              } catch (e) {}
+            });
           }
           chatIndex.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
         } catch (e) {
@@ -5286,8 +5585,10 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       async function loadState() {
         try {
           const stored = await readJsonFile(OPFS_SETTINGS_FILE, null);
-          if (stored) Object.assign(state, stored);
-          if (!stored) {
+          const fallbackStored = !stored && storageMode !== "indexeddb" ? await readJsonFileFrom("indexeddb", OPFS_SETTINGS_FILE, null) : null;
+          const finalStored = stored || fallbackStored;
+          if (finalStored) Object.assign(state, finalStored);
+          if (!finalStored) {
             const rawLegacy = localStorage.getItem(STORAGE_KEY);
             if (rawLegacy) Object.assign(state, JSON.parse(rawLegacy));
           }
@@ -5307,6 +5608,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         state.activeModel = state.modelQueue[0] || state.activeModel || "";
         if (!state.themeMode) state.themeMode = state.theme || "light";
         normalizeWebSearchState();
+        state.searchPlanningMode = normalizeSearchPlanningMode(state.searchPlanningMode);
+        state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(state.clarifyQuestionsMode);
+        state.searchResultCountMode = normalizeSearchResultCountMode(state.searchResultCountMode);
         state.railEnabled = state.railEnabled !== false;
         state.queueFallback = state.queueFallback === true;
         state.retryOnFailure = state.retryOnFailure !== false;
@@ -5317,6 +5621,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         state.interactionMode = normalizeInteractionMode(state.interactionMode);
         if (!state.prompt) state.prompt = DEFAULT_PROMPT;
         state.amapKey = String(state.amapKey || "");
+        state.persistenceMode = resolvePersistenceMode(normalizePersistenceMode(state.persistenceMode) || storageMode || "opfs");
+        storageMode = state.persistenceMode;
+        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, storageMode);
         hydrateModelsFromCache();
       }
 
@@ -5348,8 +5655,30 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function saveState() {
         try {
+          state.persistenceMode = resolvePersistenceMode(state.persistenceMode || storageMode || "opfs");
           await writeJsonFile(OPFS_SETTINGS_FILE, state);
+          localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, state.persistenceMode);
         } catch (e) {}
+      }
+
+      async function migratePersistenceData(targetMode) {
+        const nextMode = resolvePersistenceMode(targetMode);
+        if (nextMode === storageMode) return true;
+        if (!isPersistenceModeAvailable(nextMode)) return false;
+        const settingsSnapshot = cloneValue(state);
+        settingsSnapshot.persistenceMode = nextMode;
+        await writeJsonFileTo(nextMode, OPFS_SETTINGS_FILE, settingsSnapshot);
+        for (const item of chatIndex) {
+          const chat = currentChat?.slug === item.slug
+            ? { ...currentChat, messages: cloneValue(messages) }
+            : await readJsonFileFrom(storageMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, null);
+          if (!chat) continue;
+          await writeJsonFileTo(nextMode, `${OPFS_CHAT_DIR}/${item.slug}.json`, chat);
+        }
+        storageMode = nextMode;
+        state.persistenceMode = nextMode;
+        localStorage.setItem(STORAGE_MODE_BOOTSTRAP_KEY, nextMode);
+        return true;
       }
 
       function ensureActiveModel() {
@@ -5436,8 +5765,23 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         els.exportChatsBtn.addEventListener("click", exportChats);
         els.importChatsBtn.addEventListener("click", () => els.importChatsInput.click());
         els.importChatsInput.addEventListener("change", importChats);
+        els.persistenceModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => {
+            if (button.disabled) return;
+            els.persistenceModeGroup.querySelectorAll("button").forEach((item) => item.classList.toggle("active", item === button));
+          });
+        });
         els.webSearchModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setWebSearchMode(button.dataset.webSearchMode, { toast: false }));
+        });
+        els.searchResultCountModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setSearchResultCountMode(button.dataset.searchResultCountMode, { toast: false }));
+        });
+        els.searchPlanningModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setSearchPlanningMode(button.dataset.searchPlanningMode, { toast: false }));
+        });
+        els.clarifyQuestionsModeGroup.querySelectorAll("button").forEach((button) => {
+          button.addEventListener("click", () => setClarifyQuestionsMode(button.dataset.clarifyQuestionsMode, { toast: false }));
         });
         els.interactionModeGroup.querySelectorAll("button").forEach((button) => {
           button.addEventListener("click", () => setInteractionMode(button.dataset.interactionMode, { toast: false }));
@@ -5564,6 +5908,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }, { passive: true });
 
         window.addEventListener("scroll", () => {
+          saveViewScroll();
+          if (currentActiveView() !== "chat") return;
           const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
           autoFollow = Date.now() < userScrollPauseUntil ? distance < 12 : distance < 120;
           handleMobileComposerScroll(distance, { forceCollapse: Date.now() < mobileUserScrollUntil });
@@ -5573,6 +5919,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         window.addEventListener("resize", () => {
           updateMobileViewportInsets();
           updateScrollButtonOffset();
+          scheduleRailRender();
         }, { passive: true });
         window.visualViewport?.addEventListener("resize", updateMobileViewportInsets, { passive: true });
         window.visualViewport?.addEventListener("scroll", updateMobileViewportInsets, { passive: true });
@@ -5780,6 +6127,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       }
 
       function setActiveView(view, opts = {}) {
+        const previousView = currentActiveView();
+        saveViewScroll(previousView);
         const activeView = normalizeActiveView(view);
         if (activeView === "chat" && isClassicSearchInProgress()) return;
         const search = activeView === "search";
@@ -5794,10 +6143,16 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
         if (search) {
           renderSearchPage();
-          window.scrollTo({ top: 0, behavior: "smooth" });
+          if (searchViewNeedsTopReset) {
+            restoreViewScroll("search", { forceTop: true });
+            searchViewNeedsTopReset = false;
+          } else {
+            restoreViewScroll("search");
+          }
         } else {
           if (opts.allowClassicAnswer !== false) maybeAnswerClassicSearch();
-          if (autoFollow) scrollToBottom();
+          if (autoFollow) scrollToBottom({ behavior: "auto" });
+          else restoreViewScroll("chat");
         }
       }
 
@@ -5816,6 +6171,78 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function normalizeActiveView(view, fallback = "chat") {
         if (view === "search" || view === "chat") return view;
         return fallback === "search" ? "search" : "chat";
+      }
+
+      function currentActiveView() {
+        return document.body.classList.contains("search-view") ? "search" : "chat";
+      }
+
+      function currentScrollY() {
+        return window.scrollY || document.documentElement.scrollTop || 0;
+      }
+
+      function saveViewScroll(view = currentActiveView()) {
+        if (suppressScrollCapture) return;
+        viewScrollState[normalizeActiveView(view)] = currentScrollY();
+      }
+
+      function setWindowScroll(top, behavior = "auto") {
+        suppressScrollCapture = true;
+        window.scrollTo({ top: Math.max(0, Math.round(top || 0)), behavior });
+        requestAnimationFrame(() => {
+          suppressScrollCapture = false;
+          saveViewScroll();
+        });
+      }
+
+      function restoreViewScroll(view, opts = {}) {
+        const activeView = normalizeActiveView(view);
+        const top = opts.forceTop ? 0 : viewScrollState[activeView] || 0;
+        setWindowScroll(top, opts.behavior || "auto");
+      }
+
+      function requestUiRender() {
+        if (uiRenderFrame) return;
+        uiRenderFrame = requestAnimationFrame(flushUiRender);
+      }
+
+      function scheduleAssistantRender(id) {
+        if (!id) return;
+        pendingAssistantRenderIds.add(id);
+        requestUiRender();
+      }
+
+      function scheduleRailRender() {
+        pendingRailRefresh = true;
+        requestUiRender();
+      }
+
+      function scheduleSearchPageRender(opts = {}) {
+        pendingSearchPageRefresh = true;
+        if (opts.resetScrollTop) searchViewNeedsTopReset = true;
+        requestUiRender();
+      }
+
+      function flushUiRender() {
+        uiRenderFrame = 0;
+        pendingAssistantRenderIds.forEach((id) => {
+          const message = messages.find((item) => item.id === id);
+          const node = message ? els.messages?.querySelector(`[data-id="${CSS.escape(id)}"]`) : null;
+          if (message?.role === "assistant" && node) renderAssistantContent(node, message);
+        });
+        pendingAssistantRenderIds.clear();
+        if (pendingRailRefresh) {
+          pendingRailRefresh = false;
+          renderConversationRail();
+        }
+        if (pendingSearchPageRefresh) {
+          pendingSearchPageRefresh = false;
+          renderSearchPage();
+          if (currentActiveView() === "search" && searchViewNeedsTopReset) {
+            restoreViewScroll("search", { forceTop: true });
+            searchViewNeedsTopReset = false;
+          }
+        }
       }
 
       async function persistCurrentChatView() {
@@ -5872,15 +6299,42 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       async function setInteractionMode(mode, opts = {}) {
         state.interactionMode = normalizeInteractionMode(mode);
+        if (currentChat) currentChat.interactionMode = state.interactionMode;
         document.body.classList.toggle("classic-mode", activeInteractionMode() === "classic");
         renderInteractionModeControls();
         renderWebSearchControls();
+        renderSidebar();
         await saveState();
+        if (currentChat?.slug) persistCurrentChatView();
         if (opts.toast) showToast(state.interactionMode === "classic" ? "模式：传统" : "模式：对话");
       }
 
       function normalizeWebSearchMode(mode) {
         return ["on", "auto", "off"].includes(mode) ? mode : "auto";
+      }
+
+      function normalizeSearchPlanningMode(mode) {
+        return ["advanced", "auto", "simple"].includes(mode) ? mode : "auto";
+      }
+
+      function normalizeClarifyQuestionsMode(mode) {
+        return mode === "off" ? "off" : "auto";
+      }
+
+      function normalizeSearchResultCountMode(mode) {
+        return ["fewer", "balanced", "more"].includes(mode) ? mode : "balanced";
+      }
+
+      function persistenceModeLabel(mode = storageMode) {
+        return mode === "opfs" ? "OPFS" : "IndexedDB";
+      }
+
+      function searchResultCountValue(mode = state.searchResultCountMode) {
+        return {
+          fewer: 3,
+          balanced: 6,
+          more: 9,
+        }[normalizeSearchResultCountMode(mode)] || 6;
       }
 
       function modeLabel(mode) {
@@ -5898,6 +6352,64 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         renderWebSearchControls();
         await saveState();
         if (opts.toast) showToast(`Web Search: ${modeLabel(state.webSearchMode)}`);
+      }
+
+      function renderSearchResultCountModeControls() {
+        const mode = normalizeSearchResultCountMode(state.searchResultCountMode);
+        els.searchResultCountModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.searchResultCountMode === mode);
+        });
+      }
+
+      async function setSearchResultCountMode(mode, opts = {}) {
+        state.searchResultCountMode = normalizeSearchResultCountMode(mode);
+        renderSearchResultCountModeControls();
+        await saveState();
+        if (opts.toast) showToast(`单次搜索返回条数：${state.searchResultCountMode === "fewer" ? "更少" : state.searchResultCountMode === "more" ? "更多" : "适中"}`);
+      }
+
+      function renderPersistenceModeControls() {
+        const active = resolvePersistenceMode(state.persistenceMode || storageMode || "opfs");
+        els.persistenceModeGroup?.querySelectorAll("button").forEach((button) => {
+          const mode = normalizePersistenceMode(button.dataset.persistenceMode);
+          button.classList.toggle("active", mode === active);
+          button.disabled = !isPersistenceModeAvailable(mode);
+          button.title = !isPersistenceModeAvailable(mode) ? `${persistenceModeLabel(mode)} 当前不可用` : "";
+        });
+        if (els.persistenceModeHint) {
+          const unavailableOpfs = !opfsReady;
+          els.persistenceModeHint.textContent = unavailableOpfs
+            ? `当前正在使用 ${persistenceModeLabel(active)}。浏览器未通过 OPFS 稳定读写检测，已自动回退到 IndexedDB。`
+            : `当前正在使用 ${persistenceModeLabel(active)}。默认优先使用 OPFS；若浏览器不支持稳定读写，则会自动回退到 IndexedDB。`;
+        }
+      }
+
+      function renderSearchPlanningModeControls() {
+        const mode = normalizeSearchPlanningMode(state.searchPlanningMode);
+        els.searchPlanningModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.searchPlanningMode === mode);
+        });
+      }
+
+      async function setSearchPlanningMode(mode, opts = {}) {
+        state.searchPlanningMode = normalizeSearchPlanningMode(mode);
+        renderSearchPlanningModeControls();
+        await saveState();
+        if (opts.toast) showToast(`搜索词构建：${state.searchPlanningMode === "advanced" ? "进阶" : state.searchPlanningMode === "simple" ? "简易" : "自动"}`);
+      }
+
+      function renderClarifyQuestionsModeControls() {
+        const mode = normalizeClarifyQuestionsMode(state.clarifyQuestionsMode);
+        els.clarifyQuestionsModeGroup?.querySelectorAll("button").forEach((button) => {
+          button.classList.toggle("active", button.dataset.clarifyQuestionsMode === mode);
+        });
+      }
+
+      async function setClarifyQuestionsMode(mode, opts = {}) {
+        state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(mode);
+        renderClarifyQuestionsModeControls();
+        await saveState();
+        if (opts.toast) showToast(`补充问题：${state.clarifyQuestionsMode === "off" ? "关" : "自动"}`);
       }
 
       function renderModelPickers() {
@@ -6034,9 +6546,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       function chatRowHTML(chat) {
         const folderAction = chat.folder ? "remove-folder" : "folder";
         const folderLabel = chat.folder ? "移出" : "文件夹";
+        const mode = normalizeInteractionMode(chat.interactionMode);
         return `
           <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0" draggable="true">
-            <span class="chat-title">${esc(chat.title)}</span>
+            <span class="chat-main">
+              <span class="chat-mode-icon${mode === "classic" ? " classic" : ""}">${mode === "classic" ? ICON_SEARCH_VIEW : ICON_CHAT_VIEW}</span>
+              <span class="chat-title">${esc(chat.title)}</span>
+            </span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
             <span class="mobile-row-actions" aria-hidden="true">
               <button type="button" data-mobile-action="pin">${chat.pinned ? "取消" : "固定"}</button>
@@ -6412,6 +6928,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function newChat(opts = {}) {
         cancelRun();
+        editingMessageId = "";
         messages = [];
         currentChat = null;
         activeFolder = "";
@@ -6515,6 +7032,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           updatedAt: chat.updatedAt || Date.now(),
         };
         messages = normalizeLoadedMessages(Array.isArray(chat.messages) ? chat.messages : []);
+        editingMessageId = "";
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
         renderSearchPage();
@@ -6577,25 +7095,65 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
       function renderConversationRail() {
         if (!els.railInner) return;
-        els.railInner.innerHTML = "";
-        if (!messages.length) {
+        const turns = conversationTurnCount();
+        if (!messages.length || turns < 3) {
+          railSignature = "";
+          els.railInner.innerHTML = "";
           railActiveIndex = -1;
           els.railPreview.classList.remove("visible");
+          els.conversationRail.style.display = "none";
           return;
         }
-        messages.forEach((message, index) => {
-          const mark = document.createElement("button");
-          mark.type = "button";
-          mark.className = "rail-mark";
+        els.conversationRail.style.display = "";
+        const signature = messages.map((message) => message.id).join("|");
+        if (railSignature !== signature || els.railInner.children.length !== messages.length) {
+          els.railInner.innerHTML = "";
+          messages.forEach((message, index) => {
+            const mark = document.createElement("button");
+            mark.type = "button";
+            mark.className = "rail-mark";
+            mark.dataset.id = message.id;
+            mark.addEventListener("mouseenter", () => showRailPreview(index, mark));
+            mark.addEventListener("focus", () => showRailPreview(index, mark));
+            mark.addEventListener("click", () => jumpToMessage(index));
+            els.railInner.appendChild(mark);
+          });
+          railSignature = signature;
+        }
+        [...els.railInner.children].forEach((mark, index) => {
+          const message = messages[index];
+          if (!message) return;
           mark.dataset.index = String(index);
           mark.title = railPreviewText(message);
           mark.style.width = `${railMarkWidth(message)}px`;
-          mark.addEventListener("mouseenter", () => showRailPreview(index, mark));
-          mark.addEventListener("focus", () => showRailPreview(index, mark));
-          mark.addEventListener("click", () => jumpToMessage(index));
-          els.railInner.appendChild(mark);
         });
+        updateRailDensity();
         updateRailActive();
+      }
+
+      function conversationTurnCount() {
+        return messages.filter((message) => message.role === "user").length;
+      }
+
+      function updateRailDensity() {
+        const inner = els.railInner;
+        if (!inner) return;
+        const marks = [...inner.children];
+        if (!marks.length) {
+          inner.style.removeProperty("--rail-gap");
+          return;
+        }
+        const viewportLimit = Math.max(140, Math.floor(window.innerHeight * 0.8));
+        const padding = 56;
+        const totalMarkHeight = marks.reduce((sum, mark) => sum + mark.getBoundingClientRect().height, 0);
+        const defaultGap = 7;
+        const totalDefault = totalMarkHeight + padding + Math.max(0, marks.length - 1) * defaultGap;
+        if (totalDefault <= viewportLimit || marks.length <= 1) {
+          inner.style.setProperty("--rail-gap", `${defaultGap}px`);
+          return;
+        }
+        const compressedGap = Math.max(1, (viewportLimit - padding - totalMarkHeight) / Math.max(1, marks.length - 1));
+        inner.style.setProperty("--rail-gap", `${compressedGap.toFixed(2)}px`);
       }
 
       function railMarkWidth(message) {
@@ -6642,7 +7200,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (!node) return;
         const offset = isMobileViewport() ? 66 : 10;
         const top = window.scrollY + node.getBoundingClientRect().top - offset;
-        window.scrollTo({ top: Math.max(0, top), behavior: "smooth" });
+        setWindowScroll(top, "smooth");
       }
 
       function jumpUserPrompt(direction) {
@@ -6668,18 +7226,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         node.dataset.id = message.id;
 
         if (message.role === "user") {
-          const files = (message.attachments || [])
-            .map((file) => attachmentCardHTML(file, false))
-            .join("");
           node.innerHTML = `
-            <div class="bubble">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>
+            <div class="bubble"></div>
             <div class="user-footer">
               <span class="message-time">${esc(formatMessageTime(message.createdAt))}</span>
+              <button class="mini-btn retry-user-btn" title="重新回答" aria-label="重新回答">${ICON_RETRY}</button>
               <button class="mini-btn copy-user-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
               <button class="mini-btn edit-user-btn" title="编辑" aria-label="编辑">${ICON_EDIT}</button>
             </div>`;
+          node.querySelector(".retry-user-btn").addEventListener("click", () => retryFromUserMessage(message.id));
           node.querySelector(".copy-user-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
           node.querySelector(".edit-user-btn").addEventListener("click", () => editUserMessage(message.id));
+          renderUserMessageContent(node, message);
           if (message.searchStatus || message.searchContext || message.search) renderSearchPage();
         } else {
           node.innerHTML = `
@@ -6694,24 +7252,33 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
                 </button>
               </div>
             </div>
-            <div class="bubble"><div class="sources"></div><div class="answer"></div><div class="assistant-footer"></div></div>`;
+            <div class="bubble">
+              <div class="sources"></div>
+              <div class="assistant-status"></div>
+              <div class="thinking-slot"></div>
+              <div class="answer"></div>
+              <div class="assistant-footer"></div>
+            </div>`;
           node.querySelector(".copy-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
           node.querySelector(".retry-btn").addEventListener("click", () => retryFrom(message.id));
           renderAssistantContent(node, message);
         }
 
         els.messages.appendChild(node);
-        renderConversationRail();
+        scheduleRailRender();
       }
 
       function updateMessage(id, patch) {
         const message = messages.find((m) => m.id === id);
         if (!message) return;
         Object.assign(message, patch);
-        const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
-        if (node && message.role === "assistant") renderAssistantContent(node, message);
-        renderConversationRail();
-        if (patchTouchesSearchSurface(patch)) renderSearchPage();
+        if (message.role === "assistant") scheduleAssistantRender(id);
+        else {
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+          if (node) renderUserMessageContent(node, message);
+        }
+        scheduleRailRender();
+        if (patchTouchesSearchSurface(patch)) scheduleSearchPageRender();
         scheduleSaveChat();
       }
 
@@ -6722,10 +7289,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         Object.assign(message, patch);
         if (!run?.chat || currentChat?.slug === run.chat.slug) {
           if (messages !== runMessages) messages = runMessages;
-          const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
-          if (node && message.role === "assistant") renderAssistantContent(node, message);
-          renderConversationRail();
-          if (patchTouchesSearchSurface(patch)) renderSearchPage();
+          if (message.role === "assistant") scheduleAssistantRender(id);
+          scheduleRailRender();
+          if (patchTouchesSearchSurface(patch)) scheduleSearchPageRender();
           scheduleSaveChat();
         }
       }
@@ -6774,25 +7340,84 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         applyGeneralSettings();
       }
 
+      function renderUserMessageContent(node, message) {
+        const bubble = node.querySelector(".bubble");
+        if (!bubble) return;
+        const files = (message.attachments || [])
+          .map((file) => attachmentCardHTML(file, false))
+          .join("");
+        const editing = editingMessageId === message.id;
+        bubble.innerHTML = `
+          <div class="user-bubble-body">${esc(message.content)}${files ? `<div class="attachment-strip visible" style="padding:10px 0 0">${files}</div>` : ""}</div>
+          ${editing ? `
+            <div class="message-edit-panel">
+              <textarea class="message-edit-input" spellcheck="false">${esc(message.content || "")}</textarea>
+              <div class="message-edit-note">保存后会丢弃这条消息以下的后续对话，并从这里重新生成回答。</div>
+              <div class="message-edit-actions">
+                <button class="message-edit-btn" type="button" data-edit-action="cancel">取消</button>
+                <button class="message-edit-btn primary" type="button" data-edit-action="save">保存</button>
+              </div>
+            </div>` : ""}`;
+        if (!editing) return;
+        const input = bubble.querySelector(".message-edit-input");
+        const saveBtn = bubble.querySelector('[data-edit-action="save"]');
+        const sync = () => {
+          saveBtn.disabled = !String(input.value || "").trim();
+        };
+        bubble.querySelector('[data-edit-action="cancel"]')?.addEventListener("click", cancelUserMessageEdit);
+        bubble.querySelector('[data-edit-action="save"]')?.addEventListener("click", () => commitUserMessageEdit(message.id, input.value));
+        input?.addEventListener("input", sync);
+        sync();
+        requestAnimationFrame(() => {
+          input?.focus();
+          input?.setSelectionRange(input.value.length, input.value.length);
+        });
+      }
+
       function editUserMessage(id) {
+        if (running) return;
+        const previousId = editingMessageId;
+        editingMessageId = editingMessageId === id ? "" : id;
+        if (previousId && previousId !== editingMessageId) {
+          const previousMessage = messages.find((m) => m.id === previousId);
+          const previousNode = els.messages.querySelector(`[data-id="${CSS.escape(previousId)}"]`);
+          if (previousMessage && previousNode) renderUserMessageContent(previousNode, previousMessage);
+        }
+        const message = messages.find((m) => m.id === id);
+        const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+        if (message && node) renderUserMessageContent(node, message);
+      }
+
+      function cancelUserMessageEdit() {
+        const id = editingMessageId;
+        editingMessageId = "";
+        if (!id) return;
+        const message = messages.find((m) => m.id === id);
+        const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+        if (message && node) renderUserMessageContent(node, message);
+      }
+
+      function commitUserMessageEdit(id, nextContent) {
         if (running) return;
         const idx = messages.findIndex((m) => m.id === id);
         const message = messages[idx];
-        if (!message || message.role !== "user") return;
-        els.threadInput.value = message.content || "";
-        attachments.thread = (message.attachments || []).map((file) => ({ ...file }));
-        renderAttachments("thread");
-        autosize(els.threadInput);
-        messages = messages.slice(0, idx);
+        const content = String(nextContent || "").trim();
+        if (idx < 0 || !message || message.role !== "user" || !content) return;
+        editingMessageId = "";
+        message.content = content;
+        messages = messages.slice(0, idx + 1);
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
-        updateSendState();
-        els.threadInput.focus();
+        renderSearchPage();
         scheduleSaveChat();
+        setActiveView("chat", { allowClassicAnswer: false });
+        runAssistant();
       }
 
       function renderAssistantContent(node, message) {
         const sources = node.querySelector(".sources");
+        const status = node.querySelector(".assistant-status");
+        const thinkingSlot = node.querySelector(".thinking-slot");
         const answer = node.querySelector(".answer");
         const footer = node.querySelector(".assistant-footer");
         const sourceItems = extractSources(message);
@@ -6806,36 +7431,45 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         }
         sources.style.display = sourceItems.length || message.amapContext ? "" : "none";
 
-        if (message.loading && !message.content && !message.thinking) {
-          answer.innerHTML = renderSearchStatus(message);
-          const footerSig = `loading|${sourceSig}`;
-          if (footer.dataset.signature !== footerSig) {
-            footer.innerHTML = sourceItems.length
-              ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>`
-              : "";
-            footer.dataset.signature = footerSig;
-            footer.querySelector(".source-drawer-btn")?.addEventListener("click", () => openSourcePanel(message));
-          }
-          return;
+        const statusHtml = renderSearchStatus(message);
+        if (status.dataset.signature !== statusHtml) {
+          status.innerHTML = statusHtml;
+          status.dataset.signature = statusHtml;
         }
+        status.style.display = statusHtml ? "" : "none";
+
         const thinking = renderThinking(message);
+        if (thinkingSlot.dataset.signature !== thinking) {
+          thinkingSlot.innerHTML = thinking;
+          thinkingSlot.dataset.signature = thinking;
+          bindThinking(thinkingSlot, message);
+        }
+        thinkingSlot.style.display = thinking ? "" : "none";
+
         const body = message.content ? renderMarkdown(message.content) : "";
-        answer.innerHTML = (message.loading ? renderSearchStatus(message) : "") + thinking + body;
-        bindThinking(answer, message);
-        highlightCodeBlocks(answer);
-        bindCodeCopyButtons(answer);
-        const footerSig = `done|${sourceSig}`;
+        if (answer.dataset.signature !== body) {
+          answer.innerHTML = body;
+          answer.dataset.signature = body;
+          highlightCodeBlocks(answer);
+          bindCodeCopyButtons(answer);
+          queueMathTypeset(answer);
+        }
+        const loadingOnly = message.loading && !message.content && !message.thinking;
+        const footerSig = `${loadingOnly ? "loading" : "done"}|${sourceSig}`;
         if (footer.dataset.signature !== footerSig) {
-          footer.innerHTML = `
-            <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
-            <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
-            ${sourceItems.length ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>` : ""}`;
+          footer.innerHTML = loadingOnly
+            ? (sourceItems.length
+              ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>`
+              : "")
+            : `
+              <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
+              <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
+              ${sourceItems.length ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>` : ""}`;
           footer.dataset.signature = footerSig;
-          footer.querySelector(".copy-answer-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
-          footer.querySelector(".retry-answer-btn").addEventListener("click", () => retryFrom(message.id));
+          footer.querySelector(".copy-answer-btn")?.addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
+          footer.querySelector(".retry-answer-btn")?.addEventListener("click", () => retryFrom(message.id));
           footer.querySelector(".source-drawer-btn")?.addEventListener("click", () => openSourcePanel(message));
         }
-        queueMathTypeset(answer);
       }
 
       function sourceListSignature(sources) {
@@ -7004,8 +7638,8 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             <div class="search-query-head">
               <div>
                 <div class="search-query-title">${esc(record.prompt)}</div>
-                ${renderSearchQueryList(record.search)}
                 <div class="search-page-provider">${esc(searchProviderSummary(record.search) || `${record.sources.length} 条结果`)}</div>
+                ${renderSearchQueryList(record.search)}
               </div>
               <a class="search-query-google" href="${esc(googleSearchUrl(record.prompt))}" target="_blank" rel="noopener noreferrer">Google ↗</a>
             </div>
@@ -7052,7 +7686,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           : (search?.groups || []).map((group) => group.query).filter(Boolean);
         const unique = [...new Set(queries.map((query) => String(query || "").trim()).filter(Boolean))];
         return unique.length
-          ? `<div class="search-query-list">${unique.map((query) => `<span class="search-query-chip">${esc(query)}</span>`).join("")}</div>`
+          ? `<div class="search-query-list">${unique.map((query) => `<a class="search-query-chip" href="${esc(googleSearchUrl(query))}" target="_blank" rel="noopener noreferrer">${esc(query)}</a>`).join("")}</div>`
           : "";
       }
 
@@ -7313,6 +7947,15 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
               askPanelState.answers[index] = [];
               syncAskOtherUi();
             }
+          });
+          otherInput.addEventListener("keydown", (event) => {
+            if (event.key !== "Enter" || event.shiftKey || event.isComposing) return;
+            event.preventDefault();
+            const value = String(otherInput.value || "").replace(/\s+/g, " ").trim();
+            askPanelState.customAnswers[index] = value;
+            if (!value) return;
+            syncAskOtherUi();
+            advanceAskPanel();
           });
         }
       }
@@ -8059,12 +8702,15 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           queries: [searchFallbackQuery(searchSeed, fallbackQuery)],
           intent: inferSearchIntent(searchSeed),
           preferredProvider: "",
+          complex: false,
         };
         if (opts.skipPlanner) {
           decision = buildTraditionalSearchDecision(searchSeed, fallbackQuery);
+        } else if (state.searchPlanningMode === "simple") {
+          decision = refineSearchDecision(decision, searchSeed);
         }
         updateRunMessage(run, targetMessageId, { searchStatus: mode === "auto" && !forceSearch ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
-        if (!opts.skipPlanner && (mode === "auto" || mode === "on" || forceSearch)) {
+        if (!opts.skipPlanner && state.searchPlanningMode !== "simple" && (mode === "auto" || mode === "on" || forceSearch)) {
           decision = await decideWebSearch(searchSeed, clarifiedContext, model, signal, forceSearch || mode === "on").catch(() => {
             const intent = inferSearchIntent(searchSeed);
             const query = searchFallbackQuery(searchSeed, fallbackQuery);
@@ -8077,6 +8723,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           return;
         }
 
+        scheduleSearchPageRender({ resetScrollTop: true });
         const queries = normalizeSearchQueries(decision, searchSeed);
         if (!queries.length) return;
         try {
@@ -8138,6 +8785,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       }
 
       async function maybeAskUserQuestion({ prompt, targetMessageId, planningContext, model, signal, run, amapContext = null, forceAskCheck = true }) {
+        if (state.clarifyQuestionsMode === "off") return null;
         if (!forceAskCheck || !state.apiKey || !model || signal?.aborted) return null;
         updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要补充问题..." });
         const decision = await decideAskUserQuestion(prompt, planningContext, model, signal).catch(() => ({ shouldAsk: false, questions: [] }));
@@ -8249,7 +8897,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             messages: withRealtimeMessagePrefix([
               {
                 role: "system",
-                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} If the context already contains enough structured location-service data from AMap to answer the request directly, set shouldSearch to false unless the user explicitly asks for broader web sources, comparisons, reviews, or external references. Write concise search-engine queries that capture the user's meaning. Do not copy a long user prompt unless it is already an excellent short query. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
+                content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} If the context already contains enough structured location-service data from AMap to answer the request directly, set shouldSearch to false unless the user explicitly asks for broader web sources, comparisons, reviews, or external references. Build search queries by staying close to the user's original wording: first extract the core entities, constraints, and keywords directly from the user prompt, then add only the minimum missing context needed to make the query self-contained. Do not replace the user's framing with a completely different search angle unless the user prompt is extremely vague or underspecified. Prefer keyword extraction plus light completion over free invention. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
               },
               { role: "user", content: planningContext },
             ]),
@@ -8284,7 +8932,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             messages: withRealtimeMessagePrefix([
               {
                 role: "system",
-                content: "判断当前用户问题是否仍然不够明确，是否需要先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。只有真正需要多选时才设置 multiple=true。仅当歧义会实质影响对象、范围、地区、时间、意图、型号、预算、用途或搜索方向时才提问；如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。若当前信息已经足够明确，返回 shouldAsk=false 和空 questions 数组。",
+                content: "判断当前用户问题是否仍然不够明确，是否需要先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。除非明显只能单选，否则优先使用多选题形式并设置 multiple=true，让用户可以更快圈定范围。仅当歧义会实质影响对象、范围、地区、时间、意图、型号、预算、用途或搜索方向时才提问；如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。若当前信息已经足够明确，返回 shouldAsk=false 和空 questions 数组。",
               },
               { role: "user", content: planningContext },
             ]),
@@ -8331,11 +8979,15 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 
       function refineSearchDecision(decision, prompt) {
         const next = { ...decision };
-        if (shouldUseMultipleSearches(prompt)) next.complex = true;
+        if (state.searchPlanningMode === "advanced") next.complex = true;
+        else if (state.searchPlanningMode === "simple") next.complex = false;
+        else if (shouldUseMultipleSearches(prompt)) next.complex = true;
         let queries = Array.isArray(next.queries) ? next.queries.filter(Boolean) : [];
         if (next.query) queries.unshift(next.query);
         queries = [...new Set(queries.map((query) => String(query || "").trim()).filter(Boolean))];
-        if (next.complex && queries.length <= 1) {
+        if (state.searchPlanningMode === "simple") {
+          queries = [searchFallbackQuery(prompt, queries[0] || next.query || "")].filter(Boolean);
+        } else if (next.complex && queries.length <= 1) {
           queries = expandSearchQueries(prompt, queries[0] || searchFallbackQuery(prompt));
         }
         next.queries = queries;
@@ -8509,13 +9161,14 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       const SEARCH_ADAPTERS = {
         tavily: {
           async search(query, apiKey, signal) {
+            const resultCount = searchResultCountValue();
             const response = await fetch("https://api.tavily.com/search", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${apiKey}`,
               },
-              body: JSON.stringify({ query, search_depth: "basic", max_results: 6, include_favicon: true }),
+              body: JSON.stringify({ query, search_depth: "basic", max_results: resultCount, include_favicon: true }),
               signal,
             });
             const data = await readSearchJson(response, "Tavily");
@@ -8531,13 +9184,14 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         },
         exa: {
           async search(query, apiKey, signal) {
+            const resultCount = searchResultCountValue();
             const response = await fetch("https://api.exa.ai/search", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 "x-api-key": apiKey,
               },
-              body: JSON.stringify({ query, type: "auto", numResults: 6, contents: { highlights: { maxCharacters: 500 } } }),
+              body: JSON.stringify({ query, type: "auto", numResults: resultCount, contents: { highlights: { maxCharacters: 500 } } }),
               signal,
             });
             const data = await readSearchJson(response, "Exa");
@@ -8553,13 +9207,14 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         },
         serper: {
           async search(query, apiKey, signal) {
+            const resultCount = searchResultCountValue();
             const response = await fetch("https://google.serper.dev/search", {
               method: "POST",
               headers: {
                 "Content-Type": "application/json",
                 "X-API-KEY": apiKey,
               },
-              body: JSON.stringify({ q: query, num: 6 }),
+              body: JSON.stringify({ q: query, num: resultCount }),
               signal,
             });
             const data = await readSearchJson(response, "Serper");
@@ -8574,11 +9229,12 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         },
         serpapi: {
           async search(query, apiKey, signal) {
+            const resultCount = searchResultCountValue();
             const url = new URL("https://serpapi.com/search.json");
             url.searchParams.set("engine", "google");
             url.searchParams.set("q", query);
             url.searchParams.set("api_key", apiKey);
-            url.searchParams.set("num", "6");
+            url.searchParams.set("num", String(resultCount));
             let response;
             try {
               response = await fetch(url.toString(), { signal });
@@ -8735,6 +9391,9 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 - You can ask the user 1-3 clarifying questions with askuserquestion when the request is ambiguous, under-specified, or missing key constraints.
 - If clarifying answers are available, incorporate them together with the original prompt.
 - Do not claim that you lack search or askuserquestion capability unless the app explicitly reports a runtime failure.`;
+        const timeHint = `Current date and time are available as internal context for freshness decisions only.
+- Do not start the answer with the current date or time.
+- Do not mention the current date or time unless the user explicitly asks for it or the answer cannot be correct without it.`;
         const geo = run?.amapContext?.geo;
         const geoHint = geo?.formattedAddress
           ? `Current user location confirmed by browser geolocation and AMap:
@@ -8743,21 +9402,27 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 - Address: ${geo.formattedAddress}
 Treat this as the user's actual current location unless the user explicitly says otherwise.`
           : "Current user location is not confirmed. If location permission or AMap data was not obtained, do not guess the user's city, district, or nearby places. State clearly that location data was not available.";
-        return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${geoHint}`;
+        return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${timeHint}\n\n${geoHint}`;
       }
 
       function currentRealtimePromptPrefix() {
         const now = new Date();
         const pad = (value) => String(value).padStart(2, "0");
-        return `当前实时日期时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}`;
+        return `内部参考时间：${now.getFullYear()}年${now.getMonth() + 1}月${now.getDate()}日 ${pad(now.getHours())}:${pad(now.getMinutes())}。仅用于判断时效性；除非用户明确要求或答案必须依赖具体时间，否则不要主动输出，更不要放在回答开头。`;
       }
 
       function withRealtimeMessagePrefix(items) {
         const prefix = currentRealtimePromptPrefix();
-        return items.map((item) => ({
-          ...item,
-          content: `${prefix}\n\n${item.content || ""}`,
-        }));
+        let applied = false;
+        return items.map((item, index) => {
+          const shouldPrefix = !applied && (item.role === "system" || index === 0);
+          if (!shouldPrefix) return item;
+          applied = true;
+          return {
+            ...item,
+            content: `${prefix}\n\n${item.content || ""}`,
+          };
+        });
       }
 
       function buildSearchContextPrompt(search) {
@@ -8836,10 +9501,24 @@ ${formatClarification(clarification)}
         if (running) return;
         const idx = messages.findIndex((m) => m.id === assistantId);
         if (idx <= 0) return;
+        editingMessageId = "";
         messages = messages.slice(0, idx);
         els.messages.innerHTML = "";
         messages.forEach(renderMessage);
         renderSearchPage();
+        runAssistant();
+      }
+
+      function retryFromUserMessage(userId) {
+        if (running) return;
+        const idx = messages.findIndex((m) => m.id === userId);
+        if (idx < 0 || messages[idx]?.role !== "user") return;
+        editingMessageId = "";
+        messages = messages.slice(0, idx + 1);
+        els.messages.innerHTML = "";
+        messages.forEach(renderMessage);
+        renderSearchPage();
+        setActiveView("chat", { allowClassicAnswer: false });
         runAssistant();
       }
 
@@ -8884,6 +9563,10 @@ ${formatClarification(clarification)}
         els.cfgModelInput.value = state.activeModel || "";
         els.cfgPrompt.value = state.prompt || DEFAULT_PROMPT;
         renderWebSearchControls();
+        renderSearchResultCountModeControls();
+        renderSearchPlanningModeControls();
+        renderClarifyQuestionsModeControls();
+        renderPersistenceModeControls();
         renderInteractionModeControls();
         els.cfgRail.checked = state.railEnabled !== false;
         els.cfgQueueFallback.checked = state.queueFallback === true;
@@ -8897,7 +9580,6 @@ ${formatClarification(clarification)}
         renderSearchProviderSettings();
         switchTab("general");
         els.settingsOverlay.classList.add("open");
-        requestAnimationFrame(lockSettingsModalHeight);
       }
 
       function closeSettings() {
@@ -8905,32 +9587,12 @@ ${formatClarification(clarification)}
       }
 
       function lockSettingsModalHeight() {
-        const modal = els.settingsOverlay.querySelector(".modal");
-        if (!modal) return;
-        modal.style.height = "auto";
-        const previous = {
-          general: els.tabGeneral.style.display,
-          ai: els.tabAI.style.display,
-          search: els.tabSearch.style.display,
-          appearance: els.tabAppearance.style.display,
-          about: els.tabAbout.style.display,
-        };
-        els.tabGeneral.style.display = "none";
-        els.tabAI.style.display = "none";
-        els.tabSearch.style.display = "";
-        els.tabAppearance.style.display = "none";
-        els.tabAbout.style.display = "none";
-        const height = Math.min(Math.floor(window.innerHeight * 0.88), Math.ceil(modal.scrollHeight));
-        els.tabGeneral.style.display = previous.general;
-        els.tabAI.style.display = previous.ai;
-        els.tabSearch.style.display = previous.search;
-        els.tabAppearance.style.display = previous.appearance;
-        els.tabAbout.style.display = previous.about;
-        modal.style.height = `${height}px`;
+        return;
       }
 
       async function saveSettings() {
         const oldUrl = state.baseUrl;
+        const requestedPersistenceMode = resolvePersistenceMode(normalizePersistenceMode(els.persistenceModeGroup.querySelector(".active")?.dataset.persistenceMode || state.persistenceMode || storageMode || "opfs"));
         try {
           persistProviderDraft();
         } catch (e) {
@@ -8938,6 +9600,8 @@ ${formatClarification(clarification)}
         }
         persistSearchProviderSettings();
         state.interactionMode = normalizeInteractionMode(els.interactionModeGroup.querySelector(".active")?.dataset.interactionMode || state.interactionMode);
+        state.searchPlanningMode = normalizeSearchPlanningMode(els.searchPlanningModeGroup.querySelector(".active")?.dataset.searchPlanningMode || state.searchPlanningMode);
+        state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(els.clarifyQuestionsModeGroup.querySelector(".active")?.dataset.clarifyQuestionsMode || state.clarifyQuestionsMode);
         state.railEnabled = els.cfgRail.checked;
         state.queueFallback = els.cfgQueueFallback.checked;
         state.retryOnFailure = els.cfgRetryOnFailure.checked;
@@ -8945,6 +9609,7 @@ ${formatClarification(clarification)}
         state.baseUrl = els.cfgBaseUrl.value.trim();
         state.apiKey = els.cfgApiKey.value.trim();
         state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
+        state.persistenceMode = requestedPersistenceMode;
         if (oldUrl !== state.baseUrl) {
           fetchedModels = [];
           state.modelCache = { baseUrl: "", models: [], savedAt: 0 };
@@ -8953,6 +9618,14 @@ ${formatClarification(clarification)}
         renderInteractionModeControls();
         applyTheme();
         applyGeneralSettings();
+        if (requestedPersistenceMode !== storageMode) {
+          const migrated = await migratePersistenceData(requestedPersistenceMode);
+          if (!migrated) {
+            showToast("目标持久化方式当前不可用。");
+            state.persistenceMode = storageMode;
+          }
+        }
+        renderPersistenceModeControls();
         await saveState();
         renderModelPickers();
         renderWebSearchControls();
@@ -9676,7 +10349,29 @@ ${formatClarification(clarification)}
           const key = normalizeSourceUrl(source.url);
           if (key && !map.has(key)) map.set(key, { ...source, url: key });
         });
+        if (!map.size) {
+          extractMarkdownSources(message.content || "").forEach((source) => {
+            const key = normalizeSourceUrl(source.url);
+            if (key && !map.has(key)) map.set(key, { ...source, url: key });
+          });
+        }
         return [...map.values()].slice(0, 8);
+      }
+
+      function extractMarkdownSources(text) {
+        const raw = String(text || "");
+        const matches = [...raw.matchAll(/(^|[^!])\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/gm)];
+        return matches.map((match) => {
+          const title = String(match[2] || "").trim() || domainOf(match[3] || "");
+          const url = String(match[3] || "").trim();
+          return {
+            title,
+            url,
+            siteName: domainOf(url),
+            snippet: sourceSnippetAround(raw, match.index || 0),
+            source: "markdown",
+          };
+        });
       }
 
       function sourceSnippetAround(text, index) {
@@ -10055,16 +10750,16 @@ ${formatClarification(clarification)}
         toastTimer = setTimeout(() => els.toast.classList.remove("visible"), 2300);
       }
 
-      function scrollToBottom() {
+      function scrollToBottom(opts = {}) {
         showThreadComposer();
         els.scrollBtn.classList.remove("visible");
         requestAnimationFrame(() => {
-          window.scrollTo({ top: document.documentElement.scrollHeight, behavior: "smooth" });
+          setWindowScroll(document.documentElement.scrollHeight, opts.behavior || "smooth");
         });
       }
 
       function pauseAutoFollowForUserScroll() {
-        if (!document.body.classList.contains("chat-active")) return;
+        if (!document.body.classList.contains("chat-active") || currentActiveView() !== "chat") return;
         const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
         mobileUserScrollUntil = Date.now() + 900;
         userScrollPauseUntil = Date.now() + 1600;
