@@ -765,7 +765,15 @@
       flex-direction: column;
       padding: clamp(26px, 5vw, 70px) clamp(16px, 3vw, 28px) 24px;
       margin-left: 288px;
-      transition: margin-left var(--speed);
+      transition:
+        margin-left var(--speed),
+        transform var(--speed),
+        border-radius var(--speed),
+        box-shadow var(--speed);
+    }
+
+    .mobile-sidebar-scrim {
+      display: none;
     }
 
     body.chat-active .main {
@@ -3343,6 +3351,16 @@
       box-shadow: 0 1px 2px rgba(54, 44, 32, 0.05);
     }
 
+    .tabs-wrap {
+      position: sticky;
+      top: -18px;
+      z-index: 8;
+    }
+
+    .tab-picker-frame {
+      display: none;
+    }
+
     .field {
       margin-bottom: 16px;
     }
@@ -4097,6 +4115,10 @@
     }
 
     @media (max-width: 720px) {
+      :root {
+        --mobile-sidebar-width: min(78vw, 292px);
+      }
+
       html {
         min-height: 100%;
         overflow-x: hidden;
@@ -4124,22 +4146,24 @@
       .sidebar {
         top: 0;
         left: 0;
-        right: 0;
-        bottom: auto;
-        width: 100%;
-        max-height: min(88vh, 680px);
+        right: auto;
+        bottom: 0;
+        width: var(--mobile-sidebar-width);
+        height: 100dvh;
+        max-height: none;
         border: 1px solid var(--line-strong);
         border-top: none;
         border-left: none;
-        border-right: none;
-        border-radius: 0 0 18px 18px;
-        box-shadow: 0 20px 90px rgba(20, 20, 19, 0.22);
+        border-bottom: none;
+        border-radius: 0;
+        box-shadow: 22px 0 90px rgba(20, 20, 19, 0.22);
         padding: 15px 12px 14px;
         overflow: hidden;
         overscroll-behavior: contain;
         touch-action: pan-y;
+        transform: translateX(0);
         transition:
-          max-height var(--speed),
+          transform 0.28s cubic-bezier(0.2, 0.8, 0.2, 1),
           padding var(--speed),
           border-radius var(--speed),
           box-shadow var(--speed);
@@ -4212,22 +4236,30 @@
       body.sidebar-collapsed .sidebar {
         top: 0;
         left: 0;
-        right: 0;
-        bottom: auto;
-        width: 100%;
-        max-height: 56px;
+        right: auto;
+        bottom: 0;
+        width: var(--mobile-sidebar-width);
+        height: 100dvh;
+        max-height: none;
         border-left: none;
         border-top: none;
         border-right: none;
-        border-bottom: 1px solid var(--line);
+        border-bottom: none;
         border-radius: 0;
         box-shadow: none;
-        padding: 10px 12px;
+        padding: 15px 12px 14px;
+        overflow: visible;
+        transform: translateX(-100%);
+        pointer-events: none;
       }
 
       .sidebar-head,
       body.sidebar-collapsed .sidebar-head {
-        justify-content: space-between;
+        justify-content: flex-start;
+      }
+
+      .sidebar-head {
+        padding-inline: 2px;
       }
 
       .sidebar-collapse .hamburger-lines {
@@ -4248,7 +4280,7 @@
 
       body:not(.sidebar-collapsed) .sidebar-body {
         display: block;
-        max-height: calc(88vh - 62px);
+        max-height: calc(100dvh - 74px);
         padding-top: 10px;
         overflow-y: auto;
         overscroll-behavior: contain;
@@ -4267,6 +4299,61 @@
         max-width: 100vw;
         min-width: 0;
         padding: 72px 8px 22px;
+        transform: translateX(0);
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      body:not(.sidebar-collapsed) .main {
+        transform: translateX(var(--mobile-sidebar-width));
+        transform-origin: left center;
+        border-radius: 24px 0 0 24px;
+        box-shadow: -18px 0 70px rgba(20, 20, 19, 0.18);
+        overflow: hidden;
+      }
+
+      .mobile-sidebar-scrim {
+        position: fixed;
+        inset: 0 0 0 var(--mobile-sidebar-width);
+        z-index: 28;
+        display: block;
+        border-radius: 24px 0 0 24px;
+        background: rgba(20, 20, 19, 0.34);
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.22s ease;
+      }
+
+      body:not(.sidebar-collapsed) .mobile-sidebar-scrim {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      .icon-btn.sidebar-collapse,
+      body.sidebar-collapsed .icon-btn.sidebar-collapse {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        left: auto;
+        z-index: 35;
+        width: 42px;
+        height: 42px;
+        border: 1px solid var(--line);
+        border-radius: 14px;
+        background: color-mix(in srgb, var(--paper) 88%, transparent);
+        color: var(--text-strong);
+        box-shadow: 0 4px 18px rgba(20, 20, 19, 0.08);
+        backdrop-filter: blur(14px);
+        pointer-events: auto;
+      }
+
+      body.sidebar-collapsed .icon-btn.sidebar-collapse {
+        right: -52px;
+      }
+
+      .icon-btn.sidebar-collapse:hover {
+        background: var(--white);
       }
 
       .thread,
@@ -4284,16 +4371,8 @@
         padding-top: 72px;
       }
 
-      body.chat-active.sidebar-collapsed .sidebar-head {
-        justify-content: flex-end;
-      }
-
-      body.chat-active.sidebar-collapsed .brand {
-        display: none;
-      }
-
       body.chat-active:not(.sidebar-collapsed) .top-view-tabs {
-        display: none;
+        display: flex;
       }
 
       .top-view-tabs,
@@ -4301,7 +4380,7 @@
         top: 6px;
         left: 50%;
         right: auto;
-        z-index: 31;
+        z-index: 24;
         width: 158px;
         justify-content: center;
         border-radius: 14px;
@@ -4312,7 +4391,7 @@
       .chat-export-btn {
         top: 6px;
         right: 8px;
-        z-index: 31;
+        z-index: 24;
       }
 
       .view-tab {
@@ -4529,6 +4608,93 @@
         touch-action: pan-y;
       }
 
+      .tabs-wrap {
+        top: -1px;
+        margin: 0 0 16px;
+        padding: 4px 0;
+        border-radius: var(--radius-md);
+        background: var(--sand);
+        overflow: hidden;
+      }
+
+      .tabs-wrap::before,
+      .tabs-wrap::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        z-index: 3;
+        width: 42px;
+        pointer-events: none;
+      }
+
+      .tabs-wrap::before {
+        left: 0;
+        background: linear-gradient(90deg, var(--sand), transparent);
+      }
+
+      .tabs-wrap::after {
+        right: 0;
+        background: linear-gradient(270deg, var(--sand), transparent);
+      }
+
+      .tab-picker-frame {
+        position: absolute;
+        left: 50%;
+        top: 4px;
+        z-index: 1;
+        display: block;
+        width: 78px;
+        height: 34px;
+        border: none;
+        border-radius: 999px;
+        background: var(--ivory);
+        box-shadow: 0 1px 2px rgba(54, 44, 32, 0.05);
+        transform: translateX(-50%);
+        pointer-events: none;
+      }
+
+      .tabs {
+        position: relative;
+        top: auto;
+        z-index: 2;
+        flex-wrap: nowrap;
+        gap: 8px;
+        overflow-x: auto;
+        overflow-y: hidden;
+        scroll-snap-type: x mandatory;
+        scrollbar-width: none;
+        border-radius: 0;
+        background: transparent;
+        margin: 0;
+        padding: 0 calc(50% - 39px);
+        -webkit-overflow-scrolling: touch;
+      }
+
+      .tabs::-webkit-scrollbar {
+        display: none;
+      }
+
+      .tab {
+        flex: 0 0 78px;
+        min-height: 34px;
+        scroll-snap-align: center;
+        border-radius: 999px;
+        padding: 0 10px;
+        font-size: 13px;
+        background: transparent;
+        box-shadow: none;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .tab.active {
+        background: transparent;
+        color: var(--ink);
+        box-shadow: none;
+        font-weight: 700;
+      }
+
       body.sidebar-collapsed .sidebar-label,
       body.sidebar-collapsed .chat-title,
       body.sidebar-collapsed .folder-name,
@@ -4712,6 +4878,7 @@
         </section>
       </div>
     </aside>
+    <div class="mobile-sidebar-scrim" id="mobileSidebarScrim" aria-hidden="true"></div>
 
     <main class="main">
       <section class="hero" id="hero">
@@ -4899,12 +5066,15 @@
         </button>
       </div>
       <div class="modal-body">
-        <div class="tabs">
+        <div class="tabs-wrap">
+          <div class="tab-picker-frame" aria-hidden="true"></div>
+          <div class="tabs">
           <button class="tab active" data-tab="general">通用</button>
           <button class="tab" data-tab="ai">AI</button>
           <button class="tab" data-tab="search">搜索</button>
           <button class="tab" data-tab="appearance">外观</button>
           <button class="tab" data-tab="about">关于</button>
+          </div>
         </div>
         <div id="tabGeneral">
           <div class="setting-row" data-setting-key="interactionMode" data-setting-tab="general">
@@ -5108,7 +5278,7 @@
             <div class="field-label">Jina Reader API Key</div>
             <input class="input mono" id="cfgJinaApiKey" type="password" placeholder="用于提权域名的完整正文抓取" autocomplete="off"
               spellcheck="false" />
-            <div class="field-hint">当本地正文提取链路失败时，会回退到 Jina Reader 抓取提权网页的完整正文；未填写时仍会尝试匿名访问。</div>
+            <div class="field-hint">用于通过 Jina Reader 抓取提权网页或工具指定网页的完整正文；未填写时按 Jina 匿名额度尝试，失败后不会再走本地匿名抓取。</div>
           </div>
           <div class="field" data-setting-key="boostedDomains" data-setting-tab="search">
             <div class="field-label">来源提权</div>
@@ -5282,10 +5452,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       serper: { label: "Serper", keyUrl: "https://serper.dev/" },
       serpapi: { label: "SerpAPI", keyUrl: "https://serpapi.com/manage-api-key" },
     };
-    const SOURCE_EXTRACTION_PROXIES = [
-      "https://corsproxy.io/?",
-      "https://api.allorigins.win/raw?url=",
-    ];
     const SEARCH_PROVIDER_IDS = ["tavily", "exa", "serper", "serpapi"];
     const SEARCH_COUNTRY_OPTIONS = [
       { code: "CN", label: "中国", tavily: "china" },
@@ -5407,6 +5573,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     let settingsDirty = false;
     let settingsPendingAck = false;
     let settingsOverlayDismissArmed = false;
+    let settingsTabWheelTimer = null;
     const settingsUndoStack = [];
     let currentSettingsTab = "general";
     let settingsHighlightTimer = null;
@@ -5414,10 +5581,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     let mathJaxReady = null;
     let markdownReady = null;
     let markdownRenderer = null;
-    let readabilityReady = null;
-    let readabilityCtor = null;
-    let turndownReady = null;
-    let turndownCtor = null;
     let highlightReady = null;
     let railActiveIndex = -1;
     let activeRun = null;
@@ -5512,6 +5675,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         "interactionModeGroup",
         "homeBtn",
         "sidebarToggle",
+        "mobileSidebarScrim",
         "searchHistoryBtn",
         "exportMdBtn",
         "searchOverlay",
@@ -6512,6 +6676,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       els.searchViewBtn.addEventListener("click", () => setActiveView("search"));
       els.homeBtn.addEventListener("click", goHome);
       els.sidebarToggle.addEventListener("click", toggleSidebar);
+      els.mobileSidebarScrim?.addEventListener("click", collapseMobileSidebar);
       els.searchHistoryBtn.addEventListener("click", openGlobalSearch);
       els.exportMdBtn?.addEventListener("click", exportCurrentChatMarkdown);
       els.searchClose?.addEventListener("click", closeGlobalSearch);
@@ -6709,6 +6874,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           switchTab(nextTab);
         });
       });
+      els.settingsOverlay.querySelector(".tabs")?.addEventListener("scroll", scheduleSettingsTabWheelSync, { passive: true });
 
       els.refreshModelsBtn.addEventListener("click", () => fetchModels({ force: true, open: true }));
       els.cfgModelInput.addEventListener("focus", () => {
@@ -9421,26 +9587,17 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     async function fetchPageContentForTool(url, signal) {
       const annotated = annotateSource({ url, title: domainOf(url) || "Untitled" });
       if (!annotated.url) return { ok: false, error: "无效 URL。" };
-      let jinaError = null;
       try {
         const remote = await fetchSourceBodyWithJina(annotated, signal, WEBPAGE_CONTENT_TOOL_TIMEOUT_MS);
         return { ok: true, url: annotated.url, domain: annotated.domain, ...remote };
-      } catch (remoteError) {
-        if (remoteError.name === "AbortError") throw remoteError;
-        jinaError = remoteError;
-      }
-      try {
-        const local = await extractSourceBodyLocally(annotated, signal, WEBPAGE_CONTENT_TOOL_TIMEOUT_MS);
+      } catch (error) {
+        if (isUserAbortError(error, signal)) throw error;
         return {
-          ok: true,
+          ok: false,
           url: annotated.url,
           domain: annotated.domain,
-          ...local,
-          fallbackFrom: jinaError?.message || "",
+          error: `Jina Reader 获取页面内容失败：${readerErrorMessage(error)}`,
         };
-      } catch (localError) {
-        if (localError.name === "AbortError") throw localError;
-        throw new Error(`Jina Reader 优先抓取失败：${jinaError?.message || "unknown error"}；本地匿名获取 fallback 也失败：${localError.message || localError}`);
       }
     }
 
@@ -9554,11 +9711,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           type: "function",
           function: {
             name: "get_webpage_content",
-            description: `Fetch the main textual content of a webpage. Prefer Jina Reader first, but stop the primary fetch after ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s and fall back to local anonymous extraction when needed. Use this for at most ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer to avoid token overuse; pick only the links most important to answering the user.`,
+            description: `Fetch the main textual content of a webpage through Jina Reader. Stop after ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s; if Jina Reader fails or times out, do not try another extraction path. Use this for at most ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer, then answer from already collected search results, snippets, and successful page reads.`,
             parameters: {
               type: "object",
               properties: {
-                url: { type: "string", description: `One URL to read. Prefer Jina Reader; if it does not finish within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s, stop it and use local anonymous extraction as fallback. Across this answer, call get_webpage_content for no more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs.` },
+                url: { type: "string", description: `One URL to read via Jina Reader. If it does not finish within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s or returns an error, continue the answer from already available evidence instead of trying another extraction path. Across this answer, call get_webpage_content for no more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs.` },
               },
               required: ["url"],
             },
@@ -9609,7 +9766,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         if (name === "ask_user_question") return await executeAskUserQuestionTool(args, signal, run, assistantId);
         return { ok: false, error: `未知工具：${name}` };
       } catch (error) {
-        if (error.name === "AbortError") throw error;
+        if (isUserAbortError(error, signal)) throw error;
         return { ok: false, error: error.message || String(error) };
       }
     }
@@ -10866,12 +11023,24 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       return clean.length > limit ? `${clean.slice(0, limit - 1)}...` : clean;
     }
 
-    function jinaReaderHeaders() {
+    function jinaReaderHeaders(timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
       const headers = {
-        Accept: "text/plain, text/markdown;q=0.9, */*;q=0.1",
+        Accept: "application/json, text/plain;q=0.8, text/markdown;q=0.7, */*;q=0.1",
+        "X-Timeout": String(Math.max(1, Math.ceil(timeoutMs / 1000))),
       };
       if (state.jinaApiKey) headers.Authorization = `Bearer ${state.jinaApiKey}`;
       return headers;
+    }
+
+    function readerErrorMessage(error) {
+      if (!error) return "unknown error";
+      if (error.name === "TimeoutError") return "请求超时";
+      if (error.name === "AbortError") return "请求超时";
+      return error.message || String(error);
+    }
+
+    function isUserAbortError(error, signal) {
+      return signal?.aborted && error?.name === "AbortError";
     }
 
     function parseJinaReaderPayload(text, fallbackUrl = "") {
@@ -10883,6 +11052,17 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         readerTitle: title,
         readerUrl: sourceUrl,
         fullMarkdown: raw.trim(),
+        readerContent: content,
+      };
+    }
+
+    function parseJinaReaderJsonPayload(data, fallbackUrl = "") {
+      const root = data?.data && !Array.isArray(data.data) ? data.data : data;
+      const content = String(root?.content || root?.markdown || root?.text || "").trim();
+      return {
+        readerTitle: String(root?.title || "").trim(),
+        readerUrl: String(root?.url || root?.source || fallbackUrl).trim() || fallbackUrl,
+        fullMarkdown: content,
         readerContent: content,
       };
     }
@@ -10901,59 +11081,25 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       }
     }
 
-    async function fetchSourceViaProxy(url, signal, timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
-      const errors = [];
-      for (const proxyBase of SOURCE_EXTRACTION_PROXIES) {
-        try {
-          const response = await fetchTextWithTimeout(`${proxyBase}${encodeURIComponent(url)}`, { signal }, timeoutMs);
-          if (!response.ok) throw new Error(`HTTP ${response.status}`);
-          const html = await response.text();
-          if (!html || html.length < 120) throw new Error("empty html");
-          return html;
-        } catch (error) {
-          if (error.name === "AbortError") throw error;
-          errors.push(`${proxyBase}: ${error.message || error}`);
-        }
-      }
-      throw new Error(errors[0] || "proxy fetch failed");
-    }
-
-    async function extractSourceBodyLocally(source, signal, timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
-      const [readabilityOk, turndownOk] = await Promise.all([loadReadability(), loadTurndown()]);
-      if (!readabilityOk || !turndownOk || !readabilityCtor || !turndownCtor) {
-        throw new Error("local extractor unavailable");
-      }
-      const html = await fetchSourceViaProxy(source.url, signal, timeoutMs);
-      const doc = new DOMParser().parseFromString(html, "text/html");
-      const reader = new readabilityCtor(doc);
-      const article = reader.parse();
-      if (!article?.content) throw new Error("Readability failed");
-      const turndown = new turndownCtor({
-        headingStyle: "atx",
-        codeBlockStyle: "fenced",
-      });
-      const markdownBody = turndown.turndown(article.content).trim();
-      if (!markdownBody) throw new Error("Turndown failed");
-      return {
-        readerTitle: String(article.title || source.title || "").trim(),
-        readerUrl: source.url,
-        fullMarkdown: markdownBody,
-        readerContent: markdownBody,
-        extractionMethod: "local",
-      };
-    }
-
     async function fetchSourceBodyWithJina(source, signal, timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
       const response = await fetchTextWithTimeout(`${JINA_READER_BASE}${source.url}`, {
-        headers: jinaReaderHeaders(),
+        headers: jinaReaderHeaders(timeoutMs),
         signal,
       }, timeoutMs);
       if (!response.ok) {
         const detail = clipText(await response.text().catch(() => ""), 180);
         throw new Error(`Jina Reader HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
       }
+      const raw = await response.text();
+      let parsed = null;
+      try {
+        parsed = parseJinaReaderJsonPayload(JSON.parse(raw), source.url);
+      } catch (error) {
+        parsed = parseJinaReaderPayload(raw, source.url);
+      }
+      if (!parsed.readerContent && !parsed.fullMarkdown) throw new Error("Jina Reader 返回内容为空");
       return {
-        ...parseJinaReaderPayload(await response.text(), source.url),
+        ...parsed,
         extractionMethod: "jina",
       };
     }
@@ -10965,18 +11111,12 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       if (annotated.fullMarkdown) return annotated;
       if (jinaReaderCache.has(cacheKey)) return { ...annotated, ...jinaReaderCache.get(cacheKey) };
       const controller = new AbortController();
-      const abort = () => controller.abort();
+      const abort = () => controller.abort(new DOMException("Aborted", "AbortError"));
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
       signal?.addEventListener("abort", abort, { once: true });
       const timer = setTimeout(() => controller.abort(new DOMException("Source extraction timed out", "TimeoutError")), WEBPAGE_CONTENT_TOOL_TIMEOUT_MS);
       try {
-        let parsed = null;
-        try {
-          parsed = await extractSourceBodyLocally(annotated, controller.signal);
-        } catch (localError) {
-          if (localError.name === "AbortError") throw localError;
-          parsed = await fetchSourceBodyWithJina(annotated, controller.signal);
-        }
+        const parsed = await fetchSourceBodyWithJina(annotated, controller.signal);
         jinaReaderCache.set(cacheKey, parsed);
         return {
           ...annotated,
@@ -10999,10 +11139,10 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         try {
           replacements.set(source.url, await fetchBoostedSourceBody(source, signal));
         } catch (error) {
-          if (error.name === "AbortError") throw error;
+          if (isUserAbortError(error, signal)) throw error;
           replacements.set(source.url, {
             ...source,
-            readerError: error.message || String(error),
+            readerError: `Jina Reader 获取页面内容失败：${readerErrorMessage(error)}`,
           });
         }
       }
@@ -11068,10 +11208,10 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         try {
           replacements.set(source.url, await fetchBoostedSourceBody(source, context.signal, { force: true }));
         } catch (error) {
-          if (error.name === "AbortError") throw error;
+          if (isUserAbortError(error, context.signal)) throw error;
           replacements.set(source.url, {
             ...source,
-            readerError: error.message || String(error),
+            readerError: `Jina Reader 获取页面内容失败：${readerErrorMessage(error)}`,
           });
         }
       }
@@ -11220,7 +11360,7 @@ You are operating inside a browser-side tool calling environment.
 - Prefer build_search_queries before multi-query search when it helps narrow or structure search intent.
 - Use ask_user_question only when ambiguity materially affects scope, target object, constraints, location, or intended search direction.
 - Use amap_explore for current-location weather, nearby places, routes, and trip suggestions.
-- Use get_webpage_content when you need to read a specific page more deeply than snippets allow. Prefer Jina Reader first; if it does not finish within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000} seconds, stop it and fall back to local anonymous extraction. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
+- Use get_webpage_content when you need to read a specific page more deeply than snippets allow. It uses Jina Reader only. If Jina Reader fails or times out within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000} seconds, do not retry with another extraction path; continue answering from available search results, snippets, and successful page reads. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
 - Prefer boosted domains when they appear and are relevant.
 - Do not rely on blocked domains.
 - After enough tool results are available, answer naturally and cite URLs with normal Markdown links.
@@ -11476,6 +11616,7 @@ ${formatClarification(clarification)}
       renderSearchProviderSettings();
       switchTab(currentSettingsTab || "general");
       els.settingsOverlay.classList.add("open");
+      setTimeout(centerActiveSettingsTab, 80);
     }
 
     async function closeSettings() {
@@ -11818,82 +11959,6 @@ ${formatClarification(clarification)}
       });
     }
 
-    function loadReadability() {
-      if (readabilityReady) return readabilityReady;
-      readabilityReady = new Promise((resolve) => {
-        const configure = () => {
-          readabilityCtor = window.Readability || null;
-          resolve(!!readabilityCtor);
-        };
-        if (window.Readability) {
-          configure();
-          return;
-        }
-        const existing = document.getElementById("readabilityScript") || document.querySelector('script[src*="@mozilla/readability"]');
-        if (existing) {
-          existing.addEventListener("load", configure, { once: true });
-          existing.addEventListener("error", () => resolve(false), { once: true });
-          setTimeout(() => resolve(!!window.Readability), 5000);
-          return;
-        }
-        const script = document.createElement("script");
-        script.id = "readabilityScript";
-        script.src = "https://cdn.jsdelivr.net/npm/@mozilla/readability@0.5.0/Readability.min.js";
-        script.async = true;
-        script.onload = configure;
-        script.onerror = () => {
-          script.remove();
-          resolve(false);
-        };
-        document.head.appendChild(script);
-        setTimeout(() => {
-          if (!window.Readability) {
-            script.remove();
-            resolve(false);
-          }
-        }, 5000);
-      });
-      return readabilityReady;
-    }
-
-    function loadTurndown() {
-      if (turndownReady) return turndownReady;
-      turndownReady = new Promise((resolve) => {
-        const configure = () => {
-          turndownCtor = window.TurndownService || null;
-          resolve(!!turndownCtor);
-        };
-        if (window.TurndownService) {
-          configure();
-          return;
-        }
-        const existing = document.getElementById("turndownScript") || document.querySelector('script[src*="turndown"]');
-        if (existing) {
-          existing.addEventListener("load", configure, { once: true });
-          existing.addEventListener("error", () => resolve(false), { once: true });
-          setTimeout(() => resolve(!!window.TurndownService), 5000);
-          return;
-        }
-        const script = document.createElement("script");
-        script.id = "turndownScript";
-        script.src = "https://cdn.jsdelivr.net/npm/turndown@7.2.0/dist/turndown.js";
-        script.async = true;
-        script.onload = configure;
-        script.onerror = () => {
-          script.remove();
-          resolve(false);
-        };
-        document.head.appendChild(script);
-        setTimeout(() => {
-          if (!window.TurndownService) {
-            script.remove();
-            resolve(false);
-          }
-        }, 5000);
-      });
-      return turndownReady;
-    }
-
     function rerenderAssistantMarkdown() {
       if (!els.messages) return;
       messages
@@ -11989,6 +12054,7 @@ ${formatClarification(clarification)}
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.classList.toggle("active", tab.dataset.tab === currentSettingsTab);
       });
+      centerActiveSettingsTab();
       els.tabGeneral.style.display = currentSettingsTab === "general" ? "" : "none";
       els.tabAI.style.display = currentSettingsTab === "ai" ? "" : "none";
       els.tabSearch.style.display = currentSettingsTab === "search" ? "" : "none";
@@ -11998,6 +12064,40 @@ ${formatClarification(clarification)}
         renderSearchProviderSettings();
         renderSearchCountryControls();
       }
+    }
+
+    function centerActiveSettingsTab() {
+      const active = document.querySelector(`.tabs .tab[data-tab="${CSS.escape(currentSettingsTab || "general")}"]`);
+      if (!active || !isMobileViewport()) return;
+      requestAnimationFrame(() => active.scrollIntoView({ inline: "center", block: "nearest", behavior: "smooth" }));
+    }
+
+    function scheduleSettingsTabWheelSync() {
+      if (!isMobileViewport() || !els.settingsOverlay?.classList.contains("open")) return;
+      clearTimeout(settingsTabWheelTimer);
+      settingsTabWheelTimer = setTimeout(syncSettingsTabFromWheel, 120);
+    }
+
+    async function syncSettingsTabFromWheel() {
+      const rail = els.settingsOverlay?.querySelector(".tabs");
+      if (!rail || !isMobileViewport() || !els.settingsOverlay?.classList.contains("open")) return;
+      const railRect = rail.getBoundingClientRect();
+      const centerX = railRect.left + railRect.width / 2;
+      const tabs = [...rail.querySelectorAll(".tab")];
+      let best = null;
+      let bestDistance = Infinity;
+      tabs.forEach((tab) => {
+        const rect = tab.getBoundingClientRect();
+        const distance = Math.abs(rect.left + rect.width / 2 - centerX);
+        if (distance < bestDistance) {
+          best = tab;
+          bestDistance = distance;
+        }
+      });
+      const nextTab = best?.dataset.tab || "";
+      if (!nextTab || nextTab === currentSettingsTab) return;
+      await saveSettings({ close: false, toast: true });
+      switchTab(nextTab);
     }
 
     function renderSearchProviderSettings() {
