@@ -4445,11 +4445,21 @@
       :root {
         --mobile-sidebar-width: min(78vw, 292px);
         --mobile-screen-corner-radius: 44px;
+        --mobile-drawer-x: 0px;
+        --mobile-drawer-surface: color-mix(in srgb, var(--paper) 94%, var(--charcoal) 6%);
       }
 
       html {
         min-height: 100%;
         overflow-x: hidden;
+        -webkit-user-select: none;
+        user-select: none;
+      }
+
+      input,
+      textarea {
+        -webkit-user-select: text;
+        user-select: text;
       }
 
       body:not(.chat-active) {
@@ -4482,12 +4492,13 @@
         z-index: 100;
         border: none;
         border-radius: 0;
+        background: var(--mobile-drawer-surface);
         box-shadow: none;
         padding: 15px 12px 14px;
         overflow: hidden;
         overscroll-behavior: contain;
         touch-action: pan-y;
-        transform: translateX(0);
+        transform: translateX(calc(var(--mobile-drawer-x, var(--mobile-sidebar-width)) - var(--mobile-sidebar-width)));
         transition:
           transform var(--motion-drawer),
           padding var(--speed),
@@ -4575,8 +4586,20 @@
         box-shadow: none;
         padding: 15px 12px 14px;
         overflow: visible;
-        transform: translateX(-100%);
+        transform: translateX(calc(var(--mobile-drawer-x, 0px) - var(--mobile-sidebar-width)));
         pointer-events: none;
+      }
+
+      body.drawer-dragging .sidebar,
+      body.drawer-dragging .main,
+      body.drawer-dragging .search-page,
+      body.drawer-dragging .mobile-sidebar-scrim,
+      body.drawer-dragging .top-view-tabs,
+      body.drawer-dragging .chat-export-btn,
+      body.drawer-dragging .thread-composer,
+      body.drawer-dragging .scroll-btn,
+      body.drawer-dragging .ask-panel {
+        transition: none !important;
       }
 
       .sidebar-head,
@@ -4614,8 +4637,19 @@
       }
 
       body:not(.sidebar-collapsed) {
+        --mobile-drawer-x: var(--mobile-sidebar-width);
+        background: var(--mobile-drawer-surface);
         height: 100dvh;
         overflow: hidden;
+      }
+
+      body.drawer-dragging {
+        background: var(--mobile-drawer-surface);
+      }
+
+      body:not(.sidebar-collapsed)::before,
+      body.drawer-dragging::before {
+        opacity: 0;
       }
 
       .main,
@@ -4628,7 +4662,7 @@
         width: 100%;
         max-width: 100vw;
         min-width: 0;
-        transform: translateX(0);
+        transform: translateX(var(--mobile-drawer-x, 0px));
         border-radius: 0;
         border: 1px solid transparent;
         box-shadow: none;
@@ -4643,28 +4677,32 @@
       }
 
       body:not(.sidebar-collapsed) .main {
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
         transform-origin: left center;
         border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
         border-left-color: transparent;
         box-shadow:
-          -10px 0 32px rgba(0, 0, 0, 0.28),
+          -24px 0 56px rgba(0, 0, 0, 0.36),
+          -8px 0 22px rgba(0, 0, 0, 0.22),
           -1px 0 0 color-mix(in srgb, var(--white) 58%, transparent);
         overflow: hidden;
+        clip-path: none;
       }
 
       body:not(.sidebar-collapsed) .search-page {
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
         transform-origin: left center;
         border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
         border-left-color: transparent;
         background: var(--paper);
         box-shadow:
-          -10px 0 32px rgba(0, 0, 0, 0.28),
+          -24px 0 56px rgba(0, 0, 0, 0.36),
+          -8px 0 22px rgba(0, 0, 0, 0.22),
           -1px 0 0 color-mix(in srgb, var(--white) 58%, transparent);
         overflow: hidden;
+        clip-path: none;
       }
 
       .mobile-sidebar-scrim {
@@ -4742,12 +4780,12 @@
       body:not(.sidebar-collapsed) .thread-composer,
       body:not(.sidebar-collapsed) .scroll-btn,
       body:not(.sidebar-collapsed) .ask-panel {
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
       }
 
       body:not(.sidebar-collapsed) .ask-panel.open {
         animation: none;
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
       }
 
       .top-view-tabs,
@@ -4764,7 +4802,7 @@
       }
 
       body:not(.sidebar-collapsed) .top-view-tabs {
-        transform: translateX(calc(-50% + var(--mobile-sidebar-width)));
+        transform: translateX(calc(-50% + var(--mobile-drawer-x, var(--mobile-sidebar-width))));
       }
 
       .chat-export-btn {
@@ -4857,6 +4895,28 @@
 
       .search-page-result-snippet {
         -webkit-line-clamp: 1;
+      }
+
+      .search-provider-list.provider-stack-collapsed {
+        gap: 0;
+        padding-bottom: 18px;
+      }
+
+      .search-provider-list.provider-stack-collapsed .search-provider-card:not(:first-child) {
+        margin-top: -14px;
+      }
+
+      .search-provider-handle,
+      .ai-config-handle,
+      .chat-row {
+        -webkit-user-select: none;
+        user-select: none;
+        -webkit-touch-callout: none;
+      }
+
+      .search-provider-handle,
+      .ai-config-handle {
+        touch-action: none;
       }
 
       .thread-composer,
@@ -5005,12 +5065,12 @@
       body:not(.sidebar-collapsed) .thread-composer,
       body:not(.sidebar-collapsed) .scroll-btn,
       body:not(.sidebar-collapsed) .ask-panel {
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
       }
 
       body:not(.sidebar-collapsed) .ask-panel.open {
         animation: none;
-        transform: translateX(var(--mobile-sidebar-width));
+        transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
       }
 
       .ask-panel-head {
@@ -5947,8 +6007,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       serper: { label: "Serper", keyUrl: "https://serper.dev/" },
       serpapi: { label: "SerpAPI", keyUrl: "https://serpapi.com/manage-api-key" },
     };
-    const SEARCH_PROVIDER_IDS = ["serper", "serpapi", "tavily", "exa"];
+    const SEARCH_PROVIDER_IDS = ["tavily", "serper", "serpapi", "exa"];
     const SEARCH_PROVIDER_LEGACY_ORDER = ["tavily", "exa", "serper", "serpapi"];
+    const SEARCH_PROVIDER_PREVIOUS_DEFAULT_ORDER = ["serper", "serpapi", "tavily", "exa"];
     const SEARCH_COUNTRY_OPTIONS = [
       { code: "US", label: "美国", tavily: "united states" },
       { code: "CN", label: "中国", tavily: "china" },
@@ -7142,10 +7203,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       delete state.webSearch;
       const existing = state.searchProviders && typeof state.searchProviders === "object" ? state.searchProviders : {};
       state.searchProviders = {};
-      const legacyDefaultOrder = SEARCH_PROVIDER_LEGACY_ORDER.every((id, index) => {
+      const matchesProviderOrder = (ids) => ids.every((id, index) => {
         const order = Number(existing[id]?.order);
         return !Number.isFinite(order) || order === index + 1;
       });
+      const legacyDefaultOrder = matchesProviderOrder(SEARCH_PROVIDER_LEGACY_ORDER) || matchesProviderOrder(SEARCH_PROVIDER_PREVIOUS_DEFAULT_ORDER);
       SEARCH_PROVIDER_IDS.forEach((id, index) => {
         const provider = existing[id] || {};
         state.searchProviders[id] = {
@@ -8590,11 +8652,96 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           openChatMenu(btn.dataset.menu, btn.getBoundingClientRect());
         });
       });
+      [els.pinnedList, els.recentList, ...document.querySelectorAll(".folder-chat-list")].forEach((list) => {
+        bindTouchReorder(list, ".chat-row", null, () => commitChatTouchOrder(list), {
+          delay: 360,
+          ignore: (event) => !!event.target.closest("button, input, textarea, select, .chat-menu-btn, .mobile-row-actions"),
+        });
+      });
+    }
+
+    function commitChatTouchOrder(list) {
+      const slugs = [...list.querySelectorAll(".chat-row")].map((row) => row.dataset.slug).filter(Boolean);
+      if (slugs.length < 2) return;
+      const ordered = slugs.map((slug) => chatIndex.find((chat) => chat.slug === slug)).filter(Boolean);
+      const firstIndex = Math.max(0, chatIndex.findIndex((chat) => chat.slug === slugs[0]));
+      chatIndex = chatIndex.filter((chat) => !slugs.includes(chat.slug));
+      chatIndex.splice(firstIndex, 0, ...ordered);
+      const now = Date.now();
+      ordered.forEach((chat, index) => {
+        chat.updatedAt = now - index;
+        if (currentChat?.slug === chat.slug) currentChat.updatedAt = chat.updatedAt;
+        readJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`, null)
+          .then((full) => {
+            if (full) writeJsonFile(`${OPFS_CHAT_DIR}/${chat.slug}.json`, { ...full, updatedAt: chat.updatedAt });
+          })
+          .catch(() => { });
+      });
+      renderSidebar();
     }
 
     function closeMobileRowActions(except = null) {
       document.querySelectorAll(".chat-row.mobile-swiped").forEach((row) => {
         if (row !== except) row.classList.remove("mobile-swiped");
+      });
+    }
+
+    function bindTouchReorder(container, itemSelector, handleSelector, onCommit, opts = {}) {
+      if (!container) return;
+      container.querySelectorAll(itemSelector).forEach((item) => {
+        const handle = handleSelector ? item.querySelector(handleSelector) : item;
+        if (!handle || handle.dataset.touchReorderBound === "true") return;
+        handle.dataset.touchReorderBound = "true";
+        let timer = 0;
+        let dragging = false;
+        let startX = 0;
+        let startY = 0;
+        const cancel = () => {
+          clearTimeout(timer);
+          timer = 0;
+          if (dragging) {
+            dragging = false;
+            item.classList.remove("dragging");
+            document.body.classList.remove("touch-reordering");
+            onCommit?.();
+          }
+        };
+        handle.addEventListener("pointerdown", (event) => {
+          if (!isMobileViewport() || event.pointerType === "mouse") return;
+          if (opts.ignore?.(event)) return;
+          startX = event.clientX;
+          startY = event.clientY;
+          clearTimeout(timer);
+          timer = setTimeout(() => {
+            dragging = true;
+            item.classList.add("dragging");
+            document.body.classList.add("touch-reordering");
+            try {
+              handle.setPointerCapture?.(event.pointerId);
+              navigator.vibrate?.(8);
+            } catch (e) { }
+          }, opts.delay || 260);
+        });
+        handle.addEventListener("pointermove", (event) => {
+          if (!timer && !dragging) return;
+          const dx = event.clientX - startX;
+          const dy = event.clientY - startY;
+          if (!dragging && Math.hypot(dx, dy) > 14) {
+            clearTimeout(timer);
+            timer = 0;
+            return;
+          }
+          if (!dragging) return;
+          event.preventDefault();
+          const target = document.elementFromPoint(event.clientX, event.clientY)?.closest?.(itemSelector);
+          if (!target || target === item || target.parentElement !== item.parentElement) return;
+          const rect = target.getBoundingClientRect();
+          const after = event.clientY > rect.top + rect.height / 2;
+          target.parentElement.insertBefore(item, after ? target.nextSibling : target);
+        });
+        ["pointerup", "pointercancel", "lostpointercapture"].forEach((type) => {
+          handle.addEventListener(type, cancel);
+        });
       });
     }
 
@@ -8609,6 +8756,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       };
       row.addEventListener("pointerdown", (event) => {
         if (!isMobileViewport() || event.pointerType === "mouse") return;
+        if (document.body.classList.contains("touch-reordering")) return;
         if (event.target.closest("button, input, textarea, select, .chat-menu-btn, .mobile-row-actions")) return;
         startX = event.clientX;
         startY = event.clientY;
@@ -12894,6 +13042,7 @@ ${formatClarification(clarification)}
 
     function applySidebarState() {
       document.body.classList.toggle("sidebar-collapsed", !!state.sidebarCollapsed);
+      resetMobileDrawerDragStyles();
     }
 
     function applyResponsiveSidebarDefault() {
@@ -12922,6 +13071,37 @@ ${formatClarification(clarification)}
       return true;
     }
 
+    function mobileDrawerWidthPx() {
+      const raw = getComputedStyle(document.documentElement).getPropertyValue("--mobile-sidebar-width").trim();
+      if (!raw) return Math.min(window.innerWidth * 0.78, 292);
+      const probe = document.createElement("div");
+      probe.style.cssText = `position:absolute;visibility:hidden;width:${raw};height:0;`;
+      document.body.appendChild(probe);
+      const width = probe.getBoundingClientRect().width || Math.min(window.innerWidth * 0.78, 292);
+      probe.remove();
+      return width;
+    }
+
+    function setMobileDrawerProgress(px) {
+      const width = mobileDrawerWidthPx();
+      const value = Math.max(0, Math.min(width, px));
+      document.body.style.setProperty("--mobile-drawer-x", `${value}px`);
+      document.body.classList.add("drawer-dragging");
+      if (els.mobileSidebarScrim) {
+        els.mobileSidebarScrim.style.opacity = String(Math.min(1, value / Math.max(1, width)));
+        els.mobileSidebarScrim.style.pointerEvents = value > 8 ? "auto" : "none";
+      }
+    }
+
+    function resetMobileDrawerDragStyles() {
+      document.body.classList.remove("drawer-dragging");
+      document.body.style.removeProperty("--mobile-drawer-x");
+      if (els.mobileSidebarScrim) {
+        els.mobileSidebarScrim.style.opacity = "";
+        els.mobileSidebarScrim.style.pointerEvents = "";
+      }
+    }
+
     function handleMobileDrawerSwipeStart(event) {
       if (!event.touches?.length || !mobileDrawerSwipeTargetAllowed(event.target)) {
         mobileDrawerSwipe = null;
@@ -12939,6 +13119,7 @@ ${formatClarification(clarification)}
         y: touch.clientY,
         active: false,
         collapsed,
+        width: mobileDrawerWidthPx(),
       };
     }
 
@@ -12952,11 +13133,14 @@ ${formatClarification(clarification)}
         if (Math.abs(dx) <= Math.abs(dy) * 1.35) return;
         if ((mobileDrawerSwipe.collapsed && dx > 0) || (!mobileDrawerSwipe.collapsed && dx < 0)) {
           mobileDrawerSwipe.active = true;
+          document.body.classList.add("drawer-dragging");
         } else {
           mobileDrawerSwipe = null;
           return;
         }
       }
+      const base = mobileDrawerSwipe.collapsed ? 0 : mobileDrawerSwipe.width;
+      setMobileDrawerProgress(base + dx);
       event.preventDefault();
     }
 
@@ -12966,15 +13150,18 @@ ${formatClarification(clarification)}
       const dx = touch ? touch.clientX - mobileDrawerSwipe.x : 0;
       const shouldOpen = mobileDrawerSwipe.collapsed && dx > 54;
       const shouldClose = !mobileDrawerSwipe.collapsed && dx < -54;
+      const shouldSettleOpen = mobileDrawerSwipe.active && (mobileDrawerSwipe.collapsed ? dx > mobileDrawerSwipe.width * 0.33 : dx > -mobileDrawerSwipe.width * 0.33);
       mobileDrawerSwipe = null;
-      if (shouldOpen && state.sidebarCollapsed) {
+      if ((shouldOpen || shouldSettleOpen) && state.sidebarCollapsed) {
         state.sidebarCollapsed = false;
         mobileSidebarOpenUntil = Date.now() + 700;
         applySidebarState();
         saveState();
-      } else if (shouldClose && !state.sidebarCollapsed) {
+      } else if ((shouldClose || !shouldSettleOpen) && !state.sidebarCollapsed) {
         collapseMobileSidebar();
         saveState();
+      } else {
+        resetMobileDrawerDragStyles();
       }
     }
 
@@ -13363,6 +13550,11 @@ ${formatClarification(clarification)}
           const after = event.clientY > rect.top + rect.height / 2;
           card.parentNode.insertBefore(dragging, after ? card.nextSibling : card);
         });
+      });
+      bindTouchReorder(els.searchProviderList, ".search-provider-card", ".search-provider-handle", () => {
+        recordSettingsEdit({ key: "searchProviders", tab: "search" });
+        persistSearchProviderSettings();
+        saveState();
       });
     }
 
@@ -13887,6 +14079,15 @@ ${formatClarification(clarification)}
           const after = event.clientY > rect.top + rect.height / 2;
           card.parentNode.insertBefore(dragging, after ? card.nextSibling : card);
         });
+      });
+      bindTouchReorder(els.aiConfigList, ".ai-config-card", ".ai-config-handle", () => {
+        state.aiConfigs = [...els.aiConfigList.querySelectorAll(".ai-config-card")]
+          .map((item) => state.aiConfigs.find((config) => config.id === item.dataset.aiConfig))
+          .filter(Boolean);
+        recordSettingsEdit({ key: "aiConfigs", tab: "ai" });
+        syncActiveAiConfigToLegacy();
+        saveState();
+        renderModelPickers();
       });
     }
 
