@@ -1239,6 +1239,18 @@
       color: var(--ink);
     }
 
+    .tool-auto-switch {
+      display: none;
+    }
+
+    .tool-auto-switch.visible {
+      display: block;
+    }
+
+    .tool-child-setting .segmented[hidden] {
+      display: none !important;
+    }
+
     .model-picker {
       position: relative;
       min-width: 0;
@@ -5168,6 +5180,8 @@
               <button type="button" data-clarify-questions-mode="auto">自动</button>
               <button type="button" data-clarify-questions-mode="off">禁用</button>
             </div>
+            <label class="switch tool-auto-switch" id="clarifyQuestionsToolSwitch" title="问题卡片"><input
+                id="cfgClarifyQuestionsToolEnabled" type="checkbox" /><span></span></label>
           </div>
           <div class="setting-row tool-child-setting" id="webSearchSettingRow" data-tool-child-setting
             data-setting-key="webSearchMode" data-setting-tab="general">
@@ -5181,6 +5195,8 @@
               <button type="button" data-web-search-mode="on">始终</button>
               <button type="button" data-web-search-mode="off">禁用</button>
             </div>
+            <label class="switch tool-auto-switch" id="webSearchToolSwitch" title="网络搜索"><input
+                id="cfgWebSearchToolEnabled" type="checkbox" /><span></span></label>
           </div>
           <div class="setting-row tool-child-setting" data-tool-child-setting data-setting-key="searchPlanningMode"
             data-setting-tab="general">
@@ -5193,6 +5209,8 @@
               <button type="button" data-search-planning-mode="advanced">始终</button>
               <button type="button" data-search-planning-mode="simple">禁用</button>
             </div>
+            <label class="switch tool-auto-switch" id="searchPlanningToolSwitch" title="搜索词构造"><input
+                id="cfgSearchPlanningToolEnabled" type="checkbox" /><span></span></label>
           </div>
           <div class="setting-row tool-child-setting" data-tool-child-setting data-setting-key="contentGranularityMode"
             data-setting-tab="general">
@@ -5205,6 +5223,8 @@
               <button type="button" data-content-granularity-mode="detail">详细</button>
               <button type="button" data-content-granularity-mode="summary">概要</button>
             </div>
+            <label class="switch tool-auto-switch" id="contentGranularityToolSwitch" title="获取网页正文"><input
+                id="cfgContentGranularityToolEnabled" type="checkbox" /><span></span></label>
           </div>
           <div class="setting-row tool-child-setting" data-tool-child-setting data-setting-key="locationServiceMode"
             data-setting-tab="general">
@@ -5217,6 +5237,8 @@
               <button type="button" data-location-service-mode="enabled">启用</button>
               <button type="button" data-location-service-mode="disabled">禁用</button>
             </div>
+            <label class="switch tool-auto-switch" id="locationServiceToolSwitch" title="位置服务"><input
+                id="cfgLocationServiceToolEnabled" type="checkbox" /><span></span></label>
           </div>
         </div>
         <div id="tabAI" style="display: none">
@@ -5521,9 +5543,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       { code: "KR", label: "韩国", tavily: "south korea" },
     ];
     const SEARCH_PROVIDER_TIMEOUT_MS = 18000;
-    const WEBPAGE_CONTENT_TOOL_TIMEOUT_MS = 3000;
     const JINA_READER_BASE = "https://r.jina.ai/";
-    const TOOL_AGENT_MAX_STEPS = 8;
+    const TOOL_AGENT_MAX_STEPS = 10;
+    const MAX_WEB_SEARCH_TOOL_CALLS = 6;
+    const TARGET_WEB_SEARCH_TOOL_CALLS = 3;
+    const MAX_BUILD_SEARCH_QUERY_TOOL_CALLS = 3;
     const MAX_WEBPAGE_CONTENT_TOOL_CALLS = 3;
     const MOBILE_ROW_LONG_PRESS_MS = 520;
     const MOBILE_ROW_SWIPE_PX = 42;
@@ -5536,7 +5560,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       "provider",
       "customName",
       "customProviders",
+      "toolCallMode",
+      "autoToolEnabled",
       "webSearchMode",
+      "searchPlanningMode",
+      "clarifyQuestionsMode",
+      "contentGranularityMode",
+      "locationServiceMode",
       "searchProviders",
       "searchCountry",
       "amapKey",
@@ -5562,6 +5592,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       mode: "search",
       interactionMode: "chat",
       toolCallMode: "auto",
+      autoToolEnabled: {
+        webSearch: true,
+        searchPlanning: true,
+        clarifyQuestions: true,
+        contentGranularity: true,
+        locationService: true,
+      },
       theme: "light",
       themeMode: "light",
       webSearchMode: "auto",
@@ -5806,12 +5843,17 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         "toggleKeyBtn",
         "testApiKeyBtn",
         "webSearchModeGroup",
+        "cfgWebSearchToolEnabled",
         "toolCallModeGroup",
         "contentGranularityModeGroup",
+        "cfgContentGranularityToolEnabled",
         "locationServiceModeGroup",
+        "cfgLocationServiceToolEnabled",
         "searchResultCountModeGroup",
         "searchPlanningModeGroup",
+        "cfgSearchPlanningToolEnabled",
         "clarifyQuestionsModeGroup",
+        "cfgClarifyQuestionsToolEnabled",
         "webSearchSettingRow",
         "searchProviderList",
         "boostedDomainInput",
@@ -6542,6 +6584,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       state.activeModel = state.modelQueue[0] || state.activeModel || "";
       if (!state.themeMode) state.themeMode = state.theme || "light";
       normalizeWebSearchState();
+      normalizeAutoToolEnabledState();
       state.searchPlanningMode = normalizeSearchPlanningMode(state.searchPlanningMode);
       state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(state.clarifyQuestionsMode);
       state.contentGranularityMode = normalizeContentGranularityMode(state.contentGranularityMode);
@@ -6584,6 +6627,18 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           apiKey: String(provider.apiKey || ""),
         };
       });
+    }
+
+    function normalizeAutoToolEnabledState() {
+      const saved = state.autoToolEnabled && typeof state.autoToolEnabled === "object" ? state.autoToolEnabled : {};
+      state.autoToolEnabled = {
+        webSearch: saved.webSearch !== false,
+        searchPlanning: saved.searchPlanning !== false,
+        clarifyQuestions: saved.clarifyQuestions !== false,
+        contentGranularity: saved.contentGranularity !== false,
+        locationService: saved.locationService !== false,
+      };
+      return state.autoToolEnabled;
     }
 
     function normalizeSourcePreferenceState() {
@@ -6819,6 +6874,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       els.toolCallModeGroup.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", () => setToolCallMode(button.dataset.toolCallMode, { toast: false }));
       });
+      els.cfgWebSearchToolEnabled?.addEventListener("change", () => setAutoToolEnabled("webSearch", els.cfgWebSearchToolEnabled.checked));
+      els.cfgSearchPlanningToolEnabled?.addEventListener("change", () => setAutoToolEnabled("searchPlanning", els.cfgSearchPlanningToolEnabled.checked));
+      els.cfgClarifyQuestionsToolEnabled?.addEventListener("change", () => setAutoToolEnabled("clarifyQuestions", els.cfgClarifyQuestionsToolEnabled.checked));
+      els.cfgContentGranularityToolEnabled?.addEventListener("change", () => setAutoToolEnabled("contentGranularity", els.cfgContentGranularityToolEnabled.checked));
+      els.cfgLocationServiceToolEnabled?.addEventListener("change", () => setAutoToolEnabled("locationService", els.cfgLocationServiceToolEnabled.checked));
       els.contentGranularityModeGroup.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", () => setContentGranularityMode(button.dataset.contentGranularityMode, { toast: false }));
       });
@@ -7358,7 +7418,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
         button.setAttribute("aria-label", label);
       });
       els.webSearchModeGroup?.querySelectorAll("button").forEach((button) => {
-        button.classList.toggle("active", button.dataset.webSearchMode === mode);
+        const buttonMode = button.dataset.webSearchMode;
+        const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto";
+        button.classList.toggle("active", buttonMode === mode || (autoToolMode && mode === "on" && buttonMode === "auto"));
         button.disabled = locked;
       });
       els.webSearchSettingRow?.classList.toggle("disabled", locked);
@@ -7420,6 +7482,35 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       return mode === "disabled" ? "disabled" : "enabled";
     }
 
+    function isAutoToolMode() {
+      return normalizeToolCallMode(state.toolCallMode) === "auto";
+    }
+
+    function isAutoToolEnabled(key) {
+      normalizeAutoToolEnabledState();
+      return state.autoToolEnabled[key] !== false;
+    }
+
+    function isWebSearchEnabledForCurrentMode() {
+      return isAutoToolMode() ? isAutoToolEnabled("webSearch") : normalizeWebSearchMode(state.webSearchMode) !== "off";
+    }
+
+    function isSearchPlanningEnabledForCurrentMode() {
+      return isAutoToolMode() ? isAutoToolEnabled("searchPlanning") : normalizeSearchPlanningMode(state.searchPlanningMode) !== "simple";
+    }
+
+    function isClarifyQuestionsEnabledForCurrentMode() {
+      return isAutoToolMode() ? isAutoToolEnabled("clarifyQuestions") : normalizeClarifyQuestionsMode(state.clarifyQuestionsMode) !== "off";
+    }
+
+    function isContentGranularityEnabledForCurrentMode() {
+      return isAutoToolMode() ? isAutoToolEnabled("contentGranularity") : normalizeContentGranularityMode(state.contentGranularityMode) === "detail";
+    }
+
+    function isLocationServiceEnabledForCurrentMode() {
+      return isAutoToolMode() ? isAutoToolEnabled("locationService") : normalizeLocationServiceMode(state.locationServiceMode) === "enabled";
+    }
+
     function normalizeSearchResultCountMode(mode) {
       return ["fewer", "balanced", "more"].includes(mode) ? mode : "balanced";
     }
@@ -7475,16 +7566,55 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     function renderToolChildSettingControls() {
-      const locked = normalizeToolCallMode(state.toolCallMode) !== "flow";
+      const autoToolMode = isAutoToolMode();
       document.querySelectorAll("[data-tool-child-setting]").forEach((row) => {
-        row.classList.toggle("disabled", locked);
+        row.classList.remove("disabled");
         row.querySelectorAll("button, input, select, textarea").forEach((control) => {
           if (control.classList.contains("inline-link")) return;
-          control.disabled = locked;
+          control.disabled = false;
         });
       });
+      toggleAutoToolSwitch(els.webSearchModeGroup, els.cfgWebSearchToolEnabled, autoToolMode, isAutoToolEnabled("webSearch"));
+      toggleAutoToolSwitch(els.searchPlanningModeGroup, els.cfgSearchPlanningToolEnabled, autoToolMode, isAutoToolEnabled("searchPlanning"));
+      toggleAutoToolSwitch(els.clarifyQuestionsModeGroup, els.cfgClarifyQuestionsToolEnabled, autoToolMode, isAutoToolEnabled("clarifyQuestions"));
+      toggleAutoToolSwitch(els.contentGranularityModeGroup, els.cfgContentGranularityToolEnabled, autoToolMode, isAutoToolEnabled("contentGranularity"));
+      toggleAutoToolSwitch(els.locationServiceModeGroup, els.cfgLocationServiceToolEnabled, autoToolMode, isAutoToolEnabled("locationService"));
+      renderSearchPlanningModeControls();
+      renderClarifyQuestionsModeControls();
       renderContentGranularityModeControls();
       renderLocationServiceModeControls();
+    }
+
+    function toggleAutoToolSwitch(group, input, autoToolMode, checked) {
+      if (group) {
+        group.hidden = autoToolMode;
+        group.style.display = autoToolMode ? "none" : "";
+      }
+      const label = input?.closest(".tool-auto-switch");
+      label?.classList.toggle("visible", autoToolMode);
+      if (input) {
+        input.checked = checked;
+        input.disabled = false;
+      }
+    }
+
+    async function setAutoToolEnabled(key, enabled) {
+      if (!isAutoToolMode()) return;
+      const map = {
+        webSearch: { label: "网络搜索" },
+        searchPlanning: { label: "搜索词构造" },
+        clarifyQuestions: { label: "问题卡片" },
+        contentGranularity: { label: "获取网页正文" },
+        locationService: { label: "位置服务" },
+      };
+      const item = map[key];
+      if (!item) return;
+      recordSettingsEdit({ key: "autoToolEnabled", tab: "general" });
+      normalizeAutoToolEnabledState();
+      state.autoToolEnabled[key] = enabled === true;
+      renderToolChildSettingControls();
+      await saveState();
+      showToast(`${item.label}：${enabled ? "开启" : "关闭"}`);
     }
 
     function renderContentGranularityModeControls() {
@@ -7495,7 +7625,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function setContentGranularityMode(mode, opts = {}) {
-      if (normalizeToolCallMode(state.toolCallMode) !== "flow") return;
       const next = normalizeContentGranularityMode(mode);
       if (next === normalizeContentGranularityMode(state.contentGranularityMode)) return;
       recordSettingsEdit({ key: "contentGranularityMode", tab: "general" });
@@ -7513,7 +7642,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function setLocationServiceMode(mode, opts = {}) {
-      if (normalizeToolCallMode(state.toolCallMode) !== "flow") return;
       const next = normalizeLocationServiceMode(mode);
       if (next === normalizeLocationServiceMode(state.locationServiceMode)) return;
       recordSettingsEdit({ key: "locationServiceMode", tab: "general" });
@@ -7589,13 +7717,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
 
     function renderSearchPlanningModeControls() {
       const mode = normalizeSearchPlanningMode(state.searchPlanningMode);
+      const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto";
       els.searchPlanningModeGroup?.querySelectorAll("button").forEach((button) => {
-        button.classList.toggle("active", button.dataset.searchPlanningMode === mode);
+        const buttonMode = button.dataset.searchPlanningMode;
+        button.classList.toggle("active", buttonMode === mode || (autoToolMode && mode === "advanced" && buttonMode === "auto"));
       });
     }
 
     async function setSearchPlanningMode(mode, opts = {}) {
-      if (normalizeToolCallMode(state.toolCallMode) !== "flow") return;
       const next = normalizeSearchPlanningMode(mode);
       if (next === normalizeSearchPlanningMode(state.searchPlanningMode)) return;
       recordSettingsEdit({ key: "searchPlanningMode", tab: "general" });
@@ -7613,7 +7742,6 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function setClarifyQuestionsMode(mode, opts = {}) {
-      if (normalizeToolCallMode(state.toolCallMode) !== "flow") return;
       const next = normalizeClarifyQuestionsMode(mode);
       if (next === normalizeClarifyQuestionsMode(state.clarifyQuestionsMode)) return;
       recordSettingsEdit({ key: "clarifyQuestionsMode", tab: "general" });
@@ -9531,27 +9659,89 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       return JSON.stringify(payload, null, 2);
     }
 
+    function normalizeBuildSearchQueryArgs(args, seed, fallbackQuery) {
+      const source = args && typeof args === "object" ? args : {};
+      let queries = Array.isArray(source.queries)
+        ? source.queries
+        : Array.isArray(source.query)
+          ? source.query
+          : [];
+      if (!queries.length && source.query) queries = [source.query];
+      if (!queries.length && source.searchQuery) queries = [source.searchQuery];
+      queries = queries
+        .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+      return {
+        query: String(source.query || queries[0] || fallbackQuery || searchFallbackQuery(seed)).trim(),
+        queries: queries.length ? queries : [fallbackQuery || searchFallbackQuery(seed)].filter(Boolean),
+        preferredProvider: SEARCH_PROVIDER_IDS.includes(source.preferredProvider) ? source.preferredProvider : "",
+        complex: source.complex === true || queries.length > 1,
+      };
+    }
+
     function buildSearchQueriesToolResult(args, run, assistantId) {
+      run = run || activeRun || {};
+      if (!isSearchPlanningEnabledForCurrentMode()) {
+        return { ok: false, disabled: true, error: "build_search_queries 当前已在设置中禁用。请直接使用用户原始 prompt 中的关键词作答，或在允许时调用 web_search。" };
+      }
+      run.buildSearchQueryToolCalls = (run.buildSearchQueryToolCalls || 0) + 1;
+      if (run.buildSearchQueryToolCalls > MAX_BUILD_SEARCH_QUERY_TOOL_CALLS) {
+        return {
+          ok: false,
+          error: `build_search_queries 本轮最多调用 ${MAX_BUILD_SEARCH_QUERY_TOOL_CALLS} 次。请停止构造搜索词，使用已有搜索结果或用户原始 prompt 直接回答。`,
+          existingQueries: run.searchContext?.queries || [],
+        };
+      }
       const prompt = String(args.prompt || latestUserPrompt(run?.messages || messages, assistantId) || "").trim();
       const fallback = String(args.fallback || "").trim();
-      const decision = args.complex === true
-        ? buildTraditionalSearchDecision(prompt, fallback)
+      const seed = prompt || fallback;
+      const userWeightedQuery = searchFallbackQuery(seed, fallback);
+      const planned = normalizeBuildSearchQueryArgs(args, seed, userWeightedQuery);
+      const decision = planned.complex === true
+        ? buildTraditionalSearchDecision(seed, userWeightedQuery)
         : refineSearchDecision({
           shouldSearch: true,
-          query: searchFallbackQuery(prompt, fallback),
-          queries: [searchFallbackQuery(prompt, fallback)],
-          intent: inferSearchIntent(prompt),
-          preferredProvider: SEARCH_PROVIDER_IDS.includes(args.preferredProvider) ? args.preferredProvider : "",
-          complex: args.complex === true,
-        }, prompt);
+          query: planned.query || userWeightedQuery,
+          queries: planned.queries,
+          intent: inferSearchIntent(seed),
+          preferredProvider: planned.preferredProvider,
+          complex: planned.complex === true,
+        }, seed);
+      if (planned.queries.length) {
+        decision.query = planned.queries[0] || decision.query;
+        decision.queries = planned.queries;
+        decision.complex = planned.complex === true;
+      }
+      if (run.searchContext?.results?.length && run.buildSearchQueryToolCalls > 1) {
+        return {
+          ok: true,
+          query: decision.query,
+          queries: normalizeSearchQueries(decision, userWeightedQuery),
+          intent: decision.intent,
+          complex: decision.complex === true,
+          warning: "本轮已经有搜索结果。不要继续循环构造搜索词，除非用户问题仍有完全不同的未覆盖主题。",
+          existingQueries: run.searchContext.queries || [],
+        };
+      }
       return {
         ok: true,
         query: decision.query,
-        queries: normalizeSearchQueries(decision, fallback || prompt),
+        queries: normalizeSearchQueries(decision, userWeightedQuery),
         intent: decision.intent,
         complex: decision.complex === true,
       };
     }
+
+    const BUILD_SEARCH_QUERIES_TOOL_DESCRIPTION = `Compose precise web search queries for the current user request.
+Return arguments in this shape when possible: {"queries": string[]}.
+Rules:
+- Write search-engine keyword queries, not conversational sentences.
+- Prefer the user's original entities, nouns, names, products, places, dates, versions, domains, and constraints.
+- Avoid SEO-spam traps by adding exact sites only when the user asks for a known platform, such as youtube -> site:youtube.com, amazon -> site:amazon.com, resy -> site:resy.com.
+- Do not include more than one query unless the user explicitly asks for more than one item, comparison target, platform, or side-by-side comparison.
+- If the user asks for multiple named items, generate one query per item.
+- If the user prompt is vague, use the shortest precise query that preserves the user's wording.
+Linsoo only needs the query strings; web_search will run them. Call this at most ${MAX_BUILD_SEARCH_QUERY_TOOL_CALLS} times and normally no more than once.`;
 
     function summarizeSearchForTool(search) {
       return {
@@ -9572,33 +9762,67 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
       };
     }
 
+    function mergeSearchContexts(previous, incoming) {
+      if (!previous?.results?.length && !previous?.groups?.length) return incoming;
+      if (!incoming?.results?.length && !incoming?.groups?.length) return previous;
+      const queries = [...new Set([...(previous.queries || []), ...(incoming.queries || [])].filter(Boolean))];
+      const providerOrder = [...new Set([...(previous.providerOrder || []), ...(incoming.providerOrder || [])].filter(Boolean))];
+      return applySourcePreferencesToSearch({
+        query: previous.query || incoming.query || queries[0] || "",
+        queries,
+        providerOrder,
+        groups: [...(previous.groups || []), ...(incoming.groups || [])],
+        results: dedupeSources([...(previous.results || []), ...(incoming.results || [])]).slice(0, 48),
+        errors: [...(previous.errors || []), ...(incoming.errors || [])],
+      });
+    }
+
     async function executeWebSearchTool(args, signal, run, assistantId) {
+      run = run || activeRun || {};
+      if (!isWebSearchEnabledForCurrentMode()) {
+        return { ok: false, disabled: true, error: "web_search 当前已在设置中禁用。请不要继续调用网络搜索工具，直接说明无法联网搜索并基于已有上下文回答。" };
+      }
+      run.webSearchToolCalls = (run.webSearchToolCalls || 0) + 1;
+      if (run.webSearchToolCalls > MAX_WEB_SEARCH_TOOL_CALLS) {
+        return {
+          ok: false,
+          error: `web_search 本轮最多调用 ${MAX_WEB_SEARCH_TOOL_CALLS} 次。请停止搜索并基于已有 ${run.searchContext?.results?.length || 0} 条结果回答。`,
+          existingQueries: run.searchContext?.queries || [],
+        };
+      }
       const queriesInput = Array.isArray(args.queries) ? args.queries : [];
       const prompt = String(args.prompt || latestUserPrompt(run?.messages || messages, assistantId) || "").trim();
       const fallback = String(args.fallback || "").trim();
+      const userWeightedQuery = searchFallbackQuery(prompt, fallback);
       const decision = {
         shouldSearch: true,
-        query: String(args.query || queriesInput[0] || searchFallbackQuery(prompt, fallback)).trim(),
+        query: String(args.query || queriesInput[0] || userWeightedQuery).trim(),
         queries: queriesInput,
         intent: ["fresh", "research", "general"].includes(args.intent) ? args.intent : inferSearchIntent(prompt),
         preferredProvider: SEARCH_PROVIDER_IDS.includes(args.preferredProvider) ? args.preferredProvider : "",
         complex: args.complex === true || queriesInput.length > 1,
       };
-      const queries = normalizeSearchQueries(decision, fallback || prompt);
+      const queries = normalizeSearchQueries(decision, userWeightedQuery);
       updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0] || decision.query}` });
       const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
         const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
-        updateRunMessage(run, assistantId, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+        const mergedPartial = preparedPartial ? mergeSearchContexts(run.searchContext, preparedPartial) : null;
+        updateRunMessage(run, assistantId, mergedPartial ? { searchStatus: status, searchContext: mergedPartial, sources: mergedPartial.results } : { searchStatus: status });
       });
       const searchPrepared = applySourcePreferencesToSearch(searchRaw);
       const search = await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
-        updateRunMessage(run, assistantId, { searchStatus: status, searchContext: searchPrepared, sources: searchPrepared.results });
+        const mergedPrepared = mergeSearchContexts(run.searchContext, searchPrepared);
+        updateRunMessage(run, assistantId, { searchStatus: status, searchContext: mergedPrepared, sources: mergedPrepared.results });
       });
-      run.searchContext = search;
-      updateRunMessage(run, assistantId, { searchContext: search, sources: search.results, searchStatus: "" });
+      run.searchContext = mergeSearchContexts(run.searchContext, search);
+      const warning = run.webSearchToolCalls > TARGET_WEB_SEARCH_TOOL_CALLS
+        ? `本轮已经调用 web_search ${run.webSearchToolCalls} 次，已超过建议的 ${TARGET_WEB_SEARCH_TOOL_CALLS} 次。除非绝对必要，请停止搜索并回答。`
+        : "";
+      updateRunMessage(run, assistantId, { searchContext: run.searchContext, sources: run.searchContext.results, searchStatus: "" });
       return {
         ok: true,
-        ...summarizeSearchForTool(search),
+        ...summarizeSearchForTool(run.searchContext),
+        ...(warning ? { warning } : {}),
       };
     }
 
@@ -9624,6 +9848,9 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function executeAmapTool(args, signal, run, assistantId) {
+      if (!isLocationServiceEnabledForCurrentMode()) {
+        return { ok: false, disabled: true, error: "amap_explore 当前已在设置中禁用。请不要继续调用位置服务工具。" };
+      }
       if (!state.amapKey) return { ok: false, error: "高德地图 Key 未填写。" };
       const kind = ["weather", "nearby", "route", "trip"].includes(args.kind) ? args.kind : "";
       const mode = ["walking", "cycling", "driving", "transit"].includes(args.mode) ? args.mode : "walking";
@@ -9646,10 +9873,13 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function fetchPageContentForTool(url, signal) {
+      if (!isContentGranularityEnabledForCurrentMode()) {
+        return { ok: false, disabled: true, error: "get_webpage_content 当前已在设置中禁用。请基于搜索摘要、已有网页正文和上下文回答。" };
+      }
       const annotated = annotateSource({ url, title: domainOf(url) || "Untitled" });
       if (!annotated.url) return { ok: false, error: "无效 URL。" };
       try {
-        const remote = await fetchSourceBodyWithJina(annotated, signal, WEBPAGE_CONTENT_TOOL_TIMEOUT_MS);
+        const remote = await fetchSourceBodyWithJina(annotated, signal);
         return { ok: true, url: annotated.url, domain: annotated.domain, ...remote };
       } catch (error) {
         if (isUserAbortError(error, signal)) throw error;
@@ -9685,7 +9915,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
     }
 
     async function executeAskUserQuestionTool(args, signal, run, assistantId) {
-      if (state.clarifyQuestionsMode === "off") return { ok: false, error: "当前设置已关闭补充问题。" };
+      if (!isClarifyQuestionsEnabledForCurrentMode()) return { ok: false, disabled: true, error: "ask_user_question 当前已在设置中禁用。请不要继续调用补充问题工具。" };
       const questions = normalizeAskQuestions(args.questions);
       if (!questions.length) return { ok: false, error: "没有有效问题可展示。" };
       updateRunMessage(run, assistantId, { searchStatus: "等待你补充问题信息..." });
@@ -9718,12 +9948,14 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           type: "function",
           function: {
             name: "build_search_queries",
-            description: "Construct one or more concise search-engine queries from the current user request before running web search.",
+            description: BUILD_SEARCH_QUERIES_TOOL_DESCRIPTION,
             parameters: {
               type: "object",
               properties: {
                 prompt: { type: "string" },
+                queries: { type: "array", items: { type: "string" }, description: "Precise search-engine keyword queries. Use multiple queries only when the user explicitly asks for multiple items, comparison targets, or platforms." },
                 fallback: { type: "string" },
+                query: { type: "string", description: "Legacy single-query field. Prefer queries[]." },
                 preferredProvider: { type: "string", enum: ["tavily", "exa", "serper", "serpapi"] },
                 complex: { type: "boolean" },
               },
@@ -9735,7 +9967,7 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           type: "function",
           function: {
             name: "web_search",
-            description: "Run browser-side web search across enabled providers such as Tavily, Exa, Serper, or SerpAPI.",
+            description: `Run browser-side web search across enabled providers such as Tavily, Exa, Serper, or SerpAPI. Prefer one call with keywords extracted from the user prompt. Try to stay within ${TARGET_WEB_SEARCH_TOOL_CALLS} calls and never exceed ${MAX_WEB_SEARCH_TOOL_CALLS} calls in one answer.`,
             parameters: {
               type: "object",
               properties: {
@@ -9772,11 +10004,11 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
           type: "function",
           function: {
             name: "get_webpage_content",
-            description: `Fetch the main textual content of a webpage through Jina Reader. Stop after ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s; if Jina Reader fails or times out, do not try another extraction path. Use this for at most ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer, then answer from already collected search results, snippets, and successful page reads.`,
+            description: `Fetch the main textual content of a webpage through Jina Reader. It has no local 3-second timeout; if Jina Reader returns an HTTP/network/content error, the tool reports the exact failure reason. Use this for at most ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer, then answer from already collected search results, snippets, and successful page reads.`,
             parameters: {
               type: "object",
               properties: {
-                url: { type: "string", description: `One URL to read via Jina Reader. If it does not finish within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000}s or returns an error, continue the answer from already available evidence instead of trying another extraction path. Across this answer, call get_webpage_content for no more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs.` },
+                url: { type: "string", description: `One URL to read via Jina Reader. If it returns an error, continue the answer from already available evidence instead of trying another extraction path. Across this answer, call get_webpage_content for no more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs.` },
               },
               required: ["url"],
             },
@@ -9907,8 +10139,52 @@ Output normal Markdown. Do not output JSON unless the user asks for it.`;
             content: toolResultJson(result),
           });
         }
+        if ((run.webSearchToolCalls || 0) >= MAX_WEB_SEARCH_TOOL_CALLS) {
+          requestMessages.push({
+            role: "system",
+            content: `web_search quota is exhausted for this user prompt. Do not call web_search again. Produce the final answer from the collected tool results, citations, and context.`,
+          });
+        } else if ((run.webSearchToolCalls || 0) >= TARGET_WEB_SEARCH_TOOL_CALLS) {
+          requestMessages.push({
+            role: "system",
+            content: `web_search has already been called ${run.webSearchToolCalls} times. Prefer stopping tool use now and answer from the collected evidence unless one clearly separate missing fact is essential.`,
+          });
+        }
       }
-      throw new Error("工具调用轮次超过上限。");
+      updateRunMessage(run, assistantId, { searchStatus: "工具调用已达到轮次上限，正在根据已有结果整理回答..." });
+      const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            ...requestMessages,
+            { role: "system", content: "Stop using tools now. Write the final answer from the collected tool results. If evidence is incomplete because a tool was disabled, failed, or exhausted its quota, say so briefly." },
+          ],
+          temperature: state.mode === "quick" ? 0.15 : 0.35,
+          max_tokens: state.mode === "quick" ? 1400 : 3800,
+          stream: false,
+        }),
+        signal,
+      });
+      if (!response.ok) throw new Error(`工具调用轮次超过上限，最终回答请求失败：HTTP ${response.status}`);
+      const data = await response.json();
+      const content = extractContentFromResponse(data);
+      if (!content) throw new Error("工具调用轮次超过上限，模型仍没有返回内容。");
+      const finalReasoning = [reasoning, extractReasoningFromResponse(data)].filter(Boolean).join("\n").trim();
+      updateRunMessage(run, assistantId, {
+        thinking: finalReasoning,
+        content,
+        loading: false,
+        searchStatus: "",
+        searchContext: run?.searchContext || null,
+        sources: run?.searchContext?.results || [],
+        amapContext: run?.amapContext || null,
+      });
+      return content;
     }
 
     async function callChat(assistantId, signal, run = activeRun) {
@@ -11084,10 +11360,17 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       return clean.length > limit ? `${clean.slice(0, limit - 1)}...` : clean;
     }
 
-    function jinaReaderHeaders(timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
+    function jinaReaderHeaders() {
       const headers = {
-        Accept: "application/json, text/plain;q=0.8, text/markdown;q=0.7, */*;q=0.1",
-        "X-Timeout": String(Math.max(1, Math.ceil(timeoutMs / 1000))),
+        Accept: "application/json",
+        "Content-Type": "application/json",
+        "X-Engine": "direct",
+        "X-Locale": "zh-CN",
+        "X-Proxy": "auto",
+        "X-Referer": "https://www.google.com/",
+        "X-Retain-Images": "none",
+        "X-Return-Format": "markdown",
+        "X-Token-Budget": "200000",
       };
       if (state.jinaApiKey) headers.Authorization = `Bearer ${state.jinaApiKey}`;
       return headers;
@@ -11128,25 +11411,20 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       };
     }
 
-    async function fetchTextWithTimeout(url, opts = {}, timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
-      const controller = new AbortController();
-      const abort = () => controller.abort();
-      if (opts.signal?.aborted) throw new DOMException("Aborted", "AbortError");
-      opts.signal?.addEventListener("abort", abort, { once: true });
-      const timer = setTimeout(() => controller.abort(new DOMException("Timed out", "TimeoutError")), timeoutMs);
-      try {
-        return await fetch(url, { ...opts, signal: controller.signal });
-      } finally {
-        clearTimeout(timer);
-        opts.signal?.removeEventListener("abort", abort);
-      }
-    }
-
-    async function fetchSourceBodyWithJina(source, signal, timeoutMs = WEBPAGE_CONTENT_TOOL_TIMEOUT_MS) {
-      const response = await fetchTextWithTimeout(`${JINA_READER_BASE}${source.url}`, {
-        headers: jinaReaderHeaders(timeoutMs),
+    async function fetchSourceBodyWithJina(source, signal) {
+      if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+      const response = await fetch(JINA_READER_BASE, {
+        method: "POST",
+        headers: jinaReaderHeaders(),
         signal,
-      }, timeoutMs);
+        body: JSON.stringify({
+          url: source.url,
+          viewport: {
+            width: 1920,
+            height: 1080,
+          },
+        }),
+      });
       if (!response.ok) {
         const detail = clipText(await response.text().catch(() => ""), 180);
         throw new Error(`Jina Reader HTTP ${response.status}${detail ? `: ${detail}` : ""}`);
@@ -11171,22 +11449,13 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       const cacheKey = annotated.url;
       if (annotated.fullMarkdown) return annotated;
       if (jinaReaderCache.has(cacheKey)) return { ...annotated, ...jinaReaderCache.get(cacheKey) };
-      const controller = new AbortController();
-      const abort = () => controller.abort(new DOMException("Aborted", "AbortError"));
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
-      signal?.addEventListener("abort", abort, { once: true });
-      const timer = setTimeout(() => controller.abort(new DOMException("Source extraction timed out", "TimeoutError")), WEBPAGE_CONTENT_TOOL_TIMEOUT_MS);
-      try {
-        const parsed = await fetchSourceBodyWithJina(annotated, controller.signal);
-        jinaReaderCache.set(cacheKey, parsed);
-        return {
-          ...annotated,
-          ...parsed,
-        };
-      } finally {
-        clearTimeout(timer);
-        signal?.removeEventListener("abort", abort);
-      }
+      const parsed = await fetchSourceBodyWithJina(annotated, signal);
+      jinaReaderCache.set(cacheKey, parsed);
+      return {
+        ...annotated,
+        ...parsed,
+      };
     }
 
     async function hydrateBoostedSearchContent(search, signal, onStatus = null) {
@@ -11402,6 +11671,17 @@ Treat this as the user's actual current location unless the user explicitly says
       return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${timeHint}\n\n${geoHint}`;
     }
 
+    function buildToolAvailabilityPrompt() {
+      const enabled = (value) => value ? "enabled" : "disabled";
+      return [
+        `build_search_queries: ${enabled(isSearchPlanningEnabledForCurrentMode())}`,
+        `web_search: ${enabled(isWebSearchEnabledForCurrentMode())} (suggested max ${TARGET_WEB_SEARCH_TOOL_CALLS}, hard max ${MAX_WEB_SEARCH_TOOL_CALLS})`,
+        `amap_explore: ${enabled(isLocationServiceEnabledForCurrentMode())}`,
+        `get_webpage_content: ${enabled(isContentGranularityEnabledForCurrentMode())} (hard max ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs)`,
+        `ask_user_question: ${enabled(isClarifyQuestionsEnabledForCurrentMode())}`,
+      ].join("\n");
+    }
+
     function buildToolAgentSystemPrompt(run = activeRun) {
       const geo = run?.amapContext?.geo;
       const geoHint = geo?.formattedAddress
@@ -11417,11 +11697,16 @@ Treat this as the user's actual current location unless the user explicitly says
 
 You are operating inside a browser-side tool calling environment.
 - Available tools: build_search_queries, web_search, amap_explore, get_webpage_content, ask_user_question.
+- Tool availability from current user settings:
+${buildToolAvailabilityPrompt()}
+- Disabled tools still exist in the schema so you can see the capability, but they will return disabled=true. Do not repeatedly call a disabled tool.
 - Use tools whenever current, source-grounded, webpage-specific, or location-based information is required.
-- Prefer build_search_queries before multi-query search when it helps narrow or structure search intent.
+- Prefer the user's original prompt as the source of search terms. Extract names, places, product names, dates, versions, and constraints from the prompt; do not invent broader search terms unless the prompt is genuinely vague.
+- Use build_search_queries only before multi-query search when it helps narrow or structure search intent. When calling it, provide only the query strings Linsoo needs; do not include tab/folder/split layout metadata. Normally call it once at most; do not loop on it.
+- Use web_search no more than ${TARGET_WEB_SEARCH_TOOL_CALLS} times unless distinct missing evidence is essential. Hard stop at ${MAX_WEB_SEARCH_TOOL_CALLS} calls.
 - Use ask_user_question only when ambiguity materially affects scope, target object, constraints, location, or intended search direction.
 - Use amap_explore for current-location weather, nearby places, routes, and trip suggestions.
-- Use get_webpage_content when you need to read a specific page more deeply than snippets allow. It uses Jina Reader only. If Jina Reader fails or times out within ${WEBPAGE_CONTENT_TOOL_TIMEOUT_MS / 1000} seconds, do not retry with another extraction path; continue answering from available search results, snippets, and successful page reads. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
+- Use get_webpage_content when you need to read a specific page more deeply than snippets allow. It uses Jina Reader only and has no local 3-second timeout. If Jina Reader returns a failure reason, do not retry with another extraction path; continue answering from available search results, snippets, and successful page reads. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
 - Prefer boosted domains when they appear and are relevant.
 - Do not rely on blocked domains.
 - After enough tool results are available, answer naturally and cite URLs with normal Markdown links.
@@ -11724,6 +12009,12 @@ ${formatClarification(clarification)}
       state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(els.clarifyQuestionsModeGroup.querySelector(".active")?.dataset.clarifyQuestionsMode || state.clarifyQuestionsMode);
       state.contentGranularityMode = normalizeContentGranularityMode(els.contentGranularityModeGroup.querySelector(".active")?.dataset.contentGranularityMode || state.contentGranularityMode);
       state.locationServiceMode = normalizeLocationServiceMode(els.locationServiceModeGroup.querySelector(".active")?.dataset.locationServiceMode || state.locationServiceMode);
+      normalizeAutoToolEnabledState();
+      state.autoToolEnabled.webSearch = els.cfgWebSearchToolEnabled?.checked !== false;
+      state.autoToolEnabled.searchPlanning = els.cfgSearchPlanningToolEnabled?.checked !== false;
+      state.autoToolEnabled.clarifyQuestions = els.cfgClarifyQuestionsToolEnabled?.checked !== false;
+      state.autoToolEnabled.contentGranularity = els.cfgContentGranularityToolEnabled?.checked !== false;
+      state.autoToolEnabled.locationService = els.cfgLocationServiceToolEnabled?.checked !== false;
       state.railEnabled = els.cfgRail.checked;
       state.queueFallback = els.cfgQueueFallback.checked;
       state.retryOnFailure = els.cfgRetryOnFailure.checked;
@@ -11805,6 +12096,11 @@ ${formatClarification(clarification)}
         els.cfgPrompt,
         els.cfgAmapKey,
         els.cfgJinaApiKey,
+        els.cfgWebSearchToolEnabled,
+        els.cfgSearchPlanningToolEnabled,
+        els.cfgClarifyQuestionsToolEnabled,
+        els.cfgContentGranularityToolEnabled,
+        els.cfgLocationServiceToolEnabled,
         els.cfgQueueFallback,
         els.cfgRetryOnFailure,
         els.cfgRail,
@@ -12620,7 +12916,18 @@ ${formatClarification(clarification)}
         if (els.settingsOverlay.classList.contains("open")) {
           persistProviderDraft({ validate: false });
           persistSearchProviderSettings();
+          state.toolCallMode = normalizeToolCallMode(els.toolCallModeGroup.querySelector(".active")?.dataset.toolCallMode || state.toolCallMode);
           state.webSearchMode = normalizeWebSearchMode(els.webSearchModeGroup.querySelector(".active")?.dataset.webSearchMode || state.webSearchMode);
+          state.searchPlanningMode = normalizeSearchPlanningMode(els.searchPlanningModeGroup.querySelector(".active")?.dataset.searchPlanningMode || state.searchPlanningMode);
+          state.clarifyQuestionsMode = normalizeClarifyQuestionsMode(els.clarifyQuestionsModeGroup.querySelector(".active")?.dataset.clarifyQuestionsMode || state.clarifyQuestionsMode);
+          state.contentGranularityMode = normalizeContentGranularityMode(els.contentGranularityModeGroup.querySelector(".active")?.dataset.contentGranularityMode || state.contentGranularityMode);
+          state.locationServiceMode = normalizeLocationServiceMode(els.locationServiceModeGroup.querySelector(".active")?.dataset.locationServiceMode || state.locationServiceMode);
+          normalizeAutoToolEnabledState();
+          state.autoToolEnabled.webSearch = els.cfgWebSearchToolEnabled?.checked !== false;
+          state.autoToolEnabled.searchPlanning = els.cfgSearchPlanningToolEnabled?.checked !== false;
+          state.autoToolEnabled.clarifyQuestions = els.cfgClarifyQuestionsToolEnabled?.checked !== false;
+          state.autoToolEnabled.contentGranularity = els.cfgContentGranularityToolEnabled?.checked !== false;
+          state.autoToolEnabled.locationService = els.cfgLocationServiceToolEnabled?.checked !== false;
           state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "SG";
           state.amapKey = els.cfgAmapKey?.value.trim() || state.amapKey;
           state.jinaApiKey = els.cfgJinaApiKey?.value.trim() || state.jinaApiKey;
@@ -12628,6 +12935,7 @@ ${formatClarification(clarification)}
       } catch (e) { }
       ensureActiveModel();
       normalizeWebSearchState();
+      normalizeAutoToolEnabledState();
       normalizeSourcePreferenceState();
       return CONFIG_EXPORT_KEYS.reduce((out, key) => {
         out[key] = configClone(state[key]);
@@ -12647,6 +12955,7 @@ ${formatClarification(clarification)}
       if (!Array.isArray(state.customProviders)) state.customProviders = [];
       if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
       normalizeWebSearchState();
+      normalizeAutoToolEnabledState();
       state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "SG";
       state.amapKey = String(state.amapKey || "");
       state.jinaApiKey = String(state.jinaApiKey || "");
