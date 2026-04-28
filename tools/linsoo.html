@@ -6,6 +6,17 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Linsoo — AI 搜索对话</title>
   <script>
+    (function () {
+      try {
+        var raw = localStorage.getItem("linsoo_v1");
+        var state = raw ? JSON.parse(raw) : {};
+        var mode = state.themeMode || state.theme || "light";
+        var resolved = mode === "auto" && matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : mode;
+        if (resolved === "dark") document.documentElement.dataset.theme = "dark";
+        document.documentElement.dataset.palette = state.palette === "openai" ? "openai" : "claude";
+        if (matchMedia("(max-width: 720px)").matches) document.documentElement.classList.add("boot-mobile-sidebar-collapsed");
+      } catch (e) { }
+    })();
     if (new URLSearchParams(location.search).get("q")?.trim()) {
       document.documentElement.classList.add("query-launch");
     }
@@ -136,6 +147,62 @@
       --shadow-elevated: 0 10px 28px rgba(0, 0, 0, 0.24);
       --shadow-floating: 0 18px 44px rgba(0, 0, 0, 0.32);
       --shadow-soft: var(--shadow-ring), 0 8px 22px rgba(0, 0, 0, 0.18);
+    }
+
+    :root[data-palette="openai"],
+    body[data-palette="openai"] {
+      --color-canvas: #ffffff;
+      --color-page: #ffffff;
+      --color-surface: #ffffff;
+      --color-surface-soft: #f7f7f8;
+      --color-surface-card: #f4f4f5;
+      --color-surface-raised: #ffffff;
+      --color-text: #171717;
+      --color-body: #2f2f2f;
+      --color-text-strong: #212121;
+      --color-muted: #676767;
+      --color-muted-soft: #8f8f8f;
+      --color-border: #e3e3e3;
+      --color-border-strong: #d4d4d4;
+      --color-ring: #c7c7c7;
+      --color-ring-strong: #a3a3a3;
+      --color-primary: #212121;
+      --color-primary-active: #0f0f0f;
+      --color-primary-soft: rgba(33, 33, 33, 0.1);
+      --accent: var(--color-primary);
+      --accent-2: var(--color-primary-active);
+      --accent-soft: var(--color-primary-soft);
+      --olive: #5f6368;
+      --olive-soft: rgba(33, 33, 33, 0.08);
+      --focus: #a3a3a3;
+    }
+
+    :root[data-theme="dark"][data-palette="openai"],
+    body[data-theme="dark"][data-palette="openai"] {
+      --color-canvas: #171717;
+      --color-page: #212121;
+      --color-surface: #2f2f2f;
+      --color-surface-soft: #262626;
+      --color-surface-card: #303030;
+      --color-surface-raised: #353535;
+      --color-text: #f4f4f5;
+      --color-body: #171717;
+      --color-text-strong: #ececec;
+      --color-muted: #c5c5c5;
+      --color-muted-soft: #8f8f8f;
+      --color-border: rgba(255, 255, 255, 0.1);
+      --color-border-strong: rgba(255, 255, 255, 0.16);
+      --color-ring: rgba(255, 255, 255, 0.18);
+      --color-ring-strong: rgba(255, 255, 255, 0.28);
+      --color-primary: #ececec;
+      --color-primary-active: #ffffff;
+      --color-primary-soft: rgba(255, 255, 255, 0.11);
+      --accent: var(--color-primary);
+      --accent-2: var(--color-primary-active);
+      --accent-soft: var(--color-primary-soft);
+      --olive: #a3a3a3;
+      --olive-soft: rgba(255, 255, 255, 0.1);
+      --focus: #c7c7c7;
     }
 
     * {
@@ -314,6 +381,8 @@
     #pinnedList.drag-over,
     #recentList.drag-over {
       outline: 1px solid color-mix(in srgb, var(--accent) 35%, var(--line));
+      outline-offset: -1px;
+      border-left: 1px solid color-mix(in srgb, var(--accent) 58%, var(--line));
       background: color-mix(in srgb, var(--sand) 82%, transparent);
       color: var(--ink);
     }
@@ -1067,10 +1136,10 @@
     }
 
     .composer-shell:focus-within {
-      border-color: color-mix(in srgb, var(--focus) 34%, var(--ring));
+      border-color: color-mix(in srgb, var(--white) 78%, var(--ring));
       box-shadow:
         var(--shadow-elevated),
-        0 0 0 2px color-mix(in srgb, var(--focus) 16%, transparent);
+        0 0 0 2px color-mix(in srgb, var(--white) 42%, transparent);
     }
 
     .composer-input {
@@ -1560,14 +1629,82 @@
       gap: 34px;
       min-width: 0;
       max-width: 100%;
-      padding: 10px 0 168px;
+      padding: 10px 0 var(--message-bottom-space, 168px);
     }
 
     .message {
+      position: relative;
       display: grid;
       min-width: 0;
       max-width: 100%;
       gap: 9px;
+    }
+
+    .message-select-box {
+      position: absolute;
+      top: 12px;
+      left: -34px;
+      width: 22px;
+      height: 22px;
+      display: none;
+      place-items: center;
+      border: 1px solid var(--line-strong);
+      border-radius: var(--radius-sm);
+      background: var(--ivory);
+      color: var(--ink);
+      box-shadow: var(--shadow-ring);
+      pointer-events: none;
+    }
+
+    .message-select-box svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0;
+    }
+
+    body.export-selecting .message {
+      cursor: pointer;
+    }
+
+    body.export-selecting .message-select-box {
+      display: grid;
+    }
+
+    body.export-selecting .message.export-selected .message-select-box {
+      border-color: var(--accent);
+      background: var(--accent);
+      color: var(--ivory);
+    }
+
+    body.export-selecting .message.export-selected .message-select-box svg {
+      opacity: 1;
+    }
+
+    .export-bar {
+      position: fixed;
+      left: 50%;
+      bottom: 22px;
+      z-index: 95;
+      display: none;
+      align-items: center;
+      gap: 10px;
+      transform: translateX(-50%);
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--ivory);
+      box-shadow: var(--shadow-floating);
+      padding: 8px 10px;
+      user-select: none;
+    }
+
+    body.export-selecting .export-bar {
+      display: inline-flex;
+    }
+
+    .export-bar-count {
+      color: var(--muted);
+      font-size: 13px;
+      white-space: nowrap;
     }
 
     .message.user {
@@ -1796,6 +1933,97 @@
       font-weight: 600;
     }
 
+    .inline-citation {
+      position: relative;
+      display: inline-flex;
+      vertical-align: baseline;
+      margin: 0 2px;
+    }
+
+    .inline-citation-trigger {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      max-width: 25ch;
+      min-height: 18px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-pill);
+      background: color-mix(in srgb, var(--sand-2) 78%, transparent);
+      color: var(--text-strong);
+      padding: 2px 6px;
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 10px;
+      line-height: 1.15;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .inline-citation-extra {
+      color: var(--faint);
+    }
+
+    .inline-citation-card {
+      position: absolute;
+      left: 0;
+      bottom: calc(100% + 8px);
+      z-index: 40;
+      width: min(280px, calc(100vw - 28px));
+      display: none;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--ivory);
+      box-shadow: var(--shadow-floating);
+      padding: 10px;
+    }
+
+    .inline-citation:hover .inline-citation-card,
+    .inline-citation:focus-within .inline-citation-card {
+      display: grid;
+      gap: 8px;
+    }
+
+    .inline-citation-link {
+      display: grid;
+      grid-template-columns: 28px minmax(0, 1fr);
+      gap: 8px;
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .inline-citation-favicon {
+      grid-row: span 3;
+      align-self: start;
+    }
+
+    .inline-citation-title,
+    .inline-citation-domain {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .inline-citation-title {
+      font-weight: 700;
+    }
+
+    .inline-citation-domain {
+      color: var(--faint);
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 10px;
+    }
+
+    .inline-citation-snippet {
+      grid-column: 2;
+      color: var(--muted);
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 3;
+      overflow: hidden;
+    }
+
     .source-btn-icons {
       display: inline-flex;
       align-items: center;
@@ -2009,35 +2237,186 @@
       padding: 2px 0;
     }
 
-    .thinking-block {
-      margin: 0 0 14px;
-      color: var(--faint);
+    .agent-loop {
+      display: grid;
+      gap: 0;
+      margin: 0 0 16px;
+      color: var(--muted);
       font-size: 13px;
     }
 
-    .thinking-toggle {
+    .agent-loop-head {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 7px;
+      width: fit-content;
+      border: none;
+      background: transparent;
+      color: var(--muted);
+      cursor: pointer;
+      padding: 0 0 7px;
+      font: inherit;
+      text-align: left;
+      transition: color var(--speed);
+    }
+
+    .agent-loop-head:hover {
+      color: var(--ink);
+    }
+
+    .agent-loop-label.loading {
+      color: var(--text-strong);
+      animation: shimmerOpacity 1.35s ease-in-out infinite;
+    }
+
+    .agent-loop-body {
+      display: grid;
+      grid-template-rows: 0fr;
+      transition: grid-template-rows 0.28s ease;
+    }
+
+    .agent-loop.open .agent-loop-body {
+      grid-template-rows: 1fr;
+    }
+
+    .agent-loop-inner {
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    .agent-step {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr);
+      min-width: 0;
+    }
+
+    .agent-step-rail {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 28px;
+      padding-top: 2px;
+    }
+
+    .agent-step-rail::before,
+    .agent-step-rail::after {
+      content: "";
+      width: 1px;
+      background: var(--line-strong);
+    }
+
+    .agent-step-rail::before {
+      flex: 0 0 0;
+      min-height: 0;
+    }
+
+    .agent-step-rail::after {
+      flex: 1;
+      min-height: 8px;
+    }
+
+    .agent-step:first-child .agent-step-rail::before,
+    .agent-step:last-child .agent-step-rail::after {
+      background: transparent;
+    }
+
+    .agent-node {
+      display: grid;
+      place-items: center;
+      width: 18px;
+      height: 18px;
+      margin: 0 0 3px;
+      border-radius: 50%;
+      color: var(--muted);
+    }
+
+    .agent-step.running .agent-node,
+    .agent-step.status .agent-node {
+      color: var(--accent);
+    }
+
+    .agent-step.failed .agent-node {
+      color: var(--danger);
+    }
+
+    .agent-node svg {
+      width: 16px;
+      height: 16px;
+      display: block;
+    }
+
+    .agent-step-main {
+      min-width: 0;
+      padding: 0 0 8px 8px;
+    }
+
+    .agent-step-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 22px;
+      color: var(--muted);
+      line-height: 1.45;
+    }
+
+    .agent-step.running .agent-step-title,
+    .agent-step.status .agent-step-title {
+      color: var(--text-strong);
+    }
+
+    .agent-step-title.shimmer {
+      color: var(--text-strong);
+      animation: shimmerOpacity 1.35s ease-in-out infinite;
+    }
+
+    .agent-step-detail {
+      margin-top: 7px;
+      color: var(--faint);
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .agent-step-detail pre {
+      margin: 7px 0 0;
+      max-height: 150px;
+      overflow: auto;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      background: var(--sand);
+      padding: 9px;
+      color: var(--text-strong);
+      font-family: "DM Mono", ui-monospace, monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      white-space: pre-wrap;
+    }
+
+    .agent-thinking-text {
+      display: -webkit-box;
+      max-width: 100%;
+      overflow: hidden;
+      -webkit-line-clamp: 6;
+      -webkit-box-orient: vertical;
+      white-space: pre-wrap;
+    }
+
+    .agent-step.expanded .agent-thinking-text {
+      display: block;
+    }
+
+    .agent-show-more {
+      margin-top: 6px;
       border: none;
       background: transparent;
       color: var(--faint);
       cursor: pointer;
       padding: 0;
-      font-size: 13px;
+      font-size: 12px;
+      transition: color var(--speed);
     }
 
-    .thinking-content {
-      display: none;
-      margin-top: 8px;
-      border-left: 2px solid var(--line-strong);
-      padding-left: 11px;
-      white-space: pre-wrap;
-      line-height: 1.55;
-    }
-
-    .thinking-block.open .thinking-content {
-      display: block;
+    .agent-show-more:hover {
+      color: var(--ink);
     }
 
     .sources {
@@ -2369,18 +2748,17 @@
     }
 
     .search-status::before {
-      content: "";
-      width: 14px;
-      height: 14px;
-      border: 2px solid var(--line-strong);
-      border-top-color: var(--accent);
-      border-radius: 50%;
-      animation: spin 0.9s linear infinite;
+      content: " ";
+      width: 18px;
+      height: 1px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, transparent, var(--accent), transparent);
+      background-size: 180% 100%;
+      animation: shimmerLine 1.25s ease-in-out infinite;
     }
 
     .search-status.done::before {
-      border-color: var(--accent);
-      border-top-color: var(--accent);
+      background: var(--accent);
       animation: none;
     }
 
@@ -3182,6 +3560,37 @@
       }
     }
 
+    @keyframes shimmerText {
+      0% {
+        background-position: 120% 50%;
+      }
+
+      100% {
+        background-position: -120% 50%;
+      }
+    }
+
+    @keyframes shimmerLine {
+      0% {
+        background-position: 120% 50%;
+      }
+
+      100% {
+        background-position: -120% 50%;
+      }
+    }
+
+    @keyframes shimmerOpacity {
+      0%,
+      100% {
+        opacity: 0.55;
+      }
+
+      50% {
+        opacity: 1;
+      }
+    }
+
     .thread-composer {
       position: fixed;
       left: calc(50% + 144px);
@@ -3815,8 +4224,8 @@
 
     .provider-trigger[aria-expanded="true"] {
       border-radius: 12px 12px 0 0;
-      border-color: var(--focus);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      border-color: color-mix(in srgb, var(--white) 78%, var(--ring));
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--white) 34%, transparent);
     }
 
     .provider-dropdown {
@@ -3884,9 +4293,9 @@
 
     .input:focus,
     .textarea:focus {
-      border-color: var(--focus);
+      border-color: color-mix(in srgb, var(--white) 78%, var(--ring));
       background: var(--ivory);
-      box-shadow: 0 0 0 3px color-mix(in srgb, var(--focus) 18%, transparent);
+      box-shadow: 0 0 0 3px color-mix(in srgb, var(--white) 34%, transparent);
     }
 
     .mono {
@@ -4048,6 +4457,134 @@
 
     .legacy-ai-fields {
       display: none;
+    }
+
+    .palette-preview-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .palette-preview {
+      display: grid;
+      gap: 10px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-lg);
+      background: var(--ivory);
+      color: var(--ink);
+      cursor: pointer;
+      padding: 12px;
+      text-align: left;
+      user-select: none;
+    }
+
+    .palette-preview.active {
+      border-color: var(--ring-deep);
+      box-shadow: var(--shadow-ring);
+    }
+
+    .palette-preview-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .palette-mock {
+      display: grid;
+      grid-template-columns: 34% 1fr;
+      min-height: 116px;
+      overflow: hidden;
+      border: 1px solid var(--mock-line);
+      border-radius: var(--radius-md);
+      background: var(--mock-page);
+    }
+
+    .palette-mock-sidebar {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      background: var(--mock-side);
+      padding: 10px 8px;
+    }
+
+    .palette-mock-brand,
+    .palette-mock-row,
+    .palette-mock-user,
+    .palette-mock-answer,
+    .palette-mock-cite {
+      border-radius: var(--radius-pill);
+    }
+
+    .palette-mock-brand {
+      width: 42px;
+      height: 10px;
+      background: var(--mock-ink);
+      opacity: 0.72;
+    }
+
+    .palette-mock-row {
+      width: 100%;
+      height: 9px;
+      background: var(--mock-muted);
+      opacity: 0.42;
+    }
+
+    .palette-mock-row.active {
+      background: var(--mock-card);
+      opacity: 1;
+    }
+
+    .palette-mock-main {
+      display: grid;
+      align-content: start;
+      gap: 8px;
+      padding: 12px;
+    }
+
+    .palette-mock-user,
+    .palette-mock-answer {
+      background: var(--mock-card);
+    }
+
+    .palette-mock-user {
+      justify-self: end;
+      width: 58%;
+      height: 20px;
+    }
+
+    .palette-mock-answer {
+      width: 86%;
+      height: 42px;
+      border-radius: var(--radius-md);
+    }
+
+    .palette-mock-cite {
+      width: 38%;
+      height: 14px;
+      background: var(--mock-accent-soft);
+    }
+
+    .palette-preview[data-palette-preview="claude"] {
+      --mock-page: #f5f4ed;
+      --mock-side: #e8e6dc;
+      --mock-card: #efe9de;
+      --mock-line: #e6dfd8;
+      --mock-ink: #141413;
+      --mock-muted: #6c6a64;
+      --mock-accent-soft: #f1ded5;
+    }
+
+    .palette-preview[data-palette-preview="openai"] {
+      --mock-page: #ffffff;
+      --mock-side: #f7f7f8;
+      --mock-card: #f4f4f5;
+      --mock-line: #e3e3e3;
+      --mock-ink: #171717;
+      --mock-muted: #676767;
+      --mock-accent-soft: rgba(33, 33, 33, 0.1);
     }
 
     .ai-config-list {
@@ -4446,7 +4983,7 @@
         --mobile-sidebar-width: min(78vw, 292px);
         --mobile-screen-corner-radius: 44px;
         --mobile-drawer-x: 0px;
-        --mobile-drawer-surface: color-mix(in srgb, var(--paper) 94%, var(--charcoal) 6%);
+        --mobile-drawer-surface: color-mix(in srgb, var(--paper) 88%, var(--charcoal) 12%);
       }
 
       html {
@@ -4504,6 +5041,20 @@
           padding var(--speed),
           border-radius var(--speed),
           box-shadow var(--speed);
+      }
+
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) .sidebar,
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) body:not(.sidebar-collapsed) .sidebar {
+        transform: translateX(calc(0px - var(--mobile-sidebar-width)));
+        pointer-events: none;
+      }
+
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) .main,
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) .search-page,
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) body:not(.sidebar-collapsed) .main,
+      html.boot-mobile-sidebar-collapsed:not(.sidebar-ready) body:not(.sidebar-collapsed) .search-page {
+        transform: translateX(0);
+        border-left-color: transparent;
       }
 
       .chat-row {
@@ -4683,6 +5234,16 @@
         box-shadow: none;
         overflow: visible;
         clip-path: none;
+      }
+
+      body:not(.sidebar-collapsed) .main::after,
+      body:not(.sidebar-collapsed) .search-page::after {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 80;
+        background: transparent;
+        pointer-events: auto;
       }
 
       body:not(.sidebar-collapsed) .search-page {
@@ -5318,7 +5879,7 @@
       }
 
       .messages {
-        padding-bottom: 152px;
+        padding-bottom: var(--message-bottom-space, 152px);
       }
 
       .conversation-rail {
@@ -5565,6 +6126,11 @@
   </div>
 
   <div class="chat-menu" id="chatMenu"></div>
+  <div class="export-bar" id="exportBar">
+    <span class="export-bar-count" id="exportBarCount">已选择 0 条</span>
+    <button class="outline-btn" id="exportCancelBtn" type="button">取消</button>
+    <button class="primary-btn" id="exportConfirmBtn" type="button">导出</button>
+  </div>
   <div class="search-overlay" id="searchOverlay">
     <div class="search-modal">
       <div class="search-head">
@@ -5743,7 +6309,7 @@
             <div id="modelList"></div>
             <button id="deleteCustomBtn" type="button"></button>
           </div>
-          <div class="field" data-setting-key="prompt" data-setting-tab="ai">
+          <div class="field" data-setting-key="prompt" data-setting-tab="ai" style="display: none" aria-hidden="true">
             <div class="field-label">
               System Prompt
               <button class="ghost-btn" id="resetPromptBtn" style="min-height: 24px; padding: 0 9px">恢复默认</button>
@@ -5832,6 +6398,25 @@
           </div>
         </div>
         <div id="tabAppearance" style="display: none">
+          <div class="field" data-setting-key="palette" data-setting-tab="appearance">
+            <div class="field-label">配色</div>
+            <div class="palette-preview-grid" id="paletteGroup">
+              <button class="palette-preview" type="button" data-palette="claude" data-palette-preview="claude">
+                <span class="palette-preview-title"><span>Claude</span><span>暖色编辑感</span></span>
+                <span class="palette-mock">
+                  <span class="palette-mock-sidebar"><span class="palette-mock-brand"></span><span class="palette-mock-row active"></span><span class="palette-mock-row"></span><span class="palette-mock-row"></span></span>
+                  <span class="palette-mock-main"><span class="palette-mock-user"></span><span class="palette-mock-answer"></span><span class="palette-mock-cite"></span></span>
+                </span>
+              </button>
+              <button class="palette-preview" type="button" data-palette="openai" data-palette-preview="openai">
+                <span class="palette-preview-title"><span>OpenAI</span><span>中性灰阶</span></span>
+                <span class="palette-mock">
+                  <span class="palette-mock-sidebar"><span class="palette-mock-brand"></span><span class="palette-mock-row active"></span><span class="palette-mock-row"></span><span class="palette-mock-row"></span></span>
+                  <span class="palette-mock-main"><span class="palette-mock-user"></span><span class="palette-mock-answer"></span><span class="palette-mock-cite"></span></span>
+                </span>
+              </button>
+            </div>
+          </div>
           <div class="field" data-setting-key="themeMode" data-setting-tab="appearance">
             <div class="field-label">Theme</div>
             <div class="segmented" id="themeModeGroup">
@@ -5921,6 +6506,7 @@ Your job:
 - Prefer current, source-grounded answers when the selected model has web/search access.
 - If you do not have live web access, say that clearly and answer from available knowledge without pretending you browsed.
 - When sources are available in tool results, cite claims with normal clickable Markdown links near the claims.
+- When web search results are available, add citation links after each factual sentence or paragraph that uses those results. If one sentence depends on multiple sources, put multiple Markdown links together at the end of that sentence.
 - Citation format must be a Markdown link using the source title, for example [Source title](https://example.com/page). Do not use bare citation markers such as 【1】, [1], [5], [^6], footnotes, or bracket-only references without URLs.
 - If citing several sources for one sentence, use multiple Markdown links separated by spaces.
 - Prioritize the user's request and adapt tone, style, and detail level to the question.
@@ -5964,7 +6550,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     const ICON_RETRY = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 1 1-2.64-6.36"/><path d="M21 3v6h-6"/></svg>';
     const ICON_EDIT = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>';
     const ICON_FOLDER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5h6l2 2h10v8.5a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2Z"/><path d="M3 7.5V6a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v1.5"/></svg>';
-    const ICON_PIN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 4 5 5-4 1-4.5 4.5.5 4.5-2 2-6-6 2-2 4.5.5L15 9z"/></svg>';
+    const ICON_PIN = '<svg width="14" height="14" viewBox="0 -960 960 960" fill="currentColor" aria-hidden="true"><path d="m640-480 80 80v80H520v240l-40 40-40-40v-240H240v-80l80-80v-280h-40v-80h400v80h-40v280Zm-286 80h252l-46-46v-314H400v314l-46 46Zm126 0Z"/></svg>';
     const ICON_TRASH = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M8 6V4h8v2"/><path d="M6 6l1 15h10l1-15"/><path d="M10 11v6M14 11v6"/></svg>';
     const ICON_WEB_SEARCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.2 2.5 3.3 5.5 3.3 9S14.2 18.5 12 21M12 3C9.8 5.5 8.7 8.5 8.7 12S9.8 18.5 12 21"/><path class="slash" d="M4 20 20 4"/><path class="spark" d="M18.4 2.6l.5 1.25 1.35.1-1.04.86.32 1.32-1.15-.72-1.16.72.33-1.32-1.04-.86 1.34-.1.5-1.25Z"/></svg>';
     const ICON_CHAT_VIEW = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 6.5A4.5 4.5 0 0 1 9.5 2h5A4.5 4.5 0 0 1 19 6.5v4A4.5 4.5 0 0 1 14.5 15H11l-4.5 4v-4.4A4.5 4.5 0 0 1 5 11V6.5Z" /><path d="M9 7h6M9 10.5h4" /></svg>';
@@ -6013,7 +6599,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     const SEARCH_PROVIDER_TIMEOUT_MS = 18000;
     const JINA_READER_BASE = "https://r.jina.ai/";
     const TOOL_AGENT_MAX_STEPS = 10;
-    const MAX_WEB_SEARCH_TOOL_CALLS = 6;
+    const MAX_WEB_SEARCH_TOOL_CALLS = 3;
     const TARGET_WEB_SEARCH_TOOL_CALLS = 3;
     const MAX_BUILD_SEARCH_QUERY_TOOL_CALLS = 3;
     const MAX_WEBPAGE_CONTENT_TOOL_CALLS = 3;
@@ -6025,12 +6611,12 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       "aiConfigs",
       "activeModel",
       "modelQueue",
-      "prompt",
       "provider",
       "customName",
       "customProviders",
       "toolCallMode",
       "autoToolEnabled",
+      "palette",
       "webSearchMode",
       "searchPlanningMode",
       "clarifyQuestionsMode",
@@ -6071,6 +6657,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       },
       theme: "light",
       themeMode: "light",
+      palette: "claude",
       webSearchMode: "auto",
       searchPlanningMode: "auto",
       clarifyQuestionsMode: "auto",
@@ -6102,6 +6689,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let expandedFolder = "";
     let activeChatMenuSlug = "";
     let activeFolderMenuName = "";
+    let exportSelecting = false;
+    let exportFormat = "markdown";
+    let exportSelectedIds = new Set();
     let pendingDeleteSlug = "";
     let pendingDeleteAction = null;
     let folderPickerSlug = "";
@@ -6117,6 +6707,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let aborter = null;
     let autoFollow = true;
     let userMessageAnchorUntil = 0;
+    let latestAnchoredUserMessageId = "";
     let userScrollPauseUntil = 0;
     let mobileComposerExpandedUntil = 0;
     let mobileComposerRevealClickUntil = 0;
@@ -6156,6 +6747,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let pendingRailRefresh = false;
     let pendingSearchPageRefresh = false;
     let pendingAssistantRenderIds = new Set();
+    let openAgentLoopMessageIds = new Set();
     let railSignature = "";
     let searchViewNeedsTopReset = false;
     let suppressScrollCapture = false;
@@ -6247,6 +6839,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         "mobileSidebarScrim",
         "searchHistoryBtn",
         "exportMdBtn",
+        "exportBar",
+        "exportBarCount",
+        "exportCancelBtn",
+        "exportConfirmBtn",
         "searchOverlay",
         "globalSearchInput",
         "globalSearchResults",
@@ -6352,6 +6948,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         "persistenceModeGroup",
         "persistenceModeHint",
         "themeModeGroup",
+        "paletteGroup",
         "tabGeneral",
         "tabAI",
         "tabSearch",
@@ -7079,9 +7676,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       normalizeAiConfigsState({ migrateLegacy: true });
       state.interactionMode = normalizeInteractionMode(state.interactionMode);
       state.toolCallMode = normalizeToolCallMode(state.toolCallMode);
-      if (!state.prompt) state.prompt = DEFAULT_PROMPT;
+      state.prompt = DEFAULT_PROMPT;
+      state.palette = state.palette === "openai" ? "openai" : "claude";
       state.amapKey = String(state.amapKey || "");
       state.jinaApiKey = String(state.jinaApiKey || "");
+      state.palette = state.palette === "openai" ? "openai" : "claude";
       normalizeSourcePreferenceState();
       const storedPreference = normalizeConfigurablePersistenceMode(state.persistenceMode) || persistencePreference || "opfs";
       storageMode = resolvePersistenceMode(storedPreference);
@@ -7196,16 +7795,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       delete state.webSearch;
       const existing = state.searchProviders && typeof state.searchProviders === "object" ? state.searchProviders : {};
       state.searchProviders = {};
-      const matchesProviderOrder = (ids) => ids.every((id, index) => {
-        const order = Number(existing[id]?.order);
-        return !Number.isFinite(order) || order === index + 1;
-      });
-      const legacyDefaultOrder = matchesProviderOrder(SEARCH_PROVIDER_LEGACY_ORDER) || matchesProviderOrder(SEARCH_PROVIDER_PREVIOUS_DEFAULT_ORDER);
       SEARCH_PROVIDER_IDS.forEach((id, index) => {
         const provider = existing[id] || {};
         state.searchProviders[id] = {
           enabled: provider.enabled !== false,
-          order: legacyDefaultOrder ? index + 1 : Number.isFinite(Number(provider.order)) ? Number(provider.order) : index + 1,
+          order: Number.isFinite(Number(provider.order)) ? Number(provider.order) : index + 1,
           apiKey: String(provider.apiKey || ""),
         };
       });
@@ -7376,7 +7970,13 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       els.sidebarToggle.addEventListener("click", toggleSidebar);
       els.mobileSidebarScrim?.addEventListener("click", collapseMobileSidebar);
       els.searchHistoryBtn.addEventListener("click", openGlobalSearch);
-      els.exportMdBtn?.addEventListener("click", exportCurrentChatMarkdown);
+      els.exportMdBtn?.addEventListener("click", (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+        openExportMenu();
+      });
+      els.exportCancelBtn?.addEventListener("click", cancelExportSelection);
+      els.exportConfirmBtn?.addEventListener("click", confirmSelectedExport);
       els.searchClose?.addEventListener("click", closeGlobalSearch);
       els.searchOverlay.addEventListener("click", (event) => {
         if (event.target === els.searchOverlay) closeGlobalSearch();
@@ -7567,6 +8167,15 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           saveState();
         });
       });
+      els.paletteGroup?.querySelectorAll("[data-palette]").forEach((button) => {
+        button.addEventListener("click", () => {
+          if ((state.palette || "claude") === button.dataset.palette) return;
+          recordSettingsEdit({ key: "palette", tab: "appearance" });
+          state.palette = button.dataset.palette === "openai" ? "openai" : "claude";
+          applyTheme();
+          saveState();
+        });
+      });
       els.settingsOverlay.querySelectorAll("[data-settings-focus-api]").forEach((button) => {
         button.addEventListener("click", () => focusSettingsApi(button.dataset.settingsFocusApi));
       });
@@ -7630,6 +8239,13 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         if (event.target.closest(".modal, .search-modal, .delete-dialog, .folder-dialog, .source-panel, .chat-menu")) return;
         event.preventDefault();
       }, { passive: false, capture: true });
+      document.addEventListener("click", (event) => {
+        if (!isMobileViewport() || document.body.classList.contains("sidebar-collapsed")) return;
+        if (event.target.closest(".sidebar, .modal, .search-modal, .delete-dialog, .folder-dialog, .source-panel, .chat-menu, .ask-panel")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        collapseMobileSidebar();
+      }, { capture: true });
       document.addEventListener("touchstart", handleMobileDrawerSwipeStart, { passive: true, capture: true });
       document.addEventListener("touchmove", handleMobileDrawerSwipeMove, { passive: false, capture: true });
       document.addEventListener("touchend", handleMobileDrawerSwipeEnd, { passive: true, capture: true });
@@ -7664,17 +8280,15 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       els.cfgModelInput.addEventListener("blur", () => {
         setTimeout(closeSettingsModelDropdown, 140);
       });
-      els.resetPromptBtn.addEventListener("click", () => {
-        recordSettingsEdit({ key: "prompt", tab: "ai" });
+      els.resetPromptBtn?.addEventListener("click", () => {
         els.cfgPrompt.value = DEFAULT_PROMPT;
-        scheduleSettingsAutosave();
       });
 
       document.addEventListener("click", (event) => {
         if (!event.target.closest(".model-picker")) closeComposerModelDropdowns();
         if (!event.target.closest("#cfgProviderTrigger") && !event.target.closest("#providerDropdown")) closeProviderDropdown();
         if (!event.target.closest(".search-country-select")) closeSearchCountryDropdown();
-        if (!event.target.closest(".chat-menu") && !event.target.closest(".chat-menu-btn")) closeChatMenu();
+        if (!event.target.closest(".chat-menu") && !event.target.closest(".chat-menu-btn") && !event.target.closest(".chat-export-btn")) closeChatMenu();
         if (!event.target.closest(".chat-row")) closeMobileRowActions();
       });
       document.addEventListener("keydown", (event) => {
@@ -8542,7 +9156,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return `
           <div class="chat-row${currentChat?.slug === chat.slug ? " active" : ""}" data-slug="${esc(chat.slug)}" role="button" tabindex="0" draggable="true">
             <span class="chat-main">
-              <span class="chat-mode-icon${mode === "classic" ? " classic" : ""}">${mode === "classic" ? ICON_SEARCH_VIEW : ICON_CHAT_VIEW}</span>
+              <span class="chat-mode-icon${chat.pinned ? " pinned" : mode === "classic" ? " classic" : ""}">${chat.pinned ? ICON_PIN : mode === "classic" ? ICON_SEARCH_VIEW : ICON_CHAT_VIEW}</span>
               <span class="chat-title">${esc(chat.title)}</span>
             </span>
             <span class="chat-menu-btn" data-menu="${esc(chat.slug)}" title="更多" aria-label="更多">•••</span>
@@ -8694,6 +9308,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           timer = 0;
           if (dragging) {
             dragging = false;
+            if (item.classList.contains("chat-row")) item.dataset.mobileSuppressClickUntil = String(Date.now() + 500);
             item.classList.remove("dragging");
             document.body.classList.remove("touch-reordering");
             onCommit?.();
@@ -8707,6 +9322,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           clearTimeout(timer);
           timer = setTimeout(() => {
             dragging = true;
+            if (item.classList.contains("chat-row")) item.dataset.mobileSuppressClickUntil = String(Date.now() + 500);
             item.classList.add("dragging");
             document.body.classList.add("touch-reordering");
             try {
@@ -8741,56 +9357,31 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     function bindMobileChatRow(row) {
       let startX = 0;
       let startY = 0;
-      let longPressTimer = 0;
-      let didLongPress = false;
-      const clearLongPress = () => {
-        clearTimeout(longPressTimer);
-        longPressTimer = 0;
-      };
       row.addEventListener("pointerdown", (event) => {
         if (!isMobileViewport() || event.pointerType === "mouse") return;
         if (document.body.classList.contains("touch-reordering")) return;
         if (event.target.closest("button, input, textarea, select, .chat-menu-btn, .mobile-row-actions")) return;
         startX = event.clientX;
         startY = event.clientY;
-        didLongPress = false;
-        clearLongPress();
-        longPressTimer = setTimeout(() => {
-          didLongPress = true;
-          row.dataset.mobileSuppressClickUntil = String(Date.now() + 450);
-          closeMobileRowActions();
-          openChatMenu(row.dataset.slug, row.getBoundingClientRect());
-          try {
-            navigator.vibrate?.(8);
-          } catch (e) { }
-        }, MOBILE_ROW_LONG_PRESS_MS);
       });
       row.addEventListener("pointermove", (event) => {
-        if (!longPressTimer && !startX) return;
+        if (!startX) return;
         const dx = event.clientX - startX;
         const dy = event.clientY - startY;
-        if (Math.abs(dy) > 28) {
-          clearLongPress();
-          return;
-        }
+        if (Math.abs(dy) > 28) return;
         if (dx < -MOBILE_ROW_SWIPE_PX && Math.abs(dy) < 24) {
-          clearLongPress();
           closeMobileRowActions(row);
           row.classList.add("mobile-swiped");
           row.dataset.mobileSuppressClickUntil = String(Date.now() + 300);
         }
         if (dx > MOBILE_ROW_SWIPE_PX) {
-          clearLongPress();
           row.classList.remove("mobile-swiped");
         }
-        if (Math.abs(dx) > 10 || Math.abs(dy) > 10) clearLongPress();
       });
       ["pointerup", "pointercancel", "lostpointercapture"].forEach((type) => {
         row.addEventListener(type, () => {
-          clearLongPress();
           startX = 0;
           startY = 0;
-          if (didLongPress) row.dataset.mobileSuppressClickUntil = String(Date.now() + 450);
         });
       });
     }
@@ -9011,11 +9602,13 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       messages = [];
       currentChat = null;
       activeFolder = "";
+      openAgentLoopMessageIds.clear();
       closeChatMenu();
       closeDeleteConfirm();
       document.body.classList.remove("chat-active");
       resetActiveView();
       els.messages.innerHTML = "";
+      clearMessageAnchorSpace();
       els.hero.classList.remove("hidden");
       els.thread.classList.remove("active");
       els.threadComposer.style.display = "none";
@@ -9049,8 +9642,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       messages.push(next);
       renderMessage(next);
       if (next.role === "user") {
-        userMessageAnchorUntil = Date.now() + 1000;
+        latestAnchoredUserMessageId = next.id;
+        userMessageAnchorUntil = Date.now() + 1600;
         scrollMessageBelowTopTabs(next.id);
+      } else if (next.role === "assistant" && next.loading && latestAnchoredUserMessageId) {
+        scrollMessageBelowTopTabs(latestAnchoredUserMessageId);
       } else if (!next.loading) {
         scrollToBottom();
       }
@@ -9058,14 +9654,44 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return next;
     }
 
-    function scrollMessageBelowTopTabs(id) {
-      requestAnimationFrame(() => {
-        const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
-        if (!node) return;
-        const tabs = els.topViewTabs?.getBoundingClientRect();
-        const offset = tabs?.height ? tabs.bottom + 10 : (isMobileViewport() ? 58 : 74);
-        const top = window.scrollY + node.getBoundingClientRect().top - offset;
-        setWindowScroll(Math.max(0, top), "smooth");
+    function topTabsClearance() {
+      const tabs = els.topViewTabs?.getBoundingClientRect();
+      const fallback = isMobileViewport() ? 58 : 74;
+      const bottom = tabs?.height ? tabs.bottom : fallback;
+      const viewportOffset = isMobileViewport() ? (window.visualViewport?.offsetTop || 0) : 0;
+      return Math.ceil(Math.max(fallback, bottom + viewportOffset) + 12);
+    }
+
+    function reserveMessageAnchorSpace(id) {
+      const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      const target = node?.querySelector(".bubble") || node;
+      if (!target) return;
+      const currentPadding = parseFloat(getComputedStyle(els.messages).paddingBottom) || 0;
+      const targetTop = currentScrollY() + target.getBoundingClientRect().top;
+      const desiredTop = Math.max(0, targetTop - topTabsClearance());
+      const baseHeightWithoutPadding = document.documentElement.scrollHeight - currentPadding;
+      const reserve = Math.max(0, Math.ceil(desiredTop + window.innerHeight - baseHeightWithoutPadding + 2));
+      els.messages.style.setProperty("--message-bottom-space", `${reserve}px`);
+    }
+
+    function clearMessageAnchorSpace() {
+      els.messages?.style.removeProperty("--message-bottom-space");
+    }
+
+    function alignMessageBelowTopTabs(id, behavior = "smooth") {
+      const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+      if (!node) return;
+      reserveMessageAnchorSpace(id);
+      const target = node.querySelector(".bubble") || node;
+      const top = currentScrollY() + target.getBoundingClientRect().top - topTabsClearance();
+      setWindowScroll(Math.max(0, top), behavior);
+    }
+
+    function scrollMessageBelowTopTabs(id, opts = {}) {
+      const behavior = opts.behavior || "smooth";
+      requestAnimationFrame(() => alignMessageBelowTopTabs(id, behavior));
+      [80, 240, 520].forEach((delay) => {
+        setTimeout(() => alignMessageBelowTopTabs(id, behavior), delay);
       });
     }
 
@@ -9127,9 +9753,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         updatedAt: chat.updatedAt || Date.now(),
       };
       messages = normalizeLoadedMessages(Array.isArray(chat.messages) ? chat.messages : []);
+      openAgentLoopMessageIds.clear();
       applySourcePreferencesToExistingResults();
       editingMessageId = "";
       els.messages.innerHTML = "";
+      clearMessageAnchorSpace();
       messages.forEach(renderMessage);
       renderSearchPage();
       startThread();
@@ -9318,25 +9946,33 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function renderMessage(message) {
       const node = document.createElement("article");
-      node.className = `message ${message.role}`;
+      node.className = `message ${message.role}${exportSelectedIds.has(message.id) ? " export-selected" : ""}`;
       node.dataset.id = message.id;
+      node.insertAdjacentHTML("afterbegin", `<span class="message-select-box" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 4 4L19 6"/></svg></span>`);
+      node.addEventListener("click", (event) => {
+        if (!exportSelecting) return;
+        if (event.target.closest("button, a, input, textarea, select, .inline-citation")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        toggleExportMessage(message.id);
+      });
 
       if (message.role === "user") {
-        node.innerHTML = `
+        node.insertAdjacentHTML("beforeend", `
             <div class="bubble"></div>
             <div class="user-footer">
               <span class="message-time">${esc(formatMessageTime(message.createdAt))}</span>
               <button class="mini-btn retry-user-btn" title="重新回答" aria-label="重新回答">${ICON_RETRY}</button>
               <button class="mini-btn copy-user-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
               <button class="mini-btn edit-user-btn" title="编辑" aria-label="编辑">${ICON_EDIT}</button>
-            </div>`;
+            </div>`);
         node.querySelector(".retry-user-btn").addEventListener("click", () => retryFromUserMessage(message.id));
         node.querySelector(".copy-user-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         node.querySelector(".edit-user-btn").addEventListener("click", () => editUserMessage(message.id));
         renderUserMessageContent(node, message);
         if (message.searchStatus || message.searchContext || message.search) renderSearchPage();
       } else {
-        node.innerHTML = `
+        node.insertAdjacentHTML("beforeend", `
             <div class="assistant-head">
               <div class="assistant-id"><span class="assistant-mark">L</span> Linsoo</div>
               <div class="message-actions">
@@ -9351,10 +9987,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
             <div class="bubble">
               <div class="sources"></div>
               <div class="assistant-status"></div>
-              <div class="thinking-slot"></div>
+              <div class="agent-loop-slot"></div>
               <div class="answer"></div>
               <div class="assistant-footer"></div>
-            </div>`;
+            </div>`);
         node.querySelector(".copy-btn").addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         node.querySelector(".retry-btn").addEventListener("click", () => retryFrom(message.id));
         renderAssistantContent(node, message);
@@ -9461,7 +10097,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const input = bubble.querySelector(".message-edit-input");
       const saveBtn = bubble.querySelector('[data-edit-action="save"]');
       const sync = () => {
-        saveBtn.disabled = !String(input.value || "").trim();
+        saveBtn.disabled = !isEditedUserContentChanged(message, input.value);
       };
       bubble.querySelector('[data-edit-action="cancel"]')?.addEventListener("click", cancelUserMessageEdit);
       bubble.querySelector('[data-edit-action="save"]')?.addEventListener("click", () => commitUserMessageEdit(message.id, input.value));
@@ -9502,21 +10138,35 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const message = messages[idx];
       const content = String(nextContent || "").trim();
       if (idx < 0 || !message || message.role !== "user" || !content) return;
+      if (!isEditedUserContentChanged(message, nextContent)) {
+        showToast("内容没有变化，不能保存。");
+        return;
+      }
       editingMessageId = "";
       message.content = content;
       messages = messages.slice(0, idx + 1);
       els.messages.innerHTML = "";
+      clearMessageAnchorSpace();
       messages.forEach(renderMessage);
       renderSearchPage();
       scheduleSaveChat();
-      setActiveView("chat", { allowClassicAnswer: false });
+      latestAnchoredUserMessageId = message.id;
+      userMessageAnchorUntil = Date.now() + 1600;
+      setActiveView("chat", { allowClassicAnswer: false, skipAutoScroll: true });
+      scrollMessageBelowTopTabs(message.id);
       runAssistant();
+    }
+
+    function isEditedUserContentChanged(message, nextContent) {
+      const original = String(message?.content || "").trim();
+      const next = String(nextContent || "").trim();
+      return !!next && next !== original;
     }
 
     function renderAssistantContent(node, message) {
       const sources = node.querySelector(".sources");
       const status = node.querySelector(".assistant-status");
-      const thinkingSlot = node.querySelector(".thinking-slot");
+      const agentLoopSlot = node.querySelector(".agent-loop-slot");
       const answer = node.querySelector(".answer");
       const footer = node.querySelector(".assistant-footer");
       const sourceItems = extractSources(message);
@@ -9530,27 +10180,23 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       }
       sources.style.display = sourceItems.length || message.amapContext ? "" : "none";
 
-      const statusHtml = renderSearchStatus(message);
-      if (status.dataset.signature !== statusHtml) {
-        status.innerHTML = statusHtml;
-        status.dataset.signature = statusHtml;
+      status.style.display = "none";
+      const agentLoop = renderAgentLoop(message);
+      if (agentLoopSlot.dataset.signature !== agentLoop) {
+        agentLoopSlot.innerHTML = agentLoop;
+        agentLoopSlot.dataset.signature = agentLoop;
+        bindAgentLoop(agentLoopSlot, message);
       }
-      status.style.display = statusHtml ? "" : "none";
-
-      const thinking = renderThinking(message);
-      if (thinkingSlot.dataset.signature !== thinking) {
-        thinkingSlot.innerHTML = thinking;
-        thinkingSlot.dataset.signature = thinking;
-        bindThinking(thinkingSlot, message);
-      }
-      thinkingSlot.style.display = thinking ? "" : "none";
+      agentLoopSlot.style.display = agentLoop ? "" : "none";
 
       const body = message.content ? renderMarkdown(message.content) : "";
-      if (answer.dataset.signature !== body) {
+      const answerSig = `${body}|${sourceSig}`;
+      if (answer.dataset.signature !== answerSig) {
         answer.innerHTML = body;
-        answer.dataset.signature = body;
+        answer.dataset.signature = answerSig;
         highlightCodeBlocks(answer);
         bindCodeCopyButtons(answer);
+        bindInlineCitations(answer, sourceItems);
         queueMathTypeset(answer);
       }
       const loadingOnly = message.loading && !message.content && !message.thinking;
@@ -9558,12 +10204,12 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (footer.dataset.signature !== footerSig) {
         footer.innerHTML = loadingOnly
           ? (sourceItems.length
-            ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>`
+            ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>${sourceItems.length} 来源</span></button>`
             : "")
           : `
               <button class="mini-btn message-action-btn copy-answer-btn" title="复制" aria-label="复制">${ICON_COPY}</button>
               <button class="mini-btn message-action-btn retry-answer-btn" title="重试" aria-label="重试">${ICON_RETRY}</button>
-              ${sourceItems.length ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>来源</span></button>` : ""}`;
+              ${sourceItems.length ? `<button class="mini-btn message-action-btn source-drawer-btn" title="来源" aria-label="来源"><span>${sourceButtonIcons(sourceItems)}</span><span>${sourceItems.length} 来源</span></button>` : ""}`;
         footer.dataset.signature = footerSig;
         footer.querySelector(".copy-answer-btn")?.addEventListener("click", (event) => copyText(message.content || "", event.currentTarget));
         footer.querySelector(".retry-answer-btn")?.addEventListener("click", () => retryFrom(message.id));
@@ -9578,6 +10224,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           String(source.favicon || ""),
           String(source.title || ""),
           String(source.siteName || ""),
+          String(source.snippet || source.description || source.text || ""),
           String(index),
         ].join("|"))
         .join("||");
@@ -9589,16 +10236,130 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return text ? `<div class="search-status${done ? " done" : ""}" aria-live="polite">${esc(text)}</div>` : "";
     }
 
-    function renderThinking(message) {
-      if (!message.thinking) return "";
-      const done = !message.loading && message.content;
-      const seconds = Math.max(1, Math.round((message.thoughtSeconds || 0) / 1000));
-      const label = done ? `thought for ${seconds} seconds` : "thinking...";
+    function agentIconSvg(type, status = "") {
+      if (status === "failed") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm-2.35 3.44L10 9.29l2.35-2.35.08-.06a.5.5 0 0 1 .62.78L10.71 10l2.34 2.35.06.08a.5.5 0 0 1-.78.62L10 10.71l-2.35 2.34-.08.06a.5.5 0 0 1-.62-.78L9.29 10 6.95 7.65l-.06-.08a.5.5 0 0 1 .76-.63Z"/></svg>';
+      if (status === "done" || status === "completed") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15m0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13m2.61 3.69a.5.5 0 0 1 .78.62l-4 5a.5.5 0 0 1-.74.04l-2-2-.06-.08a.5.5 0 0 1 .76-.62l1.6 1.6Z"/></svg>';
+      if (type === "tool") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 3.5A1.5 1.5 0 0 1 5.5 2h5.1L16 7.4v9.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5Zm7 0V7h3.5ZM6.5 11a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1Zm0 2.5a.5.5 0 0 0 0 1h4.5a.5.5 0 0 0 0-1Z"/></svg>';
+      return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.39 2.51A7.5 7.5 0 1 1 2.5 10a.5.5 0 0 1 1 0 6.5 6.5 0 1 0 6.84-6.49L10 3.5l-.1-.01a.5.5 0 0 1 .1-.99zM10 5.5a.5.5 0 0 1 .5.5v3.69l2.72 1.36a.5.5 0 0 1-.35.93l-.09-.03-3-1.5A.5.5 0 0 1 9.5 10V6a.5.5 0 0 1 .5-.5"/></svg>';
+    }
+
+    function agentToolLabel(name) {
+      const labels = {
+        build_search_queries: "构造搜索词",
+        web_search: "网络搜索",
+        amap_explore: "位置服务",
+        get_webpage_content: "读取网页正文",
+        ask_user_question: "请求补充信息",
+      };
+      return labels[name] || name || "工具调用";
+    }
+
+    function summarizeToolArgsForTitle(name, args) {
+      if (!args || typeof args !== "object") return "";
+      if (name === "build_search_queries" || name === "web_search") {
+        const queries = Array.isArray(args.queries) ? args.queries : [args.query || args.fallback || args.prompt];
+        return queries.map((item) => String(item || "").replace(/\s+/g, " ").trim()).filter(Boolean).slice(0, 2).join(" / ");
+      }
+      if (name === "get_webpage_content") return domainOf(args.url) || String(args.url || "").trim();
+      if (name === "amap_explore") return [args.kind, args.keyword || args.destination].filter(Boolean).join(" · ");
+      if (name === "ask_user_question") return Array.isArray(args.questions) ? `${args.questions.length} 个问题` : "";
+      return "";
+    }
+
+    function summarizeToolResult(result) {
+      if (!result || typeof result !== "object") return "";
+      if (result.error) return String(result.error);
+      if (Array.isArray(result.results)) return `返回 ${result.results.length} 条结果`;
+      if (result.query || result.queries) return `查询：${(result.queries || [result.query]).filter(Boolean).slice(0, 2).join(" / ")}`;
+      if (result.context?.title || result.context?.summary) return result.context.title || result.context.summary;
+      if (result.url) return result.domain ? `${result.domain} 页面内容` : result.url;
+      if (result.formatted) return result.formatted;
+      if (result.ok === true) return "已完成";
+      return "";
+    }
+
+    function summarizeAgentLoopOutcome(message) {
+      const prompt = previousUserPromptFor(message.id)
+        .replace(/https?:\/\/\S+/g, "")
+        .replace(/[{}"':,\[\]]/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+      const topic = prompt
+        .replace(/^(请|帮我|麻烦|能不能|可以)?(搜索|查找|查询|研究|分析|解释|说明|整理|梳理|帮我)?/i, "")
+        .trim()
+        .slice(0, 26);
+      if (!topic) return "整理了回答依据";
+      if (/(概念|是什么|what is|definition|定义)/i.test(prompt)) return `明确了 ${topic}`;
+      if (/(实现|代码|详解|原理|架构|流程|ReAct|agent loop)/i.test(prompt)) return `梳理了 ${topic}`;
+      if (/(对比|比较|vs|versus|区别)/i.test(prompt)) return `比较了 ${topic}`;
+      if (/(推荐|排行|best|top|选择)/i.test(prompt)) return `整理了 ${topic} 的选择依据`;
+      return `完成了 ${topic}`;
+    }
+
+    function renderAgentLoop(message) {
+      const steps = Array.isArray(message.agentSteps) ? message.agentSteps.slice() : [];
+      const statusText = String(message.searchStatus || "").trim();
+      const thinkingText = String(message.thinking || "").trim();
+      if (thinkingText && !steps.some((step) => step.type === "thinking" && String(step.text || "").trim() === thinkingText)) {
+        steps.unshift({
+          id: "thinking",
+          type: "thinking",
+          title: message.loading && !message.content ? "Linsoo 正在思考" : "思考过程",
+          text: thinkingText,
+          status: message.loading && !message.content ? "running" : "done",
+          durationMs: message.thoughtSeconds || 0,
+        });
+      }
+      if (statusText) {
+        steps.push({
+          id: "status",
+          type: "status",
+          title: statusText,
+          status: message.loading ? "running" : /^已找到/.test(statusText) ? "done" : "",
+        });
+      }
+      if (!steps.length && message.loading) {
+        steps.push({ id: "status", type: "status", title: "Linsoo 正在组织回答", status: "running" });
+      }
+      if (!steps.length) return "";
+      const completed = !message.loading && !!message.content;
+      const label = completed ? summarizeAgentLoopOutcome(message) : (message.content ? "Linsoo 正在输出回答" : (steps[steps.length - 1]?.title || "Linsoo 正在处理"));
+      const open = openAgentLoopMessageIds.has(message.id);
       return `
-          <div class="thinking-block${message.thoughtOpen ? " open" : ""}">
-            <button class="thinking-toggle" type="button">${esc(label)}<span>›</span></button>
-            <div class="thinking-content">${esc(message.thinking)}</div>
-          </div>`;
+        <div class="agent-loop${open ? " open" : ""}" aria-expanded="${open ? "true" : "false"}">
+          <button class="agent-loop-head" type="button">
+            <span class="agent-loop-label${message.loading ? " loading" : ""}">${esc(label)}</span>
+          </button>
+          <div class="agent-loop-body">
+            <div class="agent-loop-inner">
+              ${steps.map((step) => renderAgentStep(step, message)).join("")}
+            </div>
+          </div>
+        </div>`;
+    }
+
+    function renderAgentStep(step, message) {
+      const status = step.status || "";
+      const type = step.type || "status";
+      const title = String(step.title || "").trim() || (type === "tool" ? agentToolLabel(step.name) : "处理步骤");
+      const text = String(step.text || step.summary || "").trim();
+      const result = step.resultSummary || summarizeToolResult(step.result);
+      const expanded = message.expandedAgentStepId === step.id;
+      const longText = text.length > 360 || text.split("\n").length > 6;
+      const detail = [
+        text ? `<div class="agent-thinking-text">${esc(text)}</div>${longText ? `<button class="agent-show-more" type="button" data-agent-step="${esc(step.id)}">${expanded ? "Show less" : "Show more"}</button>` : ""}` : "",
+        result ? `<div>${esc(result)}</div>` : "",
+      ].filter(Boolean).join("");
+      return `
+        <div class="agent-step ${esc(type)} ${esc(status)}${expanded ? " expanded" : ""}">
+          <div class="agent-step-rail"><span class="agent-node">${agentIconSvg(type, status)}</span></div>
+          <div class="agent-step-main">
+            <div class="agent-step-title${status === "running" ? " shimmer" : ""}">
+              <span>${esc(title)}</span>
+            </div>
+            ${detail ? `<div class="agent-step-detail">${detail}</div>` : ""}
+          </div>
+        </div>`;
     }
 
     function loadingDotsHTML() {
@@ -9650,6 +10411,62 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const clean = String(domain || "").replace(/^www\./, "").trim();
       const first = clean.match(/[A-Za-z0-9]/)?.[0];
       return first ? first.toUpperCase() : String(index + 1);
+    }
+
+    function bindInlineCitations(root, sources = []) {
+      if (!root) return;
+      const sourceByUrl = new Map((sources || []).map((source) => [normalizeSourceUrl(source.url), source]));
+      const anchors = [...root.querySelectorAll('a[href^="http"]')]
+        .filter((link) => !link.closest(".inline-citation, .code-block"));
+      anchors.forEach((link) => {
+        if (!link.isConnected) return;
+        const group = [link];
+        let node = link.nextSibling;
+        while (node && node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) node = node.nextSibling;
+        while (node?.nodeType === Node.ELEMENT_NODE && node.matches('a[href^="http"]')) {
+          group.push(node);
+          let next = node.nextSibling;
+          while (next && next.nodeType === Node.TEXT_NODE && !next.textContent.trim()) next = next.nextSibling;
+          node = next;
+        }
+        if (group[0] !== link) return;
+        const items = group.map((item) => {
+          const url = normalizeSourceUrl(item.href);
+          const source = sourceByUrl.get(url) || {
+            url,
+            title: item.textContent.trim(),
+            siteName: domainOf(url),
+            snippet: item.closest("p, li, blockquote")?.textContent?.replace(/\s+/g, " ").trim() || "",
+          };
+          return { ...source, url };
+        }).filter((item) => item.url);
+        if (!items.length) return;
+        const first = items[0];
+        const domain = domainOf(first.url);
+        const wrapper = document.createElement("span");
+        wrapper.className = "inline-citation";
+        wrapper.tabIndex = 0;
+        wrapper.innerHTML = `
+          <a class="inline-citation-trigger" href="${esc(first.url)}" target="_blank" rel="noopener noreferrer" aria-label="打开来源 ${esc(domain || first.siteName || "source")}">
+            <span>${esc(domain || first.siteName || "source")}</span>
+            ${items.length > 1 ? `<span class="inline-citation-extra">+${items.length - 1}</span>` : ""}
+          </a>
+          <span class="inline-citation-card">
+            ${items.map((source, index) => {
+              const snippet = String(source.snippet || source.description || source.text || "").replace(/\s+/g, " ").trim();
+              return `
+              <a class="inline-citation-link" href="${esc(source.url)}" target="_blank" rel="noopener noreferrer">
+                <span class="inline-citation-favicon">${sourceFaviconHTML(source, index, { framed: true })}</span>
+                <span class="inline-citation-domain">${esc(domainOf(source.url))}</span>
+                <span class="inline-citation-title">${esc(normalizeSourceTitle(source, index))}</span>
+                ${snippet ? `<span class="inline-citation-snippet">${esc(snippet)}</span>` : ""}
+              </a>
+            `;
+            }).join("")}
+          </span>`;
+        group[0].replaceWith(wrapper);
+        group.slice(1).forEach((item) => item.remove());
+      });
     }
 
     function renderSourceResults(sources, opts = {}) {
@@ -9966,14 +10783,21 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       });
     }
 
-    function bindThinking(root, message) {
-      const button = root.querySelector(".thinking-toggle");
-      if (!button) return;
-      button.addEventListener("click", () => {
-        message.thoughtOpen = !message.thoughtOpen;
+    function bindAgentLoop(root, message) {
+      root.querySelector(".agent-loop-head")?.addEventListener("click", () => {
+        if (openAgentLoopMessageIds.has(message.id)) openAgentLoopMessageIds.delete(message.id);
+        else openAgentLoopMessageIds.add(message.id);
         const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
         if (node) renderAssistantContent(node, message);
-        scheduleSaveChat();
+      });
+      root.querySelectorAll(".agent-show-more").forEach((button) => {
+        button.addEventListener("click", (event) => {
+          event.stopPropagation();
+          const stepId = button.dataset.agentStep || "";
+          message.expandedAgentStepId = message.expandedAgentStepId === stepId ? "" : stepId;
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
+          if (node) renderAssistantContent(node, message);
+        });
       });
     }
 
@@ -10448,6 +11272,170 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return JSON.stringify(payload, null, 2);
     }
 
+    function readAssistantAgentSteps(run, assistantId) {
+      const runMessages = run?.messages || messages;
+      const message = runMessages.find((m) => m.id === assistantId);
+      return Array.isArray(message?.agentSteps) ? message.agentSteps : [];
+    }
+
+    function patchAgentStep(run, assistantId, stepId, patch) {
+      const steps = readAssistantAgentSteps(run, assistantId).slice();
+      const index = steps.findIndex((step) => step.id === stepId);
+      if (index >= 0) steps[index] = { ...steps[index], ...patch };
+      else steps.push({ id: stepId, ...patch });
+      updateRunMessage(run, assistantId, { agentSteps: steps });
+    }
+
+    function pushAgentStep(run, assistantId, step) {
+      const steps = readAssistantAgentSteps(run, assistantId).filter((item) => item.id !== step.id);
+      steps.push(step);
+      updateRunMessage(run, assistantId, { agentSteps: steps });
+    }
+
+    function appendAgentStatusStep(run, assistantId, title, opts = {}) {
+      title = String(title || "").trim();
+      if (!title) return;
+      const now = Date.now();
+      const steps = readAssistantAgentSteps(run, assistantId).slice();
+      const last = steps[steps.length - 1];
+      if (last?.type === "status" && last.title === title) {
+        steps[steps.length - 1] = { ...last, status: opts.status || last.status || "running", updatedAt: now };
+      } else {
+        if (last?.type === "status" && last.status === "running") {
+          steps[steps.length - 1] = { ...last, status: "done", durationMs: now - (last.startedAt || now), updatedAt: now };
+        }
+        steps.push({
+          id: `status-${now}-${steps.length}`,
+          type: "status",
+          title,
+          status: opts.status || "running",
+          startedAt: now,
+          updatedAt: now,
+        });
+      }
+      updateRunMessage(run, assistantId, { agentSteps: steps });
+    }
+
+    function finishAgentStatusSteps(run, assistantId) {
+      const now = Date.now();
+      let changed = false;
+      const steps = readAssistantAgentSteps(run, assistantId).map((step) => {
+        if (!["status", "thinking"].includes(step.type) || step.status !== "running") return step;
+        changed = true;
+        return { ...step, status: "done", durationMs: now - (step.startedAt || now), updatedAt: now };
+      });
+      if (!changed) return;
+      updateRunMessage(run, assistantId, { agentSteps: steps });
+    }
+
+    function appendThinkingAgentStep(run, assistantId, text, stepIndex, status = "running") {
+      if (!String(text || "").trim()) return;
+      patchAgentStep(run, assistantId, `thinking-${stepIndex}`, {
+        type: "thinking",
+        title: status === "running" ? "Linsoo 正在思考" : "分析完成",
+        text,
+        status,
+      });
+    }
+
+    async function streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, fallbackContent = "") {
+      appendAgentStatusStep(run, assistantId, "开始流式输出回答");
+      const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${state.apiKey}`,
+        },
+        body: JSON.stringify({
+          model,
+          messages: [
+            ...requestMessages,
+            { role: "system", content: "Write the final answer now. Do not call tools. Stream the answer naturally and cite URLs when sources are available." },
+          ],
+          temperature: state.mode === "quick" ? 0.15 : 0.35,
+          max_tokens: state.mode === "quick" ? 1400 : 3800,
+          stream: true,
+        }),
+        signal,
+      });
+      if (!response.ok) throw new Error(`最终回答请求失败：HTTP ${response.status}`);
+      const type = response.headers.get("content-type") || "";
+      if (!response.body || !type.includes("text/event-stream")) {
+        const data = await response.json();
+        const content = extractContentFromResponse(data) || fallbackContent;
+        if (!content) throw new Error("模型没有返回内容。");
+        finishAgentStatusSteps(run, assistantId);
+        updateRunMessage(run, assistantId, {
+          content,
+          loading: false,
+          searchStatus: "",
+          agentLoopOpen: false,
+          searchContext: run?.searchContext || null,
+          sources: run?.searchContext?.results || [],
+          amapContext: run?.amapContext || null,
+        });
+        return content;
+      }
+      const reader = response.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+      let content = "";
+      let thinking = "";
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        const parts = buffer.split("\n\n");
+        buffer = parts.pop() || "";
+        for (const part of parts) {
+          const lines = part.split("\n").filter((line) => line.startsWith("data:"));
+          for (const line of lines) {
+            const raw = line.slice(5).trim();
+            if (!raw || raw === "[DONE]") continue;
+            try {
+              const json = JSON.parse(raw);
+              const reasoningDelta = extractReasoningDelta(json);
+              const contentDelta = extractContentDelta(json);
+              if (reasoningDelta) {
+                thinking += reasoningDelta;
+                appendThinkingAgentStep(run, assistantId, thinking, "final-stream", "running");
+              }
+              if (contentDelta) {
+                dismissMobileKeyboardForOutput(run);
+                content += contentDelta;
+                finishAgentStatusSteps(run, assistantId);
+                updateRunMessage(run, assistantId, {
+                  content,
+                  thinking: thinking || undefined,
+                  loading: true,
+                  searchStatus: "",
+                  searchContext: run?.searchContext || null,
+                  sources: run?.searchContext?.results || [],
+                  amapContext: run?.amapContext || null,
+                });
+                if (shouldAutoFollowRun(run)) scrollToBottom();
+              }
+            } catch (e) { }
+          }
+        }
+      }
+      content = content.trim() || fallbackContent;
+      if (!content) throw new Error("模型没有返回内容。");
+      if (thinking) appendThinkingAgentStep(run, assistantId, thinking, "final-stream", "done");
+      finishAgentStatusSteps(run, assistantId);
+      updateRunMessage(run, assistantId, {
+        content,
+        thinking: thinking || undefined,
+        loading: false,
+        searchStatus: "",
+        agentLoopOpen: false,
+        searchContext: run?.searchContext || null,
+        sources: run?.searchContext?.results || [],
+        amapContext: run?.amapContext || null,
+      });
+      return content;
+    }
+
     function normalizeBuildSearchQueryArgs(args, seed, fallbackQuery) {
       const source = args && typeof args === "object" ? args : {};
       let queries = Array.isArray(source.queries)
@@ -10530,6 +11518,7 @@ Rules:
 - Do not include more than one query unless the user explicitly asks for more than one item, comparison target, platform, or side-by-side comparison.
 - If the user asks for multiple named items, generate one query per item.
 - If the user prompt is vague, use the shortest precise query that preserves the user's wording.
+- For agent-style research, plan up to three distinct web_search angles: first close to the user's original prompt, second from a different conceptual/implementation angle, third from another evidence/case-study/comparison angle. Do not repeat near-duplicate queries.
 Linsoo only needs the query strings; web_search will run them. Call this at most ${MAX_BUILD_SEARCH_QUERY_TOOL_CALLS} times and normally no more than once.`;
 
     function summarizeSearchForTool(search) {
@@ -10549,6 +11538,43 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           readerError: source.readerError || "",
         })),
       };
+    }
+
+    function searchQueryTokens(text) {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/https?:\/\/\S+/g, " ")
+        .split(/[^a-z0-9\u4e00-\u9fa5]+/i)
+        .map((item) => item.trim())
+        .filter((item) => item.length > 1 && !/^(the|and|for|with|from|into|what|how|why|具体|实现|代码|详解|搜索|查询|资料|研究)$/.test(item));
+    }
+
+    function querySimilarity(a, b) {
+      const aSet = new Set(searchQueryTokens(a));
+      const bSet = new Set(searchQueryTokens(b));
+      if (!aSet.size || !bSet.size) return 0;
+      let intersection = 0;
+      aSet.forEach((item) => {
+        if (bSet.has(item)) intersection += 1;
+      });
+      return intersection / Math.max(aSet.size, bSet.size);
+    }
+
+    function validateSearchAngle(run, queries) {
+      const next = (queries || []).join(" ");
+      const previous = Array.isArray(run?.webSearchQueryAngles) ? run.webSearchQueryAngles : [];
+      if (!previous.length) return { ok: true };
+      const match = previous
+        .map((query, index) => ({ query, index, score: querySimilarity(next, query) }))
+        .sort((a, b) => b.score - a.score)[0];
+      if (match && match.score >= 0.62) {
+        return {
+          ok: false,
+          error: `这次 web_search 和第 ${match.index + 1} 次搜索角度过于相似。请换一个明显不同的方向，例如实现细节、ReAct/规划模式、工程案例、风险限制、评测对比或权威资料来源之一。`,
+          previousQueries: previous,
+        };
+      }
+      return { ok: true };
     }
 
     function mergeSearchContexts(previous, incoming) {
@@ -10571,10 +11597,10 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       if (!isWebSearchEnabledForCurrentMode()) {
         return { ok: false, disabled: true, error: "web_search 当前已在设置中禁用。请不要继续调用网络搜索工具，直接说明无法联网搜索并基于已有上下文回答。" };
       }
-      run.webSearchToolCalls = (run.webSearchToolCalls || 0) + 1;
-      if (run.webSearchToolCalls > MAX_WEB_SEARCH_TOOL_CALLS) {
+      if ((run.webSearchToolCalls || 0) >= MAX_WEB_SEARCH_TOOL_CALLS) {
         return {
           ok: false,
+          disabled: true,
           error: `web_search 本轮最多调用 ${MAX_WEB_SEARCH_TOOL_CALLS} 次。请停止搜索并基于已有 ${run.searchContext?.results?.length || 0} 条结果回答。`,
           existingQueries: run.searchContext?.queries || [],
         };
@@ -10592,15 +11618,21 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         complex: args.complex === true || queriesInput.length > 1,
       };
       const queries = normalizeSearchQueries(decision, userWeightedQuery);
+      const angle = validateSearchAngle(run, queries);
+      if (!angle.ok) return { ok: false, error: angle.error, previousQueries: angle.previousQueries };
+      run.webSearchToolCalls = (run.webSearchToolCalls || 0) + 1;
+      run.webSearchQueryAngles = [...(run.webSearchQueryAngles || []), queries.join(" / ")];
       updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0] || decision.query}` });
       const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
         const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
         const mergedPartial = preparedPartial ? mergeSearchContexts(run.searchContext, preparedPartial) : null;
+        if (/^正在用|^正在抓取/.test(status)) appendAgentStatusStep(run, assistantId, status);
         updateRunMessage(run, assistantId, mergedPartial ? { searchStatus: status, searchContext: mergedPartial, sources: mergedPartial.results } : { searchStatus: status });
       });
       const searchPrepared = applySourcePreferencesToSearch(searchRaw);
       const search = await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
         const mergedPrepared = mergeSearchContexts(run.searchContext, searchPrepared);
+        if (/^正在用|^正在抓取/.test(status)) appendAgentStatusStep(run, assistantId, status);
         updateRunMessage(run, assistantId, { searchStatus: status, searchContext: mergedPrepared, sources: mergedPrepared.results });
       });
       run.searchContext = mergeSearchContexts(run.searchContext, search);
@@ -10645,8 +11677,10 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const mode = ["walking", "cycling", "driving", "transit"].includes(args.mode) ? args.mode : "walking";
       const keyword = String(args.keyword || "").trim();
       const destination = String(args.destination || "").trim();
+      appendAgentStatusStep(run, assistantId, "获取当前位置");
       updateRunMessage(run, assistantId, { searchStatus: "正在获取当前位置与高德位置服务..." });
       const location = await resolveCurrentAmapLocation(signal);
+      appendAgentStatusStep(run, assistantId, kind === "weather" ? "查询天气" : kind === "nearby" ? "查找附近地点" : "规划路线");
       let context = null;
       if (kind === "weather") context = await buildAmapWeatherContext(location, signal);
       else if (kind === "nearby") context = await buildAmapNearbyContext(location, keyword || extractNearbyKeyword(String(args.prompt || "")), signal);
@@ -10657,6 +11691,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         return { ok: false, error: "amap_explore 缺少有效 kind。" };
       }
       run.amapContext = context;
+      appendAgentStatusStep(run, assistantId, "位置服务完成", { status: "done" });
       updateRunMessage(run, assistantId, { amapContext: context, searchStatus: "" });
       return { ok: true, context };
     }
@@ -10668,6 +11703,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const annotated = annotateSource({ url, title: domainOf(url) || "Untitled" });
       if (!annotated.url) return { ok: false, error: "无效 URL。" };
       try {
+        appendAgentStatusStep(activeRun, activeRun?.assistantId, `读取网页：${annotated.domain || annotated.url}`);
         const remote = await fetchSourceBodyWithJina(annotated, signal);
         return { ok: true, url: annotated.url, domain: annotated.domain, ...remote };
       } catch (error) {
@@ -10707,9 +11743,10 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       if (!isClarifyQuestionsEnabledForCurrentMode()) return { ok: false, disabled: true, error: "ask_user_question 当前已在设置中禁用。请不要继续调用补充问题工具。" };
       const questions = normalizeAskQuestions(args.questions);
       if (!questions.length) return { ok: false, error: "没有有效问题可展示。" };
-      updateRunMessage(run, assistantId, { searchStatus: "等待你补充问题信息..." });
+      appendAgentStatusStep(run, assistantId, "等待你补充问题信息");
       const result = await openAskPanel({ title: normalizeAskPanelTitle(args.title), questions });
       if (signal?.aborted) throw new DOMException("Aborted", "AbortError");
+      appendAgentStatusStep(run, assistantId, "整理补充信息");
       updateRunMessage(run, assistantId, { searchStatus: "正在整理补充信息..." });
       if (!result?.answers?.length) {
         updateRunMessage(run, assistantId, { searchStatus: "" });
@@ -10732,8 +11769,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
     }
 
     function buildAgentToolSchemas() {
-      return [
-        {
+      const tools = [];
+      if (isSearchPlanningEnabledForCurrentMode()) tools.push({
           type: "function",
           function: {
             name: "build_search_queries",
@@ -10751,12 +11788,12 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               required: ["prompt"],
             },
           },
-        },
-        {
+        });
+      if (isWebSearchEnabledForCurrentMode()) tools.push({
           type: "function",
           function: {
             name: "web_search",
-            description: `Run browser-side web search across enabled providers such as Tavily, Exa, Serper, or SerpAPI. Prefer one call with keywords extracted from the user prompt. Try to stay within ${TARGET_WEB_SEARCH_TOOL_CALLS} calls and never exceed ${MAX_WEB_SEARCH_TOOL_CALLS} calls in one answer.`,
+            description: `Run browser-side web search with the first enabled provider in the user's search provider order. Linsoo only falls back to the next provider if the current provider fails. Prefer one call with keywords extracted from the user prompt. Never exceed ${MAX_WEB_SEARCH_TOOL_CALLS} calls in one answer.`,
             parameters: {
               type: "object",
               properties: {
@@ -10770,8 +11807,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               },
             },
           },
-        },
-        {
+        });
+      if (isLocationServiceEnabledForCurrentMode()) tools.push({
           type: "function",
           function: {
             name: "amap_explore",
@@ -10788,8 +11825,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               required: ["kind"],
             },
           },
-        },
-        {
+        });
+      if (isContentGranularityEnabledForCurrentMode()) tools.push({
           type: "function",
           function: {
             name: "get_webpage_content",
@@ -10802,12 +11839,12 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               required: ["url"],
             },
           },
-        },
-        {
+        });
+      if (isClarifyQuestionsEnabledForCurrentMode()) tools.push({
           type: "function",
           function: {
             name: "ask_user_question",
-            description: "Ask the user 1 to 3 clarifying questions with single-select or multi-select options before answering.",
+            description: "Ask the user 1 to 3 clarifying questions with single-select or multi-select options before answering. Use this whenever you would otherwise write a question to the user in assistant text. Prefer this tool when the user's target, scope, constraints, location, comparison criteria, budget, time range, or desired search direction is uncertain.",
             parameters: {
               type: "object",
               properties: {
@@ -10828,8 +11865,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               required: ["questions"],
             },
           },
-        },
-      ];
+        });
+      return tools;
     }
 
     async function executeAgentToolCall(toolCall, signal, run, assistantId) {
@@ -10840,6 +11877,13 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         if (name === "web_search") return await executeWebSearchTool(args, signal, run, assistantId);
         if (name === "amap_explore") return await executeAmapTool(args, signal, run, assistantId);
         if (name === "get_webpage_content") {
+          if (!isContentGranularityEnabledForCurrentMode()) {
+            return {
+              ok: false,
+              disabled: true,
+              error: "读取网页正文已在设置中关闭。不要再次调用 get_webpage_content，请直接基于搜索摘要、已有来源和上下文回答。",
+            };
+          }
           const reserved = reserveWebpageContentToolUrl(String(args.url || "").trim(), run);
           if (!reserved.ok) return reserved;
           const result = await fetchPageContentForTool(reserved.url, signal);
@@ -10862,6 +11906,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           .map((message) => ({ role: message.role, content: serializeMessageContent(message) })),
       ]);
       const tools = buildAgentToolSchemas();
+      if (!tools.length) return await callChatModel(model, assistantId, signal, run);
       let reasoning = "";
 
       for (let step = 0; step < TOOL_AGENT_MAX_STEPS; step++) {
@@ -10898,15 +11943,21 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         if (reasoningChunk) {
           reasoning = `${reasoning}${reasoning ? "\n" : ""}${reasoningChunk}`.trim();
           updateRunMessage(run, assistantId, { thinking: reasoning, loading: true });
+          appendThinkingAgentStep(run, assistantId, reasoning, step + 1, "running");
         }
         if (!toolCalls.length) {
           if (!content) throw new Error("模型没有返回内容。");
+          if (step > 0) {
+            return await streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, content);
+          }
           dismissMobileKeyboardForOutput(run);
+          appendThinkingAgentStep(run, assistantId, reasoning, step + 1, "done");
           updateRunMessage(run, assistantId, {
             thinking: reasoning,
             content,
             loading: false,
             searchStatus: "",
+            agentLoopOpen: false,
             searchContext: run?.searchContext || null,
             sources: run?.searchContext?.results || [],
             amapContext: run?.amapContext || null,
@@ -10919,15 +11970,43 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           ...extractAssistantReasoningPayload(message),
           tool_calls: toolCalls,
         });
+        let shouldForceFinalAnswer = false;
         for (const toolCall of toolCalls) {
-          updateRunMessage(run, assistantId, { searchStatus: `正在调用工具：${toolCall.function.name}` });
+          const toolName = toolCall.function.name;
+          const toolStepId = toolCall.id || `tool-${step + 1}-${toolName}`;
+          const toolArgs = safeParseToolArgs(toolCall?.function?.arguments || "{}");
+          const startedAt = Date.now();
+          pushAgentStep(run, assistantId, {
+            id: toolStepId,
+            type: "tool",
+            name: toolName,
+            title: [agentToolLabel(toolName), summarizeToolArgsForTitle(toolName, toolArgs)].filter(Boolean).join("："),
+            status: "running",
+          });
+          updateRunMessage(run, assistantId, { searchStatus: `正在调用工具：${agentToolLabel(toolName)}` });
           const result = await executeAgentToolCall(toolCall, signal, run, assistantId);
+          patchAgentStep(run, assistantId, toolStepId, {
+            status: result?.ok === false ? "failed" : "done",
+            durationMs: Date.now() - startedAt,
+            result,
+            resultSummary: summarizeToolResult(result),
+          });
           requestMessages.push({
             role: "tool",
             tool_call_id: toolCall.id,
-            name: toolCall.function.name,
+            name: toolName,
             content: toolResultJson(result),
           });
+          if (result?.disabled) {
+            shouldForceFinalAnswer = true;
+            requestMessages.push({
+              role: "system",
+              content: `${toolName} is disabled by the user's current settings. Do not call ${toolName} again in this answer. Continue without it and answer from available context.`,
+            });
+          }
+        }
+        if (shouldForceFinalAnswer) {
+          return await streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, content);
         }
         if ((run.webSearchToolCalls || 0) >= MAX_WEB_SEARCH_TOOL_CALLS) {
           requestMessages.push({
@@ -10965,12 +12044,15 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const content = extractContentFromResponse(data);
       if (!content) throw new Error("工具调用轮次超过上限，模型仍没有返回内容。");
       const finalReasoning = [reasoning, extractReasoningFromResponse(data)].filter(Boolean).join("\n").trim();
+      appendThinkingAgentStep(run, assistantId, finalReasoning, "final", "done");
+      finishAgentStatusSteps(run, assistantId);
       dismissMobileKeyboardForOutput(run);
       updateRunMessage(run, assistantId, {
         thinking: finalReasoning,
         content,
         loading: false,
         searchStatus: "",
+        agentLoopOpen: false,
         searchContext: run?.searchContext || null,
         sources: run?.searchContext?.results || [],
         amapContext: run?.amapContext || null,
@@ -11017,7 +12099,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       for (let i = 0; i < delays.length; i++) {
         if (delays[i]) {
           await waitForRetry(delays[i], signal);
-          updateRunMessage(run, assistantId, { content: "", thinking: "", thoughtSeconds: 0, loading: true });
+          updateRunMessage(run, assistantId, { content: "", thinking: "", thoughtSeconds: 0, agentSteps: [], expandedAgentStepId: "", loading: true });
         }
         try {
           const content = useToolMode
@@ -11657,7 +12739,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           messages: withRealtimeMessagePrefix([
             {
               role: "system",
-              content: "判断当前用户问题是否仍然不够明确，是否需要先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。除非明显只能单选，否则优先使用多选题形式并设置 multiple=true，让用户可以更快圈定范围。仅当歧义会实质影响对象、范围、地区、时间、意图、型号、预算、用途或搜索方向时才提问；如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。若当前信息已经足够明确，返回 shouldAsk=false 和空 questions 数组。",
+              content: "判断当前用户问题是否应该先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。除非明显只能单选，否则优先使用多选题形式并设置 multiple=true，让用户可以更快圈定范围。只要补充答案会明显改变回答范围、目标对象、地区、时间、预算、用途、比较标准、输出形式或搜索方向，就返回 shouldAsk=true；不要等到完全无法回答才提问。如果接下来你会在普通回复里问用户一个问题，则必须返回 shouldAsk=true。如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。只有当当前信息已经足以直接开始且追问不会改变答案质量时，才返回 shouldAsk=false 和空 questions 数组。",
             },
             { role: "user", content: planningContext },
           ]),
@@ -11801,7 +12883,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
               queries,
               providerOrder: providers,
               groups: groups.slice(),
-              results: dedupeSources(all).slice(0, 24),
+              results: dedupeSources(all),
               errors: errors.slice(),
             });
             matched = true;
@@ -11813,12 +12895,13 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         }
         if (!matched) groups.push({ query, provider: "", results: [], errors: errors.slice(-providers.length) });
       }
+      const usedProviderOrder = [...new Set(groups.map((group) => group.provider).filter(Boolean))];
       return {
         query: queries[0] || "",
         queries,
-        providerOrder: providers,
+        providerOrder: usedProviderOrder,
         groups,
-        results: dedupeSources(all).slice(0, 24),
+        results: dedupeSources(all),
         errors,
       };
     }
@@ -11848,13 +12931,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         .filter((item) => item.cfg.enabled && item.cfg.apiKey)
         .sort((a, b) => Number(a.cfg.order || 0) - Number(b.cfg.order || 0))
         .map((item) => item.id);
-      const intentOrder = decision.intent === "fresh"
-        ? ["serper", "serpapi", "tavily", "exa"]
-        : decision.intent === "research"
-          ? ["exa", "tavily", "serper", "serpapi"]
-          : enabled;
-      const preferred = SEARCH_PROVIDER_IDS.includes(decision.preferredProvider) ? [decision.preferredProvider] : [];
-      return uniqueModels([...preferred, ...intentOrder, ...enabled]).filter((id) => enabled.includes(id));
+      return enabled;
     }
 
     function searchProviderConfig(id) {
@@ -12423,17 +13500,19 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
                 if (!thinkingStartedAt) thinkingStartedAt = Date.now();
                 thinking += reasoningDelta;
                 updateRunMessage(run, assistantId, { thinking, loading: true });
+                appendThinkingAgentStep(run, assistantId, thinking, "stream", "running");
                 if (shouldAutoFollowRun(run)) scrollToBottom();
               }
               if (contentDelta) {
                 if (thinkingStartedAt && !thinkingEndedAt) thinkingEndedAt = Date.now();
                 dismissMobileKeyboardForOutput(run);
                 content += contentDelta;
+                appendThinkingAgentStep(run, assistantId, thinking, "stream", "done");
                 updateRunMessage(run, assistantId, {
                   content,
                   thinking,
                   thoughtSeconds: thinkingEndedAt ? thinkingEndedAt - thinkingStartedAt : 0,
-                  loading: false,
+                  loading: true,
                 });
                 if (shouldAutoFollowRun(run)) scrollToBottom();
               }
@@ -12443,6 +13522,13 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       }
 
       if (!content.trim()) throw new Error("模型没有返回内容。");
+      updateRunMessage(run, assistantId, {
+        content: content.trim(),
+        thinking,
+        thoughtSeconds: thinkingEndedAt ? thinkingEndedAt - thinkingStartedAt : 0,
+        loading: false,
+        agentLoopOpen: false,
+      });
       return content.trim();
     }
 
@@ -12468,7 +13554,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 - Address: ${geo.formattedAddress}
 Treat this as the user's actual current location unless the user explicitly says otherwise.`
         : "Current user location is not confirmed. If location permission or AMap data was not obtained, do not guess the user's city, district, or nearby places. State clearly that location data was not available.";
-      return `${state.prompt || DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${timeHint}\n\n${geoHint}`;
+      return `${DEFAULT_PROMPT}\n\n${modeHint}\n\n${capabilityHint}\n\n${timeHint}\n\n${geoHint}`;
     }
 
     function buildToolAvailabilityPrompt() {
@@ -12493,18 +13579,18 @@ Treat this as the user's actual current location unless the user explicitly says
         : "Current user location is not confirmed. If location-specific information is needed, call the amap_explore tool instead of guessing.";
       const boosted = (state.sourcePreferences?.boosted || []).join(", ");
       const blocked = (state.sourcePreferences?.blocked || []).join(", ");
-      return `${state.prompt || DEFAULT_PROMPT}
+      return `${DEFAULT_PROMPT}
 
 You are operating inside a browser-side tool calling environment.
 - Available tools: build_search_queries, web_search, amap_explore, get_webpage_content, ask_user_question.
 - Tool availability from current user settings:
 ${buildToolAvailabilityPrompt()}
-- Disabled tools still exist in the schema so you can see the capability, but they will return disabled=true. Do not repeatedly call a disabled tool.
+- Disabled tools exist as Linsoo capabilities, but are omitted from the callable schema for this turn. Treat any disabled tool above as unavailable and do not attempt to call it.
 - Use tools whenever current, source-grounded, webpage-specific, or location-based information is required.
 - Prefer the user's original prompt as the source of search terms. Extract names, places, product names, dates, versions, and constraints from the prompt; do not invent broader search terms unless the prompt is genuinely vague.
 - Use build_search_queries only before multi-query search when it helps narrow or structure search intent. When calling it, provide only the query strings Linsoo needs; do not include tab/folder/split layout metadata. Normally call it once at most; do not loop on it.
-- Use web_search no more than ${TARGET_WEB_SEARCH_TOOL_CALLS} times unless distinct missing evidence is essential. Hard stop at ${MAX_WEB_SEARCH_TOOL_CALLS} calls.
-- Use ask_user_question only when ambiguity materially affects scope, target object, constraints, location, or intended search direction.
+- Use web_search no more than ${MAX_WEB_SEARCH_TOOL_CALLS} times. If using multiple web_search calls, the first search should stay close to the user prompt, and later searches must explore clearly different angles. Near-duplicate web_search queries will be rejected by Linsoo.
+- Use ask_user_question whenever you would otherwise ask the user a follow-up question in normal assistant text. Prefer the tool over textual questions when scope, target object, constraints, location, comparison criteria, budget, time range, or search direction is uncertain.
 - Use amap_explore for current-location weather, nearby places, routes, and trip suggestions.
 - Use get_webpage_content when you need to read a specific page more deeply than snippets allow. It uses Jina Reader only and has no local 3-second timeout. If Jina Reader returns a failure reason, do not retry with another extraction path; continue answering from available search results, snippets, and successful page reads. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
 - Prefer boosted domains when they appear and are relevant.
@@ -12760,11 +13846,12 @@ ${formatClarification(clarification)}
       els.toggleKeyBtn.classList.remove("visible");
       renderProviderFields();
       renderThemeMode();
+      renderPaletteControls();
       renderAiConfigList();
       renderSearchProviderSettings();
       switchTab(currentSettingsTab || "general");
       els.settingsOverlay.classList.add("open");
-      setTimeout(centerActiveSettingsTab, 80);
+      setTimeout(() => centerActiveSettingsTab("auto"), 0);
     }
 
     async function closeSettings() {
@@ -12825,7 +13912,7 @@ ${formatClarification(clarification)}
       state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "US";
       state.amapKey = els.cfgAmapKey.value.trim();
       state.jinaApiKey = els.cfgJinaApiKey.value.trim();
-      state.prompt = els.cfgPrompt.value.trim() || DEFAULT_PROMPT;
+      state.prompt = DEFAULT_PROMPT;
       syncActiveAiConfigToLegacy();
       normalizeSourcePreferenceState();
       persistencePreference = requestedPersistencePreference;
@@ -13022,9 +14109,13 @@ ${formatClarification(clarification)}
       const theme = resolved === "dark" ? "dark" : "light";
       document.body.dataset.theme = theme;
       document.documentElement.dataset.theme = theme;
+      const palette = state.palette === "openai" ? "openai" : "claude";
+      document.body.dataset.palette = palette;
+      document.documentElement.dataset.palette = palette;
       document.documentElement.style.colorScheme = theme;
       renderThemeButtons();
       renderThemeMode();
+      renderPaletteControls();
     }
 
     function toggleTheme() {
@@ -13056,6 +14147,8 @@ ${formatClarification(clarification)}
     function applySidebarState() {
       const top = currentScrollY();
       document.body.classList.toggle("sidebar-collapsed", !!state.sidebarCollapsed);
+      document.documentElement.classList.add("sidebar-ready");
+      document.documentElement.classList.remove("boot-mobile-sidebar-collapsed");
       resetMobileDrawerDragStyles();
       if (isMobileViewport()) requestAnimationFrame(() => setWindowScroll(top, "auto"));
     }
@@ -13124,11 +14217,6 @@ ${formatClarification(clarification)}
       }
       const touch = event.touches[0];
       const collapsed = document.body.classList.contains("sidebar-collapsed");
-      const edgeStart = touch.clientX <= 28;
-      if (collapsed && !edgeStart) {
-        mobileDrawerSwipe = null;
-        return;
-      }
       mobileDrawerSwipe = {
         x: touch.clientX,
         y: touch.clientY,
@@ -13163,9 +14251,15 @@ ${formatClarification(clarification)}
       if (!mobileDrawerSwipe) return;
       const touch = event.changedTouches?.[0];
       const dx = touch ? touch.clientX - mobileDrawerSwipe.x : 0;
+      const wasActive = mobileDrawerSwipe.active;
       const shouldOpen = mobileDrawerSwipe.collapsed && dx > 54;
       const shouldClose = !mobileDrawerSwipe.collapsed && dx < -54;
       const shouldSettleOpen = mobileDrawerSwipe.active && (mobileDrawerSwipe.collapsed ? dx > mobileDrawerSwipe.width * 0.33 : dx > -mobileDrawerSwipe.width * 0.33);
+      if (!wasActive) {
+        mobileDrawerSwipe = null;
+        resetMobileDrawerDragStyles();
+        return;
+      }
       mobileDrawerSwipe = null;
       if ((shouldOpen || shouldSettleOpen) && state.sidebarCollapsed) {
         state.sidebarCollapsed = false;
@@ -13326,7 +14420,7 @@ ${formatClarification(clarification)}
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.classList.toggle("active", tab.dataset.tab === currentSettingsTab);
       });
-      centerActiveSettingsTab();
+      centerActiveSettingsTab("auto");
       els.tabGeneral.style.display = currentSettingsTab === "general" ? "" : "none";
       els.tabAI.style.display = currentSettingsTab === "ai" ? "" : "none";
       els.tabSearch.style.display = currentSettingsTab === "search" ? "" : "none";
@@ -13338,11 +14432,11 @@ ${formatClarification(clarification)}
       }
     }
 
-    function centerActiveSettingsTab() {
+    function centerActiveSettingsTab(behavior = "smooth") {
       const active = document.querySelector(`.tabs .tab[data-tab="${CSS.escape(currentSettingsTab || "general")}"]`);
       if (!active || !isMobileViewport()) return;
       const reduceMotion = window.matchMedia?.("(prefers-reduced-motion: reduce)")?.matches;
-      requestAnimationFrame(() => active.scrollIntoView({ inline: "center", block: "nearest", behavior: reduceMotion ? "auto" : "smooth" }));
+      requestAnimationFrame(() => active.scrollIntoView({ inline: "center", block: "nearest", behavior: reduceMotion ? "auto" : behavior }));
     }
 
     async function handleSettingsTabWheelKeydown(event) {
@@ -13803,6 +14897,13 @@ ${formatClarification(clarification)}
       });
     }
 
+    function renderPaletteControls() {
+      const palette = state.palette === "openai" ? "openai" : "claude";
+      els.paletteGroup?.querySelectorAll("[data-palette]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.palette === palette);
+      });
+    }
+
     function downloadJson(name, data) {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -13865,7 +14966,7 @@ ${formatClarification(clarification)}
       }).join("\n")}\n`;
     }
 
-    function buildCurrentChatMarkdown() {
+    function buildCurrentChatMarkdown(selectedIds = null) {
       const title = currentChat?.title?.trim() || messages.find((message) => message.role === "user")?.content?.trim().slice(0, 64) || "Linsoo 对话导出";
       const createdAt = currentChat?.createdAt || messages[0]?.createdAt || Date.now();
       const updatedAt = currentChat?.updatedAt || messages[messages.length - 1]?.createdAt || Date.now();
@@ -13881,7 +14982,8 @@ ${formatClarification(clarification)}
         `**Link:** [${pageLink}](${pageLink})  `,
         "",
       ];
-      messages.forEach((message) => {
+      const selected = selectedIds instanceof Set ? selectedIds : null;
+      messages.filter((message) => !selected || selected.has(message.id)).forEach((message) => {
         if (message.role === "user") {
           promptCount += 1;
           parts.push(`## Prompt ${promptCount}:`);
@@ -13927,6 +15029,161 @@ ${formatClarification(clarification)}
       const title = currentChat?.title?.trim() || "linsoo-chat";
       downloadTextFile(markdownSafeFilename(title), buildCurrentChatMarkdown(), "text/markdown;charset=utf-8");
       showToast("已导出 Markdown。");
+    }
+
+    function openExportMenu() {
+      if (!messages.length) {
+        showToast("当前没有可导出的对话。");
+        return;
+      }
+      const rect = els.exportMdBtn.getBoundingClientRect();
+      els.chatMenu.innerHTML = `
+        <button data-export-format="image"><span class="menu-icon">${ICON_COPY}</span><span>导出为截图</span></button>
+        <button data-export-format="markdown"><span class="menu-icon">${ICON_EDIT}</span><span>导出为 Markdown</span></button>`;
+      els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, Math.max(8, rect.right - 174))}px`;
+      els.chatMenu.style.top = `${Math.max(8, rect.bottom + 8)}px`;
+      els.chatMenu.classList.add("open");
+      els.chatMenu.querySelectorAll("[data-export-format]").forEach((button) => {
+        button.addEventListener("click", () => {
+          closeChatMenu();
+          startExportSelection(button.dataset.exportFormat);
+        });
+      });
+    }
+
+    function startExportSelection(format = "markdown") {
+      exportFormat = format === "image" ? "image" : "markdown";
+      exportSelecting = true;
+      exportSelectedIds = new Set(messages.map((message) => message.id));
+      document.body.classList.add("export-selecting");
+      renderExportSelection();
+      showToast("点击消息行选择要导出的内容。");
+    }
+
+    function cancelExportSelection() {
+      exportSelecting = false;
+      exportSelectedIds.clear();
+      document.body.classList.remove("export-selecting");
+      renderExportSelection();
+    }
+
+    function toggleExportMessage(id) {
+      if (exportSelectedIds.has(id)) exportSelectedIds.delete(id);
+      else exportSelectedIds.add(id);
+      renderExportSelection();
+    }
+
+    function renderExportSelection() {
+      els.messages?.querySelectorAll(".message").forEach((node) => {
+        node.classList.toggle("export-selected", exportSelectedIds.has(node.dataset.id));
+      });
+      if (els.exportBarCount) els.exportBarCount.textContent = `已选择 ${exportSelectedIds.size} 条`;
+      if (els.exportConfirmBtn) {
+        els.exportConfirmBtn.disabled = !exportSelectedIds.size;
+        els.exportConfirmBtn.textContent = exportFormat === "image" ? "导出截图" : "导出 Markdown";
+      }
+    }
+
+    function confirmSelectedExport() {
+      if (!exportSelectedIds.size) return;
+      if (exportFormat === "image") exportSelectedMessagesImage();
+      else exportSelectedMessagesMarkdown();
+      cancelExportSelection();
+    }
+
+    function exportSelectedMessagesMarkdown() {
+      const title = currentChat?.title?.trim() || "linsoo-chat";
+      downloadTextFile(markdownSafeFilename(title), buildCurrentChatMarkdown(exportSelectedIds), "text/markdown;charset=utf-8");
+      showToast("已导出 Markdown。");
+    }
+
+    function exportSelectedMessagesImage() {
+      const selected = messages.filter((message) => exportSelectedIds.has(message.id));
+      const title = currentChat?.title?.trim() || "Linsoo";
+      const width = 1080;
+      const rowHeight = 140;
+      const footerHeight = 172;
+      const height = Math.min(4096, 120 + selected.length * rowHeight + footerHeight);
+      const canvas = document.createElement("canvas");
+      canvas.width = width;
+      canvas.height = height;
+      const ctx = canvas.getContext("2d");
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--paper").trim() || "#faf9f5";
+      ctx.fillRect(0, 0, width, height);
+      ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue("--ink").trim() || "#141413";
+      ctx.font = "44px Georgia, serif";
+      ctx.fillText(title.slice(0, 40), 64, 76);
+      let y = 120;
+      selected.forEach((message) => {
+        ctx.fillStyle = message.role === "user" ? "#efe9de" : "#ffffff";
+        roundRect(ctx, 64, y, width - 128, rowHeight - 18, 14);
+        ctx.fill();
+        ctx.fillStyle = "#6c6a64";
+        ctx.font = "22px sans-serif";
+        ctx.fillText(message.role === "user" ? "User" : "Linsoo", 88, y + 34);
+        ctx.fillStyle = "#252523";
+        ctx.font = "26px sans-serif";
+        wrapCanvasText(ctx, String(message.content || message.searchStatus || "正在生成回答...").replace(/\s+/g, " ").slice(0, 220), 88, y + 72, width - 176, 34, 2);
+        y += rowHeight;
+      });
+      ctx.fillStyle = "#cc785c";
+      ctx.font = "30px Georgia, serif";
+      ctx.fillText("Linsoo", 64, height - 92);
+      ctx.fillStyle = "#6c6a64";
+      ctx.font = "20px sans-serif";
+      const pageLink = "https://parr0tboy.github.io/tools/linsoo.html";
+      ctx.fillText(pageLink, 64, height - 56);
+      drawQrPlaceholder(ctx, width - 156, height - 132, 92);
+      canvas.toBlob((blob) => {
+        if (!blob) return;
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = `${markdownSafeFilename(title).replace(/\.md$/, "")}.png`;
+        link.click();
+        URL.revokeObjectURL(url);
+        showToast("已导出截图。");
+      }, "image/png");
+    }
+
+    function roundRect(ctx, x, y, w, h, r) {
+      ctx.beginPath();
+      ctx.moveTo(x + r, y);
+      ctx.arcTo(x + w, y, x + w, y + h, r);
+      ctx.arcTo(x + w, y + h, x, y + h, r);
+      ctx.arcTo(x, y + h, x, y, r);
+      ctx.arcTo(x, y, x + w, y, r);
+      ctx.closePath();
+    }
+
+    function wrapCanvasText(ctx, text, x, y, maxWidth, lineHeight, maxLines) {
+      const words = String(text || "").split(/\s+/);
+      let line = "";
+      let lines = 0;
+      words.forEach((word) => {
+        const test = line ? `${line} ${word}` : word;
+        if (ctx.measureText(test).width > maxWidth && line) {
+          if (lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
+          lines += 1;
+          line = word;
+        } else {
+          line = test;
+        }
+      });
+      if (line && lines < maxLines) ctx.fillText(line, x, y + lines * lineHeight);
+    }
+
+    function drawQrPlaceholder(ctx, x, y, size) {
+      ctx.fillStyle = "#141413";
+      ctx.fillRect(x, y, size, size);
+      ctx.fillStyle = "#faf9f5";
+      ctx.fillRect(x + 8, y + 8, size - 16, size - 16);
+      ctx.fillStyle = "#141413";
+      for (let row = 0; row < 7; row++) {
+        for (let col = 0; col < 7; col++) {
+          if ((row * 3 + col * 5) % 4 !== 0) ctx.fillRect(x + 14 + col * 9, y + 14 + row * 9, 5, 5);
+        }
+      }
     }
 
     function configClone(value) {
@@ -14395,21 +15652,21 @@ ${formatClarification(clarification)}
     function extractSources(message) {
       const fromMetadata = Array.isArray(message.sources) ? message.sources : [];
       const search = message.searchContext || message.search || null;
-      const fromSearch = search?.results?.length
-        ? search.results
-        : (search?.groups || []).flatMap((group) => group.results || []);
+      const fromSearch = [
+        ...(search?.results || []),
+        ...((search?.groups || []).flatMap((group) => group.results || [])),
+      ];
       const map = new Map();
       [...fromSearch, ...fromMetadata].forEach((source) => {
         const key = normalizeSourceUrl(source.url);
         if (key && !map.has(key)) map.set(key, { ...source, url: key });
       });
-      if (!map.size) {
-        extractMarkdownSources(message.content || "").forEach((source) => {
-          const key = normalizeSourceUrl(source.url);
-          if (key && !map.has(key)) map.set(key, { ...source, url: key });
-        });
-      }
-      return sortSourcesByPreference([...map.values()]).slice(0, 8);
+      extractMarkdownSources(message.content || "").forEach((source) => {
+        const key = normalizeSourceUrl(source.url);
+        if (!key || map.has(key)) return;
+        map.set(key, { ...source, url: key });
+      });
+      return sortSourcesByPreference([...map.values()]);
     }
 
     function extractMarkdownSources(text) {
@@ -14819,6 +16076,7 @@ ${formatClarification(clarification)}
     }
 
     function scrollToBottom(opts = {}) {
+      clearMessageAnchorSpace();
       showThreadComposer();
       els.scrollBtn.classList.remove("visible");
       requestAnimationFrame(() => {
