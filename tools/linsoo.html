@@ -1176,6 +1176,7 @@
       font-size: 7px;
       font-weight: 800;
       letter-spacing: 0;
+      user-select: none;
       line-height: 1;
       text-transform: uppercase;
     }
@@ -2847,6 +2848,11 @@
       font-weight: 650;
     }
 
+    .view-tab:not(.active):not(:disabled):hover {
+      background: var(--sand);
+      color: var(--ink);
+    }
+
     .view-tab svg {
       width: 15px;
       height: 15px;
@@ -3612,6 +3618,7 @@
       font-size: 15px;
       font-weight: 780;
       letter-spacing: 0;
+      user-select: none;
     }
 
     .settings-section-title:first-child {
@@ -4058,6 +4065,7 @@
       background: color-mix(in srgb, var(--paper) 78%, transparent);
       color: var(--faint);
       font-size: 13px;
+      user-select: none;
     }
 
     .ai-config-card {
@@ -4068,6 +4076,12 @@
       border-radius: 12px;
       background: var(--paper);
       padding: 12px;
+      user-select: none;
+    }
+
+    .ai-config-card input,
+    .ai-config-card textarea {
+      user-select: text;
     }
 
     .ai-config-card.dragging {
@@ -4183,6 +4197,7 @@
 
     .ai-provider-dialog {
       width: min(420px, calc(100vw - 32px));
+      user-select: none;
     }
 
     .ai-provider-options {
@@ -4201,6 +4216,7 @@
       padding: 0 12px;
       text-align: left;
       font-size: 13px;
+      user-select: none;
     }
 
     .ai-provider-option:hover {
@@ -5700,13 +5716,13 @@
           </div>
         </div>
         <div id="tabSearch" style="display: none">
+          <div class="settings-section-title">密钥配置</div>
           <div class="field" data-setting-key="searchProviders" data-setting-tab="search">
             <div class="field-label">Search Providers</div>
             <div class="field-hint">纯静态页面会从浏览器直接请求搜索 API；API Key 会优先保存在浏览器 OPFS/IndexedDB，必要时回退到 localStorage。部分服务可能因
               CORS 拒绝前端请求。</div>
           </div>
           <div class="search-provider-list" id="searchProviderList"></div>
-          <div class="settings-section-title">密钥配置</div>
           <div class="field" data-setting-key="amapKey" data-setting-tab="search">
             <div class="field-label">高德地图 Key</div>
             <input class="input mono" id="cfgAmapKey" type="password" placeholder="用于天气、附近、路线等位置服务" autocomplete="off"
@@ -7054,7 +7070,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
             modelQueue: legacyQueue,
             activeModel: legacyQueue[0] || state.activeModel || "",
             modelCache: state.modelCache,
-            expanded: true,
+            expanded: false,
           }));
         }
       }
@@ -7108,6 +7124,14 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function configModels(config) {
       return uniqueModels(config?.modelQueue || (config?.activeModel ? [config.activeModel] : []));
+    }
+
+    function collapseAiConfigCards() {
+      if (!Array.isArray(state.aiConfigs)) return;
+      state.aiConfigs.forEach((config) => {
+        config.expanded = false;
+      });
+      closeSettingsModelDropdown(activeSettingsAiConfigId);
     }
 
     function normalizeWebSearchState() {
@@ -12529,6 +12553,7 @@ ${formatClarification(clarification)}
       settingsOverlayDismissArmed = false;
       searchProvidersExpanded = false;
       normalizeAiConfigsState();
+      collapseAiConfigCards();
       renderProviderSelect();
       closeProviderDropdown();
       closeSearchCountryDropdown();
@@ -12568,6 +12593,8 @@ ${formatClarification(clarification)}
       if (els.settingsOverlay?.classList.contains("open")) {
         await saveSettings({ close: false, toast: false });
       }
+      collapseAiConfigCards();
+      renderAiConfigList();
       els.settingsOverlay.classList.remove("open");
       settingsOverlayDismissArmed = false;
       searchProvidersExpanded = false;
@@ -13003,6 +13030,10 @@ ${formatClarification(clarification)}
     }
 
     function switchTab(id) {
+      if ((currentSettingsTab || "general") === "ai" && id !== "ai") {
+        collapseAiConfigCards();
+        renderAiConfigList();
+      }
       if ((currentSettingsTab || "general") === "search" && id !== "search") {
         searchProvidersExpanded = false;
         closeSearchCountryDropdown();
@@ -13383,7 +13414,7 @@ ${formatClarification(clarification)}
         provider: provider ? providerId : "custom",
         name: provider?.label || "Custom",
         baseUrl: provider?.baseUrl || "",
-        expanded: true,
+        expanded: false,
       });
       state.aiConfigs.push(config);
       activeSettingsAiConfigId = config.id;
