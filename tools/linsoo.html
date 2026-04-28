@@ -4155,6 +4155,7 @@
     @media (max-width: 720px) {
       :root {
         --mobile-sidebar-width: min(78vw, 292px);
+        --mobile-screen-corner-radius: 44px;
       }
 
       html {
@@ -4346,7 +4347,7 @@
       body:not(.sidebar-collapsed) .main {
         transform: translateX(var(--mobile-sidebar-width));
         transform-origin: left center;
-        border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+        border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         box-shadow: var(--shadow-floating);
         overflow: hidden;
       }
@@ -4356,7 +4357,7 @@
         inset: 0 0 0 var(--mobile-sidebar-width);
         z-index: 28;
         display: block;
-        border-radius: var(--radius-lg) 0 0 var(--radius-lg);
+        border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         background: rgba(20, 20, 19, 0.34);
         opacity: 0;
         pointer-events: none;
