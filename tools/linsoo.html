@@ -4647,6 +4647,7 @@
         transform-origin: left center;
         border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
+        border-left-color: transparent;
         box-shadow:
           -10px 0 32px rgba(0, 0, 0, 0.28),
           -1px 0 0 color-mix(in srgb, var(--white) 58%, transparent);
@@ -4658,6 +4659,7 @@
         transform-origin: left center;
         border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
         border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
+        border-left-color: transparent;
         background: var(--paper);
         box-shadow:
           -10px 0 32px rgba(0, 0, 0, 0.28),
@@ -4704,9 +4706,7 @@
       }
 
       body:not(.sidebar-collapsed) .icon-btn.sidebar-collapse {
-        border: none;
-        background: transparent;
-        box-shadow: none;
+        display: none;
       }
 
       .icon-btn.sidebar-collapse:hover {
@@ -6068,6 +6068,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let mobileComposerRevealClickUntil = 0;
     let mobileSidebarOpenUntil = 0;
     let mobileUserScrollUntil = 0;
+    let mobileDrawerSwipe = null;
     let toastTimer = null;
     let mobileComposerTimer = null;
     let scrollSettleTimer = null;
@@ -7574,6 +7575,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         if (event.target.closest(".modal, .search-modal, .delete-dialog, .folder-dialog, .source-panel, .chat-menu")) return;
         event.preventDefault();
       }, { passive: false, capture: true });
+      document.addEventListener("touchstart", handleMobileDrawerSwipeStart, { passive: true, capture: true });
+      document.addEventListener("touchmove", handleMobileDrawerSwipeMove, { passive: false, capture: true });
+      document.addEventListener("touchend", handleMobileDrawerSwipeEnd, { passive: true, capture: true });
 
       document.querySelectorAll(".tab").forEach((tab) => {
         tab.addEventListener("click", async () => {
@@ -8902,9 +8906,23 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       };
       messages.push(next);
       renderMessage(next);
-      scrollToBottom();
+      if (isMobileViewport() && next.role === "user") {
+        scrollMessageBelowMobileToolbar(next.id);
+      } else if (!(isMobileViewport() && next.role === "assistant" && next.loading)) {
+        scrollToBottom();
+      }
       scheduleSaveChat();
       return next;
+    }
+
+    function scrollMessageBelowMobileToolbar(id) {
+      requestAnimationFrame(() => {
+        const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
+        if (!node) return;
+        const offset = 64;
+        const top = window.scrollY + node.getBoundingClientRect().top - offset;
+        setWindowScroll(Math.max(0, top), "smooth");
+      });
     }
 
     function ensureCurrentChat(text, files = []) {
@@ -12895,6 +12913,69 @@ ${formatClarification(clarification)}
       applySidebarState();
       if (wasComposerHidden) els.threadComposer?.classList.add("composer-hidden");
       saveState();
+    }
+
+    function mobileDrawerSwipeTargetAllowed(target) {
+      if (!isMobileViewport()) return false;
+      if (target.closest?.(".modal, .search-modal, .delete-dialog, .folder-dialog, .source-panel, .chat-menu, .ask-panel")) return false;
+      if (target.closest?.("input, textarea, select, button, a, .model-dropdown, .provider-dropdown")) return false;
+      return true;
+    }
+
+    function handleMobileDrawerSwipeStart(event) {
+      if (!event.touches?.length || !mobileDrawerSwipeTargetAllowed(event.target)) {
+        mobileDrawerSwipe = null;
+        return;
+      }
+      const touch = event.touches[0];
+      const collapsed = document.body.classList.contains("sidebar-collapsed");
+      const edgeStart = touch.clientX <= 28;
+      if (collapsed && !edgeStart) {
+        mobileDrawerSwipe = null;
+        return;
+      }
+      mobileDrawerSwipe = {
+        x: touch.clientX,
+        y: touch.clientY,
+        active: false,
+        collapsed,
+      };
+    }
+
+    function handleMobileDrawerSwipeMove(event) {
+      if (!mobileDrawerSwipe || !event.touches?.length) return;
+      const touch = event.touches[0];
+      const dx = touch.clientX - mobileDrawerSwipe.x;
+      const dy = touch.clientY - mobileDrawerSwipe.y;
+      if (!mobileDrawerSwipe.active) {
+        if (Math.abs(dy) > 38 || Math.abs(dx) < 18) return;
+        if (Math.abs(dx) <= Math.abs(dy) * 1.35) return;
+        if ((mobileDrawerSwipe.collapsed && dx > 0) || (!mobileDrawerSwipe.collapsed && dx < 0)) {
+          mobileDrawerSwipe.active = true;
+        } else {
+          mobileDrawerSwipe = null;
+          return;
+        }
+      }
+      event.preventDefault();
+    }
+
+    function handleMobileDrawerSwipeEnd(event) {
+      if (!mobileDrawerSwipe) return;
+      const touch = event.changedTouches?.[0];
+      const dx = touch ? touch.clientX - mobileDrawerSwipe.x : 0;
+      const shouldOpen = mobileDrawerSwipe.collapsed && dx > 54;
+      const shouldClose = !mobileDrawerSwipe.collapsed && dx < -54;
+      mobileDrawerSwipe = null;
+      if (shouldOpen && state.sidebarCollapsed) {
+        state.sidebarCollapsed = false;
+        mobileSidebarOpenUntil = Date.now() + 700;
+        applySidebarState();
+        saveState();
+      } else if (shouldClose && !state.sidebarCollapsed) {
+        collapseMobileSidebar();
+        saveState();
+      }
     }
 
     function loadMarkdownIt() {
