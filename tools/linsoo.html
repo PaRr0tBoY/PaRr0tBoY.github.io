@@ -4639,8 +4639,6 @@
       body:not(.sidebar-collapsed) {
         --mobile-drawer-x: var(--mobile-sidebar-width);
         background: var(--mobile-drawer-surface);
-        height: 100dvh;
-        overflow: hidden;
       }
 
       body.drawer-dragging {
@@ -4679,29 +4677,23 @@
       body:not(.sidebar-collapsed) .main {
         transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
         transform-origin: left center;
-        border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
-        border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
-        border-left-color: transparent;
-        box-shadow:
-          -24px 0 56px rgba(0, 0, 0, 0.36),
-          -8px 0 22px rgba(0, 0, 0, 0.22),
-          -1px 0 0 color-mix(in srgb, var(--white) 58%, transparent);
-        overflow: hidden;
+        border-radius: 0;
+        border-color: transparent;
+        border-left-color: color-mix(in srgb, var(--line-strong) 86%, transparent);
+        box-shadow: none;
+        overflow: visible;
         clip-path: none;
       }
 
       body:not(.sidebar-collapsed) .search-page {
         transform: translateX(var(--mobile-drawer-x, var(--mobile-sidebar-width)));
         transform-origin: left center;
-        border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
-        border-color: color-mix(in srgb, var(--line-strong) 82%, transparent);
-        border-left-color: transparent;
+        border-radius: 0;
+        border-color: transparent;
+        border-left-color: color-mix(in srgb, var(--line-strong) 86%, transparent);
         background: var(--paper);
-        box-shadow:
-          -24px 0 56px rgba(0, 0, 0, 0.36),
-          -8px 0 22px rgba(0, 0, 0, 0.22),
-          -1px 0 0 color-mix(in srgb, var(--white) 58%, transparent);
-        overflow: hidden;
+        box-shadow: none;
+        overflow: visible;
         clip-path: none;
       }
 
@@ -4709,17 +4701,17 @@
         position: fixed;
         inset: 0 0 0 var(--mobile-sidebar-width);
         z-index: 99;
-        display: block;
-        border-radius: var(--mobile-screen-corner-radius) 0 0 var(--mobile-screen-corner-radius);
-        background: rgba(0, 0, 0, 0.24);
+        display: none;
+        border-radius: 0;
+        background: transparent;
         opacity: 0;
         pointer-events: none;
         transition: opacity 0.22s ease;
       }
 
       body:not(.sidebar-collapsed) .mobile-sidebar-scrim {
-        opacity: 1;
-        pointer-events: auto;
+        opacity: 0;
+        pointer-events: none;
       }
 
       .icon-btn.sidebar-collapse,
@@ -6124,6 +6116,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let running = false;
     let aborter = null;
     let autoFollow = true;
+    let userMessageAnchorUntil = 0;
     let userScrollPauseUntil = 0;
     let mobileComposerExpandedUntil = 0;
     let mobileComposerRevealClickUntil = 0;
@@ -7950,7 +7943,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         }
       } else {
         if (opts.allowClassicAnswer !== false) maybeAnswerClassicSearch();
-        if (autoFollow) scrollToBottom({ behavior: "auto" });
+        if (autoFollow && !opts.skipAutoScroll) scrollToBottom({ behavior: "auto" });
         else restoreViewScroll("chat");
       }
     }
@@ -8976,6 +8969,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         return;
       }
 
+      dismissMobileKeyboardAfterSubmit(input);
       input.value = "";
       autosize(input);
       const activeAttachments = attachments[scope].slice();
@@ -8989,7 +8983,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         setActiveView("search", { allowClassicAnswer: false });
         runSearchOnly(userMessage.id);
       } else {
-        setActiveView("chat", { allowClassicAnswer: false });
+        setActiveView("chat", { allowClassicAnswer: false, skipAutoScroll: true });
         runAssistant();
       }
     }
@@ -9002,7 +8996,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       els.threadComposer.style.display = "";
       collapseMobileSidebar();
       updateScrollButtonOffset();
-      setTimeout(() => els.threadInput.focus(), 60);
+      if (!isMobileViewport()) setTimeout(() => els.threadInput.focus(), 60);
     }
 
     function goHome() {
@@ -9054,20 +9048,22 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       };
       messages.push(next);
       renderMessage(next);
-      if (isMobileViewport() && next.role === "user") {
-        scrollMessageBelowMobileToolbar(next.id);
-      } else if (!(isMobileViewport() && next.role === "assistant" && next.loading)) {
+      if (next.role === "user") {
+        userMessageAnchorUntil = Date.now() + 1000;
+        scrollMessageBelowTopTabs(next.id);
+      } else if (!next.loading) {
         scrollToBottom();
       }
       scheduleSaveChat();
       return next;
     }
 
-    function scrollMessageBelowMobileToolbar(id) {
+    function scrollMessageBelowTopTabs(id) {
       requestAnimationFrame(() => {
         const node = els.messages.querySelector(`[data-id="${CSS.escape(id)}"]`);
         if (!node) return;
-        const offset = 64;
+        const tabs = els.topViewTabs?.getBoundingClientRect();
+        const offset = tabs?.height ? tabs.bottom + 10 : (isMobileViewport() ? 58 : 74);
         const top = window.scrollY + node.getBoundingClientRect().top - offset;
         setWindowScroll(Math.max(0, top), "smooth");
       });
@@ -9403,6 +9399,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function shouldAutoFollowRun(run) {
       return autoFollow
+        && Date.now() >= userMessageAnchorUntil
         && !document.body.classList.contains("search-view")
         && (!run?.chat || currentChat?.slug === run.chat.slug);
     }
@@ -10251,6 +10248,22 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (document.activeElement === els.heroInput || document.activeElement === els.threadInput) {
         document.activeElement.blur();
       }
+    }
+
+    function dismissMobileKeyboardAfterSubmit(input) {
+      if (!isMobileViewport()) return;
+      mobileComposerExpandedUntil = 0;
+      mobileComposerRevealClickUntil = 0;
+      const active = document.activeElement;
+      if (active === input || active === els.heroInput || active === els.threadInput) {
+        active.blur();
+      }
+      requestAnimationFrame(() => {
+        if (document.activeElement === input || document.activeElement === els.heroInput || document.activeElement === els.threadInput) {
+          document.activeElement.blur();
+        }
+        updateMobileViewportInsets();
+      });
     }
 
     async function runAssistant() {
@@ -13041,8 +13054,10 @@ ${formatClarification(clarification)}
     }
 
     function applySidebarState() {
+      const top = currentScrollY();
       document.body.classList.toggle("sidebar-collapsed", !!state.sidebarCollapsed);
       resetMobileDrawerDragStyles();
+      if (isMobileViewport()) requestAnimationFrame(() => setWindowScroll(top, "auto"));
     }
 
     function applyResponsiveSidebarDefault() {
