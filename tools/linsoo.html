@@ -578,7 +578,7 @@
 
     .chat-menu {
       position: fixed;
-      z-index: 90;
+      z-index: 140;
       min-width: 174px;
       display: none;
       border: 1px solid var(--line-strong);
@@ -9438,8 +9438,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           <button data-action="${chat.folder ? "remove-folder" : "folder"}"><span class="menu-icon">${ICON_FOLDER}</span><span>${chat.folder ? "移出文件夹" : "添加到文件夹"}</span></button>
           <hr>
           <button class="danger" data-action="delete"><span class="menu-icon">${ICON_TRASH}</span><span>删除</span></button>`;
-      els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, rect.right + 6)}px`;
-      els.chatMenu.style.top = `${Math.min(window.innerHeight - 176, rect.top)}px`;
+      positionChatMenu(rect, 176);
       els.chatMenu.classList.add("open");
       document.querySelectorAll(".chat-menu-btn").forEach((item) => item.classList.toggle("open", item.dataset.menu === slug));
       els.chatMenu.querySelectorAll("button").forEach((button) => {
@@ -9458,13 +9457,24 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           <hr>
           <button data-action="dissolve"><span class="menu-icon">${ICON_FOLDER}</span><span>解散</span></button>
           <button class="danger" data-action="delete"><span class="menu-icon">${ICON_TRASH}</span><span>删除</span></button>`;
-      els.chatMenu.style.left = `${Math.min(window.innerWidth - 190, rect.right + 6)}px`;
-      els.chatMenu.style.top = `${Math.min(window.innerHeight - 144, rect.top)}px`;
+      positionChatMenu(rect, 144);
       els.chatMenu.classList.add("open");
       document.querySelectorAll(".chat-menu-btn").forEach((item) => item.classList.toggle("open", item.dataset.folderMenu === folder));
       els.chatMenu.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", () => handleFolderMenu(button.dataset.action));
       });
+    }
+
+    function positionChatMenu(rect, estimatedHeight = 176) {
+      const safe = isMobileViewport() ? 12 : 8;
+      const width = 190;
+      const viewportBottom = window.innerHeight - safe;
+      const left = Math.min(window.innerWidth - width - safe, Math.max(safe, rect.right + 6));
+      let top = Math.min(viewportBottom - estimatedHeight, Math.max(safe, rect.top));
+      if (isMobileViewport() && top < safe) top = safe;
+      els.chatMenu.style.left = `${left}px`;
+      els.chatMenu.style.top = `${top}px`;
+      els.chatMenu.style.maxHeight = `${Math.max(120, viewportBottom - safe)}px`;
     }
 
     function closeChatMenu() {
