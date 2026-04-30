@@ -7070,6 +7070,16 @@
               <button type="button" data-toolbar-mode="hide">隐藏</button>
             </div>
           </div>
+          <div class="setting-row" data-setting-key="agentLoopVisualMode" data-setting-tab="appearance">
+            <div>
+              <div class="setting-title">Agent loop 可视化</div>
+              <div class="setting-subtitle">控制回答过程时间线默认展开或默认隐藏。</div>
+            </div>
+            <div class="segmented web-mode-group" id="agentLoopVisualModeGroup">
+              <button type="button" data-agent-loop-visual-mode="show">显示</button>
+              <button type="button" data-agent-loop-visual-mode="hide">隐藏</button>
+            </div>
+          </div>
           <div class="setting-row" data-setting-key="railEnabled" data-setting-tab="appearance">
             <div>
               <div class="setting-title">对话索引</div>
@@ -7268,6 +7278,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       "luckyShotMode",
       "domainClickStats",
       "toolbarMode",
+      "agentLoopVisualMode",
+      "agentLoopOpenPreference",
       "searchCallLimitMode",
       "palette",
       "webSearchMode",
@@ -7304,6 +7316,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       luckyShotMode: "smart",
       domainClickStats: {},
       toolbarMode: "show",
+      agentLoopVisualMode: "show",
+      agentLoopOpenPreference: true,
       toolCallMode: "auto",
       autoToolEnabled: {
         searchPlanning: true,
@@ -7609,6 +7623,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         "persistenceModeHint",
         "themeModeGroup",
         "toolbarModeGroup",
+        "agentLoopVisualModeGroup",
         "paletteGroup",
         "tabGeneral",
         "tabAI",
@@ -8328,10 +8343,14 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       state.searchResultCountMode = normalizeSearchResultCountMode(state.searchResultCountMode);
       state.searchCallLimitMode = normalizeSearchCallLimitMode(state.searchCallLimitMode);
       state.toolbarMode = normalizeToolbarMode(state.toolbarMode);
+      state.agentLoopVisualMode = normalizeAgentLoopVisualMode(state.agentLoopVisualMode);
+      state.agentLoopOpenPreference = state.agentLoopOpenPreference !== false;
       state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "US";
       state.railEnabled = state.railEnabled !== false;
       state.queueFallback = state.queueFallback === true;
       state.retryOnFailure = state.retryOnFailure !== false;
+      state.agentLoopVisualMode = normalizeAgentLoopVisualMode(state.agentLoopVisualMode);
+      state.agentLoopOpenPreference = state.agentLoopOpenPreference !== false;
       if (!Array.isArray(state.customProviders)) state.customProviders = [];
       if (!state.customProviders.length) state.customProviders.push({ ...DEFAULT_CUSTOM_PROVIDER });
       if (!state.provider) state.provider = state.baseUrl ? inferProviderFromBaseUrl(state.baseUrl) || "glm" : "custom-default";
@@ -8913,6 +8932,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           renderSettingSubtitles();
           saveState();
         });
+      });
+      els.agentLoopVisualModeGroup?.querySelectorAll("button").forEach((button) => {
+        button.addEventListener("click", () => setAgentLoopVisualMode(button.dataset.agentLoopVisualMode, { toast: false }));
       });
       els.paletteGroup?.querySelectorAll("[data-palette]").forEach((button) => {
         button.addEventListener("click", () => {
@@ -9587,6 +9609,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return mode === "hide" ? "hide" : "show";
     }
 
+    function normalizeAgentLoopVisualMode(mode) {
+      return mode === "hide" ? "hide" : "show";
+    }
+
     function persistenceModeLabel(mode = storageMode) {
       return mode === "opfs" ? "OPFS" : mode === "indexeddb" ? "IndexedDB" : "localStorage";
     }
@@ -9705,6 +9731,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         show: "宽屏下始终显示左侧工具栏",
         hide: "宽屏下默认折叠，鼠标移到左侧工具栏区域会临时展开",
       };
+      const agentLoopCopy = {
+        show: state.agentLoopOpenPreference === false ? "默认显示 Agent loop，但沿用你上次手动折叠状态" : "默认展开 Agent loop 时间线",
+        hide: "默认隐藏 Agent loop 时间线；手动展开只在当前页面临时生效",
+      };
       setSettingSubtitle("interactionMode", interactionCopy[normalizeInteractionMode(state.interactionMode)]);
       setSettingSubtitle("toolCallMode", toolCallCopy[normalizeInteractionMode(state.interactionMode) === "classic" ? "flow" : normalizeToolCallMode(state.toolCallMode)]);
       setSettingSubtitle("clarifyQuestionsMode", clarifyCopy[normalizeClarifyQuestionsMode(state.clarifyQuestionsMode)]);
@@ -9719,6 +9749,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       setSettingSubtitle("searchCallLimitMode", searchLimitCopy[normalizeSearchCallLimitMode(state.searchCallLimitMode)]);
       setSettingSubtitle("themeMode", themeCopy[state.themeMode || state.theme || "light"] || themeCopy.light);
       setSettingSubtitle("toolbarMode", toolbarCopy[normalizeToolbarMode(state.toolbarMode)]);
+      setSettingSubtitle("agentLoopVisualMode", agentLoopCopy[normalizeAgentLoopVisualMode(state.agentLoopVisualMode)]);
       setSettingSubtitle("railEnabled", `${switchSettingLabel(state.railEnabled !== false)}长对话右侧的消息索引`);
     }
 
@@ -11400,6 +11431,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       }).join("")}</div>`;
     }
 
+    function isAgentLoopOpen(messageId) {
+      if (openAgentLoopMessageIds.has(messageId)) return true;
+      return normalizeAgentLoopVisualMode(state.agentLoopVisualMode) === "show" && state.agentLoopOpenPreference !== false;
+    }
+
     function summarizeAgentLoopOutcome(message) {
       if (message?.interrupted) return "处理已被用户中断";
       if (message?.agentSummary) return sanitizeAgentLoopSummary(message.agentSummary);
@@ -11529,7 +11565,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const previousLabel = message.renderedAgentLoopLabel || "";
       const labelChanged = !!previousLabel && previousLabel !== label;
       message.renderedAgentLoopLabel = label;
-      const open = openAgentLoopMessageIds.has(message.id);
+      const open = isAgentLoopOpen(message.id);
       return `
         <div class="agent-loop${open ? " open" : ""}" aria-expanded="${open ? "true" : "false"}">
           <button class="agent-loop-head" type="button">
@@ -12161,8 +12197,17 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       root.addEventListener("click", (event) => {
         const activeMessage = root.__agentLoopMessage || message;
         if (event.target.closest(".agent-loop-head")) {
-          if (openAgentLoopMessageIds.has(activeMessage.id)) openAgentLoopMessageIds.delete(activeMessage.id);
-          else openAgentLoopMessageIds.add(activeMessage.id);
+          const nextOpen = !isAgentLoopOpen(activeMessage.id);
+          if (nextOpen) openAgentLoopMessageIds.add(activeMessage.id);
+          else openAgentLoopMessageIds.delete(activeMessage.id);
+          if (normalizeAgentLoopVisualMode(state.agentLoopVisualMode) === "show") {
+            state.agentLoopOpenPreference = nextOpen;
+            if (!nextOpen) openAgentLoopMessageIds.clear();
+            saveState();
+            renderSettingSubtitles();
+            rerenderVisibleAssistantMessages();
+            return;
+          }
           const node = els.messages.querySelector(`[data-id="${CSS.escape(activeMessage.id)}"]`);
           if (node) renderAssistantContent(node, activeMessage);
           return;
@@ -12478,7 +12523,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         searchStatus: "Thinking",
         agentSteps: [],
       });
-      openAgentLoopMessageIds.add(assistant.id);
+      if (isAgentLoopOpen(assistant.id)) openAgentLoopMessageIds.add(assistant.id);
       scheduleAssistantRender(assistant.id);
       const run = {
         chat: currentChat ? { ...currentChat } : null,
@@ -12624,7 +12669,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         loading: true,
         agentSteps: [{ id: "direct-start", type: "status", title: "准备直达搜索", status: "running", startedAt: Date.now(), updatedAt: Date.now() }],
       });
-      openAgentLoopMessageIds.add(assistant.id);
+      if (isAgentLoopOpen(assistant.id)) openAgentLoopMessageIds.add(assistant.id);
       scheduleAssistantRender(assistant.id);
       const run = {
         chat: null,
@@ -14983,6 +15028,16 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       if (els.sourcePanel?.classList.contains("open")) closeSourcePanel();
     }
 
+    function rerenderVisibleAssistantMessages() {
+      if (!els.messages) return;
+      messages
+        .filter((message) => message.role === "assistant")
+        .forEach((message) => {
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
+          if (node) renderAssistantContent(node, message);
+        });
+    }
+
     function dedupeSources(sources) {
       const map = new Map();
       (sources || []).forEach((source) => {
@@ -15914,6 +15969,7 @@ ${formatClarification(clarification)}
       renderThemeMode();
       renderPaletteControls();
       renderToolbarModeControls();
+      renderAgentLoopVisualModeControls();
       renderSettingSubtitles();
       renderAiConfigList();
       renderSearchProviderSettings();
@@ -15978,6 +16034,7 @@ ${formatClarification(clarification)}
       state.queueFallback = els.cfgQueueFallback.checked;
       state.retryOnFailure = els.cfgRetryOnFailure.checked;
       state.toolbarMode = normalizeToolbarMode(els.toolbarModeGroup?.querySelector(".active")?.dataset.toolbarMode || state.toolbarMode);
+      state.agentLoopVisualMode = normalizeAgentLoopVisualMode(els.agentLoopVisualModeGroup?.querySelector(".active")?.dataset.agentLoopVisualMode || state.agentLoopVisualMode);
       state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "US";
       state.amapKey = els.cfgAmapKey.value.trim();
       state.jinaApiKey = els.cfgJinaApiKey.value.trim();
@@ -16190,6 +16247,7 @@ ${formatClarification(clarification)}
       renderThemeMode();
       renderPaletteControls();
       renderToolbarModeControls();
+      renderAgentLoopVisualModeControls();
     }
 
     function toggleTheme() {
@@ -17015,6 +17073,30 @@ ${formatClarification(clarification)}
       });
     }
 
+    function renderAgentLoopVisualModeControls() {
+      const mode = normalizeAgentLoopVisualMode(state.agentLoopVisualMode);
+      els.agentLoopVisualModeGroup?.querySelectorAll("[data-agent-loop-visual-mode]").forEach((button) => {
+        button.classList.toggle("active", button.dataset.agentLoopVisualMode === mode);
+      });
+    }
+
+    async function setAgentLoopVisualMode(mode, opts = {}) {
+      const next = normalizeAgentLoopVisualMode(mode);
+      if (next === normalizeAgentLoopVisualMode(state.agentLoopVisualMode)) return;
+      recordSettingsEdit({ key: "agentLoopVisualMode", tab: "appearance" });
+      state.agentLoopVisualMode = next;
+      if (next === "show") {
+        state.agentLoopOpenPreference = true;
+      } else {
+        openAgentLoopMessageIds.clear();
+      }
+      renderAgentLoopVisualModeControls();
+      renderSettingSubtitles();
+      rerenderVisibleAssistantMessages();
+      await saveState();
+      if (opts.toast) showToast(`Agent loop：${next === "show" ? "显示" : "隐藏"}`);
+    }
+
     function downloadJson(name, data) {
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
       const url = URL.createObjectURL(blob);
@@ -17368,6 +17450,7 @@ ${formatClarification(clarification)}
           state.autoToolEnabled.contentGranularity = els.cfgContentGranularityToolEnabled?.checked !== false;
           state.autoToolEnabled.locationService = els.cfgLocationServiceToolEnabled?.checked !== false;
           state.toolbarMode = normalizeToolbarMode(els.toolbarModeGroup?.querySelector(".active")?.dataset.toolbarMode || state.toolbarMode);
+          state.agentLoopVisualMode = normalizeAgentLoopVisualMode(els.agentLoopVisualModeGroup?.querySelector(".active")?.dataset.agentLoopVisualMode || state.agentLoopVisualMode);
           state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "US";
           state.amapKey = els.cfgAmapKey?.value.trim() || state.amapKey;
           state.jinaApiKey = els.cfgJinaApiKey?.value.trim() || state.jinaApiKey;
@@ -17403,6 +17486,8 @@ ${formatClarification(clarification)}
       state.interactionMode = normalizeInteractionMode(state.interactionMode);
       state.luckyShotMode = normalizeLuckyShotMode(state.luckyShotMode);
       state.toolbarMode = normalizeToolbarMode(state.toolbarMode);
+      state.agentLoopVisualMode = normalizeAgentLoopVisualMode(state.agentLoopVisualMode);
+      state.agentLoopOpenPreference = state.agentLoopOpenPreference !== false;
       state.searchCallLimitMode = normalizeSearchCallLimitMode(state.searchCallLimitMode);
       normalizeDomainClickStats();
       state.searchCountry = normalizeSearchCountryCode(state.searchCountry) || "US";
