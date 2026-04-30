@@ -2640,17 +2640,30 @@
 
     .agent-loop-label.loading {
       color: var(--text-strong);
+      display: inline-block;
       animation: shimmerOpacity 1.35s ease-in-out infinite;
+    }
+
+    .agent-loop-label.label-changing {
+      display: inline-block;
+      animation: agentLabelIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .agent-loop-label.loading.label-changing {
+      animation: agentLabelIn 0.34s cubic-bezier(0.16, 1, 0.3, 1) both, shimmerOpacity 1.35s ease-in-out infinite;
     }
 
     .agent-loop-body {
       display: grid;
       grid-template-rows: 0fr;
-      transition: grid-template-rows 0.28s ease;
+      transform-origin: top;
+      opacity: 0;
+      transition: grid-template-rows 0.34s cubic-bezier(0.19, 1, 0.22, 1), opacity 0.22s ease;
     }
 
     .agent-loop.open .agent-loop-body {
       grid-template-rows: 1fr;
+      opacity: 1;
     }
 
     .agent-loop-inner {
@@ -2662,6 +2675,12 @@
       display: grid;
       grid-template-columns: 20px minmax(0, 1fr);
       min-width: 0;
+      overflow: hidden;
+      animation: agentStepIn 0.72s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .agent-step.existing {
+      animation: none;
     }
 
     .agent-step-rail {
@@ -2709,6 +2728,17 @@
       color: var(--accent);
     }
 
+    .agent-step.tool.done .agent-node,
+    .agent-step.search.done .agent-node,
+    .agent-step.thinking.done .agent-node,
+    .agent-step.status.done .agent-node {
+      color: var(--muted);
+    }
+
+    .agent-step.complete .agent-node {
+      color: var(--text-strong);
+    }
+
     .agent-step.failed .agent-node {
       color: var(--danger);
     }
@@ -2727,15 +2757,34 @@
     .agent-step-title {
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 8px;
       min-height: 22px;
       color: var(--muted);
       line-height: 1.45;
     }
 
+    .agent-step.thinking .agent-step-title,
+    .agent-step.complete .agent-step-title {
+      color: var(--ink);
+    }
+
+    .agent-step.thinking .agent-step-title:empty {
+      display: none;
+    }
+
     .agent-step.running .agent-step-title,
     .agent-step.status .agent-step-title {
       color: var(--text-strong);
+    }
+
+    .agent-step.status.done .agent-step-title {
+      color: var(--muted);
+    }
+
+    .agent-step.search .agent-step-title,
+    .agent-step.tool .agent-step-title {
+      color: var(--muted);
     }
 
     .agent-step-title.shimmer {
@@ -2748,6 +2797,11 @@
       color: var(--faint);
       line-height: 1.55;
       overflow-wrap: anywhere;
+    }
+
+    .agent-step-detail.detail-new {
+      overflow: hidden;
+      animation: agentDetailIn 0.68s cubic-bezier(0.16, 1, 0.3, 1) both;
     }
 
     .agent-step-detail pre {
@@ -2774,6 +2828,59 @@
       white-space: pre-wrap;
     }
 
+    .agent-step.thinking .agent-thinking-text {
+      color: var(--ink);
+    }
+
+    .agent-step.thinking .agent-step-detail {
+      margin-top: 0;
+    }
+
+    .agent-step-meta {
+      margin-left: auto;
+      color: var(--faint);
+      font-size: 12px;
+      line-height: 1.45;
+      white-space: nowrap;
+    }
+
+    .agent-step-meta strong {
+      color: var(--faint);
+      font-weight: 500;
+    }
+
+    .agent-sources-preview {
+      display: grid;
+      gap: 4px;
+      margin-top: 2px;
+      padding: 8px 10px;
+      border: 1px solid var(--line);
+      border-radius: 7px;
+      color: var(--muted);
+      background: color-mix(in srgb, var(--paper) 70%, transparent);
+      animation: agentSourceIn 0.68s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .agent-source-preview {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 14px;
+      min-width: 0;
+      line-height: 1.45;
+    }
+
+    .agent-source-title {
+      color: var(--muted);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .agent-source-domain {
+      color: var(--faint);
+      white-space: nowrap;
+    }
+
     .agent-step.expanded .agent-thinking-text {
       display: block;
     }
@@ -2793,6 +2900,55 @@
       color: var(--ink);
     }
 
+    @keyframes agentStepIn {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      55% {
+        opacity: 0.82;
+      }
+      to {
+        opacity: 1;
+        max-height: 1400px;
+      }
+    }
+
+    @keyframes agentLabelIn {
+      from {
+        opacity: 0;
+        transform: translateY(-3px);
+        filter: blur(1px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+        filter: blur(0);
+      }
+    }
+
+    @keyframes agentSourceIn {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 260px;
+      }
+    }
+
+    @keyframes agentDetailIn {
+      from {
+        opacity: 0;
+        max-height: 0;
+      }
+      to {
+        opacity: 1;
+        max-height: 900px;
+      }
+    }
+
     .sources {
       display: grid;
       gap: 12px;
@@ -2810,6 +2966,39 @@
       transition:
         background var(--speed),
         color var(--speed);
+    }
+
+    .sources.source-reveal {
+      overflow: hidden;
+      animation: sourceBlockIn 0.96s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .sources.source-reveal .source-result {
+      animation: sourceCardIn 0.82s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    @keyframes sourceBlockIn {
+      from {
+        opacity: 0;
+        max-height: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        max-height: 320px;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes sourceCardIn {
+      from {
+        opacity: 0;
+        transform: translateY(6px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .sources .source-result {
@@ -5472,6 +5661,13 @@
         pointer-events: auto;
       }
 
+      .folder-row .chat-menu-btn,
+      .message .assistant-footer,
+      .message .user-footer {
+        opacity: 1;
+        pointer-events: auto;
+      }
+
       .chat-row.mobile-swiped .chat-menu-btn {
         opacity: 0;
         pointer-events: none;
@@ -5993,9 +6189,14 @@
 
       .search-modal,
       body.sidebar-collapsed .search-modal {
+        z-index: 171;
         left: 50%;
         top: 12vh;
         width: min(calc(100vw - 24px), 672px);
+      }
+
+      .search-overlay {
+        z-index: 170;
       }
 
       .ask-panel {
@@ -6078,6 +6279,7 @@
       }
 
       .source-panel {
+        z-index: 180;
         top: auto;
         left: 8px;
         right: 8px;
@@ -6645,10 +6847,7 @@
             <div class="segmented web-mode-group" id="webSearchModeGroup">
               <button type="button" data-web-search-mode="auto">自动</button>
               <button type="button" data-web-search-mode="on">始终</button>
-              <button type="button" data-web-search-mode="off">禁用</button>
             </div>
-            <label class="switch tool-auto-switch" id="webSearchToolSwitch" title="网络搜索"><input
-                id="cfgWebSearchToolEnabled" type="checkbox" /><span></span></label>
           </div>
           <div class="setting-row tool-dependent-setting tool-child-setting" data-tool-dependent-setting data-tool-child-setting data-setting-key="searchPlanningMode"
             data-setting-tab="general">
@@ -7107,11 +7306,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       toolbarMode: "show",
       toolCallMode: "auto",
       autoToolEnabled: {
-        webSearch: true,
         searchPlanning: true,
         clarifyQuestions: true,
-        contentGranularity: true,
-        locationService: true,
+        contentGranularity: false,
+        locationService: false,
       },
       theme: "light",
       themeMode: "light",
@@ -7119,8 +7317,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       webSearchMode: "auto",
       searchPlanningMode: "auto",
       clarifyQuestionsMode: "auto",
-      contentGranularityMode: "detail",
-      locationServiceMode: "enabled",
+      contentGranularityMode: "summary",
+      locationServiceMode: "disabled",
       searchResultCountMode: "balanced",
       searchCallLimitMode: "moderate",
       persistenceMode: "opfs",
@@ -7209,6 +7407,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let pendingAssistantRenderIds = new Set();
     let openAgentLoopMessageIds = new Set();
     let completionSummaryPendingIds = new Set();
+    let completionSummaryAttemptedIds = new Set();
     let railSignature = "";
     let searchViewNeedsTopReset = false;
     let suppressScrollCapture = false;
@@ -7378,7 +7577,6 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         "toggleKeyBtn",
         "testApiKeyBtn",
         "webSearchModeGroup",
-        "cfgWebSearchToolEnabled",
         "toolCallModeGroup",
         "contentGranularityModeGroup",
         "cfgContentGranularityToolEnabled",
@@ -8256,9 +8454,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function normalizeWebSearchState() {
-      if (!["on", "auto", "off"].includes(state.webSearchMode)) {
-        state.webSearchMode = state.webSearch === false ? "off" : "auto";
-      }
+      if (!["on", "auto"].includes(state.webSearchMode)) state.webSearchMode = "auto";
       delete state.webSearch;
       const existing = state.searchProviders && typeof state.searchProviders === "object" ? state.searchProviders : {};
       state.searchProviders = {};
@@ -8275,11 +8471,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     function normalizeAutoToolEnabledState() {
       const saved = state.autoToolEnabled && typeof state.autoToolEnabled === "object" ? state.autoToolEnabled : {};
       state.autoToolEnabled = {
-        webSearch: saved.webSearch !== false,
         searchPlanning: saved.searchPlanning !== false,
         clarifyQuestions: saved.clarifyQuestions !== false,
-        contentGranularity: saved.contentGranularity !== false,
-        locationService: saved.locationService !== false,
+        contentGranularity: saved.contentGranularity === true,
+        locationService: saved.locationService === true,
       };
       return state.autoToolEnabled;
     }
@@ -8644,7 +8839,6 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       els.luckyShotModeGroup?.querySelectorAll("button").forEach((button) => {
         button.addEventListener("click", () => setLuckyShotMode(button.dataset.luckyShotMode, { toast: false }));
       });
-      els.cfgWebSearchToolEnabled?.addEventListener("change", () => setAutoToolEnabled("webSearch", els.cfgWebSearchToolEnabled.checked));
       els.cfgSearchPlanningToolEnabled?.addEventListener("change", () => setAutoToolEnabled("searchPlanning", els.cfgSearchPlanningToolEnabled.checked));
       els.cfgClarifyQuestionsToolEnabled?.addEventListener("change", () => setAutoToolEnabled("clarifyQuestions", els.cfgClarifyQuestionsToolEnabled.checked));
       els.cfgContentGranularityToolEnabled?.addEventListener("change", () => setAutoToolEnabled("contentGranularity", els.cfgContentGranularityToolEnabled.checked));
@@ -8855,6 +9049,13 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         if (!event.target.closest(".chat-menu") && !event.target.closest(".chat-menu-btn") && !event.target.closest(".chat-export-btn")) closeChatMenu();
         if (!event.target.closest(".chat-row")) closeMobileRowActions();
       });
+      document.addEventListener("pointerdown", (event) => {
+        if (!isMobileViewport() || !els.chatMenu?.classList.contains("open")) return;
+        if (event.target.closest(".chat-menu, .chat-menu-btn")) return;
+        event.preventDefault();
+        event.stopPropagation();
+        closeChatMenu();
+      }, true);
       document.addEventListener("keydown", (event) => {
         if (event.key === "Escape") closeDeleteConfirm();
       });
@@ -9312,7 +9513,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function normalizeWebSearchMode(mode) {
-      return ["on", "auto", "off"].includes(mode) ? mode : "auto";
+      return ["on", "auto"].includes(mode) ? mode : "auto";
     }
 
     function normalizeToolCallMode(mode) {
@@ -9336,8 +9537,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function isAutoToolMode() {
-      const interaction = activeInteractionMode();
-      return normalizeToolCallMode(state.toolCallMode) === "auto" && interaction !== "classic" && interaction !== "direct";
+      return isAutoToolModeForRun(activeRun);
     }
 
     function isAutoToolEnabled(key) {
@@ -9346,11 +9546,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function isWebSearchEnabledForCurrentMode() {
-      return isAutoToolMode() ? isAutoToolEnabled("webSearch") : normalizeWebSearchMode(state.webSearchMode) !== "off";
+      return true;
     }
 
     function isSearchPlanningEnabledForCurrentMode() {
-      return isAutoToolMode() ? isAutoToolEnabled("searchPlanning") : normalizeSearchPlanningMode(state.searchPlanningMode) !== "simple";
+      return isAutoToolModeForRun(activeRun) ? isAutoToolEnabled("searchPlanning") : normalizeSearchPlanningMode(state.searchPlanningMode) !== "simple";
     }
 
     function isLuckyShotEnabledForCurrentMode() {
@@ -9358,15 +9558,21 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function isClarifyQuestionsEnabledForCurrentMode() {
-      return isAutoToolMode() ? isAutoToolEnabled("clarifyQuestions") : normalizeClarifyQuestionsMode(state.clarifyQuestionsMode) !== "off";
+      return isAutoToolModeForRun(activeRun) ? isAutoToolEnabled("clarifyQuestions") : normalizeClarifyQuestionsMode(state.clarifyQuestionsMode) !== "off";
     }
 
     function isContentGranularityEnabledForCurrentMode() {
-      return isAutoToolMode() ? isAutoToolEnabled("contentGranularity") : normalizeContentGranularityMode(state.contentGranularityMode) === "detail";
+      return isAutoToolModeForRun(activeRun) ? isAutoToolEnabled("contentGranularity") : normalizeContentGranularityMode(state.contentGranularityMode) === "detail";
+    }
+
+    function shouldHydrateDetailedSearchForRun(run = activeRun) {
+      return isAutoToolModeForRun(run)
+        ? isAutoToolEnabled("contentGranularity")
+        : normalizeContentGranularityMode(state.contentGranularityMode) === "detail";
     }
 
     function isLocationServiceEnabledForCurrentMode() {
-      return isAutoToolMode() ? isAutoToolEnabled("locationService") : normalizeLocationServiceMode(state.locationServiceMode) === "enabled";
+      return isAutoToolModeForRun(activeRun) ? isAutoToolEnabled("locationService") : normalizeLocationServiceMode(state.locationServiceMode) === "enabled";
     }
 
     function normalizeSearchResultCountMode(mode) {
@@ -9517,7 +9723,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function cycleWebSearchMode() {
-      const order = ["on", "auto", "off"];
+      const order = ["auto", "on"];
       const current = normalizeWebSearchMode(state.webSearchMode);
       setWebSearchMode(order[(order.indexOf(current) + 1) % order.length], { toast: true });
     }
@@ -9552,16 +9758,19 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (next === normalizeToolCallMode(state.toolCallMode)) return;
       recordSettingsEdit({ key: "toolCallMode", tab: "general" });
       state.toolCallMode = next;
+      if (activeRun) activeRun.toolCallMode = next;
       renderToolCallModeControls();
+      renderWebSearchControls();
+      renderToolChildSettingControls();
       renderSettingSubtitles();
       await saveState();
       if (opts.toast) showToast(`工具调用：${state.toolCallMode === "auto" ? "自动" : "流程"}`);
     }
 
     function renderToolChildSettingControls() {
-      const autoToolMode = isAutoToolMode();
       const directMode = normalizeInteractionMode(state.interactionMode) === "direct";
       const classicMode = normalizeInteractionMode(state.interactionMode) === "classic";
+      const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto" && !directMode && !classicMode;
       document.querySelectorAll("[data-tool-child-setting]").forEach((row) => {
         row.hidden = false;
         row.classList.toggle("disabled", directMode);
@@ -9577,7 +9786,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           control.disabled = directMode || classicMode;
         });
       });
-      toggleAutoToolSwitch(els.webSearchModeGroup, els.cfgWebSearchToolEnabled, autoToolMode, isAutoToolEnabled("webSearch"));
+      if (els.webSearchModeGroup) {
+        els.webSearchModeGroup.hidden = autoToolMode;
+        els.webSearchModeGroup.style.display = autoToolMode ? "none" : "";
+      }
       toggleAutoToolSwitch(els.searchPlanningModeGroup, els.cfgSearchPlanningToolEnabled, autoToolMode, isAutoToolEnabled("searchPlanning"));
       const luckyShotRow = document.querySelector("#luckyShotSettingRow");
       if (luckyShotRow) luckyShotRow.hidden = false;
@@ -9607,7 +9819,6 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     async function setAutoToolEnabled(key, enabled) {
       if (!isAutoToolMode()) return;
       const map = {
-        webSearch: { label: "网络搜索" },
         searchPlanning: { label: "搜索词构造" },
         clarifyQuestions: { label: "问题卡片" },
         contentGranularity: { label: "获取网页正文" },
@@ -10864,6 +11075,15 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return ["searchStatus", "searchContext", "search", "sources", "amapContext"].some((key) => Object.prototype.hasOwnProperty.call(patch, key));
     }
 
+    function currentToolCallModeForRun(run = activeRun) {
+      return normalizeToolCallMode(run?.toolCallMode || state.toolCallMode);
+    }
+
+    function isAutoToolModeForRun(run = activeRun) {
+      const interaction = normalizeInteractionMode(run?.interactionMode || activeInteractionMode());
+      return currentToolCallModeForRun(run) === "auto" && interaction !== "classic" && interaction !== "direct";
+    }
+
     function shouldAutoFollowRun(run) {
       return autoFollow
         && Date.now() >= userMessageAnchorUntil
@@ -11006,19 +11226,19 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const amapSig = JSON.stringify(message.amapContext || null);
       const featuredSources = normalizeFeaturedSources(message);
       const featuredSig = JSON.stringify(featuredSources);
+      const hasVisibleSources = !!(featuredSources.length || message.amapContext);
+      const hadVisibleSources = sources.dataset.visible === "true";
       if (sources.dataset.signature !== `${sourceSig}|${amapSig}|${featuredSig}`) {
         sources.innerHTML = `${renderAmapPanel(message.amapContext, { compact: true })}${featuredSources.length ? renderSourceResults(featuredSources, { limit: featuredSources.length, prompt }) : ""}`;
         sources.dataset.signature = `${sourceSig}|${amapSig}|${featuredSig}`;
         bindSourceListActions(sources, sourceItems, prompt);
       }
-      sources.style.display = featuredSources.length || message.amapContext ? "" : "none";
+      applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, `${amapSig}|${featuredSig}`);
 
       status.style.display = "none";
       const agentLoop = renderAgentLoop(message);
       if (agentLoopSlot.dataset.signature !== agentLoop) {
-        agentLoopSlot.innerHTML = agentLoop;
-        agentLoopSlot.dataset.signature = agentLoop;
-        bindAgentLoop(agentLoopSlot, message);
+        patchAgentLoopSlot(agentLoopSlot, agentLoop, message);
       }
       agentLoopSlot.style.display = agentLoop ? "" : "none";
 
@@ -11050,6 +11270,23 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       }
     }
 
+    function applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, revealSig) {
+      if (!hasVisibleSources) {
+        sources.classList.remove("source-reveal");
+        sources.dataset.visible = "false";
+        sources.style.display = "none";
+        return;
+      }
+      const shouldReveal = !hadVisibleSources || sources.dataset.revealSig !== revealSig;
+      sources.style.display = "";
+      sources.dataset.visible = "true";
+      sources.dataset.revealSig = revealSig;
+      if (!shouldReveal) return;
+      sources.classList.remove("source-reveal");
+      sources.getBoundingClientRect();
+      sources.classList.add("source-reveal");
+    }
+
     function sourceListSignature(sources) {
       return (sources || [])
         .map((source, index) => [
@@ -11069,10 +11306,15 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return text ? `<div class="search-status${done ? " done" : ""}" aria-live="polite">${esc(text)}</div>` : "";
     }
 
-    function agentIconSvg(type, status = "") {
+    function agentIconSvg(type, status = "", name = "", iconType = "") {
       if (status === "failed") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm-2.35 3.44L10 9.29l2.35-2.35.08-.06a.5.5 0 0 1 .62.78L10.71 10l2.34 2.35.06.08a.5.5 0 0 1-.78.62L10 10.71l-2.35 2.34-.08.06a.5.5 0 0 1-.62-.78L9.29 10 6.95 7.65l-.06-.08a.5.5 0 0 1 .76-.63Z"/></svg>';
-      if (status === "done" || status === "completed") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15m0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13m2.61 3.69a.5.5 0 0 1 .78.62l-4 5a.5.5 0 0 1-.74.04l-2-2-.06-.08a.5.5 0 0 1 .76-.62l1.6 1.6Z"/></svg>';
-      if (type === "tool") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 3.5A1.5 1.5 0 0 1 5.5 2h5.1L16 7.4v9.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5Zm7 0V7h3.5ZM6.5 11a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1Zm0 2.5a.5.5 0 0 0 0 1h4.5a.5.5 0 0 0 0-1Z"/></svg>';
+      const key = iconType || name || type;
+      if (type === "complete" || key === "complete") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15m0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13m2.61 3.69a.5.5 0 0 1 .78.62l-4 5a.5.5 0 0 1-.74.04l-2-2-.06-.08a.5.5 0 0 1 .76-.62l1.6 1.6Z"/></svg>';
+      if (key === "web_search" || key === "search" || type === "search") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm4.83 5h-2.18a11.6 11.6 0 0 0-.8-2.56 6.53 6.53 0 0 1 2.98 2.56ZM10 3.5c-.45 0-1.22.77-1.76 2.35-.17.5-.31 1.06-.43 1.65h4.38c-.12-.59-.26-1.14-.43-1.65C11.22 4.27 10.45 3.5 10 3.5ZM3.5 10c0 .52.06 1.02.17 1.5h2.95a12.8 12.8 0 0 1 0-3H3.67A6.55 6.55 0 0 0 3.5 10Zm.67 2.5a6.53 6.53 0 0 0 2.98 2.56 11.6 11.6 0 0 1-.8-2.56H4.17Zm2.18-5c.18-.96.45-1.83.8-2.56A6.53 6.53 0 0 0 4.17 7.5h2.18Zm1.27 4h4.76a11.75 11.75 0 0 0 0-3H7.62a11.75 11.75 0 0 0 0 3Zm.19 1c.12.59.26 1.14.43 1.65.54 1.58 1.31 2.35 1.76 2.35s1.22-.77 1.76-2.35c.17-.5.31-1.06.43-1.65H7.81Zm5.84 0a11.6 11.6 0 0 1-.8 2.56 6.53 6.53 0 0 0 2.98-2.56h-2.18Zm2.68-1c.11-.48.17-.98.17-1.5s-.06-1.02-.17-1.5h-2.95a12.8 12.8 0 0 1 0 3h2.95Z"/></svg>';
+      if (key === "get_webpage_content" || key === "read") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M4 3.5A1.5 1.5 0 0 1 5.5 2h5.1L16 7.4v9.1a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 4 16.5Zm7 0V7h3.5ZM6.5 11a.5.5 0 0 0 0 1h7a.5.5 0 0 0 0-1Zm0 2.5a.5.5 0 0 0 0 1h4.5a.5.5 0 0 0 0-1Z"/></svg>';
+      if (key === "amap_explore" || key === "map") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5A5.5 5.5 0 0 1 15.5 8c0 3.38-3.55 7.33-5.02 8.82a.68.68 0 0 1-.96 0C8.05 15.33 4.5 11.38 4.5 8A5.5 5.5 0 0 1 10 2.5Zm0 1A4.5 4.5 0 0 0 5.5 8c0 2.75 2.82 6.13 4.5 7.89 1.68-1.76 4.5-5.14 4.5-7.89A4.5 4.5 0 0 0 10 3.5Zm0 2.5a2 2 0 1 1 0 4 2 2 0 0 1 0-4Zm0 1a1 1 0 1 0 0 2 1 1 0 0 0 0-2Z"/></svg>';
+      if (key === "ask_user_question" || key === "question") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10 2.5a7.5 7.5 0 1 1 0 15 7.5 7.5 0 0 1 0-15Zm0 1a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm0 10a.7.7 0 1 1 0 1.4.7.7 0 0 1 0-1.4Zm0-8.4a2.65 2.65 0 0 1 1.24 4.99c-.56.3-.74.53-.74 1.16v.25a.5.5 0 0 1-1 0v-.25c0-1.15.5-1.7 1.27-2.1A1.65 1.65 0 1 0 8.35 7.7a.5.5 0 0 1-1 0A2.65 2.65 0 0 1 10 5.1Z"/></svg>';
+      if (type === "tool") return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M12.83 3.44a3.4 3.4 0 0 0-4.25 4.24l-4.72 4.72a1.85 1.85 0 1 0 2.62 2.62l4.72-4.72a3.4 3.4 0 0 0 4.24-4.25.5.5 0 0 0-.83-.2l-1.8 1.8-1.06-1.06 1.8-1.8a.5.5 0 0 0-.72-.85ZM5.77 14.31a.85.85 0 1 1-1.2-1.2l4.95-4.95a.5.5 0 0 0 .12-.52 2.4 2.4 0 0 1 2.42-3.2l-1.37 1.37a.5.5 0 0 0 0 .7l1.77 1.78a.5.5 0 0 0 .71 0l1.37-1.37a2.4 2.4 0 0 1-3.2 2.42.5.5 0 0 0-.52.12l-5.05 4.85Z"/></svg>';
       return '<svg viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path d="M10.39 2.51A7.5 7.5 0 1 1 2.5 10a.5.5 0 0 1 1 0 6.5 6.5 0 1 0 6.84-6.49L10 3.5l-.1-.01a.5.5 0 0 1 .1-.99zM10 5.5a.5.5 0 0 1 .5.5v3.69l2.72 1.36a.5.5 0 0 1-.35.93l-.09-.03-3-1.5A.5.5 0 0 1 9.5 10V6a.5.5 0 0 1 .5-.5"/></svg>';
     }
 
@@ -11118,24 +11360,56 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return "";
     }
 
+    function agentStepIdPart(value) {
+      return encodeURIComponent(String(value || "").replace(/\s+/g, " ").trim().toLowerCase()).replace(/%/g, "").slice(0, 96) || "item";
+    }
+
+    function searchStepIdForQueries(queries, prefix = "search") {
+      const list = Array.isArray(queries) ? queries : [queries];
+      return `${prefix}-${agentStepIdPart(list.filter(Boolean).join("|") || "web")}`;
+    }
+
+    function normalizedAgentSearchTitle(label, queries) {
+      const list = (Array.isArray(queries) ? queries : [queries])
+        .map((item) => String(item || "").replace(/\s+/g, " ").trim())
+        .filter(Boolean);
+      return `${label || "网络搜索"}${list.length ? `：${list.slice(0, 2).join(" / ")}` : ""}`;
+    }
+
+    function sourcesPreviewForAgentStep(step) {
+      const sources = step.sourcesPreview || step.sources || step.result?.results || [];
+      return Array.isArray(sources) ? sources.slice(0, 4) : [];
+    }
+
+    function agentStepDetailSignature(step) {
+      const sources = sourcesPreviewForAgentStep(step).map((source) => `${source.url || ""}|${source.title || ""}`).join(";");
+      return [
+        String(step.text || step.summary || "").trim(),
+        String(step.resultSummary || summarizeToolResult(step.result) || "").trim(),
+        Number.isFinite(Number(step.resultCount)) ? Number(step.resultCount) : "",
+        sources,
+      ].join("|");
+    }
+
+    function renderAgentSourcesPreview(sources) {
+      if (!sources.length) return "";
+      return `<div class="agent-sources-preview">${sources.map((source) => {
+        const title = source.title || source.siteName || domainOf(source.url) || source.url || "来源";
+        const domain = source.domain || source.siteName || domainOf(source.url) || "";
+        return `<div class="agent-source-preview"><span class="agent-source-title">${esc(title)}</span><span class="agent-source-domain">${esc(domain)}</span></div>`;
+      }).join("")}</div>`;
+    }
+
     function summarizeAgentLoopOutcome(message) {
-      if (message.agentSummary) return sanitizeAgentLoopSummary(message.agentSummary);
-      const prompt = previousUserPromptFor(message.id)
-        .replace(/https?:\/\/\S+/g, "")
-        .replace(/[{}"':,\[\]]/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
-      const topic = prompt
-        .replace(/^(请|帮我|麻烦|能不能|可以)?(搜索|查找|查询|研究|分析|解释|说明|整理|梳理|帮我)?/i, "")
-        .trim()
-        .replace(/[，,。.!！?？:：;；].*$/, "")
-        .slice(0, 18);
-      if (!topic) return "回答已整理";
-      if (/(概念|是什么|what is|definition|定义)/i.test(prompt)) return `解释了${topic}`;
-      if (/(实现|代码|详解|原理|架构|流程|ReAct|agent loop)/i.test(prompt)) return `梳理了${topic}`;
-      if (/(对比|比较|vs|versus|区别)/i.test(prompt)) return `比较了${topic}`;
-      if (/(推荐|排行|best|top|选择)/i.test(prompt)) return `筛选了${topic}`;
-      return `回答了${topic}`;
+      if (message?.interrupted) return "处理已被用户中断";
+      if (message?.agentSummary) return sanitizeAgentLoopSummary(message.agentSummary);
+      if (completionSummaryPendingIds.has(message?.id) || message?.agentSummaryPending) return "正在总结本次工作";
+      return localAgentLoopSummary(message);
+    }
+
+    function localAgentLoopSummary(message) {
+      if (message?.content) return "生成了回答";
+      return "完成";
     }
 
     function sanitizeAgentLoopSummary(text) {
@@ -11145,111 +11419,241 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         .replace(/[，,。.!！?？:：;；].*$/, "")
         .replace(/\s+/g, "")
         .trim()
-        .slice(0, 18) || "回答已整理";
+        .slice(0, 18);
+    }
+
+    function completionSummaryConfig() {
+      normalizeAiConfigsState();
+      const config = state.aiConfigs.find((item) => item.apiKey && configModels(item).length) || null;
+      if (config) {
+        const models = configModels(config);
+        return { baseUrl: config.baseUrl || DEFAULT_BASE_URL, apiKey: config.apiKey, model: models[0] || "" };
+      }
+      const model = requestModelQueue()[0] || "";
+      return state.apiKey && model ? { baseUrl: state.baseUrl || DEFAULT_BASE_URL, apiKey: state.apiKey, model } : null;
     }
 
     function scheduleCompletionSummary(message) {
-      if (!message?.id || message.agentSummary || completionSummaryPendingIds.has(message.id)) return;
-      if (!state.apiKey || !requestModelQueue()[0]) return;
+      if (!message?.id || message.agentSummary || completionSummaryAttemptedIds.has(message.id) || completionSummaryPendingIds.has(message.id)) return;
+      const config = completionSummaryConfig();
+      if (!config?.apiKey || !config.model) return;
       completionSummaryPendingIds.add(message.id);
+      completionSummaryAttemptedIds.add(message.id);
+      message.agentSummaryPending = true;
       const prompt = previousUserPromptFor(message.id);
       const content = String(message.content || "").slice(0, 900);
       Promise.resolve().then(async () => {
+        let updated = false;
         try {
-          const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${state.apiKey}`,
-            },
-            body: JSON.stringify({
-              model: requestModelQueue()[0],
-              messages: [
-                { role: "system", content: "为 AI 回答完成状态写一个中文短句。只输出短句。不要用逗号句号冒号。不要以完成了开头。不要提来源数量或检索数量。最多 12 个汉字。" },
-                { role: "user", content: `用户问题：${prompt}\n\n回答摘要：${content}` },
-              ],
-              temperature: 0.5,
-              max_tokens: 24,
-              stream: false,
-            }),
-          });
-          if (!response.ok) return;
-          const summary = sanitizeAgentLoopSummary(extractContentFromResponse(await response.json()));
-          if (summary) updateMessage(message.id, { agentSummary: summary });
+          for (let attempt = 0; attempt < 2 && !updated; attempt++) {
+            if (attempt) await new Promise((resolve) => setTimeout(resolve, 700));
+            const response = await fetch(config.baseUrl || DEFAULT_BASE_URL, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${config.apiKey}`,
+              },
+              body: JSON.stringify({
+                model: config.model,
+                messages: [
+                  { role: "system", content: "为 AI 回答完成状态写一个中文成果总结短句。只输出短句。不要用逗号句号冒号。不要以完成或已完成开头。不要提来源数量、检索数量、精选数量。最多 12 个汉字。" },
+                  { role: "user", content: `用户问题：${prompt}\n\n回答摘要：${content}` },
+                ],
+                temperature: 0.5,
+                max_tokens: 24,
+                stream: false,
+              }),
+            });
+            if (!response.ok) continue;
+            const summary = sanitizeAgentLoopSummary(extractContentFromResponse(await response.json()));
+            if (summary && summary !== "完成") {
+              updated = true;
+              updateMessage(message.id, { agentSummary: summary, agentSummaryPending: false });
+            }
+          }
         } catch (e) {
         } finally {
           completionSummaryPendingIds.delete(message.id);
+          if (!updated) updateMessage(message.id, { agentSummaryPending: false });
         }
       });
     }
 
     function renderAgentLoop(message) {
-      const steps = Array.isArray(message.agentSteps) ? message.agentSteps.slice() : [];
+      const rawSteps = Array.isArray(message.agentSteps) ? message.agentSteps.slice() : [];
+      const knownStepIds = Array.isArray(message.renderedAgentStepIds) ? new Set(message.renderedAgentStepIds) : new Set();
+      const knownDetailSigs = message.renderedAgentStepDetailSigs && typeof message.renderedAgentStepDetailSigs === "object"
+        ? message.renderedAgentStepDetailSigs
+        : {};
+      const nextStepIds = [];
+      const nextDetailSigs = {};
+      let steps = rawSteps.filter((step) => step && step.type !== "complete");
       const statusText = String(message.searchStatus || "").trim();
       const thinkingText = String(message.thinking || "").trim();
       if (thinkingText && !steps.some((step) => step.type === "thinking" && String(step.text || "").trim() === thinkingText)) {
         steps.unshift({
           id: "thinking",
           type: "thinking",
-          title: message.loading && !message.content ? "Linsoo 正在思考" : "思考过程",
+          title: "",
           text: thinkingText,
           status: message.loading && !message.content ? "running" : "done",
           durationMs: message.thoughtSeconds || 0,
         });
       }
-      const hasSameRunningStatus = steps.some((step) => step.type === "status" && step.status === "running" && step.title === statusText);
-      if (statusText && !hasSameRunningStatus) {
+      const completed = !message.loading && (!!message.content || message.interrupted);
+      if (completed && !thinkingText) {
+        steps = steps.filter((step) => !(step.id === "thinking-init" && String(step.text || "").trim() === "Thinking"));
+      }
+      if (completed) {
+        steps = steps.map((step) => step.status === "running" ? { ...step, status: step.type === "status" && message.interrupted ? "failed" : "done" } : step);
         steps.push({
-          id: "status",
-          type: "status",
-          title: statusText,
-          status: message.loading ? "running" : /^已找到/.test(statusText) ? "done" : "",
+          id: "complete",
+          type: "complete",
+          iconType: "complete",
+          title: message.interrupted ? "已中断" : "完成",
+          status: message.interrupted ? "failed" : "done",
         });
       }
-      if (!steps.length && message.loading) {
-        steps.push({ id: "status", type: "status", title: "Linsoo 正在组织回答", status: "running" });
-      }
-      if (!steps.length) return "";
-      const completed = !message.loading && !!message.content;
-      if (completed) scheduleCompletionSummary(message);
-      const label = completed ? summarizeAgentLoopOutcome(message) : (message.content ? "Linsoo 正在输出回答" : (steps[steps.length - 1]?.title || "Linsoo 正在处理"));
+      if (!steps.length && !message.loading) return "";
+      steps.forEach((step) => {
+        nextStepIds.push(step.id);
+        nextDetailSigs[step.id] = agentStepDetailSignature(step);
+      });
+      message.renderedAgentStepIds = nextStepIds;
+      message.renderedAgentStepDetailSigs = nextDetailSigs;
+      if (completed && !message.interrupted) scheduleCompletionSummary(message);
+      const activeRunningId = [...steps].reverse().find((step) => step.status === "running")?.id || "";
+      const label = completed
+        ? summarizeAgentLoopOutcome(message)
+        : (statusText || (message.content ? "正在输出回答" : (steps[steps.length - 1]?.title || "正在处理")));
+      const previousLabel = message.renderedAgentLoopLabel || "";
+      const labelChanged = !!previousLabel && previousLabel !== label;
+      message.renderedAgentLoopLabel = label;
       const open = openAgentLoopMessageIds.has(message.id);
       return `
         <div class="agent-loop${open ? " open" : ""}" aria-expanded="${open ? "true" : "false"}">
           <button class="agent-loop-head" type="button">
-            <span class="agent-loop-label${message.loading ? " loading" : ""}">${esc(label)}</span>
+            <span class="agent-loop-label${message.loading ? " loading" : ""}${labelChanged ? " label-changing" : ""}">${esc(label)}</span>
             <span class="agent-loop-caret" aria-hidden="true"><svg viewBox="0 0 20 20" fill="currentColor"><path d="M5.22 7.72a.75.75 0 0 1 1.06 0L10 11.44l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.78a.75.75 0 0 1 0-1.06Z"/></svg></span>
           </button>
           <div class="agent-loop-body">
             <div class="agent-loop-inner">
-              ${steps.map((step) => renderAgentStep(step, message)).join("")}
+              ${steps.map((step) => {
+                const existing = knownStepIds.has(step.id);
+                const detailSig = nextDetailSigs[step.id] || "";
+                const detailNew = existing && step.type !== "thinking" && !!knownDetailSigs[step.id] && knownDetailSigs[step.id] !== detailSig;
+                return renderAgentStep(step, message, existing, step.id === activeRunningId, detailNew);
+              }).join("")}
             </div>
           </div>
         </div>`;
     }
 
-    function renderAgentStep(step, message) {
+    function renderAgentStep(step, message, existing = false, activeRunning = false, detailNew = false) {
       const status = step.status || "";
       const type = step.type || "status";
-      const title = String(step.title || "").trim() || (type === "tool" ? agentToolLabel(step.name) : "处理步骤");
+      const title = String(step.title || "").trim() || (type === "thinking" ? "" : type === "tool" ? agentToolLabel(step.name) : "处理步骤");
       const text = String(step.text || step.summary || "").trim();
       const result = step.resultSummary || summarizeToolResult(step.result);
+      const progress = String(step.progressText || "").trim();
+      const visibleProgress = type === "search" ? "" : progress;
+      const resultCount = Number.isFinite(Number(step.resultCount)) ? Number(step.resultCount) : null;
+      const sourcesPreview = sourcesPreviewForAgentStep(step);
       const expanded = message.expandedAgentStepId === step.id;
       const longText = text.length > 360 || text.split("\n").length > 6;
+      const metaHtml = (visibleProgress || result || resultCount !== null)
+        ? `<span class="agent-step-meta">${visibleProgress ? `<span>${esc(visibleProgress)}</span>` : ""}${result ? `<strong>${esc(result)}</strong>` : ""}${resultCount !== null && !result ? `<strong>返回 ${resultCount} 条结果</strong>` : ""}</span>`
+        : "";
       const detail = [
         text ? `<div class="agent-thinking-text">${esc(text)}</div>${longText ? `<button class="agent-show-more" type="button" data-agent-step="${esc(step.id)}">${expanded ? "Show less" : "Show more"}</button>` : ""}` : "",
-        result ? `<div>${esc(result)}</div>` : "",
+        renderAgentSourcesPreview(sourcesPreview),
       ].filter(Boolean).join("");
       return `
-        <div class="agent-step ${esc(type)} ${esc(status)}${expanded ? " expanded" : ""}">
-          <div class="agent-step-rail"><span class="agent-node">${agentIconSvg(type, status)}</span></div>
+        <div class="agent-step ${esc(type)} ${esc(status)}${expanded ? " expanded" : ""}${existing ? " existing" : ""}" data-agent-step-id="${esc(step.id)}">
+          <div class="agent-step-rail"><span class="agent-node">${agentIconSvg(type, status, step.name, step.iconType)}</span></div>
           <div class="agent-step-main">
-            <div class="agent-step-title${status === "running" ? " shimmer" : ""}">
-              <span>${esc(title)}</span>
-            </div>
-            ${detail ? `<div class="agent-step-detail">${detail}</div>` : ""}
+            ${title ? `<div class="agent-step-title${activeRunning ? " shimmer" : ""}"><span>${esc(title)}</span>${metaHtml}</div>` : metaHtml ? `<div class="agent-step-title">${metaHtml}</div>` : ""}
+            ${detail ? `<div class="agent-step-detail${detailNew ? " detail-new" : ""}">${detail}</div>` : ""}
           </div>
         </div>`;
+    }
+
+    function patchAgentLoopSlot(slot, html, message) {
+      if (!html) {
+        slot.innerHTML = "";
+        slot.dataset.signature = "";
+        return;
+      }
+      const template = document.createElement("template");
+      template.innerHTML = html.trim();
+      const nextLoop = template.content.firstElementChild;
+      const currentLoop = slot.querySelector(".agent-loop");
+      if (!currentLoop || !nextLoop) {
+        slot.innerHTML = html;
+        slot.dataset.signature = html;
+        bindAgentLoop(slot, message);
+        return;
+      }
+
+      currentLoop.className = nextLoop.className;
+      currentLoop.setAttribute("aria-expanded", nextLoop.getAttribute("aria-expanded") || "false");
+      const currentLabel = currentLoop.querySelector(".agent-loop-label");
+      const nextLabel = nextLoop.querySelector(".agent-loop-label");
+      if (currentLabel && nextLabel) {
+        if (currentLabel.textContent !== nextLabel.textContent) currentLabel.textContent = nextLabel.textContent;
+        if (currentLabel.className !== nextLabel.className) currentLabel.className = nextLabel.className;
+      }
+      const currentBody = currentLoop.querySelector(".agent-loop-body");
+      const nextBody = nextLoop.querySelector(".agent-loop-body");
+      if (currentBody && nextBody) currentBody.className = nextBody.className;
+
+      const currentInner = currentLoop.querySelector(".agent-loop-inner");
+      const nextInner = nextLoop.querySelector(".agent-loop-inner");
+      if (!currentInner || !nextInner) {
+        slot.innerHTML = html;
+        slot.dataset.signature = html;
+        bindAgentLoop(slot, message);
+        return;
+      }
+      const nextIds = new Set();
+      [...nextInner.children].forEach((nextStep, index) => {
+        const stepId = nextStep.dataset.agentStepId || "";
+        if (!stepId) return;
+        nextIds.add(stepId);
+        const currentStep = currentInner.querySelector(`[data-agent-step-id="${CSS.escape(stepId)}"]`);
+        if (!currentStep) {
+          currentInner.insertBefore(nextStep, currentInner.children[index] || null);
+          return;
+        }
+        currentStep.className = nextStep.className;
+        const currentNode = currentStep.querySelector(".agent-node");
+        const nextNode = nextStep.querySelector(".agent-node");
+        if (currentNode && nextNode && currentNode.innerHTML !== nextNode.innerHTML) currentNode.innerHTML = nextNode.innerHTML;
+        const currentTitle = currentStep.querySelector(".agent-step-title");
+        const nextTitle = nextStep.querySelector(".agent-step-title");
+        if (currentTitle && nextTitle) {
+          if (currentTitle.innerHTML !== nextTitle.innerHTML) currentTitle.innerHTML = nextTitle.innerHTML;
+          if (currentTitle.className !== nextTitle.className) currentTitle.className = nextTitle.className;
+        } else if (currentTitle || nextTitle) {
+          currentTitle?.remove();
+          if (nextTitle) currentStep.querySelector(".agent-step-main")?.prepend(nextTitle);
+        }
+        const currentDetail = currentStep.querySelector(".agent-step-detail");
+        const nextDetail = nextStep.querySelector(".agent-step-detail");
+        if (currentDetail && nextDetail) {
+          if (currentDetail.innerHTML !== nextDetail.innerHTML) currentDetail.innerHTML = nextDetail.innerHTML;
+          if (currentDetail.className !== nextDetail.className) currentDetail.className = nextDetail.className;
+        } else if (currentDetail || nextDetail) {
+          currentDetail?.remove();
+          if (nextDetail) currentStep.querySelector(".agent-step-main")?.appendChild(nextDetail);
+        }
+        if (currentInner.children[index] !== currentStep) currentInner.insertBefore(currentStep, currentInner.children[index] || null);
+      });
+      [...currentInner.querySelectorAll(".agent-step[data-agent-step-id]")].forEach((step) => {
+        if (!nextIds.has(step.dataset.agentStepId || "")) step.remove();
+      });
+      slot.dataset.signature = html;
+      bindAgentLoop(slot, message);
     }
 
     function loadingDotsHTML() {
@@ -11751,20 +12155,26 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function bindAgentLoop(root, message) {
-      root.querySelector(".agent-loop-head")?.addEventListener("click", () => {
-        if (openAgentLoopMessageIds.has(message.id)) openAgentLoopMessageIds.delete(message.id);
-        else openAgentLoopMessageIds.add(message.id);
-        const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
-        if (node) renderAssistantContent(node, message);
-      });
-      root.querySelectorAll(".agent-show-more").forEach((button) => {
-        button.addEventListener("click", (event) => {
+      root.__agentLoopMessage = message;
+      if (root.dataset.agentLoopBound === "true") return;
+      root.dataset.agentLoopBound = "true";
+      root.addEventListener("click", (event) => {
+        const activeMessage = root.__agentLoopMessage || message;
+        if (event.target.closest(".agent-loop-head")) {
+          if (openAgentLoopMessageIds.has(activeMessage.id)) openAgentLoopMessageIds.delete(activeMessage.id);
+          else openAgentLoopMessageIds.add(activeMessage.id);
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(activeMessage.id)}"]`);
+          if (node) renderAssistantContent(node, activeMessage);
+          return;
+        }
+        const button = event.target.closest(".agent-show-more");
+        if (button) {
           event.stopPropagation();
           const stepId = button.dataset.agentStep || "";
-          message.expandedAgentStepId = message.expandedAgentStepId === stepId ? "" : stepId;
-          const node = els.messages.querySelector(`[data-id="${CSS.escape(message.id)}"]`);
-          if (node) renderAssistantContent(node, message);
-        });
+          activeMessage.expandedAgentStepId = activeMessage.expandedAgentStepId === stepId ? "" : stepId;
+          const node = els.messages.querySelector(`[data-id="${CSS.escape(activeMessage.id)}"]`);
+          if (node) renderAssistantContent(node, activeMessage);
+        }
       });
     }
 
@@ -12058,11 +12468,25 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     async function runAssistant(opts = {}) {
-      const assistant = pushMessage({ role: "assistant", content: "", loading: true });
+      const runInteractionMode = activeInteractionMode();
+      const runToolCallMode = normalizeToolCallMode(state.toolCallMode);
+      const priorUserCount = messages.filter((message) => message.role === "user").length;
+      const assistant = pushMessage({
+        role: "assistant",
+        content: "",
+        loading: true,
+        searchStatus: "Thinking",
+        agentSteps: [],
+      });
+      openAgentLoopMessageIds.add(assistant.id);
+      scheduleAssistantRender(assistant.id);
       const run = {
         chat: currentChat ? { ...currentChat } : null,
         messages,
         assistantId: assistant.id,
+        interactionMode: runInteractionMode,
+        toolCallMode: runToolCallMode,
+        forceInitialSearch: priorUserCount <= 1,
         reusedSearchContext: opts.searchContext || null,
         searchContext: opts.searchContext || null,
         searchPrepared: !!opts.searchContext,
@@ -12078,7 +12502,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         maybeGenerateTitle(run);
       } catch (error) {
         if (error.name === "AbortError") {
-          updateRunMessage(run, assistant.id, { content: "已停止生成。", loading: false, searchStatus: "" });
+          appendAgentStatusStep(run, assistant.id, "处理已被用户中断", { status: "failed" });
+          updateRunMessage(run, assistant.id, { loading: false, searchStatus: "", agentLoopOpen: false, interrupted: true });
         } else {
           updateRunMessage(run, assistant.id, {
             content: `请求失败：${error.message || error}\n\n请检查 Base URL、API Key、模型名，或换一个支持搜索/联网的模型。`,
@@ -12121,6 +12546,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         chat: currentChat ? { ...currentChat } : null,
         messages,
         assistantId: assistant.id,
+        interactionMode: "classic",
+        toolCallMode: "flow",
         searchContext: userMessage.searchContext,
         amapContext: userMessage.amapContext || null,
         searchPrepared: true,
@@ -12136,7 +12563,12 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           maybeGenerateTitle(run);
         })
         .catch((error) => {
-          updateRunMessage(run, assistant.id, { content: error.name === "AbortError" ? "已停止生成。" : `请求失败：${error.message || error}`, loading: false, searchStatus: "" });
+          if (error.name === "AbortError") {
+            appendAgentStatusStep(run, assistant.id, "处理已被用户中断", { status: "failed" });
+            updateRunMessage(run, assistant.id, { loading: false, searchStatus: "", agentLoopOpen: false, interrupted: true });
+          } else {
+            updateRunMessage(run, assistant.id, { content: `请求失败：${error.message || error}`, loading: false, searchStatus: "" });
+          }
         })
         .finally(async () => {
           if (activeRun === run) activeRun = null;
@@ -12153,6 +12585,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         messages,
         userMessageId,
         searchOnly: true,
+        interactionMode: activeInteractionMode(),
+        toolCallMode: normalizeToolCallMode(state.toolCallMode),
       };
       activeRun = run;
       running = true;
@@ -12160,7 +12594,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       updateSendState();
       updateRunMessage(run, userMessageId, { searchStatus: "正在准备搜索..." });
       try {
-        await prepareSearchForRun(userMessageId, requestModelQueue()[0] || "", aborter.signal, run, { forceSearch: true, skipPlanner: true });
+        await prepareSearchForRun(userMessageId, requestModelQueue()[0] || "", aborter.signal, run, { forceSearch: true });
         const userMessage = run.messages.find((message) => message.id === userMessageId);
         if (!userMessage?.searchContext?.results?.length && userMessage?.searchContext?.errors?.length) {
           showToast(`搜索失败：${userMessage.searchContext.errors[0]}`);
@@ -12213,8 +12647,40 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           preferredProvider: "",
           complex: false,
         };
-        appendAgentStatusStep(run, assistant.id, `搜索：${query}`);
-        const search = applySourcePreferencesToSearch(await runSearchRouter([query], decision, aborter.signal));
+        const directSearchStepId = createSearchAgentStep(run, assistant.id, [query], { label: "网络搜索" });
+        run.webSearchToolCalls = 1;
+        let search = applySourcePreferencesToSearch(await runSearchRouter([query], decision, aborter.signal, (status, partialSearch) => {
+          const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+          updateSearchAgentProgress(run, assistant.id, directSearchStepId, status, preparedPartial);
+          updateRunMessage(run, assistant.id, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+        }));
+        const remaining = Number.isFinite(searchCallLimitValue()) ? Math.max(0, searchCallLimitValue() - (run.webSearchToolCalls || 0)) : 5;
+        if (remaining > 0 && state.searchPlanningMode !== "simple" && state.apiKey && requestModelQueue()[0]) {
+          appendAgentStatusStep(run, assistant.id, "判断是否需要补充搜索");
+          const supplemental = await decideWebSearch(prompt, buildSearchContextPrompt(search), requestModelQueue()[0] || "", aborter.signal, false).catch(() => null);
+          const extraQueries = supplemental?.shouldSearch
+            ? normalizeSearchQueries(refineSearchDecision(supplemental, prompt), prompt)
+              .filter((item) => item && item.toLowerCase() !== query.toLowerCase())
+              .slice(0, remaining)
+            : [];
+          if (extraQueries.length) {
+            run.webSearchToolCalls += extraQueries.length;
+            const extraSearchStepId = createSearchAgentStep(run, assistant.id, extraQueries, { label: "补充搜索", prefix: "extra-search" });
+            const extra = applySourcePreferencesToSearch(await runSearchRouter(extraQueries, { ...decision, queries: extraQueries, complex: extraQueries.length > 1 }, aborter.signal, (status, partialSearch) => {
+              const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+              updateSearchAgentProgress(run, assistant.id, extraSearchStepId, status, preparedPartial);
+              updateRunMessage(run, assistant.id, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+            }));
+            search = mergeSearchContexts(search, extra);
+            patchSearchAgentStep(run, assistant.id, extraSearchStepId, {
+              status: "done",
+              progressText: "",
+              resultCount: search.results.length,
+              resultSummary: `返回 ${search.results.length} 条结果`,
+              sourcesPreview: search.results.slice(0, 4),
+            });
+          }
+        }
         const results = dedupeSources(search.results || []);
         if (!results.length) {
           appendAgentStatusStep(run, assistant.id, search.errors?.[0] ? `搜索失败：${search.errors[0]}` : "没有找到可直达的结果", { status: "failed" });
@@ -12222,7 +12688,13 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           showToast(search.errors?.[0] ? `直达搜索失败：${search.errors[0]}` : "没有找到可直达的结果。");
           return;
         }
-        appendAgentStatusStep(run, assistant.id, `找到 ${results.length} 条结果`, { status: "done" });
+        patchSearchAgentStep(run, assistant.id, directSearchStepId, {
+          status: "done",
+          progressText: "",
+          resultCount: results.length,
+          resultSummary: `返回 ${results.length} 条结果`,
+          sourcesPreview: results.slice(0, 4),
+        });
         appendAgentStatusStep(run, assistant.id, "判断最可能点击的结果");
         const selected = await runLuckyShotSelection({ ...search, results }, prompt, requestModelQueue()[0] || "", aborter.signal, { count: 1, mode: "smart" });
         const target = selected?.[0] || results[0];
@@ -12236,7 +12708,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         await recordDomainClick(target.url);
         location.replace(target.url);
       } catch (error) {
-        if (error.name !== "AbortError") {
+        if (error.name === "AbortError") {
+          appendAgentStatusStep(run, assistant.id, "处理已被用户中断", { status: "failed" });
+          updateRunMessage(run, assistant.id, { loading: false, searchStatus: "", agentLoopOpen: false, interrupted: true });
+        } else {
           appendAgentStatusStep(run, assistant.id, `直达失败：${error.message || error}`, { status: "failed" });
           updateRunMessage(run, assistant.id, { loading: false });
           showToast(`直达失败：${error.message || error}`);
@@ -12321,20 +12796,77 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     function patchAgentStep(run, assistantId, stepId, patch) {
       const steps = readAssistantAgentSteps(run, assistantId).slice();
       const index = steps.findIndex((step) => step.id === stepId);
-      if (index >= 0) steps[index] = { ...steps[index], ...patch };
-      else steps.push({ id: stepId, ...patch });
+      const now = Date.now();
+      if (index >= 0) steps[index] = { ...steps[index], ...patch, updatedAt: now };
+      else steps.push({ id: stepId, firstSeenAt: now, startedAt: now, updatedAt: now, ...patch });
       updateRunMessage(run, assistantId, { agentSteps: steps });
     }
 
     function pushAgentStep(run, assistantId, step) {
+      const now = Date.now();
+      const previous = readAssistantAgentSteps(run, assistantId).find((item) => item.id === step.id);
       const steps = readAssistantAgentSteps(run, assistantId).filter((item) => item.id !== step.id);
-      steps.push(step);
+      steps.push({
+        firstSeenAt: previous?.firstSeenAt || now,
+        startedAt: previous?.startedAt || now,
+        updatedAt: now,
+        ...previous,
+        ...step,
+      });
       updateRunMessage(run, assistantId, { agentSteps: steps });
+    }
+
+    function patchLatestAgentProgressStep(run, assistantId, patch) {
+      const steps = readAssistantAgentSteps(run, assistantId).slice();
+      for (let i = steps.length - 1; i >= 0; i--) {
+        if (["search", "tool", "status"].includes(steps[i]?.type)) {
+          steps[i] = { ...steps[i], ...patch, updatedAt: Date.now() };
+          updateRunMessage(run, assistantId, { agentSteps: steps });
+          return true;
+        }
+      }
+      return false;
+    }
+
+    function patchSearchAgentStep(run, assistantId, stepId, patch) {
+      if (!stepId) return;
+      patchAgentStep(run, assistantId, stepId, {
+        type: "search",
+        name: "web_search",
+        iconType: "search",
+        ...patch,
+      });
+    }
+
+    function createSearchAgentStep(run, assistantId, queries, opts = {}) {
+      const stepId = opts.stepId || searchStepIdForQueries(queries, opts.prefix || "search");
+      patchSearchAgentStep(run, assistantId, stepId, {
+        title: normalizedAgentSearchTitle(opts.label || "网络搜索", queries),
+        queries: Array.isArray(queries) ? queries : [queries],
+        status: opts.status || "running",
+        progressText: opts.progressText || "",
+      });
+      run.activeSearchStepId = stepId;
+      return stepId;
+    }
+
+    function updateSearchAgentProgress(run, assistantId, stepId, status, search = null) {
+      if (!stepId) return;
+      const count = search?.results?.length;
+      patchSearchAgentStep(run, assistantId, stepId, {
+        progressText: /^正在用|^正在抓取/.test(String(status || "")) ? status : "",
+        resultCount: Number.isFinite(count) ? count : undefined,
+        resultSummary: Number.isFinite(count) ? `返回 ${count} 条结果` : undefined,
+        sourcesPreview: Array.isArray(search?.results) ? search.results.slice(0, 4) : undefined,
+      });
     }
 
     function appendAgentStatusStep(run, assistantId, title, opts = {}) {
       title = String(title || "").trim();
       if (!title) return;
+      if (/^正在用|^已获取|^正在抓取/.test(title)) {
+        if (patchLatestAgentProgressStep(run, assistantId, { progressText: title, status: opts.status || "running" })) return;
+      }
       const now = Date.now();
       const steps = readAssistantAgentSteps(run, assistantId).slice();
       const last = steps[steps.length - 1];
@@ -12360,7 +12892,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const now = Date.now();
       let changed = false;
       const steps = readAssistantAgentSteps(run, assistantId).map((step) => {
-        if (!["status", "thinking"].includes(step.type) || step.status !== "running") return step;
+        if (!["status", "thinking", "search", "tool"].includes(step.type) || step.status !== "running") return step;
         changed = true;
         return { ...step, status: "done", durationMs: now - (step.startedAt || now), updatedAt: now };
       });
@@ -12368,18 +12900,78 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       updateRunMessage(run, assistantId, { agentSteps: steps });
     }
 
+    function normalizeThinkingForCompare(text = "") {
+      return String(text || "")
+        .toLowerCase()
+        .replace(/用户问的是|我们被问到|需要回答|最终回答|注意：|由于是搜索问题/g, "")
+        .replace(/[^\p{L}\p{N}]+/gu, "")
+        .slice(0, 1200);
+    }
+
+    function thinkingSimilarityScore(a = "", b = "") {
+      const left = normalizeThinkingForCompare(a);
+      const right = normalizeThinkingForCompare(b);
+      if (!left || !right) return 0;
+      if (left.includes(right) || right.includes(left)) return 1;
+      const shingles = (value) => {
+        const set = new Set();
+        for (let i = 0; i < value.length - 1; i++) set.add(value.slice(i, i + 2));
+        return set;
+      };
+      const aSet = shingles(left);
+      const bSet = shingles(right);
+      if (!aSet.size || !bSet.size) return 0;
+      let overlap = 0;
+      aSet.forEach((item) => {
+        if (bSet.has(item)) overlap += 1;
+      });
+      return overlap / Math.min(aSet.size, bSet.size);
+    }
+
+    function existingSimilarThinkingStep(run, assistantId, text, stepId) {
+      const steps = readAssistantAgentSteps(run, assistantId);
+      const same = steps.find((step) => step.id === stepId);
+      if (same) return same;
+      for (let i = steps.length - 1; i >= 0; i--) {
+        const step = steps[i];
+        if (step?.type !== "thinking") continue;
+        if (thinkingSimilarityScore(step.text || "", text) >= 0.36) return step;
+      }
+      return null;
+    }
+
     function appendThinkingAgentStep(run, assistantId, text, stepIndex, status = "running") {
-      if (!String(text || "").trim()) return;
-      patchAgentStep(run, assistantId, `thinking-${stepIndex}`, {
+      const nextText = String(text || "").trim();
+      if (!nextText) return;
+      const requestedId = `thinking-${agentStepIdPart(stepIndex || "stream")}`;
+      const existing = existingSimilarThinkingStep(run, assistantId, nextText, requestedId);
+      const previousText = String(existing?.text || "").trim();
+      const chosenText = previousText
+        && nextText.length < previousText.length
+        && (thinkingSimilarityScore(previousText, nextText) >= 0.24 || (previousText.length > 40 && nextText.length < 20))
+        ? previousText
+        : nextText;
+      patchAgentStep(run, assistantId, existing?.id || requestedId, {
         type: "thinking",
-        title: status === "running" ? "Linsoo 正在分析" : "分析了回答依据",
-        text,
+        title: "",
+        text: chosenText,
         status,
       });
     }
 
+    function readStreamChunkWithHeartbeat(reader, signal, onWait, intervalMs = 7000) {
+      let settled = false;
+      const timer = setInterval(() => {
+        if (!settled && !signal?.aborted) onWait?.();
+      }, intervalMs);
+      return reader.read().finally(() => {
+        settled = true;
+        clearInterval(timer);
+      });
+    }
+
     async function streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, fallbackContent = "") {
-      appendAgentStatusStep(run, assistantId, "开始回答用户问题");
+      updateRunMessage(run, assistantId, { searchStatus: "正在整理回答..." });
       const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
         method: "POST",
         headers: {
@@ -12424,9 +13016,18 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       let contentRaw = "";
       let content = "";
       let thinking = "";
+      let waitNotified = false;
       while (true) {
-        const { done, value } = await reader.read();
+        const { done, value } = await readStreamChunkWithHeartbeat(reader, signal, () => {
+          if (waitNotified) return;
+          waitNotified = true;
+          updateRunMessage(run, assistantId, { searchStatus: "正在等待模型继续返回..." });
+        });
         if (done) break;
+        if (waitNotified) {
+          waitNotified = false;
+          updateRunMessage(run, assistantId, { searchStatus: content ? "正在输出回答..." : "正在整理回答..." });
+        }
         buffer += decoder.decode(value, { stream: true });
         const parts = buffer.split("\n\n");
         buffer = parts.pop() || "";
@@ -12469,7 +13070,6 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (!content) throw new Error("模型没有返回内容。");
       if (thinking) appendThinkingAgentStep(run, assistantId, thinking, "final-stream", "done");
       finishAgentStatusSteps(run, assistantId);
-      appendAgentStatusStep(run, assistantId, summarizeAgentLoopOutcome({ ...(run?.messages || messages).find((message) => message.id === assistantId), loading: false }), { status: "done" });
       updateRunMessage(run, assistantId, {
         content,
         thinking: thinking || undefined,
@@ -12600,34 +13200,6 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         .filter((item) => item.length > 1 && !/^(the|and|for|with|from|into|what|how|why|具体|实现|代码|详解|搜索|查询|资料|研究)$/.test(item));
     }
 
-    function querySimilarity(a, b) {
-      const aSet = new Set(searchQueryTokens(a));
-      const bSet = new Set(searchQueryTokens(b));
-      if (!aSet.size || !bSet.size) return 0;
-      let intersection = 0;
-      aSet.forEach((item) => {
-        if (bSet.has(item)) intersection += 1;
-      });
-      return intersection / Math.max(aSet.size, bSet.size);
-    }
-
-    function validateSearchAngle(run, queries) {
-      const next = (queries || []).join(" ");
-      const previous = Array.isArray(run?.webSearchQueryAngles) ? run.webSearchQueryAngles : [];
-      if (!previous.length) return { ok: true };
-      const match = previous
-        .map((query, index) => ({ query, index, score: querySimilarity(next, query) }))
-        .sort((a, b) => b.score - a.score)[0];
-      if (match && match.score >= 0.62) {
-        return {
-          ok: false,
-          error: `这次 web_search 和第 ${match.index + 1} 次搜索角度过于相似。请换一个明显不同的方向，例如实现细节、ReAct/规划模式、工程案例、风险限制、评测对比或权威资料来源之一。`,
-          previousQueries: previous,
-        };
-      }
-      return { ok: true };
-    }
-
     function mergeSearchContexts(previous, incoming) {
       if (!previous?.results?.length && !previous?.groups?.length) return incoming;
       if (!incoming?.results?.length && !incoming?.groups?.length) return previous;
@@ -12682,29 +13254,36 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         }
         if (queries.length > remaining) queries = queries.slice(0, remaining);
       }
-      const angle = validateSearchAngle(run, queries);
-      if (!angle.ok) return { ok: false, error: angle.error, previousQueries: angle.previousQueries };
       run.webSearchToolCalls = (run.webSearchToolCalls || 0) + Math.max(1, queries.length);
-      run.webSearchQueryAngles = [...(run.webSearchQueryAngles || []), queries.join(" / ")];
+      const searchStepId = createSearchAgentStep(run, assistantId, queries, { label: "网络搜索" });
       updateRunMessage(run, assistantId, { searchStatus: `正在搜索：${queries[0] || decision.query}` });
       const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
         const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
         const mergedPartial = preparedPartial ? mergeSearchContexts(run.searchContext, preparedPartial) : null;
-        if (/^正在用|^正在抓取/.test(status)) appendAgentStatusStep(run, assistantId, status);
+        updateSearchAgentProgress(run, assistantId, searchStepId, status, mergedPartial);
         updateRunMessage(run, assistantId, mergedPartial ? { searchStatus: status, searchContext: mergedPartial, sources: mergedPartial.results } : { searchStatus: status });
       });
       const searchPrepared = applySourcePreferencesToSearch(searchRaw);
-      const search = await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
-        const mergedPrepared = mergeSearchContexts(run.searchContext, searchPrepared);
-        if (/^正在用|^正在抓取/.test(status)) appendAgentStatusStep(run, assistantId, status);
-        updateRunMessage(run, assistantId, { searchStatus: status, searchContext: mergedPrepared, sources: mergedPrepared.results });
-      });
+      const search = shouldHydrateDetailedSearchForRun(run)
+        ? await hydrateBoostedSearchContent(searchPrepared, signal, (status) => {
+          const mergedPrepared = mergeSearchContexts(run.searchContext, searchPrepared);
+          updateSearchAgentProgress(run, assistantId, searchStepId, status, mergedPrepared);
+          updateRunMessage(run, assistantId, { searchStatus: status, searchContext: mergedPrepared, sources: mergedPrepared.results });
+        })
+        : searchPrepared;
       run.searchContext = mergeSearchContexts(run.searchContext, search);
       const warning = Number.isFinite(searchLimit) && run.webSearchToolCalls >= searchLimit
         ? `本轮 web_search 已达到设置上限：${searchCallLimitLabel()}。请停止搜索并回答。`
         : run.webSearchToolCalls > TARGET_WEB_SEARCH_TOOL_CALLS
           ? `本轮已经调用 web_search ${run.webSearchToolCalls} 次。除非绝对必要，请停止搜索并回答。`
         : "";
+      patchSearchAgentStep(run, assistantId, searchStepId, {
+        status: "done",
+        progressText: "",
+        resultCount: run.searchContext.results.length,
+        resultSummary: `返回 ${run.searchContext.results.length} 条结果`,
+        sourcesPreview: run.searchContext.results.slice(0, 4),
+      });
       updateRunMessage(run, assistantId, { searchContext: run.searchContext, sources: run.searchContext.results, searchStatus: "" });
       return {
         ok: true,
@@ -12883,6 +13462,9 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       };
       requestedIds.forEach((id) => addEntry(entries.find((entry) => entry.id === id)));
       requestedUrls.forEach((url) => addEntry(entries.find((entry) => normalizeSourceUrl(entry.source.url) === url)));
+      if (!selected.length) {
+        return { ok: false, error: "lucky_shot 需要明确的 sourceIds 或 urls，不能默认选择顶部结果。" };
+      }
       entries.forEach((entry) => {
         if (selected.length < count) addEntry(entry);
       });
@@ -12912,8 +13494,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
     function featuredSourcesForRun(run = activeRun) {
       const sources = normalizeFeaturedSources(run);
       if (sources.length) return sources;
-      const entries = sourceIdsForSearch(run?.searchContext || run?.reusedSearchContext || null);
-      return entries[0]?.source ? [entries[0].source] : [];
+      return [];
     }
 
     function featuredSourceForRun(run = activeRun) {
@@ -12923,17 +13504,14 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
     function scheduleLuckyShotForFlow(run, targetMessageId, prompt, model, signal) {
       if (!run?.searchContext?.results?.length || run.luckyShotStarted) return;
       run.luckyShotStarted = true;
-      appendAgentStatusStep(run, targetMessageId, normalizeLuckyShotMode(state.luckyShotMode) === "bet" ? "下注第一条结果" : "选择顶部来源");
       Promise.resolve().then(async () => {
         try {
           const sources = await runLuckyShotSelection(run.searchContext, prompt, model, signal);
           if (!sources?.length || signal?.aborted) return;
           run.featuredSources = sources;
           run.featuredSource = sources[0] || null;
-          appendAgentStatusStep(run, targetMessageId, `精选 ${sources.length} 条顶部来源`, { status: "done" });
           updateRunMessage(run, targetMessageId, { featuredSources: sources, featuredSource: run.featuredSource });
         } catch (error) {
-          appendAgentStatusStep(run, targetMessageId, "顶部来源选择失败", { status: "failed" });
         }
       });
     }
@@ -13027,7 +13605,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
             },
           },
         });
-      if (isWebSearchEnabledForCurrentMode() && !runHasSearchResults(run)) tools.push({
+      if (isWebSearchEnabledForCurrentMode() && !searchCallLimitReached(run)) tools.push({
           type: "function",
           function: {
             name: "web_search",
@@ -13042,24 +13620,6 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
                 intent: { type: "string", enum: ["fresh", "research", "general"] },
                 preferredProvider: { type: "string", enum: ["tavily", "exa", "serper", "serpapi"] },
                 complex: { type: "boolean" },
-              },
-            },
-          },
-        });
-      if (isLuckyShotEnabledForCurrentMode()) tools.push({
-          type: "function",
-          function: {
-            name: "lucky_shot",
-            description: "Lucky Shot: after all web_search calls for this answer have completed, choose 1 to 3 search results to feature at the top of the assistant message. Predict which results the user would most likely click first, like likely clicks after a Google search. Select by user intent, boosted domains, and recent domain click counts, not merely the first result. If no web_search results exist, do not call this tool. Use sourceIds like S1/S2 when available, or exact URLs.",
-            parameters: {
-              type: "object",
-              properties: {
-                count: { type: "integer", minimum: 1, maximum: 3, description: "How many featured links to show, from 1 to 3." },
-                sourceId: { type: "string", description: "The source id from the search context, such as S1." },
-                sourceIds: { type: "array", items: { type: "string" }, description: "Preferred list of source ids, such as [S1, S3]." },
-                url: { type: "string", description: "Exact URL of the chosen source if sourceId is not known." },
-                urls: { type: "array", items: { type: "string" }, description: "Preferred list of exact URLs if sourceIds are not known." },
-                reason: { type: "string", description: "Short reason why this source best matches the user intent." },
               },
             },
           },
@@ -13201,32 +13761,15 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         const content = stripLeakedToolCallMarkup(normalizeAssistantMessageContent(message.content));
         const toolCalls = extractToolCallsFromResponse(data);
         const reasoningChunk = extractReasoningFromResponse(data);
+        if (!toolCalls.length) {
+          if (!content) throw new Error("模型没有返回内容。");
+          scheduleLuckyShotForFlow(run, assistantId, latestUserPrompt(runMessages, assistantId), model, signal);
+          return await streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, content);
+        }
         if (reasoningChunk) {
           reasoning = `${reasoning}${reasoning ? "\n" : ""}${reasoningChunk}`.trim();
           updateRunMessage(run, assistantId, { thinking: reasoning, loading: true });
           appendThinkingAgentStep(run, assistantId, reasoning, step + 1, "running");
-        }
-        if (!toolCalls.length) {
-          if (!content) throw new Error("模型没有返回内容。");
-          if (step > 0) {
-            return await streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, content);
-          }
-          dismissMobileKeyboardForOutput(run);
-          appendThinkingAgentStep(run, assistantId, reasoning, step + 1, "done");
-          appendAgentStatusStep(run, assistantId, summarizeAgentLoopOutcome({ ...(run?.messages || messages).find((message) => message.id === assistantId), content, loading: false }), { status: "done" });
-          updateRunMessage(run, assistantId, {
-            thinking: reasoning,
-            content,
-            loading: false,
-            searchStatus: "",
-            agentLoopOpen: false,
-            searchContext: run?.searchContext || null,
-            sources: run?.searchContext?.results || [],
-            featuredSources: featuredSourcesForRun(run),
-            featuredSource: featuredSourceForRun(run),
-            amapContext: run?.amapContext || null,
-          });
-          return content;
         }
         requestMessages.push({
           role: "assistant",
@@ -13237,16 +13780,34 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         let shouldForceFinalAnswer = false;
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
-          const toolStepId = toolCall.id || `tool-${step + 1}-${toolName}`;
           const toolArgs = safeParseToolArgs(toolCall?.function?.arguments || "{}");
+          if (toolName === "lucky_shot") {
+            const result = { ok: false, disabled: true, error: "lucky_shot 由 Linsoo 在最后一次搜索后异步执行，不参与 Agent loop。" };
+            requestMessages.push({
+              role: "tool",
+              tool_call_id: toolCall.id,
+              name: toolName,
+              content: toolResultJson(result),
+            });
+            continue;
+          }
+          const toolQueries = Array.isArray(toolArgs.queries) ? toolArgs.queries : [toolArgs.query || toolArgs.fallback || toolArgs.prompt].filter(Boolean);
+          const toolStepId = toolName === "web_search"
+            ? searchStepIdForQueries(toolQueries.length ? toolQueries : latestUserPrompt(run?.messages || messages, assistantId), "search")
+            : (toolCall.id || `tool-${step + 1}-${toolName}`);
           const startedAt = Date.now();
-          pushAgentStep(run, assistantId, {
+          const stepPayload = {
             id: toolStepId,
-            type: "tool",
+            type: toolName === "web_search" ? "search" : "tool",
             name: toolName,
-            title: [agentToolLabel(toolName), summarizeToolArgsForTitle(toolName, toolArgs)].filter(Boolean).join("："),
+            iconType: toolName === "web_search" ? "search" : "",
+            title: toolName === "web_search"
+              ? normalizedAgentSearchTitle("网络搜索", toolQueries)
+              : [agentToolLabel(toolName), summarizeToolArgsForTitle(toolName, toolArgs)].filter(Boolean).join("："),
             status: "running",
-          });
+          };
+          pushAgentStep(run, assistantId, stepPayload);
+          if (toolName === "web_search") run.activeSearchStepId = toolStepId;
           updateRunMessage(run, assistantId, { searchStatus: `正在调用工具：${agentToolLabel(toolName)}` });
           const result = await executeAgentToolCall(toolCall, signal, run, assistantId);
           patchAgentStep(run, assistantId, toolStepId, {
@@ -13254,6 +13815,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
             durationMs: Date.now() - startedAt,
             result,
             resultSummary: summarizeToolResult(result),
+            resultCount: Array.isArray(result?.results) ? result.results.length : undefined,
+            sourcesPreview: Array.isArray(result?.results) ? result.results.slice(0, 4) : undefined,
           });
           requestMessages.push({
             role: "tool",
@@ -13270,6 +13833,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           }
         }
         if (shouldForceFinalAnswer) {
+          scheduleLuckyShotForFlow(run, assistantId, latestUserPrompt(runMessages, assistantId), model, signal);
           return await streamToolFinalAnswer(model, requestMessages, assistantId, signal, run, content);
         }
         if (searchCallLimitReached(run)) {
@@ -13285,6 +13849,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         }
       }
       updateRunMessage(run, assistantId, { searchStatus: "工具调用已达到轮次上限，正在根据已有结果整理回答..." });
+      scheduleLuckyShotForFlow(run, assistantId, latestUserPrompt(runMessages, assistantId), model, signal);
       const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
         method: "POST",
         headers: {
@@ -13310,7 +13875,6 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const finalReasoning = [reasoning, extractReasoningFromResponse(data)].filter(Boolean).join("\n").trim();
       appendThinkingAgentStep(run, assistantId, finalReasoning, "final", "done");
       finishAgentStatusSteps(run, assistantId);
-      appendAgentStatusStep(run, assistantId, summarizeAgentLoopOutcome({ ...(run?.messages || messages).find((message) => message.id === assistantId), content, loading: false }), { status: "done" });
       dismissMobileKeyboardForOutput(run);
       updateRunMessage(run, assistantId, {
         thinking: finalReasoning,
@@ -13336,9 +13900,15 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         openSettings();
         throw new Error("请先在设置中添加 AI 配置、API Key 和调用模型。");
       }
-      const useToolMode = normalizeToolCallMode(state.toolCallMode) === "auto" && activeInteractionMode() !== "classic" && !run?.searchOnly;
+      const useToolMode = isAutoToolModeForRun(run) && !run?.searchOnly;
       syncActiveAiConfigToLegacy(firstConfig);
-      if (!useToolMode && !run?.skipSearch) await prepareSearchForRun(assistantId, modelList[0], signal, run);
+      const shouldPrepareSearch = !run?.skipSearch && (run?.forceInitialSearch || !useToolMode || run?.searchOnly);
+      if (shouldPrepareSearch) {
+        await prepareSearchForRun(assistantId, modelList[0], signal, run);
+        if (run?.forceInitialSearch && !run?.searchContext?.results?.length && !run?.amapContext) {
+          throw new Error("网络搜索未能完成，无法在没有搜索结果的前提下回答。");
+        }
+      }
       const queue = state.queueFallback === true ? configs : configs.slice(0, 1);
       let lastError;
       for (const config of queue) {
@@ -13701,21 +14271,83 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
     async function prepareSearchForRun(targetMessageId, model, signal, run = activeRun, opts = {}) {
       if (!run || run.searchPrepared) return;
       run.searchPrepared = true;
-      const mode = normalizeWebSearchMode(state.webSearchMode);
-      const forceSearch = opts.forceSearch === true;
       const prompt = latestUserPrompt(run.messages || messages, targetMessageId);
       if (!prompt.trim()) return;
       const planningContext = buildSearchPlanningContext(run.messages || messages, targetMessageId);
+      const fallbackQuery = contextualSearchFallbackQuery(prompt, run.messages || messages, targetMessageId);
+      const forceSearch = opts.forceSearch === true || run.forceInitialSearch === true;
+      const promptIsClearSearch = isPromptSearchReady(fallbackQuery);
+      let initialDecision = {
+        shouldSearch: forceSearch || shouldConsiderAutoSearch(prompt),
+        query: searchFallbackQuery(prompt, fallbackQuery),
+        queries: [searchFallbackQuery(prompt, fallbackQuery)],
+        intent: inferSearchIntent(prompt),
+        preferredProvider: "",
+        complex: false,
+      };
+      updateRunMessage(run, targetMessageId, { searchStatus: "Thinking" });
+      if (!opts.skipPlanner && (forceSearch ? !promptIsClearSearch : true) && model && state.apiKey) {
+        updateRunMessage(run, targetMessageId, { searchStatus: "正在规划搜索词..." });
+        initialDecision = await decideWebSearch(prompt, planningContext, model, signal, forceSearch).catch(() => initialDecision);
+        initialDecision = refineSearchDecision(initialDecision, prompt);
+      } else if (normalizeSearchPlanningMode(state.searchPlanningMode) === "simple") {
+        initialDecision = refineSearchDecision({ ...initialDecision, complex: false }, prompt);
+      }
+      if (!forceSearch && initialDecision.shouldSearch !== true) {
+        run.searchSkipped = true;
+        updateRunMessage(run, targetMessageId, { searchStatus: "" });
+        return;
+      }
+      initialDecision.shouldSearch = true;
+      const initialQuery = initialDecision.query || initialDecision.queries?.[0] || searchFallbackQuery(prompt, fallbackQuery);
+      scheduleSearchPageRender({ resetScrollTop: true });
+      const initialQueries = limitSearchQueriesForRun(normalizeSearchQueries(initialDecision, fallbackQuery), run, targetMessageId);
+      if (!initialQueries.length) {
+        updateRunMessage(run, targetMessageId, { searchStatus: "" });
+        return;
+      }
+      try {
+        run.webSearchToolCalls = (run.webSearchToolCalls || 0) + initialQueries.length;
+        const initialSearchStepId = createSearchAgentStep(run, targetMessageId, initialQueries, { label: "网络搜索" });
+        updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${initialQueries[0]}${initialQueries.length > 1 ? ` 等 ${initialQueries.length} 个搜索词` : ""}` });
+        const searchRaw = await runSearchRouter(initialQueries, initialDecision, signal, (status, partialSearch) => {
+          const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+          updateSearchAgentProgress(run, targetMessageId, initialSearchStepId, status, preparedPartial);
+          updateRunMessage(run, targetMessageId, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
+        });
+        run.searchContext = applySourcePreferencesToSearch(searchRaw);
+        if (run.searchContext.results.length) {
+          patchSearchAgentStep(run, targetMessageId, initialSearchStepId, {
+            status: "done",
+            progressText: "",
+            resultCount: run.searchContext.results.length,
+            resultSummary: `返回 ${run.searchContext.results.length} 条结果`,
+            sourcesPreview: run.searchContext.results.slice(0, 4),
+          });
+          updateRunMessage(run, targetMessageId, { sources: run.searchContext.results, searchContext: run.searchContext, searchStatus: run.searchOnly ? `已找到 ${run.searchContext.results.length} 条网页结果。` : "", featuredSources: featuredSourcesForRun(run), featuredSource: featuredSourceForRun(run) });
+        }
+      } catch (error) {
+        if (error.name === "AbortError") throw error;
+        appendAgentStatusStep(run, targetMessageId, `搜索失败：${error.message || error}`, { status: "failed" });
+        showToast(`搜索失败：${error.message || error}`);
+        updateRunMessage(run, targetMessageId, { searchStatus: "" });
+        return;
+      }
+      if (isAutoToolMode() && !run.searchOnly) {
+        updateRunMessage(run, targetMessageId, { searchStatus: "" });
+        return;
+      }
       let amapDecision = { shouldUse: false, kind: "", skipClarification: false };
       let amapContext = null;
       const useLocationService = normalizeLocationServiceMode(state.locationServiceMode) === "enabled";
       if (useLocationService && state.amapKey) {
-        appendAgentStatusStep(run, targetMessageId, "判断是否需要位置服务");
+        updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要位置服务..." });
         amapDecision = await decideAmapUsage(prompt, planningContext, model, signal).catch(() => ({
           shouldUse: shouldUseAmapForPrompt(prompt),
           kind: inferAmapIntent(prompt)?.kind || "",
           skipClarification: false,
         }));
+        appendAgentStatusStep(run, targetMessageId, amapDecision.shouldUse ? "需要位置服务" : "无需位置服务", { status: "done" });
       }
       if (amapDecision.shouldUse && !state.amapKey) {
         showToast("这个问题需要位置服务，请先在设置-搜索中填写高德地图 Key。");
@@ -13736,7 +14368,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         }
       }
       const planningContextWithGeo = [planningContext, amapContext ? buildAmapContextPrompt(amapContext) : ""].filter(Boolean).join("\n\n");
-      appendAgentStatusStep(run, targetMessageId, "判断是否需要补充问题");
+      updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要补充问题..." });
       const clarification = normalizeClarifyQuestionsMode(state.clarifyQuestionsMode) === "off" || amapDecision.skipClarification === true
         ? null
         : await maybeAskUserQuestion({
@@ -13749,6 +14381,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           amapContext,
           forceAskCheck: true,
         });
+      appendAgentStatusStep(run, targetMessageId, clarification?.answers?.length ? "已补充问题信息" : "无需补充问题", { status: "done" });
       const searchPrompt = buildClarifiedPrompt(prompt, clarification);
       const searchSeed = buildClarifiedSearchSeed(prompt, clarification);
       const clarifiedContext = clarification?.answers?.length
@@ -13761,71 +14394,61 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
         const userId = latestUserMessageId(run.messages || messages, targetMessageId);
         if (userId) updateRunMessage(run, userId, { clarification });
       }
-      if (mode === "off" && !forceSearch) {
-        appendAgentStatusStep(run, targetMessageId, "Web Search 已关闭", { status: "done" });
-        updateRunMessage(run, targetMessageId, { searchStatus: "" });
-        return;
-      }
-      const fallbackQuery = contextualSearchFallbackQuery(searchSeed, run.messages || messages, targetMessageId);
-
-      let decision = {
-        shouldSearch: forceSearch || mode === "on",
-        query: searchFallbackQuery(searchSeed, fallbackQuery),
-        queries: [searchFallbackQuery(searchSeed, fallbackQuery)],
-        intent: inferSearchIntent(searchSeed),
-        preferredProvider: "",
-        complex: false,
-      };
-      if (opts.skipPlanner) {
-        decision = buildTraditionalSearchDecision(searchSeed, fallbackQuery);
-      } else if (state.searchPlanningMode === "simple") {
-        decision = refineSearchDecision(decision, searchSeed);
-      }
-      appendAgentStatusStep(run, targetMessageId, mode === "auto" && !forceSearch ? "判断是否需要 Web Search" : "规划 Web Search 搜索词");
-      updateRunMessage(run, targetMessageId, { searchStatus: mode === "auto" && !forceSearch ? "正在判断是否需要 Web Search..." : "正在规划 Web Search 搜索词..." });
-      if (!opts.skipPlanner && state.searchPlanningMode !== "simple" && (mode === "auto" || mode === "on" || forceSearch)) {
-        decision = await decideWebSearch(searchSeed, clarifiedContext, model, signal, forceSearch || mode === "on").catch(() => {
-          const intent = inferSearchIntent(searchSeed);
-          const query = searchFallbackQuery(searchSeed, fallbackQuery);
-          return { shouldSearch: forceSearch || mode === "on" || intent === "fresh", query, queries: [query], intent, preferredProvider: "", complex: false };
-        });
-        decision = refineSearchDecision(decision, searchSeed);
-      }
-      if (!decision.shouldSearch) {
-        appendAgentStatusStep(run, targetMessageId, "无需 Web Search", { status: "done" });
-        updateRunMessage(run, targetMessageId, { searchStatus: "" });
-        return;
-      }
-
-      scheduleSearchPageRender({ resetScrollTop: true });
-      let queries = normalizeSearchQueries(decision, searchSeed);
-      queries = limitSearchQueriesForRun(queries, run, targetMessageId);
-      if (!queries.length) {
-        updateRunMessage(run, targetMessageId, { searchStatus: "" });
-        return;
-      }
       try {
-        run.webSearchToolCalls = (run.webSearchToolCalls || 0) + queries.length;
-        appendAgentStatusStep(run, targetMessageId, `搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}`);
-        updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${queries[0]}${queries.length > 1 ? ` 等 ${queries.length} 个搜索词` : ""}` });
-        const searchRaw = await runSearchRouter(queries, decision, signal, (status, partialSearch) => {
-          const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
-          if (/^正在用|^正在抓取/.test(status)) appendAgentStatusStep(run, targetMessageId, status);
-          updateRunMessage(run, targetMessageId, preparedPartial ? { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results } : { searchStatus: status });
-        });
-        const searchPrepared = applySourcePreferencesToSearch(searchRaw);
-        const search = normalizeContentGranularityMode(state.contentGranularityMode) === "detail"
-          ? await hydrateDetailedSearchContent(searchPrepared, { prompt: searchPrompt, planningContext: clarifiedContext, model, signal }, (status) => {
-            appendAgentStatusStep(run, targetMessageId, status);
-            updateRunMessage(run, targetMessageId, { searchStatus: status, searchContext: searchPrepared, sources: searchPrepared.results });
-          })
-          : searchPrepared;
-        run.searchContext = search;
+        let search = run.searchContext || { query: initialQuery, queries: [initialQuery], groups: [], results: [], errors: [] };
+        if (search.results?.length && shouldHydrateDetailedSearchForRun(run)) {
+          search = await hydrateDetailedSearchContent(search, { prompt: searchPrompt, planningContext: clarifiedContext, model, signal }, (status) => {
+            updateSearchAgentProgress(run, targetMessageId, run.activeSearchStepId, status, run.searchContext || search);
+            updateRunMessage(run, targetMessageId, { searchStatus: status, searchContext: run.searchContext, sources: run.searchContext?.results || [] });
+          });
+          run.searchContext = search;
+        }
         if (search.results.length) {
           const doneStatus = run.searchOnly ? `已找到 ${search.results.length} 条网页结果。` : "";
-          appendAgentStatusStep(run, targetMessageId, `找到 ${search.results.length} 条网页结果`, { status: "done" });
+          patchSearchAgentStep(run, targetMessageId, run.activeSearchStepId, {
+            status: "done",
+            progressText: "",
+            resultCount: search.results.length,
+            resultSummary: `返回 ${search.results.length} 条结果`,
+            sourcesPreview: search.results.slice(0, 4),
+          });
           updateRunMessage(run, targetMessageId, { sources: search.results, searchContext: search, searchStatus: doneStatus, featuredSources: featuredSourcesForRun(run), featuredSource: featuredSourceForRun(run) });
-          if (!isAutoToolMode()) scheduleLuckyShotForFlow(run, targetMessageId, searchPrompt, model, signal);
+          const remaining = Number.isFinite(searchCallLimitValue()) ? Math.max(0, searchCallLimitValue() - (run.webSearchToolCalls || 0)) : 5;
+          if (remaining > 0 && state.searchPlanningMode !== "simple" && model && state.apiKey) {
+            updateRunMessage(run, targetMessageId, { searchStatus: "正在判断是否需要补充搜索..." });
+            const supplementalContext = [clarifiedContext, buildSearchContextPrompt(search)].filter(Boolean).join("\n\n");
+            const supplemental = await decideWebSearch(searchSeed, supplementalContext, model, signal, false).catch(() => null);
+            const extraQueries = supplemental?.shouldSearch
+              ? normalizeSearchQueries(refineSearchDecision(supplemental, searchSeed), searchSeed)
+                .filter((query) => query && query.toLowerCase() !== initialQuery.toLowerCase())
+                .slice(0, remaining)
+              : [];
+            if (!extraQueries.length) appendAgentStatusStep(run, targetMessageId, "无需补充搜索", { status: "done" });
+            if (extraQueries.length) {
+              run.webSearchToolCalls = (run.webSearchToolCalls || 0) + extraQueries.length;
+              const extraSearchStepId = createSearchAgentStep(run, targetMessageId, extraQueries, { label: "补充搜索", prefix: "extra-search" });
+              updateRunMessage(run, targetMessageId, { searchStatus: `正在补充搜索：${extraQueries[0]}` });
+              const extraRaw = await runSearchRouter(extraQueries, { ...initialDecision, queries: extraQueries, complex: extraQueries.length > 1, intent: inferSearchIntent(searchSeed) }, signal, (status, partialSearch) => {
+                const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
+                updateSearchAgentProgress(run, targetMessageId, extraSearchStepId, status, preparedPartial);
+                if (preparedPartial) updateRunMessage(run, targetMessageId, { searchStatus: status, searchContext: preparedPartial, sources: preparedPartial.results });
+                else updateRunMessage(run, targetMessageId, { searchStatus: status });
+              });
+              const merged = mergeSearchContexts(search, applySourcePreferencesToSearch(extraRaw));
+              run.searchContext = shouldHydrateDetailedSearchForRun(run)
+                ? await hydrateDetailedSearchContent(merged, { prompt: searchPrompt, planningContext: clarifiedContext, model, signal })
+                : merged;
+              patchSearchAgentStep(run, targetMessageId, extraSearchStepId, {
+                status: "done",
+                progressText: "",
+                resultCount: run.searchContext.results.length,
+                resultSummary: `返回 ${run.searchContext.results.length} 条结果`,
+                sourcesPreview: run.searchContext.results.slice(0, 4),
+              });
+              updateRunMessage(run, targetMessageId, { sources: run.searchContext.results, searchContext: run.searchContext, searchStatus: doneStatus, featuredSources: featuredSourcesForRun(run), featuredSource: featuredSourceForRun(run) });
+            }
+          }
+          scheduleLuckyShotForFlow(run, targetMessageId, searchPrompt, model, signal);
         } else if (search.errors.length) {
           appendAgentStatusStep(run, targetMessageId, `搜索失败：${search.errors[0]}`, { status: "failed" });
           showToast(`搜索失败：${search.errors[0]}`);
@@ -13990,7 +14613,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           messages: withRealtimeMessagePrefix([
             {
               role: "system",
-              content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "Web search mode is On, so shouldSearch must be true." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} If the context already contains enough structured location-service data from AMap to answer the request directly, set shouldSearch to false unless the user explicitly asks for broader web sources, comparisons, reviews, or external references. Build search queries by staying close to the user's original wording: first extract the core entities, constraints, and keywords directly from the user prompt, then add only the minimum missing context needed to make the query self-contained. Do not replace the user's framing with a completely different search angle unless the user prompt is extremely vague or underspecified. Prefer keyword extraction plus light completion over free invention. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
+              content: `Decide and plan browser-side web search for the current user request using the recent conversation context. Return only compact JSON with keys: shouldSearch boolean, query string, queries array of 1-5 strings, intent one of fresh|research|general, preferredProvider one of tavily|exa|serper|serpapi|empty, complex boolean. ${forceSearch ? "A web search is required for this turn, so shouldSearch must be true; if the prompt is unclear, build a clear search query from the conversation." : "Use search only when live or source-grounded information is useful; do not search for ordinary writing, translation, explanation, coding, or conversation unless current/source-grounded facts are needed."} If the context already contains enough structured location-service data from AMap to answer the request directly, set shouldSearch to false unless the user explicitly asks for broader web sources, comparisons, reviews, or external references. Build search queries by staying close to the user's original wording: first extract the core entities, constraints, and keywords directly from the user prompt, then add only the minimum missing context needed to make the query self-contained. Do not replace the user's framing with a completely different search angle unless the user prompt is extremely vague or underspecified. Prefer keyword extraction plus light completion over free invention. Mark complex=true only when multiple independent searches are needed; one city's weather, one current price, one exchange rate, one score, or one release/version lookup is not complex. Every query must be self-contained. For follow-up requests, include the inferred topic from context; never search only a generic refinement like cheap products or budget picks.`,
             },
             { role: "user", content: planningContext },
           ]),
@@ -14090,14 +14713,14 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 
     function buildTraditionalSearchDecision(prompt, fallback = "") {
       const query = searchFallbackQuery(prompt, fallback);
-      const queries = expandSearchQueries(prompt, query).slice(0, 4);
+      const queries = [query];
       return {
         shouldSearch: true,
         query: queries[0] || query,
         queries,
         intent: inferSearchIntent(prompt),
         preferredProvider: "",
-        complex: true,
+        complex: false,
       };
     }
 
@@ -14808,10 +15431,19 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       let thinking = "";
       let thinkingStartedAt = 0;
       let thinkingEndedAt = 0;
+      let waitNotified = false;
 
       while (true) {
-        const { done, value } = await reader.read();
+        const { done, value } = await readStreamChunkWithHeartbeat(reader, signal, () => {
+          if (waitNotified) return;
+          waitNotified = true;
+          updateRunMessage(run, assistantId, { searchStatus: "正在等待模型继续返回..." });
+        });
         if (done) break;
+        if (waitNotified) {
+          waitNotified = false;
+          updateRunMessage(run, assistantId, { searchStatus: content ? "正在输出回答..." : "正在生成回答..." });
+        }
         buffer += decoder.decode(value, { stream: true });
         const parts = buffer.split("\n\n");
         buffer = parts.pop() || "";
@@ -14891,15 +15523,12 @@ Treat this as the user's actual current location unless the user explicitly says
     }
 
     function buildToolAvailabilityPrompt() {
-      const enabled = (value) => value ? "enabled" : "disabled";
-      return [
-        `build_search_queries: ${enabled(isSearchPlanningEnabledForCurrentMode())}`,
-        `web_search: ${enabled(isWebSearchEnabledForCurrentMode())} (${searchCallLimitLabel()})`,
-        `lucky_shot: ${enabled(isLuckyShotEnabledForCurrentMode())} after all web_search results exist, mode ${normalizeLuckyShotMode(state.luckyShotMode)}`,
-        `amap_explore: ${enabled(isLocationServiceEnabledForCurrentMode())}`,
-        `get_webpage_content: ${enabled(isContentGranularityEnabledForCurrentMode())} (hard max ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs)`,
-        `ask_user_question: ${enabled(isClarifyQuestionsEnabledForCurrentMode())}`,
-      ].join("\n");
+      const lines = [`web_search: enabled (${searchCallLimitLabel()})`];
+      if (isSearchPlanningEnabledForCurrentMode()) lines.push("build_search_queries: enabled");
+      if (isLocationServiceEnabledForCurrentMode()) lines.push("amap_explore: enabled");
+      if (isContentGranularityEnabledForCurrentMode()) lines.push(`get_webpage_content: enabled (hard max ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique URLs)`);
+      if (isClarifyQuestionsEnabledForCurrentMode()) lines.push("ask_user_question: enabled");
+      return lines.join("\n");
     }
 
     function buildToolAgentSystemPrompt(run = activeRun) {
@@ -14917,18 +15546,17 @@ Treat this as the user's actual current location unless the user explicitly says
       return `${DEFAULT_PROMPT}
 
 You are operating inside a browser-side tool calling environment.
-- Available tools: build_search_queries, web_search, lucky_shot, amap_explore, get_webpage_content, ask_user_question.
-- Tool availability from current user settings:
+- Callable tools for this turn:
 ${buildToolAvailabilityPrompt()}
-- Disabled tools exist as Linsoo capabilities, but are omitted from the callable schema for this turn. Treat any disabled tool above as unavailable and do not attempt to call it.
+- Tools not listed above are not available in this turn.
 - Use tools whenever current, source-grounded, webpage-specific, or location-based information is required.
 - Prefer the user's original prompt as the source of search terms. Extract names, places, product names, dates, versions, and constraints from the prompt; do not invent broader search terms unless the prompt is genuinely vague.
 - Use build_search_queries only before multi-query search when it helps narrow or structure search intent. When calling it, provide only the query strings Linsoo needs; do not include tab/folder/split layout metadata. Normally call it once at most; do not loop on it.
-- Current web_search count setting: ${searchCallLimitLabel()}. Simple factual, navigational, weather, price, release, schedule, or one-topic questions should normally use exactly one web_search call. Use multiple web_search calls only for higher-level, complex, multi-angle research or comparison tasks. If using multiple web_search calls, the first search should stay close to the user prompt, and later searches must explore clearly different angles. Near-duplicate web_search queries will be rejected by Linsoo. If Linsoo reports that the limit has been reached, stop searching and answer from collected evidence.
+- Current web_search count setting: ${searchCallLimitLabel()}. Simple factual, navigational, weather, price, release, schedule, or one-topic questions should normally use exactly one web_search call. Use multiple web_search calls only for higher-level, complex, multi-angle research or comparison tasks. If using multiple web_search calls, the first search should stay close to the user prompt, and later searches must explore clearly different angles, such as implementation details, official sources, case studies, failure modes, or comparison evidence. Do not repeat near-duplicate queries. If Linsoo reports that the limit has been reached, stop searching and answer from collected evidence.
 - Use ask_user_question whenever you would otherwise ask the user a follow-up question in normal assistant text. Prefer the tool over textual questions when scope, target object, constraints, location, comparison criteria, budget, time range, or search direction is uncertain.
 - Use amap_explore for current-location weather, nearby places, routes, and trip suggestions.
 - Use get_webpage_content when you need to read a specific page more deeply than snippets allow. It uses Jina Reader only and has no local 3-second timeout. If Jina Reader returns a failure reason, do not retry with another extraction path; continue answering from available search results, snippets, and successful page reads. Do not read more than ${MAX_WEBPAGE_CONTENT_TOOL_CALLS} unique webpages in one answer; choose only the pages most likely to change or substantiate the final answer.
-- After all web_search calls for this answer have completed, call lucky_shot once to choose 1 to 3 links the user would most likely click first. These featured sources are shown at the top of the assistant message. Do not choose sources when there were no web_search results.
+- Linsoo chooses featured Lucky Shot sources asynchronously after tool use. Do not call or mention lucky_shot.
 - Prefer boosted domains when they appear and are relevant.
 - Do not rely on blocked domains.
 - After enough tool results are available, answer naturally. Use ordinary Markdown links only as semantic links, not citations. Cite factual claims with Linsoo citation markers like [[cite:S1]] or [[cite:https://example.com/page]] at sentence or paragraph ends.
@@ -15222,7 +15850,8 @@ ${formatClarification(clarification)}
         updateRunMessage(run, run.userMessageId, { searchStatus: "" });
       }
       if (run?.assistantId) {
-        updateRunMessage(run, run.assistantId, { content: "已停止生成。", loading: false, searchStatus: "" });
+        appendAgentStatusStep(run, run.assistantId, "处理已被用户中断", { status: "failed" });
+        updateRunMessage(run, run.assistantId, { loading: false, searchStatus: "", agentLoopOpen: false, interrupted: true });
       }
       activeRun = null;
       running = false;
@@ -15341,7 +15970,6 @@ ${formatClarification(clarification)}
       state.contentGranularityMode = normalizeContentGranularityMode(els.contentGranularityModeGroup.querySelector(".active")?.dataset.contentGranularityMode || state.contentGranularityMode);
       state.locationServiceMode = normalizeLocationServiceMode(els.locationServiceModeGroup.querySelector(".active")?.dataset.locationServiceMode || state.locationServiceMode);
       normalizeAutoToolEnabledState();
-      state.autoToolEnabled.webSearch = els.cfgWebSearchToolEnabled?.checked !== false;
       state.autoToolEnabled.searchPlanning = els.cfgSearchPlanningToolEnabled?.checked !== false;
       state.autoToolEnabled.clarifyQuestions = els.cfgClarifyQuestionsToolEnabled?.checked !== false;
       state.autoToolEnabled.contentGranularity = els.cfgContentGranularityToolEnabled?.checked !== false;
@@ -15428,7 +16056,6 @@ ${formatClarification(clarification)}
         els.cfgPrompt,
         els.cfgAmapKey,
         els.cfgJinaApiKey,
-        els.cfgWebSearchToolEnabled,
         els.cfgSearchPlanningToolEnabled,
         els.cfgClarifyQuestionsToolEnabled,
         els.cfgContentGranularityToolEnabled,
@@ -16736,7 +17363,6 @@ ${formatClarification(clarification)}
           state.contentGranularityMode = normalizeContentGranularityMode(els.contentGranularityModeGroup.querySelector(".active")?.dataset.contentGranularityMode || state.contentGranularityMode);
           state.locationServiceMode = normalizeLocationServiceMode(els.locationServiceModeGroup.querySelector(".active")?.dataset.locationServiceMode || state.locationServiceMode);
           normalizeAutoToolEnabledState();
-          state.autoToolEnabled.webSearch = els.cfgWebSearchToolEnabled?.checked !== false;
           state.autoToolEnabled.searchPlanning = els.cfgSearchPlanningToolEnabled?.checked !== false;
           state.autoToolEnabled.clarifyQuestions = els.cfgClarifyQuestionsToolEnabled?.checked !== false;
           state.autoToolEnabled.contentGranularity = els.cfgContentGranularityToolEnabled?.checked !== false;
@@ -17700,27 +18326,11 @@ ${formatClarification(clarification)}
 
     function scheduleMobileComposerCollapse() {
       clearTimeout(mobileComposerTimer);
-      if (!isMobileViewport() || !document.body.classList.contains("chat-active")) return;
-      mobileComposerTimer = setTimeout(() => {
-        const distance = document.documentElement.scrollHeight - window.innerHeight - window.scrollY;
-        if (distance >= 80 && Date.now() >= mobileComposerExpandedUntil && !els.threadComposer.contains(document.activeElement)) {
-          els.threadComposer.classList.add("composer-hidden");
-          updateScrollButtonVisibility(distance);
-        }
-      }, 1800);
+      if (isMobileViewport()) showThreadComposer();
     }
 
     function forceCollapseMobileComposer(distance) {
-      if (!isMobileViewport() || !document.body.classList.contains("chat-active")) return false;
-      if (distance < 36) return false;
-      mobileComposerExpandedUntil = 0;
-      mobileComposerRevealClickUntil = 0;
-      if (els.threadComposer?.contains(document.activeElement)) {
-        document.activeElement.blur();
-      }
-      els.threadComposer?.classList.add("composer-hidden");
-      clearTimeout(mobileComposerTimer);
-      return true;
+      return false;
     }
 
     function handleMobileComposerScroll(distance, opts = {}) {
@@ -17728,18 +18338,7 @@ ${formatClarification(clarification)}
         showThreadComposer();
         return;
       }
-      if (!document.body.classList.contains("sidebar-collapsed") || Date.now() < mobileSidebarOpenUntil) return;
-      if (opts.forceCollapse && forceCollapseMobileComposer(distance)) return;
-      if (running) return;
-      if (distance < 80) {
-        showThreadComposer();
-        return;
-      }
-      if (Date.now() < mobileComposerExpandedUntil || els.threadComposer.contains(document.activeElement)) {
-        els.threadComposer.classList.remove("composer-hidden");
-        return;
-      }
-      els.threadComposer.classList.add("composer-hidden");
+      showThreadComposer();
       clearTimeout(mobileComposerTimer);
     }
 
