@@ -2687,25 +2687,44 @@
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
       min-height: 28px;
-      padding-top: 2px;
+      padding-top: 0;
     }
 
     .agent-step-rail::before,
     .agent-step-rail::after {
       content: "";
+      position: absolute;
+      left: 50%;
+      transform: translateX(-50%);
       width: 1px;
       background: var(--line-strong);
     }
 
+    .agent-step.has-parent .agent-step-rail::before {
+      top: 0;
+      height: 11px;
+    }
+
+    .agent-step.has-children .agent-step-rail::after {
+      top: 11px;
+      bottom: 0;
+    }
+
+    .agent-step:not(.has-parent) .agent-step-rail::before,
+    .agent-step:not(.has-children) .agent-step-rail::after {
+      background: transparent;
+    }
+
     .agent-step-rail::before {
-      flex: 0 0 0;
-      min-height: 0;
+      top: 0;
+      height: 0;
     }
 
     .agent-step-rail::after {
-      flex: 1;
-      min-height: 8px;
+      top: 11px;
+      bottom: 0;
     }
 
     .agent-step:first-child .agent-step-rail::before,
@@ -2716,9 +2735,11 @@
     .agent-node {
       display: grid;
       place-items: center;
+      position: relative;
+      z-index: 1;
       width: 18px;
       height: 18px;
-      margin: 0 0 3px;
+      margin: 2px 0 3px;
       border-radius: 50%;
       color: var(--muted);
     }
@@ -8285,8 +8306,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function chatSummary(chat) {
-      const text = (chat.messages || [])
-        .map((m) => `${m.role}: ${m.content || ""}`)
+      const summaryMessages = Array.isArray(chat.messages) ? chat.messages : [];
+      const text = summaryMessages
+        .map((message) => `${message.role}: ${messagePreviewText(message, { includeFallback: true })}`)
         .join("\n")
         .slice(0, 4000);
       return {
@@ -8295,6 +8317,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         title: chat.title || chat.slug,
         pinned: !!chat.pinned,
         interactionMode: normalizeInteractionMode(chat.interactionMode),
+        toolCallMode: normalizeToolCallMode(chat.toolCallMode || state.toolCallMode),
         activeView: normalizeActiveView(chat.activeView, normalizeInteractionMode(chat.interactionMode) === "classic" ? "search" : "chat"),
         folder: chat.folder || "",
         createdAt: chat.createdAt || 0,
@@ -9469,7 +9492,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       });
       els.webSearchModeGroup?.querySelectorAll("button").forEach((button) => {
         const buttonMode = button.dataset.webSearchMode;
-        const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto";
+        const autoToolMode = activeToolCallMode() === "auto";
         button.classList.toggle("active", buttonMode === mode || (autoToolMode && mode === "on" && buttonMode === "auto"));
         button.disabled = locked;
       });
@@ -9483,6 +9506,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function activeInteractionMode() {
       return normalizeInteractionMode(currentChat?.interactionMode || state.interactionMode);
+    }
+
+    function activeToolCallMode(chat = currentChat) {
+      return normalizeToolCallMode(chat?.toolCallMode || state.toolCallMode);
     }
 
     function renderInteractionModeControls() {
@@ -9736,7 +9763,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         hide: "默认隐藏 Agent loop 时间线；手动展开只在当前页面临时生效",
       };
       setSettingSubtitle("interactionMode", interactionCopy[normalizeInteractionMode(state.interactionMode)]);
-      setSettingSubtitle("toolCallMode", toolCallCopy[normalizeInteractionMode(state.interactionMode) === "classic" ? "flow" : normalizeToolCallMode(state.toolCallMode)]);
+      setSettingSubtitle("toolCallMode", toolCallCopy[normalizeInteractionMode(state.interactionMode) === "classic" ? "flow" : activeToolCallMode()]);
       setSettingSubtitle("clarifyQuestionsMode", clarifyCopy[normalizeClarifyQuestionsMode(state.clarifyQuestionsMode)]);
       setSettingSubtitle("webSearchMode", webSearchCopy[normalizeWebSearchMode(state.webSearchMode)]);
       setSettingSubtitle("searchPlanningMode", searchPlanningCopy[normalizeSearchPlanningMode(state.searchPlanningMode)]);
@@ -9771,7 +9798,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function renderToolCallModeControls() {
-      const mode = normalizeInteractionMode(state.interactionMode) === "classic" ? "flow" : normalizeToolCallMode(state.toolCallMode);
+      const mode = normalizeInteractionMode(state.interactionMode) === "classic" ? "flow" : activeToolCallMode();
       const classicMode = normalizeInteractionMode(state.interactionMode) === "classic";
       const directMode = normalizeInteractionMode(state.interactionMode) === "direct";
       els.toolCallModeGroup?.querySelectorAll("button").forEach((button) => {
@@ -9786,22 +9813,26 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     async function setToolCallMode(mode, opts = {}) {
       const next = normalizeToolCallMode(mode);
-      if (next === normalizeToolCallMode(state.toolCallMode)) return;
+      const current = activeToolCallMode();
+      if (next === current && (!currentChat || next === normalizeToolCallMode(state.toolCallMode))) return;
       recordSettingsEdit({ key: "toolCallMode", tab: "general" });
       state.toolCallMode = next;
-      if (activeRun) activeRun.toolCallMode = next;
+      if (currentChat) {
+        currentChat.toolCallMode = next;
+        scheduleSaveChat();
+      }
       renderToolCallModeControls();
       renderWebSearchControls();
       renderToolChildSettingControls();
       renderSettingSubtitles();
       await saveState();
-      if (opts.toast) showToast(`工具调用：${state.toolCallMode === "auto" ? "自动" : "流程"}`);
+      if (opts.toast) showToast(`工具调用：${next === "auto" ? "自动" : "流程"}`);
     }
 
     function renderToolChildSettingControls() {
       const directMode = normalizeInteractionMode(state.interactionMode) === "direct";
       const classicMode = normalizeInteractionMode(state.interactionMode) === "classic";
-      const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto" && !directMode && !classicMode;
+      const autoToolMode = activeToolCallMode() === "auto" && !directMode && !classicMode;
       document.querySelectorAll("[data-tool-child-setting]").forEach((row) => {
         row.hidden = false;
         row.classList.toggle("disabled", directMode);
@@ -9987,7 +10018,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function renderSearchPlanningModeControls() {
       const mode = normalizeSearchPlanningMode(state.searchPlanningMode);
-      const autoToolMode = normalizeToolCallMode(state.toolCallMode) === "auto";
+      const autoToolMode = activeToolCallMode() === "auto";
       els.searchPlanningModeGroup?.querySelectorAll("button").forEach((button) => {
         const buttonMode = button.dataset.searchPlanningMode;
         button.classList.toggle("active", buttonMode === mode || (autoToolMode && mode === "advanced" && buttonMode === "auto"));
@@ -10571,6 +10602,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         return;
       }
       if (!text && !attachments[scope].length) return;
+      const toolCallMode = activeToolCallMode();
       const fallbackView = normalizeInteractionMode(currentChat?.interactionMode || state.interactionMode) === "classic" ? "search" : "chat";
       const submitView = currentChat ? normalizeActiveView(currentChat.activeView, fallbackView) : fallbackView;
       const directSubmit = normalizeInteractionMode(currentChat?.interactionMode || state.interactionMode) === "direct";
@@ -10603,6 +10635,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       ensureCurrentChat(text, activeAttachments);
       const userMessage = pushMessage({ role: "user", content: text || "请阅读附件。", attachments: activeAttachments });
       currentChat.activeView = submitView;
+      currentChat.toolCallMode = toolCallMode;
       if (submitView === "search") {
         userMessage.searchStatus = "正在准备搜索...";
         renderSearchPage();
@@ -10778,6 +10811,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         title: seed.slice(0, 64),
         titlePending: true,
         interactionMode: normalizeInteractionMode(state.interactionMode),
+        toolCallMode: activeToolCallMode(null),
         activeView: "chat",
         pinned: false,
         folder: "",
@@ -10819,6 +10853,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         title: chat.title || chat.slug,
         titlePending: !!chat.titlePending,
         interactionMode: normalizeInteractionMode(chat.interactionMode),
+        toolCallMode: normalizeToolCallMode(chat.toolCallMode || state.toolCallMode),
         activeView: normalizeActiveView(chat.activeView, normalizeInteractionMode(chat.interactionMode) === "classic" ? "search" : "chat"),
         pinned: !!chat.pinned,
         folder: chat.folder || "",
@@ -10879,6 +10914,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       await writeJsonFile(`${OPFS_CHAT_DIR}/${currentChat.slug}.json`, {
         ...currentChat,
         interactionMode: activeInteractionMode(),
+        toolCallMode: activeToolCallMode(),
         activeView: normalizeActiveView(currentChat.activeView),
         messages,
       });
@@ -10962,8 +10998,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function railPreviewText(message) {
-      const text = (message.content || message.thinking || "正在生成…").replace(/\s+/g, " ").trim();
-      return text.length > 64 ? `${text.slice(0, 64)}...` : text;
+      return messagePreviewText(message, { includeFallback: true });
     }
 
     function showRailPreview(index, mark) {
@@ -11107,7 +11142,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     }
 
     function currentToolCallModeForRun(run = activeRun) {
-      return normalizeToolCallMode(run?.toolCallMode || state.toolCallMode);
+      return normalizeToolCallMode(run?.toolCallMode || run?.chat?.toolCallMode || state.toolCallMode);
     }
 
     function isAutoToolModeForRun(run = activeRun) {
@@ -11126,6 +11161,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (!run?.chat?.slug) return;
       const chat = {
         ...run.chat,
+        toolCallMode: currentChat?.slug === run.chat.slug ? activeToolCallMode() : normalizeToolCallMode(run.chat.toolCallMode || state.toolCallMode),
         activeView: currentChat?.slug === run.chat.slug ? normalizeActiveView(currentChat.activeView) : normalizeActiveView(run.chat.activeView),
         updatedAt: Date.now(),
         messages: run.messages,
@@ -11138,6 +11174,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           title: chat.title || chat.slug,
           titlePending: !!chat.titlePending,
           interactionMode: normalizeInteractionMode(chat.interactionMode),
+          toolCallMode: normalizeToolCallMode(chat.toolCallMode || state.toolCallMode),
           activeView: normalizeActiveView(chat.activeView),
           pinned: !!chat.pinned,
           folder: chat.folder || "",
@@ -11438,24 +11475,73 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     function summarizeAgentLoopOutcome(message) {
       if (message?.interrupted) return "处理已被用户中断";
-      if (message?.agentSummary) return sanitizeAgentLoopSummary(message.agentSummary);
+      const prompt = previousUserPromptFor(message?.id);
+      const fallback = buildCompletionSummary(prompt);
+      if (message?.agentSummary) {
+        const summary = sanitizeAgentLoopSummary(message.agentSummary, prompt);
+        if (summary) return summary;
+      }
       if (completionSummaryPendingIds.has(message?.id) || message?.agentSummaryPending) return "正在总结本次工作";
-      return localAgentLoopSummary(message);
+      return localAgentLoopSummary(message, prompt, fallback);
     }
 
-    function localAgentLoopSummary(message) {
-      if (message?.content) return "生成了回答";
-      return "完成";
+    function localAgentLoopSummary(message, prompt = "", fallback = "") {
+      if (message?.content) return fallback || buildCompletionSummary(prompt);
+      return fallback || buildCompletionSummary(prompt) || "完成了本轮查询";
     }
 
-    function sanitizeAgentLoopSummary(text) {
-      return String(text || "")
+    function summarizeUserIntentForStatus(prompt = "") {
+      const text = String(prompt || "").replace(/\s+/g, " ").trim();
+      if (!text) return "本轮查询";
+      const trimmed = text
+        .replace(/^[\s\p{P}]+|[\s\p{P}]+$/gu, "")
+        .replace(/^(请|帮我|麻烦|想知道|我想知道|告诉我|帮忙)\s*/u, "")
+        .trim();
+      const target = trimmed || text;
+      return target.length > 18 ? `${target.slice(0, 18).trim()}…` : target;
+    }
+
+    function statusVerbForPrompt(prompt = "") {
+      const text = String(prompt || "");
+      if (/(修复|排查|定位|报错|bug|错误|异常|故障)/i.test(text)) return "定位了";
+      if (/(对比|比较|区别|差异|哪个好|选哪个|怎么选)/.test(text)) return "对比了";
+      if (/(总结|概括|梳理|整理|归纳)/.test(text)) return "梳理了";
+      if (/(翻译|英文|中文|日文|韩文)/.test(text)) return "翻译了";
+      return "调查了";
+    }
+
+    function buildCompletionSummary(prompt = "") {
+      const target = summarizeUserIntentForStatus(prompt);
+      const fallbackTarget = target === "本轮查询" ? "你的问题" : target;
+      return `${statusVerbForPrompt(prompt)} ${fallbackTarget}`.trim();
+    }
+
+    function sanitizeAgentLoopSummary(text, prompt = "") {
+      const cleaned = String(text || "")
         .replace(/^[“"']|[”"']$/g, "")
-        .replace(/^(完成了|已完成|完成)\s*/i, "")
+        .replace(/^(完成了|已完成|完成|生成了回答|完成了回复|已进行回答|给出了回答|提供了回答)\s*/i, "")
+        .replace(/(生成了回答|完成了回复|已进行回答|给出了回答|提供了回答)/gi, "")
         .replace(/[，,。.!！?？:：;；].*$/, "")
-        .replace(/\s+/g, "")
+        .replace(/\s+/g, " ")
         .trim()
         .slice(0, 18);
+      if (!cleaned) return buildCompletionSummary(prompt);
+      if (/^((正在|继续)?(执行|分析|调查|定位|对比|梳理|翻译|总结|整理|归纳|修复|查找|查证|回答|说明|解释|搜索|撰写|比较)|.+了)$/.test(cleaned)) {
+        return cleaned;
+      }
+      return buildCompletionSummary(prompt);
+    }
+
+    function messagePreviewText(message, opts = {}) {
+      const fallback = opts.includeFallback === true;
+      if (!message || typeof message !== "object") return fallback ? "" : "";
+      if (message.role === "assistant" && opts.preferAgentSummary === true) {
+        const summary = summarizeAgentLoopOutcome(message);
+        if (summary && summary !== "正在总结本次工作") return summary;
+      }
+      const text = String(message.content || message.thinking || "").replace(/\s+/g, " ").trim();
+      if (text) return text.length > 64 ? `${text.slice(0, 64)}...` : text;
+      return fallback ? "正在生成…" : "";
     }
 
     function completionSummaryConfig() {
@@ -11501,7 +11587,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
               }),
             });
             if (!response.ok) continue;
-            const summary = sanitizeAgentLoopSummary(extractContentFromResponse(await response.json()));
+            const summary = sanitizeAgentLoopSummary(extractContentFromResponse(await response.json()), prompt);
             if (summary && summary !== "完成") {
               updated = true;
               updateMessage(message.id, { agentSummary: summary, agentSummaryPending: false });
@@ -11550,6 +11636,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           status: message.interrupted ? "failed" : "done",
         });
       }
+      steps = orderAgentLoopSteps(steps);
       if (!steps.length && !message.loading) return "";
       steps.forEach((step) => {
         nextStepIds.push(step.id);
@@ -11605,7 +11692,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         renderAgentSourcesPreview(sourcesPreview),
       ].filter(Boolean).join("");
       return `
-        <div class="agent-step ${esc(type)} ${esc(status)}${expanded ? " expanded" : ""}${existing ? " existing" : ""}" data-agent-step-id="${esc(step.id)}">
+        <div class="agent-step ${esc(type)} ${esc(status)}${expanded ? " expanded" : ""}${existing ? " existing" : ""}${step.parentStepId ? " has-parent" : ""}${step.hasChildren ? " has-children" : ""}" data-agent-step-id="${esc(step.id)}" data-parent-step-id="${esc(step.parentStepId || "")}">
           <div class="agent-step-rail"><span class="agent-node">${agentIconSvg(type, status, step.name, step.iconType)}</span></div>
           <div class="agent-step-main">
             ${title ? `<div class="agent-step-title${activeRunning ? " shimmer" : ""}"><span>${esc(title)}</span>${metaHtml}</div>` : metaHtml ? `<div class="agent-step-title">${metaHtml}</div>` : ""}
@@ -11662,6 +11749,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           return;
         }
         currentStep.className = nextStep.className;
+        currentStep.dataset.parentStepId = nextStep.dataset.parentStepId || "";
         const currentNode = currentStep.querySelector(".agent-node");
         const nextNode = nextStep.querySelector(".agent-node");
         if (currentNode && nextNode && currentNode.innerHTML !== nextNode.innerHTML) currentNode.innerHTML = nextNode.innerHTML;
@@ -12514,7 +12602,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
 
     async function runAssistant(opts = {}) {
       const runInteractionMode = activeInteractionMode();
-      const runToolCallMode = normalizeToolCallMode(state.toolCallMode);
+      const runToolCallMode = activeToolCallMode();
       const priorUserCount = messages.filter((message) => message.role === "user").length;
       const assistant = pushMessage({
         role: "assistant",
@@ -12631,7 +12719,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         userMessageId,
         searchOnly: true,
         interactionMode: activeInteractionMode(),
-        toolCallMode: normalizeToolCallMode(state.toolCallMode),
+        toolCallMode: activeToolCallMode(),
       };
       activeRun = run;
       running = true;
@@ -12838,6 +12926,58 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return Array.isArray(message?.agentSteps) ? message.agentSteps : [];
     }
 
+    function isAgentLoopStepType(type) {
+      return ["thinking", "status", "search", "tool"].includes(type);
+    }
+
+    function latestAgentParentStepId(run, assistantId, fallbackStepId = "") {
+      const steps = readAssistantAgentSteps(run, assistantId);
+      for (let i = steps.length - 1; i >= 0; i--) {
+        const step = steps[i];
+        if (!step || !isAgentLoopStepType(step.type)) continue;
+        if (fallbackStepId && step.id === fallbackStepId) continue;
+        return step.id;
+      }
+      return "";
+    }
+
+    function normalizeAgentStepParent(step, stepMap) {
+      const parentStepId = String(step?.parentStepId || "").trim();
+      if (!parentStepId || parentStepId === step?.id || !stepMap.has(parentStepId)) return "";
+      return parentStepId;
+    }
+
+    function orderAgentLoopSteps(rawSteps) {
+      const filtered = rawSteps.filter((step) => step && step.type !== "complete");
+      const stepMap = new Map(filtered.map((step) => [step.id, step]));
+      const childrenMap = new Map();
+      const roots = [];
+      filtered.forEach((step) => {
+        const parentStepId = normalizeAgentStepParent(step, stepMap);
+        if (!parentStepId) {
+          roots.push(step);
+          return;
+        }
+        if (!childrenMap.has(parentStepId)) childrenMap.set(parentStepId, []);
+        childrenMap.get(parentStepId).push(step);
+      });
+      const ordered = [];
+      const seen = new Set();
+      const visit = (step) => {
+        if (!step || seen.has(step.id)) return;
+        seen.add(step.id);
+        ordered.push({
+          ...step,
+          parentStepId: normalizeAgentStepParent(step, stepMap),
+          hasChildren: (childrenMap.get(step.id) || []).length > 0,
+        });
+        (childrenMap.get(step.id) || []).forEach(visit);
+      };
+      roots.forEach(visit);
+      filtered.forEach(visit);
+      return ordered;
+    }
+
     function patchAgentStep(run, assistantId, stepId, patch) {
       const steps = readAssistantAgentSteps(run, assistantId).slice();
       const index = steps.findIndex((step) => step.id === stepId);
@@ -12890,6 +13030,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         queries: Array.isArray(queries) ? queries : [queries],
         status: opts.status || "running",
         progressText: opts.progressText || "",
+        parentStepId: opts.parentStepId === undefined ? latestAgentParentStepId(run, assistantId, stepId) : opts.parentStepId,
       });
       run.activeSearchStepId = stepId;
       return stepId;
@@ -12916,7 +13057,12 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const steps = readAssistantAgentSteps(run, assistantId).slice();
       const last = steps[steps.length - 1];
       if (last?.type === "status" && last.title === title) {
-        steps[steps.length - 1] = { ...last, status: opts.status || last.status || "running", updatedAt: now };
+        steps[steps.length - 1] = {
+          ...last,
+          status: opts.status || last.status || "running",
+          parentStepId: opts.parentStepId === undefined ? last.parentStepId || latestAgentParentStepId(run, assistantId, last.id) : opts.parentStepId,
+          updatedAt: now,
+        };
       } else {
         if (last?.type === "status" && last.status === "running") {
           steps[steps.length - 1] = { ...last, status: "done", durationMs: now - (last.startedAt || now), updatedAt: now };
@@ -12926,6 +13072,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           type: "status",
           title,
           status: opts.status || "running",
+          parentStepId: opts.parentStepId === undefined ? latestAgentParentStepId(run, assistantId) : opts.parentStepId,
           startedAt: now,
           updatedAt: now,
         });
@@ -12973,13 +13120,14 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       return overlap / Math.min(aSet.size, bSet.size);
     }
 
-    function existingSimilarThinkingStep(run, assistantId, text, stepId) {
+    function existingSimilarThinkingStep(run, assistantId, text, stepId, parentStepId = "") {
       const steps = readAssistantAgentSteps(run, assistantId);
       const same = steps.find((step) => step.id === stepId);
       if (same) return same;
       for (let i = steps.length - 1; i >= 0; i--) {
         const step = steps[i];
         if (step?.type !== "thinking") continue;
+        if (parentStepId && String(step.parentStepId || "") !== parentStepId) continue;
         if (thinkingSimilarityScore(step.text || "", text) >= 0.36) return step;
       }
       return null;
@@ -12989,7 +13137,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       const nextText = String(text || "").trim();
       if (!nextText) return;
       const requestedId = `thinking-${agentStepIdPart(stepIndex || "stream")}`;
-      const existing = existingSimilarThinkingStep(run, assistantId, nextText, requestedId);
+      const parentStepId = latestAgentParentStepId(run, assistantId, requestedId);
+      const existing = existingSimilarThinkingStep(run, assistantId, nextText, requestedId, parentStepId);
       const previousText = String(existing?.text || "").trim();
       const chosenText = previousText
         && nextText.length < previousText.length
@@ -13001,6 +13150,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         title: "",
         text: chosenText,
         status,
+        parentStepId: existing?.parentStepId || parentStepId,
       });
     }
 
@@ -13245,6 +13395,17 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         .filter((item) => item.length > 1 && !/^(the|and|for|with|from|into|what|how|why|具体|实现|代码|详解|搜索|查询|资料|研究)$/.test(item));
     }
 
+    function normalizedSearchQueryKey(query) {
+      return searchQueryTokens(query).join(" ").trim();
+    }
+
+    function searchQueriesAlreadyCovered(search, queries) {
+      if (!search?.results?.length) return false;
+      const existing = new Set((search.queries || [search.query]).map(normalizedSearchQueryKey).filter(Boolean));
+      const next = (Array.isArray(queries) ? queries : [queries]).map(normalizedSearchQueryKey).filter(Boolean);
+      return !!next.length && next.every((query) => existing.has(query));
+    }
+
     function mergeSearchContexts(previous, incoming) {
       if (!previous?.results?.length && !previous?.groups?.length) return incoming;
       if (!incoming?.results?.length && !incoming?.groups?.length) return previous;
@@ -13287,6 +13448,17 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         complex: args.complex === true || queriesInput.length > 1,
       };
       let queries = normalizeSearchQueries(decision, userWeightedQuery);
+      if (searchQueriesAlreadyCovered(run.searchContext, queries)) {
+        return {
+          ok: true,
+          reused: true,
+          query: run.searchContext.query || queries[0] || "",
+          queries: run.searchContext.queries || queries,
+          results: run.searchContext.results || [],
+          resultSummary: `已复用首次搜索的 ${run.searchContext.results?.length || 0} 条结果`,
+          warning: "These queries were already covered by the initial browser-side search. Do not call web_search again for the same queries; answer from the existing results.",
+        };
+      }
       if (Number.isFinite(searchLimit)) {
         const remaining = Math.max(0, searchLimit - (run.webSearchToolCalls || 0));
         if (!remaining) {
@@ -13761,15 +13933,25 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
 
     async function callChatModelWithTools(model, assistantId, signal, run = activeRun) {
       const runMessages = run?.messages || messages;
-      const contextMessages = run?.reusedSearchContext?.results?.length
-        ? [{ role: "system", content: `${buildSearchContextPrompt(run.reusedSearchContext)}\n\nThese results were reused from the previous answer because the user clicked retry. Do not call web_search again unless the user explicitly changed the search scope.` }]
-        : [];
+      const contextMessages = [];
+      if (run?.searchContext?.results?.length) {
+        contextMessages.push({
+          role: "system",
+          content: `${buildSearchContextPrompt(run.searchContext)}\n\nThese browser-side web_search results have already been collected for the current user request before the tool loop started. Treat them as available evidence now. Do not call web_search again with the same or near-identical queries; only call web_search if a clearly separate missing fact is essential.`,
+        });
+      }
+      if (run?.reusedSearchContext?.results?.length && run.reusedSearchContext !== run.searchContext) {
+        contextMessages.push({
+          role: "system",
+          content: `${buildSearchContextPrompt(run.reusedSearchContext)}\n\nThese results were reused from the previous answer because the user clicked retry. Do not call web_search again unless the user explicitly changed the search scope.`,
+        });
+      }
       const requestMessages = withRealtimeMessagePrefix([
         { role: "system", content: buildToolAgentSystemPrompt(run) },
+        ...contextMessages,
         ...runMessages
           .filter((message) => !(message.role === "assistant" && message.id === assistantId))
           .map((message) => ({ role: message.role, content: serializeMessageContent(message) })),
-        ...contextMessages,
       ]);
       const tools = buildAgentToolSchemas(run);
       if (!tools.length) return await callChatModel(model, assistantId, signal, run);
@@ -13823,6 +14005,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           tool_calls: toolCalls,
         });
         let shouldForceFinalAnswer = false;
+        let loopParentStepId = latestAgentParentStepId(run, assistantId);
         for (const toolCall of toolCalls) {
           const toolName = toolCall.function.name;
           const toolArgs = safeParseToolArgs(toolCall?.function?.arguments || "{}");
@@ -13850,6 +14033,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
               ? normalizedAgentSearchTitle("网络搜索", toolQueries)
               : [agentToolLabel(toolName), summarizeToolArgsForTitle(toolName, toolArgs)].filter(Boolean).join("："),
             status: "running",
+            parentStepId: loopParentStepId,
           };
           pushAgentStep(run, assistantId, stepPayload);
           if (toolName === "web_search") run.activeSearchStepId = toolStepId;
@@ -13862,7 +14046,9 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
             resultSummary: summarizeToolResult(result),
             resultCount: Array.isArray(result?.results) ? result.results.length : undefined,
             sourcesPreview: Array.isArray(result?.results) ? result.results.slice(0, 4) : undefined,
+            parentStepId: stepPayload.parentStepId,
           });
+          loopParentStepId = toolStepId;
           requestMessages.push({
             role: "tool",
             tool_call_id: toolCall.id,
@@ -14353,7 +14539,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
       }
       try {
         run.webSearchToolCalls = (run.webSearchToolCalls || 0) + initialQueries.length;
-        const initialSearchStepId = createSearchAgentStep(run, targetMessageId, initialQueries, { label: "网络搜索" });
+        const initialSearchStepId = createSearchAgentStep(run, targetMessageId, initialQueries, { label: run.forceInitialSearch ? "首次搜索" : "网络搜索" });
         updateRunMessage(run, targetMessageId, { searchStatus: `正在搜索：${initialQueries[0]}${initialQueries.length > 1 ? ` 等 ${initialQueries.length} 个搜索词` : ""}` });
         const searchRaw = await runSearchRouter(initialQueries, initialDecision, signal, (status, partialSearch) => {
           const preparedPartial = partialSearch ? applySourcePreferencesToSearch(partialSearch) : null;
@@ -14465,7 +14651,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
             const supplemental = await decideWebSearch(searchSeed, supplementalContext, model, signal, false).catch(() => null);
             const extraQueries = supplemental?.shouldSearch
               ? normalizeSearchQueries(refineSearchDecision(supplemental, searchSeed), searchSeed)
-                .filter((query) => query && query.toLowerCase() !== initialQuery.toLowerCase())
+                .filter((query) => query && !searchQueriesAlreadyCovered(search, [query]))
                 .slice(0, remaining)
               : [];
             if (!extraQueries.length) appendAgentStatusStep(run, targetMessageId, "无需补充搜索", { status: "done" });
