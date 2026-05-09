@@ -6,3 +6,6 @@ description: This is a personal page that hosts my ideas,products,resources and 
 #   nav_pages:
 #     - tools/check.html
 #     - about.md
+
+exclude:
+  - tools/assistant-ui
