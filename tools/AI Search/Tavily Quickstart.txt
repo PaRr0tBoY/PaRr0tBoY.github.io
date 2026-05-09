@@ -1,0 +1,15 @@
+## Get your free Tavily API key
+
+Head to the [Tavily Platform](https://app.tavily.com/) and sign in (or create an account). Then, copy one of your API keys from your dashboard.
+
+## Install Tavily
+
+Install the Tavily SDK in your language of choice.
+
+## Start searching with Tavily
+
+Run your first Tavily Search in 4 lines of code. Simply replace the API key in this snippet with your own.
+
+## Next steps
+
+That’s all it takes to start using Tavily’s basic features! If you want to learn how to implement more complex workflows in Python, check out our intermediate-level [Getting Started notebook](https://colab.research.google.com/drive/1dWGtS3u4ocCLebuaa8Ivz7BkZ_40IgH1). Or, dive deep into our API and read about the different parameters on our [API Reference](https://docs.tavily.com/documentation/api-reference/introduction) page, and learn how to integrate natively with one of our [SDKs](https://docs.tavily.com/sdk).

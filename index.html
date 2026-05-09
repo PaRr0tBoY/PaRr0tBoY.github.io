@@ -1,501 +1,860 @@
-<!doctype html>
-<html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Ryan — 我是谁</title>
-    <style>
-      :root {
-        --bg: #0a0a0b;
-        --bg-card: #111113;
-        --bg-card-hover: #18181b;
-        --border: #27272a;
-        --text-primary: #fafafa;
-        --text-secondary: #a1a1aa;
-        --text-muted: #71717a;
-        --accent: #6366f1;
-        --accent-dim: #4f46e5;
-        --radius: 12px;
-        --transition: 0.2s ease;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Awesome Vivaldi — Your Vivaldi, Reimagined</title>
+  <meta name="description" content="A curated collection of CSS and JS mods that transform Vivaldi into a warm, modern browser inspired by Arc and Dia. One install, endless customization.">
+  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
+  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════════ */
+    :root {
+      /* Color — Restrained: tinted neutrals + olive accent */
+      --c-bg:          oklch(0.97 0.006 130);
+      --c-surface:     oklch(0.99 0.004 130);
+      --c-border:      oklch(0.90 0.008 130);
+      --c-border-subtle: oklch(0.93 0.006 130);
+      --c-text:        oklch(0.18 0.006 145);
+      --c-text-muted:  oklch(0.50 0.006 130);
+      --c-text-subtle: oklch(0.62 0.006 130);
+      --c-accent:      oklch(0.35 0.06 140);
+      --c-accent-hover: oklch(0.30 0.07 140);
+      --c-accent-soft: oklch(0.35 0.06 140 / 0.08);
+
+      /* Typography */
+      --font-display: 'Satoshi', system-ui, sans-serif;
+      --font-body:    'General Sans', system-ui, sans-serif;
+      --font-mono:    'JetBrains Mono', ui-monospace, monospace;
+
+      /* Scale — ratio 1.25 */
+      --text-xs:  0.8125rem;   /* 13px */
+      --text-sm:  0.9375rem;   /* 15px */
+      --text-base: 1rem;       /* 16px */
+      --text-lg:  1.25rem;     /* 20px */
+      --text-xl:  1.5625rem;   /* 25px */
+      --text-2xl: 1.953rem;    /* 31px */
+      --text-3xl: 2.441rem;    /* 39px */
+      --text-4xl: 3.052rem;    /* 49px */
+      --text-hero: clamp(2.5rem, 5vw + 1rem, 4.5rem);
+
+      /* Spacing — 4pt base */
+      --sp-1:  4px;
+      --sp-2:  8px;
+      --sp-3:  12px;
+      --sp-4:  16px;
+      --sp-6:  24px;
+      --sp-8:  32px;
+      --sp-12: 48px;
+      --sp-16: 64px;
+      --sp-24: 96px;
+
+      /* Radius */
+      --r-sm: 6px;
+      --r-md: 8px;
+      --r-lg: 12px;
+
+      /* Motion */
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --dur-fast: 150ms;
+      --dur-med:  300ms;
+      --dur-slow: 500ms;
+
+      /* Layout */
+      --max-w: 1120px;
+      --max-w-narrow: 800px;
+    }
+
+    /* ═══════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════ */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: 1.6;
+      color: var(--c-text);
+      background: var(--c-bg);
+    }
+
+    img { display: block; max-width: 100%; height: auto; }
+    a { color: inherit; text-decoration: none; }
+    button { font: inherit; border: none; cursor: pointer; }
+
+    /* ═══════════════════════════════════════════
+       UTILITIES
+    ═══════════════════════════════════════════ */
+    .container {
+      max-width: var(--max-w);
+      margin: 0 auto;
+      padding-inline: var(--sp-6);
+    }
+
+    .container--narrow {
+      max-width: var(--max-w-narrow);
+    }
+
+    /* Scroll-triggered reveal */
+    .reveal {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity var(--dur-slow) var(--ease-out),
+                  transform var(--dur-slow) var(--ease-out);
+    }
+    .reveal.is-visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal[data-delay="1"] { transition-delay: 80ms; }
+    .reveal[data-delay="2"] { transition-delay: 160ms; }
+    .reveal[data-delay="3"] { transition-delay: 240ms; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .reveal {
+        opacity: 1;
+        transform: none;
+        transition: none;
+      }
+    }
+
+    /* ═══════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════ */
+    .nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 100;
+      padding: var(--sp-4) 0;
+      background: oklch(0.97 0.006 130 / 0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--c-border-subtle);
+    }
+
+    .nav__inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .nav__logo {
+      font-family: var(--font-display);
+      font-weight: 700;
+      font-size: var(--text-lg);
+      letter-spacing: -0.02em;
+      color: var(--c-text);
+    }
+
+    .nav__logo span {
+      color: var(--c-accent);
+    }
+
+    .nav__links {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-6);
+      list-style: none;
+    }
+
+    .nav__links a {
+      font-size: var(--text-sm);
+      font-weight: 500;
+      color: var(--c-text-muted);
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+
+    .nav__links a:hover { color: var(--c-text); }
+
+    .nav__links .btn--gh {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--sp-2);
+      padding: var(--sp-2) var(--sp-4);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-md);
+      font-size: var(--text-xs);
+      font-weight: 600;
+      color: var(--c-text);
+      transition: border-color var(--dur-fast) var(--ease-out),
+                  background var(--dur-fast) var(--ease-out);
+    }
+
+    .nav__links .btn--gh:hover {
+      border-color: var(--c-accent);
+      background: var(--c-accent-soft);
+    }
+
+    /* ═══════════════════════════════════════════
+       HERO
+    ═══════════════════════════════════════════ */
+    .hero {
+      padding: calc(var(--sp-24) + 60px) 0 var(--sp-24) 0;
+    }
+
+    .hero__grid {
+      display: grid;
+      grid-template-columns: 1fr 1.1fr;
+      gap: var(--sp-12);
+      align-items: center;
+    }
+
+    .hero__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--c-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--sp-4);
+    }
+
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: var(--text-hero);
+      font-weight: 900;
+      line-height: 1.08;
+      letter-spacing: -0.03em;
+      color: var(--c-text);
+      margin-bottom: var(--sp-6);
+    }
+
+    .hero__subtitle {
+      font-size: var(--text-lg);
+      line-height: 1.5;
+      color: var(--c-text-muted);
+      max-width: 48ch;
+      margin-bottom: var(--sp-8);
+    }
+
+    .hero__actions {
+      display: flex;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--sp-2);
+      font-family: var(--font-display);
+      font-weight: 600;
+      border-radius: var(--r-md);
+      transition: all var(--dur-fast) var(--ease-out);
+    }
+
+    .btn--primary {
+      padding: var(--sp-3) var(--sp-6);
+      background: var(--c-accent);
+      color: oklch(0.95 0.02 155);
+      font-size: var(--text-sm);
+    }
+
+    .btn--primary:hover {
+      background: var(--c-accent-hover);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px oklch(0.35 0.06 140 / 0.2);
+    }
+
+    .btn--secondary {
+      padding: var(--sp-3) var(--sp-6);
+      background: transparent;
+      color: var(--c-text);
+      font-size: var(--text-sm);
+      border: 1px solid var(--c-border);
+    }
+
+    .btn--secondary:hover {
+      border-color: var(--c-text-muted);
+      background: var(--c-accent-soft);
+    }
+
+    /* Hero screenshot area */
+    .hero__visual {
+      position: relative;
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      box-shadow:
+        0 1px 2px oklch(0 0 0 / 0.04),
+        0 8px 32px oklch(0 0 0 / 0.06);
+    }
+
+    .hero__visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* ═══════════════════════════════════════════
+       SECTION — shared
+    ═══════════════════════════════════════════ */
+    .section {
+      padding: var(--sp-24) 0;
+    }
+
+    .section__header {
+      margin-bottom: var(--sp-16);
+    }
+
+    .section__eyebrow {
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--c-accent);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: var(--sp-3);
+    }
+
+    .section__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      color: var(--c-text);
+    }
+
+    .section__desc {
+      margin-top: var(--sp-4);
+      font-size: var(--text-lg);
+      color: var(--c-text-muted);
+      max-width: 56ch;
+    }
+
+    /* ═══════════════════════════════════════════
+       MOD GALLERY
+    ═══════════════════════════════════════════ */
+    .mods {
+      border-top: 1px solid var(--c-border-subtle);
+    }
+
+    .mod-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: var(--sp-8);
+      align-items: center;
+      padding: var(--sp-12) 0;
+      border-bottom: 1px solid var(--c-border-subtle);
+    }
+
+    .mod-row:last-child { border-bottom: none; }
+
+    /* Alternate layout: even rows reverse */
+    .mod-row:nth-child(even) {
+      direction: rtl;
+    }
+    .mod-row:nth-child(even) > * {
+      direction: ltr;
+    }
+
+    .mod-row__info {
+      max-width: 40ch;
+    }
+
+    .mod-row__tag {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      font-weight: 500;
+      color: var(--c-accent);
+      padding: var(--sp-1) var(--sp-3);
+      border: 1px solid oklch(0.35 0.06 140 / 0.2);
+      border-radius: var(--r-sm);
+      margin-bottom: var(--sp-3);
+    }
+
+    .mod-row__name {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: -0.02em;
+      margin-bottom: var(--sp-3);
+    }
+
+    .mod-row__desc {
+      font-size: var(--text-sm);
+      line-height: 1.6;
+      color: var(--c-text-muted);
+    }
+
+    .mod-row__visual {
+      position: relative;
+      border-radius: var(--r-lg);
+      overflow: hidden;
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      transition: transform var(--dur-med) var(--ease-out),
+                  box-shadow var(--dur-med) var(--ease-out);
+    }
+
+    .mod-row__visual:hover {
+      transform: scale(1.02);
+      box-shadow: 0 8px 32px oklch(0 0 0 / 0.08);
+    }
+
+    .mod-row__visual img {
+      display: block;
+      width: 100%;
+      height: auto;
+      object-fit: cover;
+    }
+
+    /* ═══════════════════════════════════════════
+       INSTALL
+    ═══════════════════════════════════════════ */
+    .install {
+      border-top: 1px solid var(--c-border-subtle);
+    }
+
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--sp-8);
+      margin-top: var(--sp-12);
+    }
+
+    .step {
+      position: relative;
+    }
+
+    .step__number {
+      font-family: var(--font-display);
+      font-size: var(--text-4xl);
+      font-weight: 900;
+      line-height: 1;
+      color: var(--c-accent-soft);
+      margin-bottom: var(--sp-4);
+    }
+
+    .step__title {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: 700;
+      margin-bottom: var(--sp-3);
+    }
+
+    .step__desc {
+      font-size: var(--text-sm);
+      color: var(--c-text-muted);
+      line-height: 1.6;
+      margin-bottom: var(--sp-4);
+    }
+
+    .step__cmd {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: var(--text-xs);
+      color: var(--c-text);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-md);
+      padding: var(--sp-3) var(--sp-4);
+      overflow-x: auto;
+    }
+
+    .step__cmd code {
+      white-space: pre;
+    }
+
+    /* ═══════════════════════════════════════════
+       CTA (bottom)
+    ═══════════════════════════════════════════ */
+    .cta {
+      border-top: 1px solid var(--c-border-subtle);
+      text-align: center;
+    }
+
+    .cta__title {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.025em;
+      margin-bottom: var(--sp-4);
+    }
+
+    .cta__desc {
+      font-size: var(--text-lg);
+      color: var(--c-text-muted);
+      max-width: 48ch;
+      margin: 0 auto var(--sp-8);
+    }
+
+    .cta__actions {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: var(--sp-4);
+    }
+
+    /* ═══════════════════════════════════════════
+       FOOTER
+    ═══════════════════════════════════════════ */
+    .footer {
+      padding: var(--sp-8) 0;
+      border-top: 1px solid var(--c-border-subtle);
+    }
+
+    .footer__inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .footer__copy {
+      font-size: var(--text-xs);
+      color: var(--c-text-subtle);
+    }
+
+    .footer__links {
+      display: flex;
+      gap: var(--sp-4);
+      list-style: none;
+    }
+
+    .footer__links a {
+      font-size: var(--text-xs);
+      color: var(--c-text-subtle);
+      transition: color var(--dur-fast) var(--ease-out);
+    }
+
+    .footer__links a:hover { color: var(--c-text); }
+
+    /* ═══════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════ */
+
+    /* Tablet */
+    @media (max-width: 900px) {
+      .hero__grid {
+        grid-template-columns: 1fr;
+        gap: var(--sp-8);
       }
 
-      [data-theme="light"] {
-        --bg: #fafafa;
-        --bg-card: #ffffff;
-        --bg-card-hover: #f4f4f5;
-        --border: #e4e4e7;
-        --text-primary: #09090b;
-        --text-secondary: #52525b;
-        --text-muted: #a1a1aa;
+      .hero__visual {
+        order: -1;
+        max-height: 360px;
       }
 
-      * {
-        margin: 0;
-        padding: 0;
-        box-sizing: border-box;
-      }
-
-      body {
-        background: var(--bg);
-        color: var(--text-primary);
-        font-family:
-          -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial,
-          sans-serif;
-        line-height: 1.6;
-        min-height: 100vh;
-        transition:
-          background var(--transition),
-          color var(--transition);
-      }
-
-      .container {
-        max-width: 900px;
-        margin: 0 auto;
-        padding: 0 24px;
-      }
-
-      /* header */
-      header {
-        position: sticky;
-        top: 0;
-        z-index: 100;
-        background: var(--bg);
-        border-bottom: 1px solid var(--border);
-        backdrop-filter: blur(12px);
-        -webkit-backdrop-filter: blur(12px);
-      }
-
-      header .container {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        height: 56px;
-      }
-
-      .site-name {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        text-decoration: none;
-        letter-spacing: -0.01em;
-      }
-
-      .theme-toggle {
-        width: 36px;
-        height: 36px;
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        background: var(--bg-card);
-        color: var(--text-secondary);
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 14px;
-        transition:
-          background var(--transition),
-          color var(--transition),
-          border-color var(--transition);
-      }
-
-      .theme-toggle:hover {
-        background: var(--bg-card-hover);
-        color: var(--text-primary);
-      }
-
-      /* hero */
       .hero {
-        padding: 80px 0 64px;
+        padding: calc(var(--sp-16) + 60px) 0 var(--sp-16) 0;
+      }
+
+      .mod-row {
+        grid-template-columns: 1fr;
+        gap: var(--sp-6);
+      }
+
+      .mod-row:nth-child(even) {
+        direction: ltr;
+      }
+
+      .steps {
+        grid-template-columns: 1fr;
+        gap: var(--sp-8);
+      }
+
+      .section {
+        padding: var(--sp-16) 0;
+      }
+    }
+
+    /* Mobile */
+    @media (max-width: 600px) {
+      .nav__links { display: none; }
+
+      .hero__title {
+        font-size: var(--text-3xl);
+      }
+
+      .hero__subtitle {
+        font-size: var(--text-base);
+      }
+
+      .hero__actions {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .btn { justify-content: center; }
+
+      .section__title {
+        font-size: var(--text-2xl);
+      }
+
+      .mod-row__name {
+        font-size: var(--text-xl);
+      }
+
+      .cta__actions {
+        flex-direction: column;
+      }
+
+      .footer__inner {
+        flex-direction: column;
+        gap: var(--sp-4);
         text-align: center;
       }
+    }
 
-      .avatar {
-        width: 80px;
-        height: 80px;
-        border-radius: 50%;
-        background: var(--accent);
-        margin: 0 auto 24px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 32px;
-        font-weight: 700;
-        color: #fff;
-        letter-spacing: -0.02em;
+    /* Prefers reduced motion — kill all animation */
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
       }
+    }
+  </style>
+</head>
+<body>
 
-      .hero h1 {
-        font-size: 3rem;
-        font-weight: 700;
-        letter-spacing: -0.03em;
-        line-height: 1.1;
-        margin-bottom: 12px;
-      }
+  <!-- ═══ NAV ═══ -->
+  <nav class="nav">
+    <div class="container nav__inner">
+      <a href="#" class="nav__logo">Awesome<span>Vivaldi</span></a>
+      <ul class="nav__links">
+        <li><a href="#mods">Mods</a></li>
+        <li><a href="#install">Install</a></li>
+        <li>
+          <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" class="btn--gh" target="_blank" rel="noopener">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
 
-      .hero .tagline {
-        font-size: 1.25rem;
-        color: var(--text-secondary);
-        font-weight: 400;
-      }
-
-      /* tags */
-      .tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        justify-content: center;
-        margin-top: 24px;
-      }
-
-      .tag {
-        padding: 4px 12px;
-        border: 1px solid var(--border);
-        border-radius: 100px;
-        font-size: 0.8rem;
-        color: var(--text-secondary);
-        background: var(--bg-card);
-      }
-
-      /* section */
-      .section {
-        padding: 48px 0;
-      }
-
-      .section + .section {
-        border-top: 1px solid var(--border);
-      }
-
-      .section-title {
-        font-size: 0.75rem;
-        font-weight: 600;
-        letter-spacing: 0.1em;
-        text-transform: uppercase;
-        color: var(--text-muted);
-        margin-bottom: 32px;
-      }
-
-      /* about */
-      .about-text {
-        color: var(--text-secondary);
-        font-size: 1rem;
-        line-height: 1.8;
-        max-width: 640px;
-      }
-
-      .about-text p + p {
-        margin-top: 16px;
-      }
-
-      /* tools grid */
-      .tools-grid {
-        display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-        gap: 12px;
-      }
-
-      .tool-card {
-        display: block;
-        padding: 20px;
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: var(--radius);
-        text-decoration: none;
-        color: inherit;
-        transition:
-          background var(--transition),
-          border-color var(--transition),
-          transform var(--transition);
-      }
-
-      .tool-card:hover {
-        background: var(--bg-card-hover);
-        border-color: var(--accent);
-        transform: translateY(-2px);
-      }
-
-      .tool-card .tool-name {
-        font-size: 1rem;
-        font-weight: 600;
-        color: var(--text-primary);
-        margin-bottom: 6px;
-      }
-
-      .tool-card .tool-desc {
-        font-size: 0.875rem;
-        color: var(--text-muted);
-        line-height: 1.5;
-      }
-
-      /* footer */
-      footer {
-        padding: 48px 0;
-        border-top: 1px solid var(--border);
-      }
-
-      footer .container {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 24px;
-      }
-
-      .social-link {
-        color: var(--text-muted);
-        text-decoration: none;
-        font-size: 0.875rem;
-        transition: color var(--transition);
-      }
-
-      .social-link:hover {
-        color: var(--text-primary);
-      }
-
-      .divider {
-        color: var(--border);
-      }
-
-      /* toast */
-      #toast {
-        position: fixed;
-        bottom: 32px;
-        left: 50%;
-        transform: translateX(-50%) translateY(80px);
-        background: var(--bg-card);
-        border: 1px solid var(--border);
-        border-radius: 8px;
-        padding: 10px 20px;
-        font-size: 0.875rem;
-        color: var(--text-primary);
-        z-index: 999;
-        opacity: 0;
-        transition:
-          transform 0.3s ease,
-          opacity 0.3s ease;
-        pointer-events: none;
-      }
-
-      #toast.show {
-        transform: translateX(-50%) translateY(0);
-        opacity: 1;
-      }
-
-      /* mobile */
-      @media (max-width: 600px) {
-        .hero {
-          padding: 56px 0 40px;
-        }
-
-        .hero h1 {
-          font-size: 2.2rem;
-        }
-
-        .hero .tagline {
-          font-size: 1rem;
-        }
-
-        .tools-grid {
-          grid-template-columns: 1fr;
-        }
-      }
-
-      /* safe area */
-      @media (max-width: 390px) {
-        .container {
-          padding-left: 16px;
-          padding-right: 16px;
-        }
-      }
-    </style>
-  </head>
-  <body>
-    <header>
-      <div class="container">
-        <a href="/" class="site-name">Ryan</a>
-        <button class="theme-toggle" id="themeToggle" aria-label="切换主题">
-          ◑
-        </button>
-      </div>
-    </header>
-
-    <main>
-      <section class="hero container">
-        <div class="avatar">R</div>
-        <h1>Ryan</h1>
-        <p class="tagline">机械 + 软件 / AI 应用 / 效率工具</p>
-        <div class="tags">
-          <span class="tag">机械制造基础</span>
-          <span class="tag">软件工程</span>
-          <span class="tag">AI Agent</span>
-          <span class="tag">无纸化学习</span>
+  <!-- ═══ HERO ═══ -->
+  <section class="hero">
+    <div class="container hero__grid">
+      <div class="hero__content">
+        <p class="hero__eyebrow reveal">Open-source Vivaldi mods</p>
+        <h1 class="hero__title reveal" data-delay="1">Your Vivaldi,<br>Reimagined</h1>
+        <p class="hero__subtitle reveal" data-delay="2">
+          A curated collection of CSS and JS mods that transform Vivaldi into a warm,
+          modern browser. Inspired by Arc and Dia. One install.
+        </p>
+        <div class="hero__actions reveal" data-delay="3">
+          <a href="#install" class="btn btn--primary">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10"/></svg>
+            Download
+          </a>
+          <a href="#mods" class="btn btn--secondary">Explore Mods</a>
         </div>
-      </section>
-
-      <div class="container">
-        <section class="section">
-          <h2 class="section-title">关于我</h2>
-          <div class="about-text">
-            <p>
-              大学生，专业是机械制造基础 +
-              软件工程。对系统架构与底层逻辑有持续的兴趣，正在探索机械与软件交叉的长期发展赛道。
-            </p>
-            <p>
-              技术兴趣集中在工业软件、自动化与控制，AI 应用与 Agent
-              工具，效率工具与知识管理系统。英语能力较好（CET6 652
-              分），正在备战考研数学二。
-            </p>
-            <p>
-              喜欢结构化总结与 TLDR
-              风格，追求系统性理解而非碎片化知识。希望找到具有时代红利与上升空间的方向。
-            </p>
-          </div>
-        </section>
-
-        <section class="section">
-          <h2 class="section-title">工具集</h2>
-          <div class="tools-grid" id="toolsGrid"></div>
-        </section>
       </div>
-    </main>
-
-    <footer>
-      <div class="container">
-        <a
-          class="social-link"
-          href="https://github.com/PaRr0tBoY"
-          target="_blank"
-          rel="noopener"
-          >GitHub</a
-        >
-        <span class="divider">·</span>
-        <a class="social-link" href="mailto:ryan@example.com">邮箱</a>
-        <span class="divider">·</span>
-        <a class="social-link" href="/feed.xml">RSS</a>
+      <div class="hero__visual reveal" data-delay="2">
+        <img src="assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
       </div>
-    </footer>
+    </div>
+  </section>
 
-    <div id="toast"></div>
+  <!-- ═══ MOD GALLERY ═══ -->
+  <section class="section mods" id="mods">
+    <div class="container">
+      <div class="section__header reveal">
+        <p class="section__eyebrow">The Collection</p>
+        <h2 class="section__title">22 CSS mods. 19 JS scripts.<br>One cohesive vision.</h2>
+        <p class="section__desc">
+          Each mod is independent. Mix, match, or install everything at once.
+          Every piece respects Vivaldi's native architecture.
+        </p>
+      </div>
 
-    <script>
-      // ── 工具配置 ──────────────────────────────────────────────
-      const TOOLS = [
-        {
-          name: "Linso",
-          desc: "智能搜索中间层，AI 预测搜索意图并构造高级搜索词",
-          url: "/tools/linso.html",
-        },
-        {
-          name: "MathBank",
-          desc: "数学题库管理，支持题目收藏与分类",
-          url: "/tools/mathbank.html",
-        },
-        {
-          name: "FlowDay",
-          desc: "AI 驱动的日程规划与时间块管理",
-          url: "/tools/flowday.html",
-        },
-        {
-          name: "Chronos",
-          desc: "极简专注计时器，支持项目追踪",
-          url: "/tools/chronos.html",
-        },
-        {
-          name: "GanttLite",
-          desc: "轻量甘特图，项目进度可视化",
-          url: "/tools/ganttlite.html",
-        },
-        {
-          name: "SmartGoal",
-          desc: "目标管理，将大目标拆解为可执行任务",
-          url: "/tools/smartgoal.html",
-        },
-        {
-          name: "Snippy",
-          desc: "代码片段收藏与快速检索",
-          url: "/tools/snippy.html",
-        },
-        {
-          name: "TechFeed",
-          desc: "技术订阅源聚合阅读",
-          url: "/tools/techfeed.html",
-        },
-        {
-          name: "DateCal",
-          desc: "日期计算器，日期差与工作日计算",
-          url: "/tools/datecal.html",
-        },
-        {
-          name: "Check",
-          desc: "检查清单，任务验收与流程确认",
-          url: "/tools/check.html",
-        },
-        {
-          name: "Quadrant",
-          desc: "四象限优先级分类，重要紧急矩阵",
-          url: "/tools/quadrant.html",
-        },
-      ];
+      <!-- Mod 1: VivalArc -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">CSS</span>
+          <h3 class="mod-row__name">VivalArc</h3>
+          <p class="mod-row__desc">
+            The foundation. Redesigns the entire UI from scratch — new tab strip,
+            sidebar, toolbar. Three layout options: left sidebar, top compact, bottom nav.
+            Every other mod builds on this.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
+        </div>
+      </div>
 
-      // ── 主题切换 ──────────────────────────────────────────────
-      function loadTheme() {
-        const saved = localStorage.getItem("theme_v1");
-        if (saved === "light") {
-          document.documentElement.setAttribute("data-theme", "light");
-        }
-        updateThemeIcon();
-      }
+      <!-- Mod 2: VividPeek -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">JS + CSS</span>
+          <h3 class="mod-row__name">VividPeek</h3>
+          <p class="mod-row__desc">
+            Hold Ctrl/Cmd and hover any link to preview it in a floating panel.
+            Browser-native, zero latency. Stay in flow without opening new tabs.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
+        </div>
+      </div>
 
-      function toggleTheme() {
-        const current = document.documentElement.getAttribute("data-theme");
-        const next = current === "light" ? "" : "light";
-        if (next) {
-          document.documentElement.setAttribute("data-theme", next);
-          localStorage.setItem("theme_v1", next);
-        } else {
-          document.documentElement.removeAttribute("data-theme");
-          localStorage.removeItem("theme_v1");
-        }
-        updateThemeIcon();
-      }
+      <!-- Mod 3: TidyTabs -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">JS + CSS</span>
+          <h3 class="mod-row__name">TidyTabs</h3>
+          <p class="mod-row__desc">
+            AI-powered tab grouping and cleanup. Automatically organizes
+            your tabs into meaningful workspaces using LLM classification.
+            Manual stacks get smart renaming.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
+        </div>
+      </div>
 
-      function updateThemeIcon() {
-        const btn = document.getElementById("themeToggle");
-        const isLight =
-          document.documentElement.getAttribute("data-theme") === "light";
-        btn.textContent = isLight ? "◑" : "◒";
-      }
+      <!-- Mod 4: VividPlayer -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">JS + CSS</span>
+          <h3 class="mod-row__name">VividPlayer</h3>
+          <p class="mod-row__desc">
+            A sidebar media controller with Picture-in-Picture. Album art,
+            progress scrubbing, playback controls — all in one place.
+            Works with any media playing in Vivaldi.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
+        </div>
+      </div>
 
-      document
-        .getElementById("themeToggle")
-        .addEventListener("click", toggleTheme);
-      loadTheme();
+      <!-- Mod 5: VividToast -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">JS + CSS</span>
+          <h3 class="mod-row__name">VividToast</h3>
+          <p class="mod-row__desc">
+            Toast notifications for mod events. Download complete, tab grouped,
+            theme switched — always informed, never interrupted.
+            Customizable duration and style.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/toast.gif" alt="VividToast notification system" loading="lazy">
+        </div>
+      </div>
 
-      // ── 渲染工具卡片 ──────────────────────────────────────────
-      function renderTools() {
-        const grid = document.getElementById("toolsGrid");
-        grid.innerHTML = TOOLS.map(
-          (tool) => `
-        <a href="${tool.url}" class="tool-card">
-          <div class="tool-name">${tool.name}</div>
-          <div class="tool-desc">${tool.desc}</div>
+      <!-- Mod 6: Quietify -->
+      <div class="mod-row reveal">
+        <div class="mod-row__info">
+          <span class="mod-row__tag">CSS</span>
+          <h3 class="mod-row__name">Quietify</h3>
+          <p class="mod-row__desc">
+            Hides audio indicators, mutes tab clutter, strips away visual noise.
+            Keeps only what matters. The sound of silence, Vivaldi edition.
+          </p>
+        </div>
+        <div class="mod-row__visual">
+          <img src="assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ INSTALL ═══ -->
+  <section class="section install" id="install">
+    <div class="container">
+      <div class="section__header reveal">
+        <p class="section__eyebrow">Get Started</p>
+        <h2 class="section__title">Three commands. That's it.</h2>
+        <p class="section__desc">
+          The install script detects your Vivaldi profile, lets you pick mods,
+          and handles everything. Reversible at any time.
+        </p>
+      </div>
+
+      <div class="steps">
+        <div class="step reveal">
+          <div class="step__number">1</div>
+          <h3 class="step__title">Clone</h3>
+          <p class="step__desc">Download the repository to your machine.</p>
+          <div class="step__cmd"><code>git clone https://github.com/PaRr0tBoY/Awesome-Vivaldi.git</code></div>
+        </div>
+
+        <div class="step reveal" data-delay="1">
+          <div class="step__number">2</div>
+          <h3 class="step__title">Run</h3>
+          <p class="step__desc">Launch the interactive installer. Pick what you want.</p>
+          <div class="step__cmd"><code>./install.sh</code></div>
+        </div>
+
+        <div class="step reveal" data-delay="2">
+          <div class="step__number">3</div>
+          <h3 class="step__title">Restart</h3>
+          <p class="step__desc">Restart Vivaldi. Your new browser is ready.</p>
+          <div class="step__cmd"><code># Restart Vivaldi to apply changes</code></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ CTA ═══ -->
+  <section class="section cta reveal">
+    <div class="container">
+      <h2 class="cta__title">Ready to reimagine your browser?</h2>
+      <p class="cta__desc">
+        Open-source. Free. No telemetry. No accounts.
+        Just a better Vivaldi.
+      </p>
+      <div class="cta__actions">
+        <a href="#install" class="btn btn--primary">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10"/></svg>
+          Download Now
         </a>
-      `,
-        ).join("");
-      }
+        <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" class="btn btn--secondary" target="_blank" rel="noopener">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
+          Star on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
 
-      renderTools();
+  <!-- ═══ FOOTER ═══ -->
+  <footer class="footer">
+    <div class="container footer__inner">
+      <p class="footer__copy">VivaldiModpack — Open source under MIT License</p>
+      <ul class="footer__links">
+        <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank" rel="noopener">GitHub</a></li>
+        <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues" target="_blank" rel="noopener">Report Issue</a></li>
+        <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/blob/main/Doc/" target="_blank" rel="noopener">Docs</a></li>
+      </ul>
+    </div>
+  </footer>
 
-      // ── Toast ─────────────────────────────────────────────────
-      function showToast(msg) {
-        const t = document.getElementById("toast");
-        t.textContent = msg;
-        t.classList.add("show");
-        clearTimeout(t._timer);
-        t._timer = setTimeout(() => t.classList.remove("show"), 2500);
-      }
-
-      // ── 头像占位提示 ─────────────────────────────────────────
-      // 替换头像：将 .avatar 的 background 改为图片
-      // background: url('/avatar.jpg') center/cover no-repeat;
-    </script>
-  </body>
+  <script>
+    /* IntersectionObserver for .reveal elements */
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-visible');
+          io.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  </script>
+</body>
 </html>

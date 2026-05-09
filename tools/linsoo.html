@@ -7375,6 +7375,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     let state = cloneValue(DEFAULT_STATE);
 
     let messages = [];
+    let revealedSourceMessageIds = new Set();
     let currentChat = null;
     let chatIndex = [];
     let activeFolder = "";
@@ -8556,6 +8557,22 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         .sort((a, b) => (b[1].count || 0) - (a[1].count || 0))
         .slice(0, limit)
         .map(([domain, item]) => ({ domain, clicks: item.count || 0 }));
+    }
+
+    function smartFallbackEntries(entries, count = 1) {
+      if (!entries.length) return [];
+      const clickStats = domainClickStatsForLuckyShot();
+      const clickMap = new Map(clickStats.map((item) => [item.domain, item.clicks]));
+      const boostedDomains = state.sourcePreferences?.boosted || [];
+      const scored = entries.map((entry, index) => {
+        const domain = entry.source.domain || domainOf(entry.source.url);
+        const clicks = clickMap.get(domain) || 0;
+        const boosted = boostedDomains.includes(domain) ? 100 : 0;
+        const positionScore = Math.max(0, 10 - index);
+        return { entry, score: clicks * 2 + boosted + positionScore };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      return scored.slice(0, count).map((item) => item.entry);
     }
 
     function recordDomainClick(url) {
@@ -10663,6 +10680,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       cancelRun();
       currentChat = null;
       messages = [];
+      revealedSourceMessageIds.clear();
       activeFolder = "";
       editingMessageId = "";
       openAgentLoopMessageIds.clear();
@@ -10705,6 +10723,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       cancelRun();
       editingMessageId = "";
       messages = [];
+      revealedSourceMessageIds.clear();
       currentChat = null;
       activeFolder = "";
       openAgentLoopMessageIds.clear();
@@ -11301,7 +11320,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         sources.dataset.signature = `${sourceSig}|${amapSig}|${featuredSig}`;
         bindSourceListActions(sources, sourceItems, prompt);
       }
-      applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, `${amapSig}|${featuredSig}`);
+      applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, `${amapSig}|${featuredSig}`, message.id);
 
       status.style.display = "none";
       const agentLoop = renderAgentLoop(message);
@@ -11338,17 +11357,19 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       }
     }
 
-    function applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, revealSig) {
+    function applySourcesReveal(sources, hasVisibleSources, hadVisibleSources, revealSig, messageId) {
       if (!hasVisibleSources) {
         sources.classList.remove("source-reveal");
         sources.dataset.visible = "false";
         sources.style.display = "none";
         return;
       }
-      const shouldReveal = !hadVisibleSources || sources.dataset.revealSig !== revealSig;
+      const alreadyRevealed = messageId && revealedSourceMessageIds.has(messageId);
+      const shouldReveal = !alreadyRevealed && (!hadVisibleSources || sources.dataset.revealSig !== revealSig);
       sources.style.display = "";
       sources.dataset.visible = "true";
       sources.dataset.revealSig = revealSig;
+      if (messageId) revealedSourceMessageIds.add(messageId);
       if (!shouldReveal) return;
       sources.classList.remove("source-reveal");
       sources.getBoundingClientRect();
@@ -11507,7 +11528,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (/(对比|比较|区别|差异|哪个好|选哪个|怎么选)/.test(text)) return "对比了";
       if (/(总结|概括|梳理|整理|归纳)/.test(text)) return "梳理了";
       if (/(翻译|英文|中文|日文|韩文)/.test(text)) return "翻译了";
-      return "调查了";
+      if (/(查|搜索|找|推荐|排行|有哪些|是什么)/.test(text)) return "查找了";
+      if (/(解释|说明|含义|意思|概念|原理)/.test(text)) return "解释了";
+      if (/(写|生成|创建|撰写|编写)/.test(text)) return "生成了";
+      return "处理了";
     }
 
     function buildCompletionSummary(prompt = "") {
@@ -11524,8 +11548,9 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         .replace(/[，,。.!！?？:：;；].*$/, "")
         .replace(/\s+/g, " ")
         .trim()
-        .slice(0, 18);
+        .slice(0, 24);
       if (!cleaned) return buildCompletionSummary(prompt);
+      if (/^[\u4e00-\u9fa5]/.test(cleaned) && cleaned.length >= 3) return cleaned;
       if (/^((正在|继续)?(执行|分析|调查|定位|对比|梳理|翻译|总结|整理|归纳|修复|查找|查证|回答|说明|解释|搜索|撰写|比较)|.+了)$/.test(cleaned)) {
         return cleaned;
       }
@@ -11578,11 +11603,11 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
               body: JSON.stringify({
                 model: config.model,
                 messages: [
-                  { role: "system", content: "为 AI 回答完成状态写一个中文成果总结短句。只输出短句。不要用逗号句号冒号。不要以完成或已完成开头。不要提来源数量、检索数量、精选数量。最多 12 个汉字。" },
+                  { role: "system", content: "根据用户问题和AI回答，用一句自然的中文短句总结AI完成了什么工作。不要用逗号句号冒号。不要以完成、已完成、调查了开头。不要提来源数量、检索数量。直接描述做了什么事，如「整理了四月新番信息」「对比了三款手机性能」「定位了登录超时原因」。8-18个汉字。" },
                   { role: "user", content: `用户问题：${prompt}\n\n回答摘要：${content}` },
                 ],
                 temperature: 0.5,
-                max_tokens: 24,
+                max_tokens: 36,
                 stream: false,
               }),
             });
@@ -13682,7 +13707,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       if (!selected.length) {
         return { ok: false, error: "lucky_shot 需要明确的 sourceIds 或 urls，不能默认选择顶部结果。" };
       }
-      entries.forEach((entry) => {
+      smartFallbackEntries(entries.filter((entry) => !selected.some((s) => normalizeSourceUrl(s.source.url) === normalizeSourceUrl(entry.source.url))), count - selected.length).forEach((entry) => {
         if (selected.length < count) addEntry(entry);
       });
       const featuredSources = selected.slice(0, count).map((entry) => entry.source);
@@ -13741,7 +13766,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const fixedCount = opts.count ? normalizeLuckyShotCount(opts.count, 1) : 0;
       const fallbackCount = fixedCount || 1;
       if (mode === "bet") return entries.slice(0, fallbackCount).map((entry) => entry.source);
-      if (!state.apiKey || !model) return entries.slice(0, fallbackCount).map((entry) => entry.source);
+      if (!state.apiKey || !model) return smartFallbackEntries(entries, fallbackCount).map((entry) => entry.source);
       const clickStats = domainClickStatsForLuckyShot();
       const boostedDomains = state.sourcePreferences?.boosted || [];
       const response = await fetch(state.baseUrl || DEFAULT_BASE_URL, {
@@ -13773,14 +13798,14 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         }),
         signal,
       });
-      if (!response.ok) return entries.slice(0, fallbackCount).map((entry) => entry.source);
+      if (!response.ok) return smartFallbackEntries(entries, fallbackCount).map((entry) => entry.source);
       let parsed = null;
       try {
         parsed = safeParseJsonObject(extractContentFromResponse(await response.json()));
       } catch (error) {
         parsed = null;
       }
-      if (!parsed) return entries.slice(0, fallbackCount).map((entry) => entry.source);
+      if (!parsed) return smartFallbackEntries(entries, fallbackCount).map((entry) => entry.source);
       const ids = [
         parsed.sourceId,
         ...(Array.isArray(parsed.sourceIds) ? parsed.sourceIds : []),
@@ -13796,7 +13821,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       };
       ids.forEach((id) => addEntry(entries.find((entry) => entry.id === id)));
       urls.forEach((url) => addEntry(entries.find((entry) => normalizeSourceUrl(entry.source.url) === url)));
-      if (!selected.length) addEntry(entries[0]);
+      if (!selected.length) smartFallbackEntries(entries, 1).forEach((entry) => addEntry(entry));
       const count = fixedCount || normalizeLuckyShotCount(parsed.count || selected.length, Math.min(3, Math.max(1, selected.length)));
       return selected.slice(0, count).map((entry) => entry.source);
     }
