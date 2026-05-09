@@ -1,0 +1,3 @@
+[submodule "tools/assistant-ui"]
+	path = tools/assistant-ui
+	url = https://github.com/assistant-ui/assistant-ui.git
