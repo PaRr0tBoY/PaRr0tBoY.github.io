@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Awesome Vivaldi — Your Vivaldi, Reimagined</title>
-  <meta name="description" content="A curated collection of CSS and JS mods that transform Vivaldi into a warm, modern browser inspired by Arc and Dia. One install, endless customization.">
+  <meta name="description" content="A curated community mod pack for Vivaldi Browser — 20 CSS mods, 17 JS scripts. One command, endless customization.">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
   <style>
     /* ═══════════════════════════════════════════
        TOKENS
@@ -25,7 +25,7 @@
       --c-accent-soft: oklch(0.35 0.06 140 / 0.08);
 
       /* Typography */
-      --font-display: 'Satoshi', system-ui, sans-serif;
+      --font-display: 'Clash Display', system-ui, sans-serif;
       --font-body:    'General Sans', system-ui, sans-serif;
       --font-mono:    'JetBrains Mono', ui-monospace, monospace;
 
@@ -83,7 +83,10 @@
       font-size: var(--text-base);
       line-height: 1.6;
       color: var(--c-text);
-      background: var(--c-bg);
+      background:
+        radial-gradient(circle at 1px 1px, oklch(0.35 0.06 140 / 0.18) 1px, transparent 0),
+        var(--c-bg);
+      background-size: 20px 20px;
     }
 
     img { display: block; max-width: 100%; height: auto; }
@@ -101,6 +104,12 @@
 
     .container--narrow {
       max-width: var(--max-w-narrow);
+    }
+
+    /* Inline keyword accent */
+    .accent {
+      color: var(--c-accent);
+      font-weight: inherit;
     }
 
     /* Scroll-triggered reveal */
@@ -199,7 +208,17 @@
        HERO
     ═══════════════════════════════════════════ */
     .hero {
-      padding: calc(var(--sp-24) + 60px) 0 var(--sp-24) 0;
+      position: relative;
+      min-height: calc(100vh - 56px);
+      display: flex;
+      align-items: center;
+      padding: 0;
+    }
+
+    .hero .container {
+      width: 100%;
+      padding-top: calc(var(--sp-24) + 28px);
+      padding-bottom: var(--sp-12);
     }
 
     .hero__grid {
@@ -222,9 +241,9 @@
     .hero__title {
       font-family: var(--font-display);
       font-size: var(--text-hero);
-      font-weight: 900;
+      font-weight: 700;
       line-height: 1.08;
-      letter-spacing: -0.03em;
+      letter-spacing: -0.025em;
       color: var(--c-text);
       margin-bottom: var(--sp-6);
     }
@@ -300,6 +319,37 @@
       object-fit: cover;
     }
 
+    /* Scroll hint — fold indicator */
+    .hero__scroll-hint {
+      position: absolute;
+      bottom: var(--sp-6);
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .hero__scroll-line {
+      width: 1px;
+      height: 32px;
+      background: var(--c-border);
+    }
+
+    .hero__scroll-dot {
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: var(--c-accent);
+      animation: scroll-pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes scroll-pulse {
+      0%, 100% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(6px); opacity: 0.4; }
+    }
+
     /* ═══════════════════════════════════════════
        SECTION — shared
     ═══════════════════════════════════════════ */
@@ -324,7 +374,7 @@
     .section__title {
       font-family: var(--font-display);
       font-size: var(--text-3xl);
-      font-weight: 800;
+      font-weight: 600;
       line-height: 1.15;
       letter-spacing: -0.025em;
       color: var(--c-text);
@@ -425,29 +475,44 @@
 
     .steps {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: 1fr;
       gap: var(--sp-8);
       margin-top: var(--sp-12);
+      max-width: 640px;
     }
 
     .step {
       position: relative;
+      padding: var(--sp-6) var(--sp-8);
+      background: var(--c-surface);
+      border: 1px solid var(--c-border);
+      border-radius: var(--r-lg);
+      display: flex;
+      gap: var(--sp-6);
+      align-items: flex-start;
     }
 
     .step__number {
       font-family: var(--font-display);
-      font-size: var(--text-4xl);
-      font-weight: 900;
+      font-size: var(--text-2xl);
+      font-weight: 700;
       line-height: 1;
       color: var(--c-accent-soft);
-      margin-bottom: var(--sp-4);
+      flex-shrink: 0;
+      width: 40px;
+      text-align: center;
+    }
+
+    .step__body {
+      flex: 1;
+      min-width: 0;
     }
 
     .step__title {
       font-family: var(--font-display);
       font-size: var(--text-lg);
       font-weight: 700;
-      margin-bottom: var(--sp-3);
+      margin-bottom: var(--sp-2);
     }
 
     .step__desc {
@@ -462,15 +527,31 @@
       font-family: var(--font-mono);
       font-size: var(--text-xs);
       color: var(--c-text);
-      background: var(--c-surface);
+      background: var(--c-bg);
       border: 1px solid var(--c-border);
       border-radius: var(--r-md);
       padding: var(--sp-3) var(--sp-4);
       overflow-x: auto;
+      margin-bottom: var(--sp-2);
+    }
+
+    .step__cmd:last-child {
+      margin-bottom: 0;
     }
 
     .step__cmd code {
       white-space: pre;
+    }
+
+    .step__platform {
+      display: inline-block;
+      font-family: var(--font-mono);
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--c-text-subtle);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: var(--sp-1);
     }
 
     /* ═══════════════════════════════════════════
@@ -484,7 +565,7 @@
     .cta__title {
       font-family: var(--font-display);
       font-size: var(--text-3xl);
-      font-weight: 800;
+      font-weight: 600;
       line-height: 1.15;
       letter-spacing: -0.025em;
       margin-bottom: var(--sp-4);
@@ -554,7 +635,12 @@
       }
 
       .hero {
+        min-height: auto;
         padding: calc(var(--sp-16) + 60px) 0 var(--sp-16) 0;
+      }
+
+      .hero__scroll-hint {
+        display: none;
       }
 
       .mod-row {
@@ -564,11 +650,6 @@
 
       .mod-row:nth-child(even) {
         direction: ltr;
-      }
-
-      .steps {
-        grid-template-columns: 1fr;
-        gap: var(--sp-8);
       }
 
       .section {
@@ -612,6 +693,17 @@
         gap: var(--sp-4);
         text-align: center;
       }
+
+      .step {
+        flex-direction: column;
+        gap: var(--sp-3);
+        padding: var(--sp-4);
+      }
+
+      .step__number {
+        width: auto;
+        font-size: var(--text-xl);
+      }
     }
 
     /* Prefers reduced motion — kill all animation */
@@ -649,8 +741,9 @@
         <p class="hero__eyebrow reveal">Open-source Vivaldi mods</p>
         <h1 class="hero__title reveal" data-delay="1">Your Vivaldi,<br>Reimagined</h1>
         <p class="hero__subtitle reveal" data-delay="2">
-          A curated collection of CSS and JS mods that transform Vivaldi into a warm,
-          modern browser. Inspired by Arc and Dia. One install.
+          A curated community mod pack that transforms Vivaldi into a
+          <span class="accent">warm, modern</span> browser.
+          One command. <span class="accent">Total control.</span>
         </p>
         <div class="hero__actions reveal" data-delay="3">
           <a href="#install" class="btn btn--primary">
@@ -664,6 +757,10 @@
         <img src="assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
       </div>
     </div>
+    <div class="hero__scroll-hint" aria-hidden="true">
+      <div class="hero__scroll-line"></div>
+      <div class="hero__scroll-dot"></div>
+    </div>
   </section>
 
   <!-- ═══ MOD GALLERY ═══ -->
@@ -671,9 +768,9 @@
     <div class="container">
       <div class="section__header reveal">
         <p class="section__eyebrow">The Collection</p>
-        <h2 class="section__title">22 CSS mods. 19 JS scripts.<br>One cohesive vision.</h2>
+        <h2 class="section__title"><span class="accent">20</span> CSS mods. <span class="accent">17</span> JS scripts.<br>One cohesive vision.</h2>
         <p class="section__desc">
-          Each mod is independent. Mix, match, or install everything at once.
+          Each mod is independent. <span class="accent">Mix, match</span>, or install <span class="accent">everything at once.</span>
           Every piece respects Vivaldi's native architecture.
         </p>
       </div>
@@ -684,7 +781,7 @@
           <span class="mod-row__tag">CSS</span>
           <h3 class="mod-row__name">VivalArc</h3>
           <p class="mod-row__desc">
-            The foundation. Redesigns the entire UI from scratch — new tab strip,
+            <span class="accent">The foundation.</span> Redesigns the entire UI from scratch — new tab strip,
             sidebar, toolbar. Three layout options: left sidebar, top compact, bottom nav.
             Every other mod builds on this.
           </p>
@@ -701,7 +798,7 @@
           <h3 class="mod-row__name">VividPeek</h3>
           <p class="mod-row__desc">
             Hold Ctrl/Cmd and hover any link to preview it in a floating panel.
-            Browser-native, zero latency. Stay in flow without opening new tabs.
+            Browser-native, <span class="accent">zero latency.</span> Stay in flow without opening new tabs.
           </p>
         </div>
         <div class="mod-row__visual">
@@ -715,7 +812,7 @@
           <span class="mod-row__tag">JS + CSS</span>
           <h3 class="mod-row__name">TidyTabs</h3>
           <p class="mod-row__desc">
-            AI-powered tab grouping and cleanup. Automatically organizes
+            <span class="accent">AI-powered</span> tab grouping and cleanup. Automatically organizes
             your tabs into meaningful workspaces using LLM classification.
             Manual stacks get smart renaming.
           </p>
@@ -731,7 +828,7 @@
           <span class="mod-row__tag">JS + CSS</span>
           <h3 class="mod-row__name">VividPlayer</h3>
           <p class="mod-row__desc">
-            A sidebar media controller with Picture-in-Picture. Album art,
+            A sidebar media controller with <span class="accent">Picture-in-Picture.</span> Album art,
             progress scrubbing, playback controls — all in one place.
             Works with any media playing in Vivaldi.
           </p>
@@ -748,7 +845,7 @@
           <h3 class="mod-row__name">VividToast</h3>
           <p class="mod-row__desc">
             Toast notifications for mod events. Download complete, tab grouped,
-            theme switched — always informed, never interrupted.
+            theme switched — <span class="accent">always informed, never interrupted.</span>
             Customizable duration and style.
           </p>
         </div>
@@ -764,7 +861,7 @@
           <h3 class="mod-row__name">Quietify</h3>
           <p class="mod-row__desc">
             Hides audio indicators, mutes tab clutter, strips away visual noise.
-            Keeps only what matters. The sound of silence, Vivaldi edition.
+            Keeps <span class="accent">only what matters.</span> The sound of silence, Vivaldi edition.
           </p>
         </div>
         <div class="mod-row__visual">
@@ -779,33 +876,41 @@
     <div class="container">
       <div class="section__header reveal">
         <p class="section__eyebrow">Get Started</p>
-        <h2 class="section__title">Three commands. That's it.</h2>
+        <h2 class="section__title"><span class="accent">One command.</span> That's it.</h2>
         <p class="section__desc">
-          The install script detects your Vivaldi profile, lets you pick mods,
-          and handles everything. Reversible at any time.
+          The interactive TUI installer auto-discovers your Vivaldi installation,
+          lets you pick exactly which mods you want, and handles everything.
+          Fully reversible at any time.
         </p>
       </div>
 
       <div class="steps">
         <div class="step reveal">
           <div class="step__number">1</div>
-          <h3 class="step__title">Clone</h3>
-          <p class="step__desc">Download the repository to your machine.</p>
-          <div class="step__cmd"><code>git clone https://github.com/PaRr0tBoY/Awesome-Vivaldi.git</code></div>
+          <div class="step__body">
+            <h3 class="step__title">Install</h3>
+            <p class="step__desc">Paste the one-liner into your terminal. The interactive TUI launches automatically.</p>
+            <span class="step__platform">Windows</span>
+            <div class="step__cmd"><code>irm https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.ps1 | iex</code></div>
+            <span class="step__platform">macOS / Linux</span>
+            <div class="step__cmd"><code>curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash</code></div>
+          </div>
         </div>
 
         <div class="step reveal" data-delay="1">
           <div class="step__number">2</div>
-          <h3 class="step__title">Run</h3>
-          <p class="step__desc">Launch the interactive installer. Pick what you want.</p>
-          <div class="step__cmd"><code>./install.sh</code></div>
+          <div class="step__body">
+            <h3 class="step__title">Customize</h3>
+            <p class="step__desc">Browse the catalog, toggle what you want. The interactive picker handles dependencies and explains each mod. Reversible at any time — run the command again to add or remove mods.</p>
+          </div>
         </div>
 
         <div class="step reveal" data-delay="2">
           <div class="step__number">3</div>
-          <h3 class="step__title">Restart</h3>
-          <p class="step__desc">Restart Vivaldi. Your new browser is ready.</p>
-          <div class="step__cmd"><code># Restart Vivaldi to apply changes</code></div>
+          <div class="step__body">
+            <h3 class="step__title">Restart</h3>
+            <p class="step__desc">Restart Vivaldi. Your reimagined browser is ready.</p>
+          </div>
         </div>
       </div>
     </div>
@@ -814,10 +919,10 @@
   <!-- ═══ CTA ═══ -->
   <section class="section cta reveal">
     <div class="container">
-      <h2 class="cta__title">Ready to reimagine your browser?</h2>
+      <h2 class="cta__title">Ready to <span class="accent">reimagine</span> your browser?</h2>
       <p class="cta__desc">
         Open-source. Free. No telemetry. No accounts.
-        Just a better Vivaldi.
+        Just a <span class="accent">better</span> Vivaldi.
       </p>
       <div class="cta__actions">
         <a href="#install" class="btn btn--primary">
@@ -835,7 +940,7 @@
   <!-- ═══ FOOTER ═══ -->
   <footer class="footer">
     <div class="container footer__inner">
-      <p class="footer__copy">VivaldiModpack — Open source under MIT License</p>
+      <p class="footer__copy">Awesome Vivaldi — Open source under MIT License</p>
       <ul class="footer__links">
         <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank" rel="noopener">GitHub</a></li>
         <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues" target="_blank" rel="noopener">Report Issue</a></li>
