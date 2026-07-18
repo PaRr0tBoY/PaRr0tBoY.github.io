@@ -8,7 +8,6 @@ _site/
 .jekyll-metadata
 /CLAUDE.md
 /.claude/
-/docs/
 /.worktrees/
 # Additional Ruby/bundler ignore for when you run: bundle install
 /vendor
