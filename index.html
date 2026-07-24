@@ -1,966 +1,387 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Awesome Vivaldi — Your Vivaldi, Reimagined</title>
-  <meta name="description" content="A curated community mod pack for Vivaldi Browser — 20 CSS mods, 17 JS scripts. One command, endless customization.">
-  <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
-  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@500,600,700&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
-  <style>
-    /* ═══════════════════════════════════════════
-       TOKENS
-    ═══════════════════════════════════════════ */
-    :root {
-      /* Color — Restrained: tinted neutrals + olive accent */
-      --c-bg:          oklch(0.97 0.006 130);
-      --c-surface:     oklch(0.99 0.004 130);
-      --c-border:      oklch(0.90 0.008 130);
-      --c-border-subtle: oklch(0.93 0.006 130);
-      --c-text:        oklch(0.18 0.006 145);
-      --c-text-muted:  oklch(0.50 0.006 130);
-      --c-text-subtle: oklch(0.62 0.006 130);
-      --c-accent:      oklch(0.35 0.06 140);
-      --c-accent-hover: oklch(0.30 0.07 140);
-      --c-accent-soft: oklch(0.35 0.06 140 / 0.08);
-
-      /* Typography */
-      --font-display: 'Clash Display', system-ui, sans-serif;
-      --font-body:    'General Sans', system-ui, sans-serif;
-      --font-mono:    'JetBrains Mono', ui-monospace, monospace;
-
-      /* Scale — ratio 1.25 */
-      --text-xs:  0.8125rem;   /* 13px */
-      --text-sm:  0.9375rem;   /* 15px */
-      --text-base: 1rem;       /* 16px */
-      --text-lg:  1.25rem;     /* 20px */
-      --text-xl:  1.5625rem;   /* 25px */
-      --text-2xl: 1.953rem;    /* 31px */
-      --text-3xl: 2.441rem;    /* 39px */
-      --text-4xl: 3.052rem;    /* 49px */
-      --text-hero: clamp(2.5rem, 5vw + 1rem, 4.5rem);
-
-      /* Spacing — 4pt base */
-      --sp-1:  4px;
-      --sp-2:  8px;
-      --sp-3:  12px;
-      --sp-4:  16px;
-      --sp-6:  24px;
-      --sp-8:  32px;
-      --sp-12: 48px;
-      --sp-16: 64px;
-      --sp-24: 96px;
-
-      /* Radius */
-      --r-sm: 6px;
-      --r-md: 8px;
-      --r-lg: 12px;
-
-      /* Motion */
-      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-      --dur-fast: 150ms;
-      --dur-med:  300ms;
-      --dur-slow: 500ms;
-
-      /* Layout */
-      --max-w: 1120px;
-      --max-w-narrow: 800px;
-    }
-
-    /* ═══════════════════════════════════════════
-       RESET & BASE
-    ═══════════════════════════════════════════ */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html {
-      scroll-behavior: smooth;
-      -webkit-font-smoothing: antialiased;
-      -moz-osx-font-smoothing: grayscale;
-    }
-
-    body {
-      font-family: var(--font-body);
-      font-size: var(--text-base);
-      line-height: 1.6;
-      color: var(--c-text);
-      background:
-        radial-gradient(circle at 1px 1px, oklch(0.35 0.06 140 / 0.18) 1px, transparent 0),
-        var(--c-bg);
-      background-size: 20px 20px;
-    }
-
-    img { display: block; max-width: 100%; height: auto; }
-    a { color: inherit; text-decoration: none; }
-    button { font: inherit; border: none; cursor: pointer; }
-
-    /* ═══════════════════════════════════════════
-       UTILITIES
-    ═══════════════════════════════════════════ */
-    .container {
-      max-width: var(--max-w);
-      margin: 0 auto;
-      padding-inline: var(--sp-6);
-    }
-
-    .container--narrow {
-      max-width: var(--max-w-narrow);
-    }
-
-    /* Inline keyword accent */
-    .accent {
-      color: var(--c-accent);
-      font-weight: inherit;
-    }
-
-    /* Scroll-triggered reveal */
-    .reveal {
-      opacity: 0;
-      transform: translateY(24px);
-      transition: opacity var(--dur-slow) var(--ease-out),
-                  transform var(--dur-slow) var(--ease-out);
-    }
-    .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
-    .reveal[data-delay="1"] { transition-delay: 80ms; }
-    .reveal[data-delay="2"] { transition-delay: 160ms; }
-    .reveal[data-delay="3"] { transition-delay: 240ms; }
-
-    @media (prefers-reduced-motion: reduce) {
-      .reveal {
-        opacity: 1;
-        transform: none;
-        transition: none;
-      }
-    }
-
-    /* ═══════════════════════════════════════════
-       NAV
-    ═══════════════════════════════════════════ */
-    .nav {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      z-index: 100;
-      padding: var(--sp-4) 0;
-      background: oklch(0.97 0.006 130 / 0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid var(--c-border-subtle);
-    }
-
-    .nav__inner {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .nav__logo {
-      font-family: var(--font-display);
-      font-weight: 700;
-      font-size: var(--text-lg);
-      letter-spacing: -0.02em;
-      color: var(--c-text);
-    }
-
-    .nav__logo span {
-      color: var(--c-accent);
-    }
-
-    .nav__links {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-6);
-      list-style: none;
-    }
-
-    .nav__links a {
-      font-size: var(--text-sm);
-      font-weight: 500;
-      color: var(--c-text-muted);
-      transition: color var(--dur-fast) var(--ease-out);
-    }
-
-    .nav__links a:hover { color: var(--c-text); }
-
-    .nav__links .btn--gh {
-      display: inline-flex;
-      align-items: center;
-      gap: var(--sp-2);
-      padding: var(--sp-2) var(--sp-4);
-      border: 1px solid var(--c-border);
-      border-radius: var(--r-md);
-      font-size: var(--text-xs);
-      font-weight: 600;
-      color: var(--c-text);
-      transition: border-color var(--dur-fast) var(--ease-out),
-                  background var(--dur-fast) var(--ease-out);
-    }
-
-    .nav__links .btn--gh:hover {
-      border-color: var(--c-accent);
-      background: var(--c-accent-soft);
-    }
-
-    /* ═══════════════════════════════════════════
-       HERO
-    ═══════════════════════════════════════════ */
-    .hero {
-      position: relative;
-      min-height: calc(100vh - 56px);
-      display: flex;
-      align-items: center;
-      padding: 0;
-    }
-
-    .hero .container {
-      width: 100%;
-      padding-top: calc(var(--sp-24) + 28px);
-      padding-bottom: var(--sp-12);
-    }
-
-    .hero__grid {
-      display: grid;
-      grid-template-columns: 1fr 1.1fr;
-      gap: var(--sp-12);
-      align-items: center;
-    }
-
-    .hero__eyebrow {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      font-weight: 500;
-      color: var(--c-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: var(--sp-4);
-    }
-
-    .hero__title {
-      font-family: var(--font-display);
-      font-size: var(--text-hero);
-      font-weight: 700;
-      line-height: 1.08;
-      letter-spacing: -0.025em;
-      color: var(--c-text);
-      margin-bottom: var(--sp-6);
-    }
-
-    .hero__subtitle {
-      font-size: var(--text-lg);
-      line-height: 1.5;
-      color: var(--c-text-muted);
-      max-width: 48ch;
-      margin-bottom: var(--sp-8);
-    }
-
-    .hero__actions {
-      display: flex;
-      align-items: center;
-      gap: var(--sp-4);
-    }
-
-    /* Buttons */
-    .btn {
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: var(--sp-2);
-      font-family: var(--font-display);
-      font-weight: 600;
-      border-radius: var(--r-md);
-      transition: all var(--dur-fast) var(--ease-out);
-    }
-
-    .btn--primary {
-      padding: var(--sp-3) var(--sp-6);
-      background: var(--c-accent);
-      color: oklch(0.95 0.02 155);
-      font-size: var(--text-sm);
-    }
-
-    .btn--primary:hover {
-      background: var(--c-accent-hover);
-      transform: translateY(-1px);
-      box-shadow: 0 4px 16px oklch(0.35 0.06 140 / 0.2);
-    }
-
-    .btn--secondary {
-      padding: var(--sp-3) var(--sp-6);
-      background: transparent;
-      color: var(--c-text);
-      font-size: var(--text-sm);
-      border: 1px solid var(--c-border);
-    }
-
-    .btn--secondary:hover {
-      border-color: var(--c-text-muted);
-      background: var(--c-accent-soft);
-    }
-
-    /* Hero screenshot area */
-    .hero__visual {
-      position: relative;
-      border-radius: var(--r-lg);
-      overflow: hidden;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      box-shadow:
-        0 1px 2px oklch(0 0 0 / 0.04),
-        0 8px 32px oklch(0 0 0 / 0.06);
-    }
-
-    .hero__visual img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-
-    /* Scroll hint — fold indicator */
-    .hero__scroll-hint {
-      position: absolute;
-      bottom: var(--sp-6);
-      left: 50%;
-      transform: translateX(-50%);
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-    }
-
-    .hero__scroll-line {
-      width: 1px;
-      height: 32px;
-      background: var(--c-border);
-    }
-
-    .hero__scroll-dot {
-      width: 4px;
-      height: 4px;
-      border-radius: 50%;
-      background: var(--c-accent);
-      animation: scroll-pulse 2s ease-in-out infinite;
-    }
-
-    @keyframes scroll-pulse {
-      0%, 100% { transform: translateY(0); opacity: 1; }
-      50% { transform: translateY(6px); opacity: 0.4; }
-    }
-
-    /* ═══════════════════════════════════════════
-       SECTION — shared
-    ═══════════════════════════════════════════ */
-    .section {
-      padding: var(--sp-24) 0;
-    }
-
-    .section__header {
-      margin-bottom: var(--sp-16);
-    }
-
-    .section__eyebrow {
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      font-weight: 500;
-      color: var(--c-accent);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-      margin-bottom: var(--sp-3);
-    }
-
-    .section__title {
-      font-family: var(--font-display);
-      font-size: var(--text-3xl);
-      font-weight: 600;
-      line-height: 1.15;
-      letter-spacing: -0.025em;
-      color: var(--c-text);
-    }
-
-    .section__desc {
-      margin-top: var(--sp-4);
-      font-size: var(--text-lg);
-      color: var(--c-text-muted);
-      max-width: 56ch;
-    }
-
-    /* ═══════════════════════════════════════════
-       MOD GALLERY
-    ═══════════════════════════════════════════ */
-    .mods {
-      border-top: 1px solid var(--c-border-subtle);
-    }
-
-    .mod-row {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: var(--sp-8);
-      align-items: center;
-      padding: var(--sp-12) 0;
-      border-bottom: 1px solid var(--c-border-subtle);
-    }
-
-    .mod-row:last-child { border-bottom: none; }
-
-    /* Alternate layout: even rows reverse */
-    .mod-row:nth-child(even) {
-      direction: rtl;
-    }
-    .mod-row:nth-child(even) > * {
-      direction: ltr;
-    }
-
-    .mod-row__info {
-      max-width: 40ch;
-    }
-
-    .mod-row__tag {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      font-weight: 500;
-      color: var(--c-accent);
-      padding: var(--sp-1) var(--sp-3);
-      border: 1px solid oklch(0.35 0.06 140 / 0.2);
-      border-radius: var(--r-sm);
-      margin-bottom: var(--sp-3);
-    }
-
-    .mod-row__name {
-      font-family: var(--font-display);
-      font-size: var(--text-2xl);
-      font-weight: 700;
-      line-height: 1.2;
-      letter-spacing: -0.02em;
-      margin-bottom: var(--sp-3);
-    }
-
-    .mod-row__desc {
-      font-size: var(--text-sm);
-      line-height: 1.6;
-      color: var(--c-text-muted);
-    }
-
-    .mod-row__visual {
-      position: relative;
-      border-radius: var(--r-lg);
-      overflow: hidden;
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      transition: transform var(--dur-med) var(--ease-out),
-                  box-shadow var(--dur-med) var(--ease-out);
-    }
-
-    .mod-row__visual:hover {
-      transform: scale(1.02);
-      box-shadow: 0 8px 32px oklch(0 0 0 / 0.08);
-    }
-
-    .mod-row__visual img {
-      display: block;
-      width: 100%;
-      height: auto;
-      object-fit: cover;
-    }
-
-    /* ═══════════════════════════════════════════
-       INSTALL
-    ═══════════════════════════════════════════ */
-    .install {
-      border-top: 1px solid var(--c-border-subtle);
-    }
-
-    .steps {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: var(--sp-8);
-      margin-top: var(--sp-12);
-      max-width: 640px;
-    }
-
-    .step {
-      position: relative;
-      padding: var(--sp-6) var(--sp-8);
-      background: var(--c-surface);
-      border: 1px solid var(--c-border);
-      border-radius: var(--r-lg);
-      display: flex;
-      gap: var(--sp-6);
-      align-items: flex-start;
-    }
-
-    .step__number {
-      font-family: var(--font-display);
-      font-size: var(--text-2xl);
-      font-weight: 700;
-      line-height: 1;
-      color: var(--c-accent-soft);
-      flex-shrink: 0;
-      width: 40px;
-      text-align: center;
-    }
-
-    .step__body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .step__title {
-      font-family: var(--font-display);
-      font-size: var(--text-lg);
-      font-weight: 700;
-      margin-bottom: var(--sp-2);
-    }
-
-    .step__desc {
-      font-size: var(--text-sm);
-      color: var(--c-text-muted);
-      line-height: 1.6;
-      margin-bottom: var(--sp-4);
-    }
-
-    .step__cmd {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: var(--text-xs);
-      color: var(--c-text);
-      background: var(--c-bg);
-      border: 1px solid var(--c-border);
-      border-radius: var(--r-md);
-      padding: var(--sp-3) var(--sp-4);
-      overflow-x: auto;
-      margin-bottom: var(--sp-2);
-    }
-
-    .step__cmd:last-child {
-      margin-bottom: 0;
-    }
-
-    .step__cmd code {
-      white-space: pre;
-    }
-
-    .step__platform {
-      display: inline-block;
-      font-family: var(--font-mono);
-      font-size: 10px;
-      font-weight: 600;
-      color: var(--c-text-subtle);
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: var(--sp-1);
-    }
-
-    /* ═══════════════════════════════════════════
-       CTA (bottom)
-    ═══════════════════════════════════════════ */
-    .cta {
-      border-top: 1px solid var(--c-border-subtle);
-      text-align: center;
-    }
-
-    .cta__title {
-      font-family: var(--font-display);
-      font-size: var(--text-3xl);
-      font-weight: 600;
-      line-height: 1.15;
-      letter-spacing: -0.025em;
-      margin-bottom: var(--sp-4);
-    }
-
-    .cta__desc {
-      font-size: var(--text-lg);
-      color: var(--c-text-muted);
-      max-width: 48ch;
-      margin: 0 auto var(--sp-8);
-    }
-
-    .cta__actions {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      gap: var(--sp-4);
-    }
-
-    /* ═══════════════════════════════════════════
-       FOOTER
-    ═══════════════════════════════════════════ */
-    .footer {
-      padding: var(--sp-8) 0;
-      border-top: 1px solid var(--c-border-subtle);
-    }
-
-    .footer__inner {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .footer__copy {
-      font-size: var(--text-xs);
-      color: var(--c-text-subtle);
-    }
-
-    .footer__links {
-      display: flex;
-      gap: var(--sp-4);
-      list-style: none;
-    }
-
-    .footer__links a {
-      font-size: var(--text-xs);
-      color: var(--c-text-subtle);
-      transition: color var(--dur-fast) var(--ease-out);
-    }
-
-    .footer__links a:hover { color: var(--c-text); }
-
-    /* ═══════════════════════════════════════════
-       RESPONSIVE
-    ═══════════════════════════════════════════ */
-
-    /* Tablet */
-    @media (max-width: 900px) {
-      .hero__grid {
-        grid-template-columns: 1fr;
-        gap: var(--sp-8);
-      }
-
-      .hero__visual {
-        order: -1;
-        max-height: 360px;
-      }
-
-      .hero {
-        min-height: auto;
-        padding: calc(var(--sp-16) + 60px) 0 var(--sp-16) 0;
-      }
-
-      .hero__scroll-hint {
-        display: none;
-      }
-
-      .mod-row {
-        grid-template-columns: 1fr;
-        gap: var(--sp-6);
-      }
-
-      .mod-row:nth-child(even) {
-        direction: ltr;
-      }
-
-      .section {
-        padding: var(--sp-16) 0;
-      }
-    }
-
-    /* Mobile */
-    @media (max-width: 600px) {
-      .nav__links { display: none; }
-
-      .hero__title {
-        font-size: var(--text-3xl);
-      }
-
-      .hero__subtitle {
-        font-size: var(--text-base);
-      }
-
-      .hero__actions {
-        flex-direction: column;
-        align-items: stretch;
-      }
-
-      .btn { justify-content: center; }
-
-      .section__title {
-        font-size: var(--text-2xl);
-      }
-
-      .mod-row__name {
-        font-size: var(--text-xl);
-      }
-
-      .cta__actions {
-        flex-direction: column;
-      }
-
-      .footer__inner {
-        flex-direction: column;
-        gap: var(--sp-4);
-        text-align: center;
-      }
-
-      .step {
-        flex-direction: column;
-        gap: var(--sp-3);
-        padding: var(--sp-4);
-      }
-
-      .step__number {
-        width: auto;
-        font-size: var(--text-xl);
-      }
-    }
-
-    /* Prefers reduced motion — kill all animation */
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after {
-        animation-duration: 0.01ms !important;
-        transition-duration: 0.01ms !important;
-      }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Acid / PaRr0tBoY</title>
+<meta name="description" content="Personal page — building Volante, Techne, Trace, Plateau, Polaris.">
+<style>
+  /*
+   * Gruvbox Material (Dark) palette
+   * bg0_h: #1d2021  bg0:   #282828  bg1:   #32302f
+   * bg2:   #3c3836  bg3:   #45403d  bg4:   #504945
+   * fg0:   #d4be98  fg1:   #ddc7a1  fg3:   #bdae93
+   * gray:  #a89984  red:   #ea6962  orange:#e78a4e
+   * yellow:#d8a657  green: #a9b665  aqua:  #89b482
+   * blue:  #7daea3  purple:#d3869b
+   */
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Noto Sans SC", monospace;
+    background: #1d2021;
+    color: #d4be98;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .container { max-width: 760px; margin:0 auto; padding: 56px 28px; }
+
+  /* ─── Profile ─── */
+  .profile { display:flex; align-items:center; gap:24px; margin-bottom:40px; }
+  .avatar {
+    width:80px; height:80px; border-radius:50%;
+    background:#32302f; flex-shrink:0;
+    border:2px solid #504945;
+    overflow:hidden;
+  }
+  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
+  .avatar-placeholder {
+    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
+    color:#a89984; font-size:1.6rem;
+  }
+  .profile-info { flex:1; min-width:0; }
+  .profile-info h1 {
+    font-size:1.5rem; font-weight:500; color:#ddc7a1;
+    letter-spacing:-0.02em; margin-bottom:2px;
+  }
+  .profile-info .handle { color:#7daea3; font-size:0.82rem; }
+  .profile-info .bio {
+    color:#bdae93; font-size:0.88rem; line-height:1.65;
+    margin-top:8px;
+  }
+  .profile-info .bio strong { color:#ddc7a1; font-weight:500; }
+  .profile-info .bio .product-list { color:#d3869b; }
+
+  /* ─── Social Links ─── */
+  .socials {
+    display:flex; gap:10px; flex-wrap:wrap;
+    margin-bottom:36px; padding-bottom:28px;
+    border-bottom:1px solid #3c3836;
+  }
+  .socials a {
+    display:inline-flex; align-items:center; gap:7px;
+    padding:7px 14px; border-radius:6px;
+    background:#282828; border:1px solid #3c3836;
+    color:#bdae93; font-size:0.82rem; text-decoration:none;
+    transition:background .15s, border-color .15s, color .15s;
+  }
+  .socials a:hover {
+    background:#32302f; border-color:#504945; color:#ddc7a1;
+  }
+  .socials a svg { width:16px; height:16px; flex-shrink:0; }
+
+  /* ─── Sections ─── */
+  section { margin-bottom:32px; }
+  .section-head {
+    display:flex; align-items:center; gap:10px;
+    margin-bottom:12px; cursor:pointer; user-select:none;
+  }
+  .section-head:hover .toggle { opacity:1; }
+  .toggle {
+    display:inline-flex; align-items:center; justify-content:center;
+    width:20px; height:20px; flex-shrink:0;
+    color:#a89984; font-size:0.7rem;
+    transition:transform .2s, opacity .15s; opacity:.6;
+  }
+  .toggle.open { transform:rotate(90deg); }
+  .section-label {
+    font-size:0.78rem; font-weight:500; text-transform:uppercase;
+    letter-spacing:0.08em; color:#a89984;
+    border-bottom:1px solid #3c3836; flex:1; padding-bottom:4px;
+  }
+  .section-count {
+    font-size:0.72rem; color:#504945; font-weight:400;
+  }
+
+  /* ─── File Items ─── */
+  .file-list { list-style:none; }
+  .file-item {
+    display:flex; align-items:center; gap:10px;
+    padding:8px 10px; border-radius:6px;
+    text-decoration:none; color:inherit;
+    transition:background .12s;
+  }
+  .file-item:hover { background:#282828; }
+  .file-item .type-icon {
+    width:28px; height:28px; flex-shrink:0; display:flex;
+    align-items:center; justify-content:center;
+    border-radius:5px; font-size:.82rem;
+  }
+  .file-item .type-icon.dir  { background:#3c3836; color:#d8a657; }
+  .file-item .type-icon.file { background:#32302f; color:#89b482; }
+  .file-item .name { flex:1; font-size:.87rem; color:#ddc7a1; }
+  .file-item .desc { font-size:.76rem; color:#a89984; margin-top:1px; }
+  .file-item .arrow { color:#504945; font-size:.75rem; }
+  .file-loading { color:#504945; font-size:.84rem; padding:10px; }
+  .file-error  { color:#ea6962; font-size:.84rem; padding:10px; }
+
+  /* ─── Products ─── */
+  .products-grid {
+    display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
+    gap:10px; margin-top:8px;
+  }
+  .product-card {
+    padding:14px; border-radius:8px;
+    border:1px solid #3c3836; background:#282828;
+    transition:border-color .15s;
+  }
+  .product-card:hover { border-color:#504945; }
+  .product-card .p-name {
+    font-size:.88rem; font-weight:500; color:#ddc7a1; margin-bottom:3px;
+  }
+  .product-card .p-desc {
+    font-size:.78rem; color:#a89984; line-height:1.5;
+  }
+  .product-card .p-links { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+  .product-card .p-links a {
+    font-size:.74rem; color:#7daea3; text-decoration:none;
+    padding:2px 8px; border-radius:4px; border:1px solid #3c3836;
+  }
+  .product-card .p-links a:hover { background:#32302f; border-color:#7daea3; }
+
+  /* ─── Status / Tag ─── */
+  .tag {
+    display:inline-block; font-size:.68rem; padding:2px 8px;
+    border-radius:4px; margin-left:6px;
+  }
+  .tag-building { background:#32302f; color:#d8a657; }
+  .tag-done     { background:#32302f; color:#a9b665; }
+
+  /* ─── Footer ─── */
+  footer {
+    margin-top:48px; padding-top:20px;
+    border-top:1px solid #3c3836;
+    color:#504945; font-size:.78rem; text-align:center;
+  }
+  footer a { color:#7daea3; text-decoration:none; }
+  footer a:hover { text-decoration:underline; }
+
+  @media (max-width:600px) {
+    .container { padding:32px 16px; }
+    .profile { flex-direction:column; align-items:flex-start; gap:16px; }
+    .avatar { width:64px; height:64px; }
+    .products-grid { grid-template-columns:1fr; }
+  }
+</style>
 </head>
 <body>
+<div class="container" id="app">
 
-  <!-- ═══ NAV ═══ -->
-  <nav class="nav">
-    <div class="container nav__inner">
-      <a href="#" class="nav__logo">Awesome<span>Vivaldi</span></a>
-      <ul class="nav__links">
-        <li><a href="#mods">Mods</a></li>
-        <li><a href="#install">Install</a></li>
-        <li><a href="/docs/">Docs</a></li>
-        <li>
-          <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" class="btn--gh" target="_blank" rel="noopener">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-            GitHub
-          </a>
-        </li>
-      </ul>
-    </div>
-  </nav>
-
-  <!-- ═══ HERO ═══ -->
-  <section class="hero">
-    <div class="container hero__grid">
-      <div class="hero__content">
-        <p class="hero__eyebrow reveal">Open-source Vivaldi mods</p>
-        <h1 class="hero__title reveal" data-delay="1">Your Vivaldi,<br>Reimagined</h1>
-        <p class="hero__subtitle reveal" data-delay="2">
-          A curated community mod pack that transforms Vivaldi into a
-          <span class="accent">warm, modern</span> browser.
-          One command. <span class="accent">Total control.</span>
-        </p>
-        <div class="hero__actions reveal" data-delay="3">
-          <a href="#install" class="btn btn--primary">
-            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10"/></svg>
-            Download
-          </a>
-          <a href="#mods" class="btn btn--secondary">Explore Mods</a>
-        </div>
-      </div>
-      <div class="hero__visual reveal" data-delay="2">
-        <img src="assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
+  <!-- ═══ PROFILE ═══ -->
+  <div class="profile">
+    <div class="avatar" id="avatar"><div class="avatar-placeholder">?</div></div>
+    <div class="profile-info">
+      <h1>Acid</h1>
+      <div class="handle">@PaRr0tBoY · <span id="location"></span></div>
+      <div class="bio">
+        机械工程专业 · 喜欢造东西，<wbr>从 Vivaldi 样式到机械设计工具。<br>
+        <strong>Building</strong> <span class="product-list">Volante · Techne · Trace · Plateau · Polaris</span>
       </div>
     </div>
-    <div class="hero__scroll-hint" aria-hidden="true">
-      <div class="hero__scroll-line"></div>
-      <div class="hero__scroll-dot"></div>
+  </div>
+
+  <!-- ═══ SOCIALS ═══ -->
+  <div class="socials">
+    <a href="https://github.com/PaRr0tBoY" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
+      GitHub
+    </a>
+    <a href="https://x.com/parrotboy888" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.307l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+      X
+    </a>
+    <a href="https://www.xiaohongshu.com/user/profile/60c0a237000000000101ea05" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.875 6.5c.08-.04.17-.07.26-.09v-.01c.015-.02.04-.04.06-.06h.01c.11-.03.23-.04.35-.04h2.39c.12 0 .24.01.35.04h.01c.02.02.045.04.06.06h.01c.09.02.18.05.26.09.08.04.16.09.23.14l.02.01c.07.06.13.13.18.2.05.08.09.16.12.25.03.09.04.18.04.28v4.13c0 .15-.03.3-.09.43-.06.14-.14.26-.24.36-.1.1-.22.18-.36.24-.13.06-.28.09-.43.09h-3.75c-.15 0-.3-.03-.43-.09-.14-.06-.26-.14-.36-.24-.1-.1-.18-.22-.24-.36-.06-.13-.09-.28-.09-.43v-4.13c0-.1.01-.19.04-.28.03-.09.07-.17.12-.25.05-.07.11-.14.18-.2l.02-.01c.07-.05.15-.1.23-.14Z"/></svg>
+      小红书
+    </a>
+    <a href="https://space.bilibili.com/109167641" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.662.373-.92.249-.257.555-.386.92-.386.364 0 .67.129.92.386L9.333 4.653h5.334l1.599-1.574c.258-.257.564-.386.92-.386.355 0 .661.129.92.386.258.258.386.564.386.92 0 .355-.128.661-.386.906l-1.173 1.12v.001Zm-7.24 2.507H8.933a.64.64 0 0 0-.64.64c0 .378.262.64.64.64h5.867c.378 0 .64-.262.64-.64a.64.64 0 0 0-.64-.64h-3.227v-.001Zm7.24 2.453H5.333c-.889 0-1.64.309-2.253.926-.614.618-.929 1.367-.929 2.254v7.36c0 .887.315 1.636.929 2.254.614.617 1.364.926 2.253.926h12.48c.889 0 1.64-.309 2.254-.926.613-.618.928-1.367.928-2.254v-7.36c0-.887-.315-1.636-.928-2.254-.614-.617-1.365-.926-2.254-.926h.001v.001Z"/></svg>
+      Bilibili
+    </a>
+    <a href="https://www.youtube.com/@goodmanpsycho8497" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></svg>
+      YouTube
+    </a>
+  </div>
+
+  <!-- ═══ PRODUCTS ═══ -->
+  <section>
+    <div class="section-head">
+      <span class="toggle open">&#x25B8;</span>
+      <span class="section-label">Building</span>
     </div>
-  </section>
-
-  <!-- ═══ MOD GALLERY ═══ -->
-  <section class="section mods" id="mods">
-    <div class="container">
-      <div class="section__header reveal">
-        <p class="section__eyebrow">The Collection</p>
-        <h2 class="section__title"><span class="accent">20</span> CSS mods. <span class="accent">17</span> JS scripts.<br>One cohesive vision.</h2>
-        <p class="section__desc">
-          Each mod is independent. <span class="accent">Mix, match</span>, or install <span class="accent">everything at once.</span>
-          Every piece respects Vivaldi's native architecture.
-        </p>
-      </div>
-
-      <!-- Mod 1: VivalArc -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">CSS</span>
-          <h3 class="mod-row__name">VivalArc</h3>
-          <p class="mod-row__desc">
-            <span class="accent">The foundation.</span> Redesigns the entire UI from scratch — new tab strip,
-            sidebar, toolbar. Three layout options: left sidebar, top compact, bottom nav.
-            Every other mod builds on this.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
+    <div class="products-grid">
+      <div class="product-card">
+        <div class="p-name">Volante <span class="tag tag-building">building</span></div>
+        <div class="p-desc">Vivaldi 浏览器 CSS/JS 整合包 · 20+ 样式与脚本</div>
+        <div class="p-links">
+          <a href="/product/volante/landing/">Landing</a>
+          <a href="/product/volante/doc/">Docs</a>
+          <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank">GitHub</a>
         </div>
       </div>
-
-      <!-- Mod 2: VividPeek -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">JS + CSS</span>
-          <h3 class="mod-row__name">VividPeek</h3>
-          <p class="mod-row__desc">
-            Hold Ctrl/Cmd and hover any link to preview it in a floating panel.
-            Browser-native, <span class="accent">zero latency.</span> Stay in flow without opening new tabs.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
+      <div class="product-card">
+        <div class="p-name">Techne <span class="tag tag-building">building</span></div>
+        <div class="p-desc">个人技能仓库 · 工具与工作流合集</div>
+        <div class="p-links">
+          <a href="/product/techne/landing/">Landing</a>
         </div>
       </div>
-
-      <!-- Mod 3: TidyTabs -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">JS + CSS</span>
-          <h3 class="mod-row__name">TidyTabs</h3>
-          <p class="mod-row__desc">
-            <span class="accent">AI-powered</span> tab grouping and cleanup. Automatically organizes
-            your tabs into meaningful workspaces using LLM classification.
-            Manual stacks get smart renaming.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
-        </div>
+      <div class="product-card">
+        <div class="p-name">Trace <span class="tag tag-building">building</span></div>
+        <div class="p-desc">工作空间 · 项目管理与协作工具</div>
       </div>
-
-      <!-- Mod 4: VividPlayer -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">JS + CSS</span>
-          <h3 class="mod-row__name">VividPlayer</h3>
-          <p class="mod-row__desc">
-            A sidebar media controller with <span class="accent">Picture-in-Picture.</span> Album art,
-            progress scrubbing, playback controls — all in one place.
-            Works with any media playing in Vivaldi.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
-        </div>
+      <div class="product-card">
+        <div class="p-name">Plateau <span class="tag tag-building">building</span></div>
+        <div class="p-desc">学习工作台 · 笔记与知识管理</div>
       </div>
-
-      <!-- Mod 5: VividToast -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">JS + CSS</span>
-          <h3 class="mod-row__name">VividToast</h3>
-          <p class="mod-row__desc">
-            Toast notifications for mod events. Download complete, tab grouped,
-            theme switched — <span class="accent">always informed, never interrupted.</span>
-            Customizable duration and style.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/toast.gif" alt="VividToast notification system" loading="lazy">
-        </div>
-      </div>
-
-      <!-- Mod 6: Quietify -->
-      <div class="mod-row reveal">
-        <div class="mod-row__info">
-          <span class="mod-row__tag">CSS</span>
-          <h3 class="mod-row__name">Quietify</h3>
-          <p class="mod-row__desc">
-            Hides audio indicators, mutes tab clutter, strips away visual noise.
-            Keeps <span class="accent">only what matters.</span> The sound of silence, Vivaldi edition.
-          </p>
-        </div>
-        <div class="mod-row__visual">
-          <img src="assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
-        </div>
+      <div class="product-card">
+        <div class="p-name">Polaris <span class="tag tag-building">building</span></div>
+        <div class="p-desc">机械工程领域的编码 Agent</div>
       </div>
     </div>
   </section>
 
-  <!-- ═══ INSTALL ═══ -->
-  <section class="section install" id="install">
-    <div class="container">
-      <div class="section__header reveal">
-        <p class="section__eyebrow">Get Started</p>
-        <h2 class="section__title"><span class="accent">One command.</span> That's it.</h2>
-        <p class="section__desc">
-          The interactive TUI installer auto-discovers your Vivaldi installation,
-          lets you pick exactly which mods you want, and handles everything.
-          Fully reversible at any time.
-        </p>
-      </div>
-
-      <div class="steps">
-        <div class="step reveal">
-          <div class="step__number">1</div>
-          <div class="step__body">
-            <h3 class="step__title">Install</h3>
-            <p class="step__desc">Paste the one-liner into your terminal. The interactive TUI launches automatically.</p>
-            <span class="step__platform">Windows</span>
-            <div class="step__cmd"><code>irm https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.ps1 | iex</code></div>
-            <span class="step__platform">macOS / Linux</span>
-            <div class="step__cmd"><code>curl -fsSL https://raw.githubusercontent.com/PaRr0tBoY/Awesome-Vivaldi/main/install.sh | bash</code></div>
-          </div>
-        </div>
-
-        <div class="step reveal" data-delay="1">
-          <div class="step__number">2</div>
-          <div class="step__body">
-            <h3 class="step__title">Customize</h3>
-            <p class="step__desc">Browse the catalog, toggle what you want. The interactive picker handles dependencies and explains each mod. Reversible at any time — run the command again to add or remove mods.</p>
-          </div>
-        </div>
-
-        <div class="step reveal" data-delay="2">
-          <div class="step__number">3</div>
-          <div class="step__body">
-            <h3 class="step__title">Restart</h3>
-            <p class="step__desc">Restart Vivaldi. Your reimagined browser is ready.</p>
-          </div>
-        </div>
-      </div>
+  <!-- ═══ TOOLS ═══ -->
+  <section>
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="toggle open">&#x25B8;</span>
+      <span class="section-label">tools <span class="section-count" id="tools-count"></span></span>
     </div>
+    <ul class="file-list" id="tools-list"><li class="file-loading">Loading…</li></ul>
   </section>
 
-  <!-- ═══ CTA ═══ -->
-  <section class="section cta reveal">
-    <div class="container">
-      <h2 class="cta__title">Ready to <span class="accent">reimagine</span> your browser?</h2>
-      <p class="cta__desc">
-        Open-source. Free. No telemetry. No accounts.
-        Just a <span class="accent">better</span> Vivaldi.
-      </p>
-      <div class="cta__actions">
-        <a href="#install" class="btn btn--primary">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v8m0 0l-3-3m3 3l3-3M3 13h10"/></svg>
-          Download Now
-        </a>
-        <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" class="btn btn--secondary" target="_blank" rel="noopener">
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0016 8c0-4.42-3.58-8-8-8z"/></svg>
-          Star on GitHub
-        </a>
-      </div>
+  <!-- ═══ BLOG ═══ -->
+  <section>
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="toggle open">&#x25B8;</span>
+      <span class="section-label">blog <span class="section-count" id="blog-count"></span></span>
     </div>
+    <ul class="file-list" id="blog-list"><li class="file-loading">Loading…</li></ul>
+  </section>
+
+  <!-- ═══ PRODUCTS (directory) ═══ -->
+  <section>
+    <div class="section-head" onclick="toggleSection(this)">
+      <span class="toggle open">&#x25B8;</span>
+      <span class="section-label">product <span class="section-count" id="product-count"></span></span>
+    </div>
+    <ul class="file-list" id="product-list"><li class="file-loading">Loading…</li></ul>
   </section>
 
   <!-- ═══ FOOTER ═══ -->
-  <footer class="footer">
-    <div class="container footer__inner">
-      <p class="footer__copy">Awesome Vivaldi — Open source under MIT License</p>
-      <ul class="footer__links">
-        <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank" rel="noopener">GitHub</a></li>
-        <li><a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/issues" target="_blank" rel="noopener">Report Issue</a></li>
-        <li><a href="/docs/" rel="noopener">Docs</a></li>
-      </ul>
-    </div>
+  <footer>
+    <a href="https://github.com/PaRr0tBoY/PaRr0tBoY.github.io" target="_blank" rel="noopener">source</a>
+    &middot; gruvbox material
   </footer>
+</div>
 
-  <script>
-    /* IntersectionObserver for .reveal elements */
-    const io = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          e.target.classList.add('is-visible');
-          io.unobserve(e.target);
-        }
-      });
-    }, { threshold: 0.15 });
-    document.querySelectorAll('.reveal').forEach(el => io.observe(el));
-  </script>
+<script>
+// ── Toggle ──
+function toggleSection(head) {
+  const list = head.parentNode.querySelector('.file-list');
+  const toggle = head.querySelector('.toggle');
+  if (!list) return;
+  const isOpen = toggle.classList.toggle('open');
+  list.style.display = isOpen ? '' : 'none';
+}
+
+// ── GitHub API ──
+const REPO = 'PaRr0tBoY/PaRr0tBoY.github.io';
+const BRANCH = 'main';
+
+async function fetchDir(path) {
+  const url = `https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`HTTP ${res.status}`);
+  return res.json();
+}
+
+function typeIcon(item) {
+  if (item.type === 'dir') {
+    return `<span class="type-icon dir">&#x1F4C1;</span>`;
+  }
+  // file
+  const ext = item.name.includes('.') ? item.name.split('.').pop().toLowerCase() : '';
+  if (['html','htm'].includes(ext)) return `<span class="type-icon file">&#x1F310;</span>`;
+  if (['md','mdx','txt'].includes(ext)) return `<span class="type-icon file">&#x1F4DD;</span>`;
+  if (['js','ts','mjs'].includes(ext)) return `<span class="type-icon file">&lt;/&gt;</span>`;
+  if (['css','scss'].includes(ext)) return `<span class="type-icon file">#</span>`;
+  if (['json','yaml','yml','xml','toml'].includes(ext)) return `<span class="type-icon file">{ }</span>`;
+  if (['png','jpg','jpeg','gif','svg','webp','ico'].includes(ext)) return `<span class="type-icon file">&#x1F5BC;</span>`;
+  if (['py','go','rs','c','cpp','h','java','rb','sh','bat','ps1'].includes(ext)) return `<span class="type-icon file">&#x2699;</span>`;
+  return `<span class="type-icon file">&#x1F4C4;</span>`;
+}
+
+function renderItem(item) {
+  const href = item.type === 'dir'
+    ? `/${item.path}/`
+    : item.name.endsWith('.html') || item.name.endsWith('.htm')
+      ? `/${item.path}`
+      : null;
+  const name = item.name.replace(/\.(html|htm)$/, '');
+  const isDir = item.type === 'dir';
+  const desc = isDir ? 'directory' : item.type;
+  const html = `<div class="file-item${href ? ' clickable' : ''}"${href ? ` onclick="location.href='${href}'"` : ''}>
+    ${typeIcon(item)}
+    <span class="info"><div class="name">${name}</div><div class="desc">${desc}</div></span>
+    ${href ? '<span class="arrow">→</span>' : ''}
+  </div>`;
+  return html;
+}
+function renderBlogItem(item) {
+  const name = item.name.replace(/\.(md|mdx)$/i, '');
+  const href = `/blog/posts/${name}/`;
+  return `<div class="file-item clickable" onclick="location.href='${href}'">
+    ${typeIcon(Object.assign({}, item, {type:'file'}))}
+    <span class="info"><div class="name">${name}</div><div class="desc">blog post</div></span>
+    <span class="arrow">→</span>
+  </div>`;
+}
+
+async function loadSection(apiPath, listId, countId, filterFn) {
+  const list = document.getElementById(listId);
+  const count = document.getElementById(countId);
+  try {
+    const items = await fetchDir(apiPath);
+    const filtered = filterFn ? items.filter(filterFn) : items;
+    if (count) count.textContent = `(${filtered.length})`;
+    list.innerHTML = filtered
+      .map(listId === 'blog-list' ? renderBlogItem : renderItem)
+      .join('');
+  } catch (e) {
+    list.innerHTML = `<li class="file-error">Failed to load: ${e.message}</li>`;
+  }
+}
+
+// ── GitHub profile ──
+(async function() {
+  try {
+    const r = await fetch('https://api.github.com/users/PaRr0tBoY');
+    const u = await r.json();
+    const avatarEl = document.getElementById('avatar');
+    if (u.avatar_url) {
+      avatarEl.innerHTML = `<img src="${u.avatar_url}" alt="avatar">`;
+    }
+    const loc = document.getElementById('location');
+    if (u.location) loc.textContent = u.location;
+  } catch (_) {}
+})();
+
+// ── Load sections ──
+function isNotBackup(item) { return !item.name.endsWith('.bak'); }
+function isHtmlFile(item) { return item.type === 'file' && (item.name.endsWith('.html') || item.name.endsWith('.htm')); }
+function isDirOrHtml(item) { return item.type === 'dir' || isHtmlFile(item); }
+
+loadSection('tools', 'tools-list', 'tools-count', item =>
+  item.type === 'dir' || (item.type === 'file' && /\.html?$/.test(item.name) && !item.name.endsWith('.bak'))
+);
+loadSection('_blog/src/content/posts', 'blog-list', 'blog-count', item =>
+  item.type === 'file' && /\.(md|mdx)$/i.test(item.name) && !item.name.startsWith('_') && !item.name.startsWith('.') && !item.name.startsWith('example') && item.name !== 'terminal-development.md' && item.name !== 'portfolio-website-development.md' && item.name !== 'tailwind-typography.md'
+);
+loadSection('product', 'product-list', 'product-count', item =>
+  item.type === 'dir'
+);
+</script>
 </body>
 </html>

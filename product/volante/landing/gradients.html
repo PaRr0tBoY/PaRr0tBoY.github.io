@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Dots — Awesome Vivaldi</title>
+  <title>Gradients — Awesome Vivaldi</title>
   <meta name="description" content="A curated community mod pack for Vivaldi Browser — 20 CSS mods, 17 JS scripts. One command, endless customization.">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
@@ -83,11 +83,22 @@
       font-size: var(--text-base);
       line-height: 1.6;
       color: var(--c-text);
+      background: var(--c-bg);
+      position: relative;
+    }
+
+    /* ═══════════════════════════════════════════
+       AMBIENT GRADIENTS — soft washes at key zones
+    ═══════════════════════════════════════════ */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
       background:
-        radial-gradient(circle at 1px 1px, oklch(0.35 0.06 140 / 0.18) 1px, transparent 0),
-        var(--c-bg);
-      background-size: 20px 20px;
-      background-position: 0 0;
+        radial-gradient(ellipse 80% 50% at 15% 15%, oklch(0.35 0.06 140 / 0.14) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 50% at 85% 75%, oklch(0.35 0.06 140 / 0.10) 0%, transparent 60%);
     }
 
     img { display: block; max-width: 100%; height: auto; }
@@ -702,7 +713,7 @@
         </div>
       </div>
       <div class="hero__visual reveal" data-delay="2">
-        <img src="assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
+        <img src="../../assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
       </div>
     </div>
   </section>
@@ -731,7 +742,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
+          <img src="../../assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
         </div>
       </div>
 
@@ -746,7 +757,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
+          <img src="../../assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
         </div>
       </div>
 
@@ -762,7 +773,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
+          <img src="../../assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
         </div>
       </div>
 
@@ -778,7 +789,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
+          <img src="../../assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
         </div>
       </div>
 
@@ -794,7 +805,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/toast.gif" alt="VividToast notification system" loading="lazy">
+          <img src="../../assets/toast.gif" alt="VividToast notification system" loading="lazy">
         </div>
       </div>
 
@@ -809,7 +820,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
+          <img src="../../assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
         </div>
       </div>
     </div>

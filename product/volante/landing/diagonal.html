@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Grain — Awesome Vivaldi</title>
+  <title>Diagonal — Awesome Vivaldi</title>
   <meta name="description" content="A curated community mod pack for Vivaldi Browser — 20 CSS mods, 17 JS scripts. One command, endless customization.">
   <link rel="preconnect" href="https://api.fontshare.com" crossorigin>
   <link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,900&f[]=general-sans@400,500,600&display=swap" rel="stylesheet">
@@ -83,22 +83,15 @@
       font-size: var(--text-base);
       line-height: 1.6;
       color: var(--c-text);
-      background: var(--c-bg);
-      position: relative;
-    }
-
-    /* ═══════════════════════════════════════════
-       PAPER GRAIN — SVG noise overlay
-    ═══════════════════════════════════════════ */
-    body::before {
-      content: '';
-      position: fixed;
-      inset: 0;
-      z-index: 0;
-      pointer-events: none;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.10;
-      background-size: 128px;
+      background:
+        repeating-linear-gradient(
+          130deg,
+          transparent,
+          transparent 4px,
+          oklch(0.35 0.06 140 / 0.08) 4px,
+          oklch(0.35 0.06 140 / 0.08) 5px
+        ),
+        var(--c-bg);
     }
 
     img { display: block; max-width: 100%; height: auto; }
@@ -713,7 +706,7 @@
         </div>
       </div>
       <div class="hero__visual reveal" data-delay="2">
-        <img src="assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
+        <img src="../../assets/VivalarcReflectGreen.jpg" alt="Vivaldi with VivalArc theme applied — green accent" loading="eager">
       </div>
     </div>
   </section>
@@ -742,7 +735,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
+          <img src="../../assets/VivaldiMax.gif" alt="VivalArc layout transformation" loading="lazy">
         </div>
       </div>
 
@@ -757,7 +750,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
+          <img src="../../assets/ArcPeek.gif" alt="VividPeek link preview in action" loading="lazy">
         </div>
       </div>
 
@@ -773,7 +766,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
+          <img src="../../assets/restorepinnedtab.gif" alt="TidyTabs tab management" loading="lazy">
         </div>
       </div>
 
@@ -789,7 +782,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
+          <img src="../../assets/VividPlayer.gif" alt="VividPlayer sidebar media controller" loading="lazy">
         </div>
       </div>
 
@@ -805,7 +798,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/toast.gif" alt="VividToast notification system" loading="lazy">
+          <img src="../../assets/toast.gif" alt="VividToast notification system" loading="lazy">
         </div>
       </div>
 
@@ -820,7 +813,7 @@
           </p>
         </div>
         <div class="mod-row__visual">
-          <img src="assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
+          <img src="../../assets/Quietify.gif" alt="Quietify noise reduction" loading="lazy">
         </div>
       </div>
     </div>

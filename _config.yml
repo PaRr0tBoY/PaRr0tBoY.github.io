@@ -1,11 +1,6 @@
-title: Mortalman
-description: This is a personal page that hosts my ideas,products,resources and everything about me.
-# remote_theme: "jekyll/minima@1e8a445"
-# minima:
-#   skin: dark
-#   nav_pages:
-#     - tools/check.html
-#     - about.md
+# Mortalman — Personal Site
+# Jekyll is disabled via .nojekyll. The blog uses Astro Paper (see _blog/).
+# This file is kept for reference only.
 
-exclude:
-  - tools/assistant-ui
+title: Mortalman
+description: Personal site — ideas, products, resources, and everything about me.
