@@ -7,380 +7,151 @@
 <meta name="description" content="Personal page — building Volante, Techne, Trace, Plateau, Polaris.">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🦜</text></svg>">
 <style>
-  /*
-   * Gruvbox Material (Dark) palette
-   * bg0_h: #1d2021  bg0:   #282828  bg1:   #32302f
-   * bg2:   #3c3836  bg3:   #45403d  bg4:   #504945
-   * fg0:   #d4be98  fg1:   #ddc7a1  fg3:   #bdae93
-   * gray:  #a89984  red:   #ea6962  orange:#e78a4e
-   * yellow:#d8a657  green: #a9b665  aqua:  #89b482
-   * blue:  #7daea3  purple:#d3869b
-   */
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-
-  body {
-    font-family: "JetBrains Mono", "Fira Code", "Cascadia Code", "Noto Sans SC", monospace;
-    background: #1d2021;
-    color: #d4be98;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+  :root{
+    --bg-h:#1d2021;--bg-0:#282828;--bg-1:#32302f;--bg-2:#3c3836;--bg-3:#45403d;--bg-4:#504945;
+    --fg-0:#d4be98;--fg-1:#ddc7a1;--fg-3:#bdae93;
+    --gray:#a89984;--red:#ea6962;--orange:#e78a4e;--yellow:#d8a657;
+    --green:#a9b665;--aqua:#89b482;--blue:#7daea3;--purple:#d3869b;
+    --r:8px;--rl:12px;
   }
-  .container { max-width: 760px; margin:0 auto; padding: 56px 28px; }
-
-  /* ─── Profile ─── */
-  .profile { display:flex; align-items:center; gap:24px; margin-bottom:40px; }
-  .avatar {
-    width:80px; height:80px; border-radius:50%;
-    background:#32302f; flex-shrink:0;
-    border:2px solid #504945;
-    overflow:hidden;
+  body{font-family:"Noto Sans SC","Source Han Sans SC",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg-h);color:var(--fg-0);line-height:1.65;-webkit-font-smoothing:antialiased}
+  .wrap{max-width:820px;margin:0 auto;padding:48px 24px}
+  /* profile */
+  .profile{display:flex;align-items:center;gap:24px;margin-bottom:32px}
+  .avatar{width:72px;height:72px;border-radius:50%;background:var(--bg-1);border:2px solid var(--bg-3);overflow:hidden;flex-shrink:0}
+  .avatar img{width:100%;height:100%;object-fit:cover;display:block}
+  .avatar-ph{width:100%;height:100%;display:flex;align-items:center;justify-content:center;color:var(--gray);font-size:1.4rem}
+  .profile-info h1{font-size:1.5rem;font-weight:600;color:var(--fg-1);letter-spacing:-0.02em;line-height:1.2}
+  .handle{color:var(--blue);font-size:0.8rem;font-family:"JetBrains Mono",monospace}
+  .bio{color:var(--fg-3);font-size:0.88rem;margin-top:8px;line-height:1.7}
+  .bio strong{color:var(--fg-1);font-weight:500}
+  .bio .pr{color:var(--purple)}
+  /* socials */
+  .socials{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:32px;padding-bottom:24px;border-bottom:1px solid var(--bg-2)}
+  .socials a{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:6px;background:var(--bg-0);border:1px solid var(--bg-2);color:var(--fg-3);font-size:0.8rem;text-decoration:none;transition:background .15s,border-color .15s,color .15s}
+  .socials a:hover{background:var(--bg-1);border-color:var(--bg-4);color:var(--fg-1)}
+  .socials a svg{width:14px;height:14px;flex-shrink:0}
+  /* bento */
+  .bento{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:32px}
+  .cell{background:var(--bg-0);border:1px solid var(--bg-2);border-radius:var(--rl);overflow:hidden;transition:border-color .2s}
+  .cell:hover{border-color:var(--bg-4)}
+  .c-building{grid-column:span 4}
+  .c-tools{grid-column:span 2;min-height:280px}
+  .c-blog{grid-column:span 2}
+  .c-product{grid-column:span 4}
+  .cell-h{display:flex;align-items:center;justify-content:space-between;padding:16px 16px 12px;border-bottom:1px solid var(--bg-1)}
+  .cell-h h2{font-size:0.78rem;font-weight:600;text-transform:uppercase;letter-spacing:0.1em;color:var(--gray)}
+  .cell-h .ct{font-size:0.7rem;color:var(--bg-4);font-family:"JetBrains Mono",monospace}
+  .cell-b{padding:12px 16px 16px}
+  /* building */
+  .b-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:8px}
+  .p-chip{display:flex;flex-direction:column;gap:4px;padding:12px;border-radius:var(--r);background:var(--bg-1);border:1px solid transparent;transition:border-color .15s,background .15s}
+  .p-chip:hover{border-color:var(--bg-3);background:var(--bg-h)}
+  .p-n{font-size:0.84rem;font-weight:500;color:var(--fg-1);display:flex;align-items:center;gap:6px}
+  .p-dot{width:6px;height:6px;border-radius:50%;background:var(--yellow);flex-shrink:0;animation:pulse 2s ease-in-out infinite}
+  @keyframes pulse{0%,100%{opacity:.4}50%{opacity:1}}
+  .p-d{font-size:0.74rem;color:var(--gray);line-height:1.5}
+  .p-l{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+  .p-l a{font-size:0.7rem;color:var(--blue);text-decoration:none;padding:1px 6px;border-radius:3px;border:1px solid var(--bg-2);transition:background .12s,border-color .12s}
+  .p-l a:hover{background:var(--bg-1);border-color:var(--blue)}
+  /* tools */
+  .t-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(130px,1fr));gap:8px}
+  .t-chip{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);background:var(--bg-1);border:1px solid transparent;text-decoration:none;color:inherit;transition:background .12s,border-color .12s;cursor:pointer}
+  .t-chip:hover{background:var(--bg-h);border-color:var(--bg-3)}
+  .t-ico{width:28px;height:28px;display:flex;align-items:center;justify-content:center;background:var(--bg-2);border-radius:6px;font-size:.78rem;flex-shrink:0}
+  .t-n{font-size:0.78rem;font-weight:500;color:var(--fg-1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  /* blog */
+  .blog-list{list-style:none}
+  .blog-item{display:flex;align-items:center;gap:12px;padding:8px 0;border-bottom:1px solid var(--bg-1);cursor:pointer;transition:background .12s}
+  .blog-item:last-child{border-bottom:none}
+  .blog-item:hover{background:var(--bg-1)}
+  .b-m{width:4px;height:4px;border-radius:50%;background:var(--aqua);flex-shrink:0}
+  .b-n{flex:1;font-size:0.82rem;color:var(--fg-3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .blog-item:hover .b-n{color:var(--fg-1)}
+  .b-a{color:var(--bg-4);font-size:0.72rem;opacity:0;transition:opacity .15s;flex-shrink:0}
+  .blog-item:hover .b-a{opacity:1}
+  /* product dir */
+  .pd{display:flex;gap:12px;flex-wrap:wrap}
+  .pd a{display:flex;align-items:center;gap:8px;padding:8px 12px;border-radius:var(--r);background:var(--bg-1);border:1px solid var(--bg-2);text-decoration:none;color:inherit;transition:background .12s,border-color .12s}
+  .pd a:hover{background:var(--bg-h);border-color:var(--bg-4)}
+  .pd .pi{width:24px;height:24px;display:flex;align-items:center;justify-content:center;font-size:.8rem}
+  .pd .pn{font-size:0.82rem;color:var(--fg-1);font-weight:500}
+  .pd .pdesc{font-size:0.72rem;color:var(--gray)}
+  /* footer */
+  footer{padding-top:24px;border-top:1px solid var(--bg-2);color:var(--bg-4);font-size:0.72rem;text-align:center;font-family:"JetBrains Mono",monospace}
+  footer a{color:var(--blue);text-decoration:none}
+  footer a:hover{text-decoration:underline}
+  /* responsive */
+  @media(max-width:640px){
+    .wrap{padding:32px 16px}
+    .profile{flex-direction:column;align-items:flex-start;gap:16px}
+    .avatar{width:56px;height:56px}
+    .bento{grid-template-columns:1fr}
+    .c-building,.c-tools,.c-blog,.c-product{grid-column:span 1}
+    .c-tools{min-height:auto}
+    .b-grid,.t-grid{grid-template-columns:1fr 1fr}
   }
-  .avatar img { width:100%; height:100%; object-fit:cover; display:block; }
-  .avatar-placeholder {
-    width:100%; height:100%; display:flex; align-items:center; justify-content:center;
-    color:#a89984; font-size:1.6rem;
-  }
-  .profile-info { flex:1; min-width:0; }
-  .profile-info h1 {
-    font-size:1.5rem; font-weight:500; color:#ddc7a1;
-    letter-spacing:-0.02em; margin-bottom:2px;
-  }
-  .profile-info .handle { color:#7daea3; font-size:0.82rem; }
-  .profile-info .bio {
-    color:#bdae93; font-size:0.88rem; line-height:1.65;
-    margin-top:8px;
-  }
-  .profile-info .bio strong { color:#ddc7a1; font-weight:500; }
-  .profile-info .bio .product-list { color:#d3869b; }
-
-  /* ─── Social Links ─── */
-  .socials {
-    display:flex; gap:10px; flex-wrap:wrap;
-    margin-bottom:36px; padding-bottom:28px;
-    border-bottom:1px solid #3c3836;
-  }
-  .socials a {
-    display:inline-flex; align-items:center; gap:7px;
-    padding:7px 14px; border-radius:6px;
-    background:#282828; border:1px solid #3c3836;
-    color:#bdae93; font-size:0.82rem; text-decoration:none;
-    transition:background .15s, border-color .15s, color .15s;
-  }
-  .socials a:hover {
-    background:#32302f; border-color:#504945; color:#ddc7a1;
-  }
-  .socials a svg { width:16px; height:16px; flex-shrink:0; }
-
-  /* ─── Sections ─── */
-  section { margin-bottom:32px; }
-  .section-head {
-    display:flex; align-items:center; gap:10px;
-    margin-bottom:12px; cursor:pointer; user-select:none;
-  }
-  .section-head:hover .toggle { opacity:1; }
-  .toggle {
-    display:inline-flex; align-items:center; justify-content:center;
-    width:20px; height:20px; flex-shrink:0;
-    color:#a89984; font-size:0.7rem;
-    transition:transform .2s, opacity .15s; opacity:.6;
-  }
-  .toggle.open { transform:rotate(90deg); }
-  .section-label {
-    font-size:0.78rem; font-weight:500; text-transform:uppercase;
-    letter-spacing:0.08em; color:#a89984;
-    border-bottom:1px solid #3c3836; flex:1; padding-bottom:4px;
-  }
-  .section-count {
-    font-size:0.72rem; color:#504945; font-weight:400;
-  }
-
-  /* ─── File Items ─── */
-  .file-list { list-style:none; }
-  .file-item {
-    display:flex; align-items:center; gap:10px;
-    padding:8px 10px; border-radius:6px;
-    text-decoration:none; color:inherit;
-    transition:background .12s;
-    cursor:pointer;
-  }
-  .file-item:hover { background:#282828; }
-  .file-item .type-icon {
-    width:28px; height:28px; flex-shrink:0; display:flex;
-    align-items:center; justify-content:center;
-    border-radius:5px; font-size:.82rem;
-  }
-  .file-item .type-icon.dir  { background:#3c3836; color:#d8a657; }
-  .file-item .type-icon.file { background:#32302f; color:#89b482; }
-  .file-item .info { flex:1; min-width:0; }
-  .file-item .info .name { font-size:.87rem; color:#ddc7a1; }
-  .file-item .info .desc { font-size:.76rem; color:#a89984; margin-top:1px; }
-  .file-item .arrow { color:#504945; font-size:.75rem; }
-
-  /* ─── Products ─── */
-  .products-grid {
-    display:grid; grid-template-columns:repeat(auto-fill, minmax(210px,1fr));
-    gap:10px; margin-top:8px;
-  }
-  .product-card {
-    padding:14px; border-radius:8px;
-    border:1px solid #3c3836; background:#282828;
-    transition:border-color .15s;
-  }
-  .product-card:hover { border-color:#504945; }
-  .product-card .p-name {
-    font-size:.88rem; font-weight:500; color:#ddc7a1; margin-bottom:3px;
-  }
-  .product-card .p-desc {
-    font-size:.78rem; color:#a89984; line-height:1.5;
-  }
-  .product-card .p-links { margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
-  .product-card .p-links a {
-    font-size:.74rem; color:#7daea3; text-decoration:none;
-    padding:2px 8px; border-radius:4px; border:1px solid #3c3836;
-  }
-  .product-card .p-links a:hover { background:#32302f; border-color:#7daea3; }
-
-  /* ─── Status / Tag ─── */
-  .tag {
-    display:inline-block; font-size:.68rem; padding:2px 8px;
-    border-radius:4px; margin-left:6px;
-  }
-  .tag-building { background:#32302f; color:#d8a657; }
-
-  /* ─── Footer ─── */
-  footer {
-    margin-top:48px; padding-top:20px;
-    border-top:1px solid #3c3836;
-    color:#504945; font-size:.78rem; text-align:center;
-  }
-  footer a { color:#7daea3; text-decoration:none; }
-  footer a:hover { text-decoration:underline; }
-
-  @media (max-width:600px) {
-    .container { padding:32px 16px; }
-    .profile { flex-direction:column; align-items:flex-start; gap:16px; }
-    .avatar { width:64px; height:64px; }
-    .products-grid { grid-template-columns:1fr; }
-  }
+  @media(max-width:400px){.b-grid,.t-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-<div class="container" id="app">
+<div class="wrap">
 
-  <!-- ═══ PROFILE ═══ -->
   <div class="profile">
-    <div class="avatar" id="avatar"><div class="avatar-placeholder">?</div></div>
+    <div class="avatar" id="avatar"><div class="avatar-ph">?</div></div>
     <div class="profile-info">
       <h1>Acid</h1>
-      <div class="handle">@PaRr0tBoY · <span id="location"></span></div>
-      <div class="bio">
-        机械工程专业 · 喜欢造东西，<wbr>从 Vivaldi 样式到机械设计工具。<br>
-        <strong>Building</strong> <span class="product-list">Volante · Techne · Trace · Plateau · Polaris</span>
-      </div>
+      <div class="handle">@PaRr0tBoY · <span id="loc"></span></div>
+      <div class="bio">机械工程专业 · 喜欢造东西，从 Vivaldi 样式到机械设计工具。<br><strong>Building</strong> <span class="pr">Volante · Techne · Trace · Plateau · Polaris</span></div>
     </div>
   </div>
 
-  <!-- ═══ SOCIALS ═══ -->
   <div class="socials">
-    <a href="https://github.com/PaRr0tBoY" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>
-      GitHub
-    </a>
-    <a href="https://x.com/parrotboy888" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.307l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
-      X
-    </a>
-    <a href="https://www.xiaohongshu.com/user/profile/60c0a237000000000101ea05" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.875 6.5c.08-.04.17-.07.26-.09v-.01c.015-.02.04-.04.06-.06h.01c.11-.03.23-.04.35-.04h2.39c.12 0 .24.01.35.04h.01c.02.02.045.04.06.06h.01c.09.02.18.05.26.09.08.04.16.09.23.14l.02.01c.07.06.13.13.18.2.05.08.09.16.12.25.03.09.04.18.04.28v4.13c0 .15-.03.3-.09.43-.06.14-.14.26-.24.36-.1.1-.22.18-.36.24-.13.06-.28.09-.43.09h-3.75c-.15 0-.3-.03-.43-.09-.14-.06-.26-.14-.36-.24-.1-.1-.18-.22-.24-.36-.06-.13-.09-.28-.09-.43v-4.13c0-.1.01-.19.04-.28.03-.09.07-.17.12-.25.05-.07.11-.14.18-.2l.02-.01c.07-.05.15-.1.23-.14Z"/></svg>
-      小红书
-    </a>
-    <a href="https://space.bilibili.com/109167641" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.662.373-.92.249-.257.555-.386.92-.386.364 0 .67.129.92.386L9.333 4.653h5.334l1.599-1.574c.258-.257.564-.386.92-.386.355 0 .661.129.92.386.258.258.386.564.386.92 0 .355-.128.661-.386.906l-1.173 1.12v.001Zm-7.24 2.507H8.933a.64.64 0 0 0-.64.64c0 .378.262.64.64.64h5.867c.378 0 .64-.262.64-.64a.64.64 0 0 0-.64-.64h-3.227v-.001Zm7.24 2.453H5.333c-.889 0-1.64.309-2.253.926-.614.618-.929 1.367-.929 2.254v7.36c0 .887.315 1.636.929 2.254.614.617 1.364.926 2.253.926h12.48c.889 0 1.64-.309 2.254-.926.613-.618.928-1.367.928-2.254v-7.36c0-.887-.315-1.636-.928-2.254-.614-.617-1.365-.926-2.254-.926h.001v.001Z"/></svg>
-      Bilibili
-    </a>
-    <a href="https://www.youtube.com/@goodmanpsycho8497" target="_blank" rel="noopener">
-      <svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></svg>
-      YouTube
-    </a>
+    <a href="https://github.com/PaRr0tBoY" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>GitHub</a>
+    <a href="https://x.com/parrotboy888" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.307l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>X</a>
+    <a href="https://www.xiaohongshu.com/user/profile/60c0a237000000000101ea05" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25Zm-1.875 6.5c.08-.04.17-.07.26-.09v-.01c.015-.02.04-.04.06-.06h.01c.11-.03.23-.04.35-.04h2.39c.12 0 .24.01.35.04h.01c.02.02.045.04.06.06h.01c.09.02.18.05.26.09.08.04.16.09.23.14l.02.01c.07.06.13.13.18.2.05.08.09.16.12.25.03.09.04.18.04.28v4.13c0 .15-.03.3-.09.43-.06.14-.14.26-.24.36-.1.1-.22.18-.36.24-.13.06-.28.09-.43.09h-3.75c-.15 0-.3-.03-.43-.09-.14-.06-.26-.14-.36-.24-.1-.1-.18-.22-.24-.36-.06-.13-.09-.28-.09-.43v-4.13c0-.1.01-.19.04-.28.03-.09.07-.17.12-.25.05-.07.11-.14.18-.2l.02-.01c.07-.05.15-.1.23-.14Z"/></svg>小红书</a>
+    <a href="https://space.bilibili.com/109167641" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.813 4.653h.854c1.51.054 2.769.578 3.773 1.574 1.004.995 1.524 2.249 1.56 3.76v7.36c-.036 1.51-.556 2.769-1.56 3.773s-2.262 1.524-3.773 1.56H5.333c-1.51-.036-2.769-.556-3.773-1.56S.036 18.858 0 17.347v-7.36c.036-1.511.556-2.765 1.56-3.76 1.004-.996 2.262-1.52 3.773-1.574h.774l-1.174-1.12a1.234 1.234 0 0 1-.373-.906c0-.356.124-.662.373-.92.249-.257.555-.386.92-.386.364 0 .67.129.92.386L9.333 4.653h5.334l1.599-1.574c.258-.257.564-.386.92-.386.355 0 .661.129.92.386.258.258.386.564.386.92 0 .355-.128.661-.386.906l-1.173 1.12v.001Zm-7.24 2.507H8.933a.64.64 0 0 0-.64.64c0 .378.262.64.64.64h5.867c.378 0 .64-.262.64-.64a.64.64 0 0 0-.64-.64h-3.227v-.001Zm7.24 2.453H5.333c-.889 0-1.64.309-2.253.926-.614.618-.929 1.367-.929 2.254v7.36c0 .887.315 1.636.929 2.254.614.617 1.364.926 2.253.926h12.48c.889 0 1.64-.309 2.254-.926.613-.618.928-1.367.928-2.254v-7.36c0-.887-.315-1.636-.928-2.254-.614-.617-1.365-.926-2.254-.926h.001v.001Z"/></svg>Bilibili</a>
+    <a href="https://www.youtube.com/@goodmanpsycho8497" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="currentColor"><path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814ZM9.545 15.568V8.432L15.818 12l-6.273 3.568Z"/></svg>YouTube</a>
   </div>
 
-  <!-- ═══ PRODUCTS ═══ -->
-  <section>
-    <div class="section-head">
-      <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">Building</span>
+  <div class="bento">
+    <div class="cell c-building">
+      <div class="cell-h"><h2>Building</h2><span class="ct">5</span></div>
+      <div class="cell-b"><div class="b-grid" id="b-grid"></div></div>
     </div>
-    <div class="products-grid">
-      <div class="product-card">
-        <div class="p-name">Volante <span class="tag tag-building">building</span></div>
-        <div class="p-desc">Vivaldi 浏览器 CSS/JS 整合包 · 20+ 样式与脚本</div>
-        <div class="p-links">
-          <a href="/product/volante/landing/">Landing</a>
-          <a href="/product/volante/doc/">Docs</a>
-          <a href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank">GitHub</a>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="p-name">Techne <span class="tag tag-building">building</span></div>
-        <div class="p-desc">个人技能仓库 · 工具与工作流合集</div>
-        <div class="p-links">
-          <a href="/product/techne/landing/">Landing</a>
-        </div>
-      </div>
-      <div class="product-card">
-        <div class="p-name">Trace <span class="tag tag-building">building</span></div>
-        <div class="p-desc">工作空间 · 项目管理与协作工具</div>
-      </div>
-      <div class="product-card">
-        <div class="p-name">Plateau <span class="tag tag-building">building</span></div>
-        <div class="p-desc">学习工作台 · 笔记与知识管理</div>
-      </div>
-      <div class="product-card">
-        <div class="p-name">Polaris <span class="tag tag-building">building</span></div>
-        <div class="p-desc">机械工程领域的编码 Agent</div>
-      </div>
+    <div class="cell c-tools">
+      <div class="cell-h"><h2>Tools</h2><span class="ct">14</span></div>
+      <div class="cell-b"><div class="t-grid" id="t-grid"></div></div>
     </div>
-  </section>
+    <div class="cell c-blog">
+      <div class="cell-h"><h2>Blog</h2><span class="ct">15</span></div>
+      <div class="cell-b"><ul class="blog-list" id="blog-list"></ul></div>
+    </div>
+    <div class="cell c-product">
+      <div class="cell-h"><h2>Product</h2><span class="ct">2</span></div>
+      <div class="cell-b"><div class="pd" id="pd"></div></div>
+    </div>
+  </div>
 
-  <!-- ═══ TOOLS ═══ -->
-  <section>
-    <div class="section-head" onclick="toggleSection(this)">
-      <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">tools <span class="section-count">(14)</span></span>
-    </div>
-    <ul class="file-list" id="tools-list"></ul>
-  </section>
-
-  <!-- ═══ BLOG ═══ -->
-  <section>
-    <div class="section-head" onclick="toggleSection(this)">
-      <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">blog <span class="section-count">(15)</span></span>
-    </div>
-    <ul class="file-list" id="blog-list"></ul>
-  </section>
-
-  <!-- ═══ PRODUCTS (directory) ═══ -->
-  <section>
-    <div class="section-head" onclick="toggleSection(this)">
-      <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">product <span class="section-count">(2)</span></span>
-    </div>
-    <ul class="file-list" id="product-list"></ul>
-  </section>
-
-  <!-- ═══ FOOTER ═══ -->
-  <footer>
-    <a href="https://github.com/PaRr0tBoY/PaRr0tBoY.github.io" target="_blank" rel="noopener">source</a>
-    &middot; gruvbox material
-  </footer>
+  <footer><a href="https://github.com/PaRr0tBoY/PaRr0tBoY.github.io" target="_blank" rel="noopener">source</a> · gruvbox material</footer>
 </div>
 
 <script>
-// ── Toggle ──
-function toggleSection(head) {
-  const list = head.parentNode.querySelector('.file-list');
-  const toggle = head.querySelector('.toggle');
-  if (!list) return;
-  const isOpen = toggle.classList.toggle('open');
-  list.style.display = isOpen ? '' : 'none';
-}
+const PRODUCTS=[{n:"Volante",d:"Vivaldi 浏览器 CSS/JS 整合包",l:[{t:"Landing",h:"/product/volante/landing/"},{t:"Docs",h:"/product/volante/doc/"},{t:"GitHub",h:"https://github.com/PaRr0tBoY/Awesome-Vivaldi"}]},{n:"Techne",d:"个人技能仓库 · 工具与工作流",l:[{t:"Landing",h:"/product/techne/landing/"}]},{n:"Trace",d:"工作空间 · 项目管理与协作",l:[]},{n:"Plateau",d:"学习工作台 · 笔记与知识管理",l:[]},{n:"Polaris",d:"机械工程领域的编码 Agent",l:[]}];
+const TOOLS=[{n:"Chronos",p:"/tools/chronos.html",i:"⏱"},{n:"DateCal",p:"/tools/datecal.html",i:"📅"},{n:"FlowDay",p:"/tools/flowday.html",i:"⚙"},{n:"GanttLite",p:"/tools/ganttlite.html",i:"📊"},{n:"LinSo",p:"/tools/linso.html",i:"🎨"},{n:"LinSoo",p:"/tools/linsoo.html",i:"🎨"},{n:"Lookey",p:"/tools/lookey.html",i:"🔍"},{n:"MathBank",p:"/tools/mathbank.html",i:"🧮"},{n:"Quadrant",p:"/tools/quadrant.html",i:"⬜"},{n:"Resume",p:"/tools/resume-tool.html",i:"📄"},{n:"SmartGoal",p:"/tools/smartgoal.html",i:"🎯"},{n:"Snippy",p:"/tools/snippy.html",i:"✂"},{n:"TechFeed",p:"/tools/techfeed.html",i:"📡"},{n:"Check",p:"/tools/check.html",i:"✔"}];
+const BLOG=[{n:"简单记点东西",s:"first-post"},{n:"How to configure AstroPaper",s:"how-to-configure-astropaper-theme"},{n:"Customizing color schemes",s:"customizing-astropaper-theme-color-schemes"},{n:"Adding new posts",s:"adding-new-posts-in-astropaper-theme"},{n:"Dynamic OG images",s:"dynamic-og-image-generation-in-astropaper-blog-posts"},{n:"How to add LaTeX equations",s:"how-to-add-latex-equations-in-blog-posts"},{n:"How to update dependencies",s:"how-to-update-dependencies"},{n:"Integrate Giscus comments",s:"how-to-integrate-giscus-comments"},{n:"Setting dates via git hooks",s:"setting-dates-via-git-hooks"},{n:"Predefined color schemes",s:"predefined-color-schemes"},{n:"AstroPaper v6",s:"astro-paper-v6"},{n:"AstroPaper v5",s:"astro-paper-v5"},{n:"AstroPaper v4",s:"astro-paper-v4"},{n:"AstroPaper v3",s:"astro-paper-v3"},{n:"AstroPaper v2",s:"astro-paper-2"}];
+const DIRS=[{n:"Volante",p:"/product/volante/",d:"Vivaldi 整合包",i:"▶"},{n:"Techne",p:"/product/techne/",d:"技能仓库",i:"◆"}];
 
-// ── Static data ──
-const TOOLS = [
-  { name: "Chronos",   path: "/tools/chronos.html",   icon: "&#x23F1;",  desc: "时间管理工具" },
-  { name: "DateCal",   path: "/tools/datecal.html",   icon: "&#x1F4C5;", desc: "日期计算器" },
-  { name: "FlowDay",   path: "/tools/flowday.html",   icon: "&#x2699;",  desc: "日程流程管理" },
-  { name: "GanttLite",  path: "/tools/ganttlite.html",  icon: "&#x1F4CA;", desc: "轻量甘特图" },
-  { name: "LinSo",     path: "/tools/linso.html",     icon: "&#x1F3A8;", desc: "配色工具" },
-  { name: "LinSoo",    path: "/tools/linsoo.html",    icon: "&#x1F3A8;", desc: "配色工具 (v2)" },
-  { name: "Lookey",    path: "/tools/lookey.html",    icon: "&#x1F50D;", desc: "搜索工具" },
-  { name: "MathBank",  path: "/tools/mathbank.html",  icon: "&#x1F9EE;", desc: "数学公式库" },
-  { name: "Quadrant",  path: "/tools/quadrant.html",  icon: "&#x2B1C;", desc: "四象限矩阵" },
-  { name: "Resume",    path: "/tools/resume-tool.html", icon: "&#x1F4C4;", desc: "简历生成器" },
-  { name: "SmartGoal", path: "/tools/smartgoal.html", icon: "&#x1F3AF;", desc: "SMART 目标管理" },
-  { name: "Snippy",    path: "/tools/snippy.html",    icon: "&#x2702;",  desc: "文本剪贴工具" },
-  { name: "TechFeed",  path: "/tools/techfeed.html",  icon: "&#x1F4E1;", desc: "技术资讯聚合" },
-  { name: "Check",     path: "/tools/check.html",     icon: "&#x2714;",  desc: "检查清单" },
-];
-
-const BLOG = [
-  { name: "简单记点东西", slug: "first-post" },
-  { name: "How to configure AstroPaper", slug: "how-to-configure-astropaper-theme" },
-  { name: "Customizing color schemes", slug: "customizing-astropaper-theme-color-schemes" },
-  { name: "Adding new posts", slug: "adding-new-posts-in-astropaper-theme" },
-  { name: "Dynamic OG images", slug: "dynamic-og-image-generation-in-astropaper-blog-posts" },
-  { name: "How to add LaTeX equations", slug: "how-to-add-latex-equations-in-blog-posts" },
-  { name: "How to update dependencies", slug: "how-to-update-dependencies" },
-  { name: "Integrate Giscus comments", slug: "how-to-integrate-giscus-comments" },
-  { name: "Setting dates via git hooks", slug: "setting-dates-via-git-hooks" },
-  { name: "Predefined color schemes", slug: "predefined-color-schemes" },
-  { name: "AstroPaper v6", slug: "astro-paper-v6" },
-  { name: "AstroPaper v5", slug: "astro-paper-v5" },
-  { name: "AstroPaper v4", slug: "astro-paper-v4" },
-  { name: "AstroPaper v3", slug: "astro-paper-v3" },
-  { name: "AstroPaper v2", slug: "astro-paper-2" },
-];
-
-const PRODUCTS = [
-  { name: "Volante", path: "/product/volante/", desc: "Vivaldi 整合包" },
-  { name: "Techne",  path: "/product/techne/",  desc: "技能仓库" },
-];
-
-// ── Render ──
-function renderItems(container, items, kind) {
-  container.innerHTML = items.map(item => {
-    if (kind === 'blog') {
-      const href = `/blog/posts/${item.slug}/`;
-      return `<div class="file-item" onclick="location.href='${href}'">
-        <span class="type-icon file">&#x1F4DD;</span>
-        <span class="info"><div class="name">${item.name}</div><div class="desc">blog post</div></span>
-        <span class="arrow">→</span>
-      </div>`;
-    }
-    if (kind === 'product') {
-      return `<div class="file-item" onclick="location.href='${item.path}'">
-        <span class="type-icon dir">&#x1F4C1;</span>
-        <span class="info"><div class="name">${item.name}</div><div class="desc">${item.desc}</div></span>
-        <span class="arrow">→</span>
-      </div>`;
-    }
-    // tool
-    return `<div class="file-item" onclick="location.href='${item.path}'">
-      <span class="type-icon file">${item.icon || '&#x1F4C4;'}</span>
-      <span class="info"><div class="name">${item.name}</div><div class="desc">${item.desc || ''}</div></span>
-      <span class="arrow">→</span>
-    </div>`;
-  }).join('');
-}
-
-renderItems(document.getElementById('tools-list'), TOOLS, 'tool');
-renderItems(document.getElementById('blog-list'), BLOG, 'blog');
-renderItems(document.getElementById('product-list'), PRODUCTS, 'product');
-
-// ── GitHub avatar ──
-(async function() {
-  try {
-    const cached = localStorage.getItem('gh-profile');
-    let u;
-    if (cached) {
-      u = JSON.parse(cached);
-      if (Date.now() - u._ts > 24 * 60 * 60 * 1000) u = null; // 24h TTL
-    }
-    if (!u) {
-      const r = await fetch('https://api.github.com/users/PaRr0tBoY');
-      u = await r.json();
-      u._ts = Date.now();
-      try { localStorage.setItem('gh-profile', JSON.stringify(u)); } catch (_) {}
-    }
-    const avatarEl = document.getElementById('avatar');
-    if (u.avatar_url) {
-      avatarEl.innerHTML = `<img src="${u.avatar_url}" alt="avatar" referrerpolicy="no-referrer">`;
-    }
-    const loc = document.getElementById('location');
-    if (u.location) loc.textContent = u.location;
-  } catch (_) {}
-})();
+// render building
+document.getElementById("b-grid").innerHTML=PRODUCTS.map(p=>`<div class="p-chip"><div class="p-n"><span class="p-dot"></span>${p.n}</div><div class="p-d">${p.d}</div>${p.l.length?`<div class="p-l">${p.l.map(a=>`<a href="${a.h}"${a.h.startsWith('http')?' target="_blank" rel="noopener"':''}>${a.t}</a>`).join("")}</div>`:""}</div>`).join("");
+// render tools
+document.getElementById("t-grid").innerHTML=TOOLS.map(t=>`<a class="t-chip" href="${t.p}"><span class="t-ico">${t.i}</span><span class="t-n">${t.n}</span></a>`).join("");
+// render blog
+document.getElementById("blog-list").innerHTML=BLOG.map(b=>`<li class="blog-item" onclick="location.href='/blog/posts/${b.s}/'"><span class="b-m"></span><span class="b-n">${b.n}</span><span class="b-a">→</span></li>`).join("");
+// render product dir
+document.getElementById("pd").innerHTML=DIRS.map(d=>`<a href="${d.p}"><span class="pi">${d.i}</span><span><span class="pn">${d.n}</span><br><span class="pdesc">${d.d}</span></span></a>`).join("");
+// avatar
+(async()=>{try{const c=localStorage.getItem("gh-profile");let u;if(c){u=JSON.parse(c);if(Date.now()-u._ts>864e5)u=null}if(!u){const r=await fetch("https://api.github.com/users/PaRr0tBoY");u=await r.json();u._ts=Date.now();try{localStorage.setItem("gh-profile",JSON.stringify(u))}catch(e){}}if(u.avatar_url)document.getElementById("avatar").innerHTML=`<img src="${u.avatar_url}" alt="avatar" referrerpolicy="no-referrer">`;if(u.location)document.getElementById("loc").textContent=u.location}catch(e){}})();
 </script>
-</body>
-</html>
+</body></html>
