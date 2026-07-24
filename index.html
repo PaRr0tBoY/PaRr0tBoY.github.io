@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Acid / PaRr0tBoY</title>
 <meta name="description" content="Personal page — building Volante, Techne, Trace, Plateau, Polaris.">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='80'>🦜</text></svg>">
 <style>
   /*
    * Gruvbox Material (Dark) palette
@@ -100,6 +101,7 @@
     padding:8px 10px; border-radius:6px;
     text-decoration:none; color:inherit;
     transition:background .12s;
+    cursor:pointer;
   }
   .file-item:hover { background:#282828; }
   .file-item .type-icon {
@@ -109,11 +111,10 @@
   }
   .file-item .type-icon.dir  { background:#3c3836; color:#d8a657; }
   .file-item .type-icon.file { background:#32302f; color:#89b482; }
-  .file-item .name { flex:1; font-size:.87rem; color:#ddc7a1; }
-  .file-item .desc { font-size:.76rem; color:#a89984; margin-top:1px; }
+  .file-item .info { flex:1; min-width:0; }
+  .file-item .info .name { font-size:.87rem; color:#ddc7a1; }
+  .file-item .info .desc { font-size:.76rem; color:#a89984; margin-top:1px; }
   .file-item .arrow { color:#504945; font-size:.75rem; }
-  .file-loading { color:#504945; font-size:.84rem; padding:10px; }
-  .file-error  { color:#ea6962; font-size:.84rem; padding:10px; }
 
   /* ─── Products ─── */
   .products-grid {
@@ -145,7 +146,6 @@
     border-radius:4px; margin-left:6px;
   }
   .tag-building { background:#32302f; color:#d8a657; }
-  .tag-done     { background:#32302f; color:#a9b665; }
 
   /* ─── Footer ─── */
   footer {
@@ -246,27 +246,27 @@
   <section>
     <div class="section-head" onclick="toggleSection(this)">
       <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">tools <span class="section-count" id="tools-count"></span></span>
+      <span class="section-label">tools <span class="section-count">(14)</span></span>
     </div>
-    <ul class="file-list" id="tools-list"><li class="file-loading">Loading…</li></ul>
+    <ul class="file-list" id="tools-list"></ul>
   </section>
 
   <!-- ═══ BLOG ═══ -->
   <section>
     <div class="section-head" onclick="toggleSection(this)">
       <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">blog <span class="section-count" id="blog-count"></span></span>
+      <span class="section-label">blog <span class="section-count">(15)</span></span>
     </div>
-    <ul class="file-list" id="blog-list"><li class="file-loading">Loading…</li></ul>
+    <ul class="file-list" id="blog-list"></ul>
   </section>
 
   <!-- ═══ PRODUCTS (directory) ═══ -->
   <section>
     <div class="section-head" onclick="toggleSection(this)">
       <span class="toggle open">&#x25B8;</span>
-      <span class="section-label">product <span class="section-count" id="product-count"></span></span>
+      <span class="section-label">product <span class="section-count">(2)</span></span>
     </div>
-    <ul class="file-list" id="product-list"><li class="file-loading">Loading…</li></ul>
+    <ul class="file-list" id="product-list"></ul>
   </section>
 
   <!-- ═══ FOOTER ═══ -->
@@ -286,102 +286,101 @@ function toggleSection(head) {
   list.style.display = isOpen ? '' : 'none';
 }
 
-// ── GitHub API ──
-const REPO = 'PaRr0tBoY/PaRr0tBoY.github.io';
-const BRANCH = 'main';
+// ── Static data ──
+const TOOLS = [
+  { name: "Chronos",   path: "/tools/chronos.html",   icon: "&#x23F1;",  desc: "时间管理工具" },
+  { name: "DateCal",   path: "/tools/datecal.html",   icon: "&#x1F4C5;", desc: "日期计算器" },
+  { name: "FlowDay",   path: "/tools/flowday.html",   icon: "&#x2699;",  desc: "日程流程管理" },
+  { name: "GanttLite",  path: "/tools/ganttlite.html",  icon: "&#x1F4CA;", desc: "轻量甘特图" },
+  { name: "LinSo",     path: "/tools/linso.html",     icon: "&#x1F3A8;", desc: "配色工具" },
+  { name: "LinSoo",    path: "/tools/linsoo.html",    icon: "&#x1F3A8;", desc: "配色工具 (v2)" },
+  { name: "Lookey",    path: "/tools/lookey.html",    icon: "&#x1F50D;", desc: "搜索工具" },
+  { name: "MathBank",  path: "/tools/mathbank.html",  icon: "&#x1F9EE;", desc: "数学公式库" },
+  { name: "Quadrant",  path: "/tools/quadrant.html",  icon: "&#x2B1C;", desc: "四象限矩阵" },
+  { name: "Resume",    path: "/tools/resume-tool.html", icon: "&#x1F4C4;", desc: "简历生成器" },
+  { name: "SmartGoal", path: "/tools/smartgoal.html", icon: "&#x1F3AF;", desc: "SMART 目标管理" },
+  { name: "Snippy",    path: "/tools/snippy.html",    icon: "&#x2702;",  desc: "文本剪贴工具" },
+  { name: "TechFeed",  path: "/tools/techfeed.html",  icon: "&#x1F4E1;", desc: "技术资讯聚合" },
+  { name: "Check",     path: "/tools/check.html",     icon: "&#x2714;",  desc: "检查清单" },
+];
 
-async function fetchDir(path) {
-  const url = `https://api.github.com/repos/${REPO}/contents/${path}?ref=${BRANCH}`;
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  return res.json();
+const BLOG = [
+  { name: "简单记点东西", slug: "first-post" },
+  { name: "How to configure AstroPaper", slug: "how-to-configure-astropaper-theme" },
+  { name: "Customizing color schemes", slug: "customizing-astropaper-theme-color-schemes" },
+  { name: "Adding new posts", slug: "adding-new-posts-in-astropaper-theme" },
+  { name: "Dynamic OG images", slug: "dynamic-og-image-generation-in-astropaper-blog-posts" },
+  { name: "How to add LaTeX equations", slug: "how-to-add-latex-equations-in-blog-posts" },
+  { name: "How to update dependencies", slug: "how-to-update-dependencies" },
+  { name: "Integrate Giscus comments", slug: "how-to-integrate-giscus-comments" },
+  { name: "Setting dates via git hooks", slug: "setting-dates-via-git-hooks" },
+  { name: "Predefined color schemes", slug: "predefined-color-schemes" },
+  { name: "AstroPaper v6", slug: "astro-paper-v6" },
+  { name: "AstroPaper v5", slug: "astro-paper-v5" },
+  { name: "AstroPaper v4", slug: "astro-paper-v4" },
+  { name: "AstroPaper v3", slug: "astro-paper-v3" },
+  { name: "AstroPaper v2", slug: "astro-paper-2" },
+];
+
+const PRODUCTS = [
+  { name: "Volante", path: "/product/volante/", desc: "Vivaldi 整合包" },
+  { name: "Techne",  path: "/product/techne/",  desc: "技能仓库" },
+];
+
+// ── Render ──
+function renderItems(container, items, kind) {
+  container.innerHTML = items.map(item => {
+    if (kind === 'blog') {
+      const href = `/blog/posts/${item.slug}/`;
+      return `<div class="file-item" onclick="location.href='${href}'">
+        <span class="type-icon file">&#x1F4DD;</span>
+        <span class="info"><div class="name">${item.name}</div><div class="desc">blog post</div></span>
+        <span class="arrow">→</span>
+      </div>`;
+    }
+    if (kind === 'product') {
+      return `<div class="file-item" onclick="location.href='${item.path}'">
+        <span class="type-icon dir">&#x1F4C1;</span>
+        <span class="info"><div class="name">${item.name}</div><div class="desc">${item.desc}</div></span>
+        <span class="arrow">→</span>
+      </div>`;
+    }
+    // tool
+    return `<div class="file-item" onclick="location.href='${item.path}'">
+      <span class="type-icon file">${item.icon || '&#x1F4C4;'}</span>
+      <span class="info"><div class="name">${item.name}</div><div class="desc">${item.desc || ''}</div></span>
+      <span class="arrow">→</span>
+    </div>`;
+  }).join('');
 }
 
-function typeIcon(item) {
-  if (item.type === 'dir') {
-    return `<span class="type-icon dir">&#x1F4C1;</span>`;
-  }
-  // file
-  const ext = item.name.includes('.') ? item.name.split('.').pop().toLowerCase() : '';
-  if (['html','htm'].includes(ext)) return `<span class="type-icon file">&#x1F310;</span>`;
-  if (['md','mdx','txt'].includes(ext)) return `<span class="type-icon file">&#x1F4DD;</span>`;
-  if (['js','ts','mjs'].includes(ext)) return `<span class="type-icon file">&lt;/&gt;</span>`;
-  if (['css','scss'].includes(ext)) return `<span class="type-icon file">#</span>`;
-  if (['json','yaml','yml','xml','toml'].includes(ext)) return `<span class="type-icon file">{ }</span>`;
-  if (['png','jpg','jpeg','gif','svg','webp','ico'].includes(ext)) return `<span class="type-icon file">&#x1F5BC;</span>`;
-  if (['py','go','rs','c','cpp','h','java','rb','sh','bat','ps1'].includes(ext)) return `<span class="type-icon file">&#x2699;</span>`;
-  return `<span class="type-icon file">&#x1F4C4;</span>`;
-}
+renderItems(document.getElementById('tools-list'), TOOLS, 'tool');
+renderItems(document.getElementById('blog-list'), BLOG, 'blog');
+renderItems(document.getElementById('product-list'), PRODUCTS, 'product');
 
-function renderItem(item) {
-  const href = item.type === 'dir'
-    ? `/${item.path}/`
-    : item.name.endsWith('.html') || item.name.endsWith('.htm')
-      ? `/${item.path}`
-      : null;
-  const name = item.name.replace(/\.(html|htm)$/, '');
-  const isDir = item.type === 'dir';
-  const desc = isDir ? 'directory' : item.type;
-  const html = `<div class="file-item${href ? ' clickable' : ''}"${href ? ` onclick="location.href='${href}'"` : ''}>
-    ${typeIcon(item)}
-    <span class="info"><div class="name">${name}</div><div class="desc">${desc}</div></span>
-    ${href ? '<span class="arrow">→</span>' : ''}
-  </div>`;
-  return html;
-}
-function renderBlogItem(item) {
-  const name = item.name.replace(/\.(md|mdx)$/i, '');
-  const href = `/blog/posts/${name}/`;
-  return `<div class="file-item clickable" onclick="location.href='${href}'">
-    ${typeIcon(Object.assign({}, item, {type:'file'}))}
-    <span class="info"><div class="name">${name}</div><div class="desc">blog post</div></span>
-    <span class="arrow">→</span>
-  </div>`;
-}
-
-async function loadSection(apiPath, listId, countId, filterFn) {
-  const list = document.getElementById(listId);
-  const count = document.getElementById(countId);
-  try {
-    const items = await fetchDir(apiPath);
-    const filtered = filterFn ? items.filter(filterFn) : items;
-    if (count) count.textContent = `(${filtered.length})`;
-    list.innerHTML = filtered
-      .map(listId === 'blog-list' ? renderBlogItem : renderItem)
-      .join('');
-  } catch (e) {
-    list.innerHTML = `<li class="file-error">Failed to load: ${e.message}</li>`;
-  }
-}
-
-// ── GitHub profile ──
+// ── GitHub avatar ──
 (async function() {
   try {
-    const r = await fetch('https://api.github.com/users/PaRr0tBoY');
-    const u = await r.json();
+    const cached = localStorage.getItem('gh-profile');
+    let u;
+    if (cached) {
+      u = JSON.parse(cached);
+      if (Date.now() - u._ts > 24 * 60 * 60 * 1000) u = null; // 24h TTL
+    }
+    if (!u) {
+      const r = await fetch('https://api.github.com/users/PaRr0tBoY');
+      u = await r.json();
+      u._ts = Date.now();
+      try { localStorage.setItem('gh-profile', JSON.stringify(u)); } catch (_) {}
+    }
     const avatarEl = document.getElementById('avatar');
     if (u.avatar_url) {
-      avatarEl.innerHTML = `<img src="${u.avatar_url}" alt="avatar">`;
+      avatarEl.innerHTML = `<img src="${u.avatar_url}" alt="avatar" referrerpolicy="no-referrer">`;
     }
     const loc = document.getElementById('location');
     if (u.location) loc.textContent = u.location;
   } catch (_) {}
 })();
-
-// ── Load sections ──
-function isNotBackup(item) { return !item.name.endsWith('.bak'); }
-function isHtmlFile(item) { return item.type === 'file' && (item.name.endsWith('.html') || item.name.endsWith('.htm')); }
-function isDirOrHtml(item) { return item.type === 'dir' || isHtmlFile(item); }
-
-loadSection('tools', 'tools-list', 'tools-count', item =>
-  item.type === 'dir' || (item.type === 'file' && /\.html?$/.test(item.name) && !item.name.endsWith('.bak'))
-);
-loadSection('_blog/src/content/posts', 'blog-list', 'blog-count', item =>
-  item.type === 'file' && /\.(md|mdx)$/i.test(item.name) && !item.name.startsWith('_') && !item.name.startsWith('.') && !item.name.startsWith('example') && item.name !== 'terminal-development.md' && item.name !== 'portfolio-website-development.md' && item.name !== 'tailwind-typography.md'
-);
-loadSection('product', 'product-list', 'product-count', item =>
-  item.type === 'dir'
-);
 </script>
 </body>
 </html>
