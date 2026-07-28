@@ -1,0 +1,133 @@
+#!/bin/sh
+set -eu
+
+BIN="hive"
+MANIFEST_URL="${HIVE_MANIFEST_URL:-https://PaRr0tBoY.github.io/product/Hive/install/latest.json}"
+INSTALL_DIR="${HIVE_INSTALL_DIR:-$HOME/.local/bin}"
+
+main() {
+    echo ""
+    echo "      Hive installer"
+    echo "      github.com/PaRr0tBoY/herdr"
+    echo ""
+
+    # detect platform
+    OS="$(uname -s)"
+    case "$OS" in
+        Linux)  os="linux" ;;
+        Darwin) os="macos" ;;
+        *)      err "unsupported OS: $OS" ;;
+    esac
+
+    ARCH="$(uname -m)"
+    case "$ARCH" in
+        x86_64|amd64)   arch="x86_64" ;;
+        aarch64|arm64)  arch="aarch64" ;;
+        *)              err "unsupported architecture: $ARCH" ;;
+    esac
+
+    TARGET="${os}-${arch}"
+    log "detected ${TARGET}"
+
+    # check deps
+    need curl
+    need awk
+
+    # fetch manifest
+    log "fetching latest release manifest..."
+    MANIFEST="$(curl -fsSL --retry 3 --connect-timeout 10 --max-time 20 "$MANIFEST_URL")" \
+        || err "can't reach ${MANIFEST_URL}."
+
+    # parse URL and SHA256 from manifest for our target
+    URL="$(printf '%s\n' "$MANIFEST" | awk -v target="\"${TARGET}\"" '
+        /^[[:space:]]*"assets"[[:space:]]*:/ { in_assets = 1; next }
+        in_assets && /^[[:space:]]*}/ { exit }
+        in_assets && index($0, target) {
+            in_target = 1; next
+        }
+        in_target && /"url"/ {
+            sub(/.*:[[:space:]]*"/, "")
+            sub(/".*$/, "")
+            print
+            in_target = 0
+            exit
+        }
+    ')"
+    SHA256="$(printf '%s\n' "$MANIFEST" | awk -v target="\"${TARGET}\"" '
+        /^[[:space:]]*"assets"[[:space:]]*:/ { in_assets = 1; next }
+        in_assets && /^[[:space:]]*}/ { exit }
+        in_assets && index($0, target) {
+            in_target = 1; next
+        }
+        in_target && /"sha256"/ {
+            sub(/.*:[[:space:]]*"/, "")
+            sub(/".*$/, "")
+            print
+            in_target = 0
+            exit
+        }
+    ')"
+    VERSION="$(printf '%s\n' "$MANIFEST" | awk -F '"' '/^[[:space:]]*"version"[[:space:]]*:/ { print $4; exit }')"
+
+    if [ -z "$URL" ]; then
+        err "release manifest does not include a binary for ${TARGET}"
+    fi
+
+    log "downloading Hive ${VERSION}..."
+    TMP="$(mktemp -d)"
+    trap 'rm -rf "$TMP"' EXIT
+
+    if ! curl -fsSL --retry 3 --connect-timeout 10 --max-time 120 "$URL" -o "${TMP}/${BIN}"; then
+        err "download failed"
+    fi
+
+    # sha256 verification
+    if [ -n "$SHA256" ]; then
+        log "verifying checksum..."
+        ACTUAL="$(sha256sum "${TMP}/${BIN}" 2>/dev/null | awk '{print $1}')"
+        if [ -z "$ACTUAL" ]; then
+            # macOS fallback
+            ACTUAL="$(shasum -a 256 "${TMP}/${BIN}" | awk '{print $1}')"
+        fi
+        if [ "$ACTUAL" != "$SHA256" ]; then
+            err "SHA-256 mismatch. Expected $SHA256, got $ACTUAL."
+        fi
+        log "checksum verified"
+    fi
+
+    # install
+    mkdir -p "$INSTALL_DIR"
+    mv "${TMP}/${BIN}" "${INSTALL_DIR}/${BIN}"
+    chmod +x "${INSTALL_DIR}/${BIN}"
+
+    log "installed ${BIN} to ${INSTALL_DIR}/${BIN}"
+
+    # check PATH
+    case ":${PATH}:" in
+        *":${INSTALL_DIR}:"*) ;;
+        *)
+            echo ""
+            warn "${INSTALL_DIR} is not in your PATH"
+            echo "  add it to your shell config:"
+            echo ""
+            echo "    export PATH=\"${INSTALL_DIR}:\$PATH\""
+            echo ""
+            ;;
+    esac
+
+    echo ""
+    log "ready. run 'hive' to get started."
+    echo ""
+}
+
+log()  { printf '  \033[32m>\033[0m %s\n' "$1"; }
+warn() { printf '  \033[33m!\033[0m %s\n' "$1"; }
+err()  { printf '  \033[31m✗\033[0m %s\n' "$1" >&2; exit 1; }
+
+need() {
+    if ! command -v "$1" >/dev/null 2>&1; then
+        err "requires '$1' — install it first"
+    fi
+}
+
+main "$@"

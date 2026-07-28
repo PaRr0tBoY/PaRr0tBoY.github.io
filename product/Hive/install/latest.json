@@ -1,0 +1,33 @@
+{
+  "schema_version": 1,
+  "channel": "stable",
+  "version": "2026.7.28",
+  "notes": "Hive v2026.7.28",
+  "assets": {
+    "windows-x86_64": {
+      "url": "https://github.com/PaRr0tBoY/herdr/releases/download/v2026.7.28/hive-windows-x86_64.zip",
+      "sha256": "50b54392fbeedfc42b3afb05741cd3a4eb452c9346099f9373a459e0f6d4c065",
+      "format": "zip"
+    },
+    "linux-x86_64": {
+      "url": "https://github.com/PaRr0tBoY/herdr/releases/download/v2026.7.28/hive-linux-x86_64",
+      "sha256": "d6c49b0b67c9c0f5bc9e5e1d9aa29c26423e0719a34beb2023aeafabe36dab75",
+      "format": "exe"
+    },
+    "linux-aarch64": {
+      "url": "https://github.com/PaRr0tBoY/herdr/releases/download/v2026.7.28/hive-linux-aarch64",
+      "sha256": "04fc0561aeb46d1777e0b180f3eb568276352069ef60c4ebd0f7493e8244c980",
+      "format": "exe"
+    },
+    "macos-x86_64": {
+      "url": "https://github.com/PaRr0tBoY/herdr/releases/download/v2026.7.28/hive-macos-x86_64",
+      "sha256": "150da202d615049edc78104686565bac9939ed53dd6345978308796eb33ef7bd",
+      "format": "exe"
+    },
+    "macos-aarch64": {
+      "url": "https://github.com/PaRr0tBoY/herdr/releases/download/v2026.7.28/hive-macos-aarch64",
+      "sha256": "08556b55725c06f59715200d46cb0c3dafdd5cdf51afc433d255bf954efc230b",
+      "format": "exe"
+    }
+  }
+}
