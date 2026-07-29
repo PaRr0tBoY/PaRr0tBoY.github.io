@@ -1,10 +1,10 @@
 #!/usr/bin/env pwsh
 <#
 .SYNOPSIS
-    Hive install script (Windows)
+    hive install script (Windows)
     Downloads the latest release from PaRr0tBoY/herdr
 .DESCRIPTION
-    Usage: irm https://PaRr0tBoY.github.io/product/Hive/install/install.ps1 | iex
+    Usage: irm <raw-url> | iex
     Or:    .\install.ps1 [-InstallDir <path>]
 #>
 [CmdletBinding()]
@@ -16,12 +16,12 @@ $ErrorActionPreference = "Stop"
 $ProgressPreference = "SilentlyContinue"
 
 $Repo = "PaRr0tBoY/herdr"
-$ManifestUrl = "https://PaRr0tBoY.github.io/product/Hive/install/latest.json"
-$AssetName = "windows-x86_64"
+$ApiUrl = "https://api.github.com/repos/$Repo/releases/latest"
+$AssetName = "hive-windows-x86_64.zip"
 
 # ---- preflight ----
 if ($env:OS -ne "Windows_NT") {
-    Write-Error "install.ps1 is for Windows."
+    Write-Error "install.ps1 is for Windows. Use install.sh on Linux or macOS."
     exit 1
 }
 
@@ -39,72 +39,64 @@ if ([string]::IsNullOrWhiteSpace($InstallDir)) {
     $InstallDir = Join-Path $env:LOCALAPPDATA "Programs\Hive\bin"
 }
 
-# ---- fetch manifest ----
-Write-Host "==> Fetching latest release manifest..."
+# ---- fetch release ----
+Write-Host "==> Fetching latest release from $Repo..."
 try {
-    $manifest = Invoke-RestMethod -Uri $ManifestUrl -TimeoutSec 20
+    $release = Invoke-RestMethod -Uri $ApiUrl -TimeoutSec 20
 } catch {
-    Write-Error "Can't reach manifest at $ManifestUrl. Check your connection."
+    Write-Error "Can't reach GitHub API. Check your connection."
     exit 1
 }
-
-$version = [string]$manifest.version
-$asset = $manifest.assets.$AssetName
 
 if (-not $version) {
-    Write-Error "Could not parse version from manifest."
-    exit 1
-}
-if (-not $asset) {
-    Write-Error "Asset '$AssetName' not found in manifest for version $version."
+    Write-Error "Could not parse version from release."
     exit 1
 }
 
-$downloadUrl = [string]$asset.url
-$expectedSha = [string]$asset.sha256
-$format = if ($asset.format) { [string]$asset.format } else { "zip" }
+if (-not $asset) {
+    Write-Error "Asset '$AssetName' not found in release $version. Is this platform built?"
+    exit 1
+}
 
 # ---- download ----
-Write-Host "==> Downloading Hive $version..."
+Write-Host "==> Downloading $version ($AssetName)..."
 $tmpDir = Join-Path $env:TEMP "hive-install-$([System.Guid]::NewGuid().ToString('N'))"
 New-Item -ItemType Directory -Force -Path $tmpDir | Out-Null
 
 try {
-    if ($format -eq "zip") {
-        $zipPath = Join-Path $tmpDir "hive-windows-x86_64.zip"
-    } else {
-        $zipPath = Join-Path $tmpDir "hive.exe"
-    }
+    $zipPath = Join-Path $tmpDir "hive-windows-x86_64.zip"
 
     try {
-        Invoke-WebRequest -Uri $downloadUrl -OutFile $zipPath -TimeoutSec 300
+        Invoke-WebRequest -Uri $asset.browser_download_url -OutFile $zipPath -TimeoutSec 300
     } catch {
         Write-Error "Download failed: $_"
         exit 1
     }
 
     # ---- sha256 verification ----
-    if (-not [string]::IsNullOrWhiteSpace($expectedSha)) {
-        Write-Host "==> Verifying checksum..."
+    $shaUrl = "$($asset.browser_download_url).sha256"
+    try {
+        $shaPath = Join-Path $tmpDir "hive-windows-x86_64.zip.sha256"
+        Invoke-WebRequest -Uri $shaUrl -OutFile $shaPath -TimeoutSec 10 -ErrorAction Stop
+        $expected = ((Get-Content $shaPath -Raw).Trim() -split '\s+')[0].ToLowerInvariant()
         $actual = (Get-FileHash -Algorithm SHA256 $zipPath).Hash.ToLowerInvariant()
-        if ($actual -ne $expectedSha.ToLowerInvariant()) {
-            Write-Error "SHA-256 mismatch. Expected $expectedSha, got $actual."
+        if ($expected -ne $actual) {
+            Write-Error "SHA-256 mismatch. Expected $expected, got $actual."
             exit 1
         }
         Write-Host "==> Checksum verified"
-    } else {
-        Write-Warning "No checksum in manifest; skipping verification"
+    } catch [System.Net.WebException] {
+        Write-Warning "No checksum file found; skipping verification"
     }
 
     # ---- extract ----
+    # Clean previous install to avoid file-exists errors
+    Remove-Item -Path (Join-Path $InstallDir "hive.exe") -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path (Join-Path $InstallDir "conpty") -Recurse -Force -ErrorAction SilentlyContinue
+    Remove-Item -Path (Join-Path $InstallDir "THIRD-PARTY-NOTICES") -Recurse -Force -ErrorAction SilentlyContinue
     New-Item -ItemType Directory -Force -Path $InstallDir | Out-Null
-    if ($format -eq "zip") {
-        Add-Type -AssemblyName System.IO.Compression.FileSystem
-        [System.IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $InstallDir)
-    } else {
-        Move-Item -LiteralPath $zipPath -Destination (Join-Path $InstallDir "hive.exe") -Force
-    }
-    $exePath = Join-Path $InstallDir "hive.exe"
+    Add-Type -AssemblyName System.IO.Compression.FileSystem
+    [System.IO.Compression.ZipFile]::ExtractToDirectory($zipPath, $InstallDir)
     Write-Host "==> Extracted to $InstallDir"
 
     # ---- smoke test ----
