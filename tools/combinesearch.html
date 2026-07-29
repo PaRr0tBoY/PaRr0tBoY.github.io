@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Search Toolkit</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", monospace;
+    background: #1a1a1a;
+    color: #e0e0e0;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    line-height: 1.5;
+  }
+  h1 {
+    font-size: 1.2rem;
+    font-weight: 500;
+    margin-bottom: 16px;
+    color: #fff;
+  }
+
+  /* Tabs */
+  .tabs {
+    display: flex;
+    border-bottom: 1px solid #333;
+    margin-bottom: 20px;
+  }
+  .tab-btn {
+    background: none;
+    border: none;
+    color: #888;
+    padding: 10px 16px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-family: inherit;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+  }
+  .tab-btn.active {
+    color: #fff;
+    border-bottom-color: #fff;
+  }
+  .tab-btn:hover { color: #ccc; }
+  .tab-panel { display: none; }
+  .tab-panel.active { display: block; }
+
+  /* Common */
+  textarea, input[type="text"] {
+    width: 100%;
+    background: #202020;
+    border: 1px solid #333;
+    color: #e0e0e0;
+    padding: 10px 12px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+  }
+  textarea:focus, input[type="text"]:focus {
+    outline: none;
+    border-color: #555;
+  }
+  button {
+    background: #252525;
+    border: 1px solid #333;
+    color: #aaa;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    font-family: inherit;
+  }
+  button:hover { background: #2d2d2d; color: #fff; }
+  .output-box, .result-box {
+    background: #252525;
+    border: 1px solid #333;
+    padding: 12px 14px;
+    border-radius: 4px;
+    font-family: monospace;
+    font-size: 0.9rem;
+    word-break: break-all;
+    position: relative;
+    margin-bottom: 20px;
+    min-height: 44px;
+  }
+  .box-actions {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    display: flex;
+    gap: 4px;
+  }
+  .box-actions button {
+    background: #333;
+    border: none;
+    color: #888;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+  }
+  .box-actions button:hover { background: #444; color: #fff; }
+
+  /* Builder */
+  .section {
+    margin-bottom: 18px;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 18px;
+  }
+  .section:last-child { border-bottom: none; }
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .section-title {
+    font-weight: 500;
+    color: #ccc;
+    font-size: 0.95rem;
+  }
+  .section-actions button {
+    background: none;
+    border: 1px solid #333;
+    color: #888;
+    padding: 3px 8px;
+    font-size: 0.75rem;
+    margin-left: 4px;
+  }
+  .section-actions button:hover { border-color: #555; color: #ccc; }
+  .selected-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 8px;
+    min-height: 28px;
+  }
+  .tag-chip {
+    background: #2d2d2d;
+    border: 1px solid #444;
+    padding: 3px 8px;
+    border-radius: 3px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .tag-chip .remove {
+    color: #888;
+    cursor: pointer;
+    font-size: 0.9rem;
+  }
+  .tag-chip .remove:hover { color: #ff6b6b; }
+  .candidates {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-top: 8px;
+  }
+  .candidate {
+    background: #222;
+    border: 1px solid #2e2e2e;
+    color: #999;
+    padding: 2px 7px;
+    border-radius: 3px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .candidate:hover { border-color: #555; color: #ccc; }
+  .candidate .remove {
+    color: #666;
+    cursor: pointer;
+    font-size: 0.85rem;
+    line-height: 1;
+  }
+  .candidate .remove:hover { color: #ff6b6b; }
+  .global-actions {
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #2a2a2a;
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .search-url-config {
+    margin-top: 16px;
+    padding-top: 16px;
+    border-top: 1px solid #2a2a2a;
+  }
+  .search-url-config label {
+    display: block;
+    font-size: 0.85rem;
+    color: #999;
+    margin-bottom: 6px;
+  }
+  .search-url-config .url-row {
+    display: flex;
+    gap: 8px;
+  }
+  .search-url-config input { flex: 1; }
+  .import-area {
+    width: 100%;
+    margin-top: 10px;
+    display: none;
+  }
+  .import-area textarea {
+    height: 80px;
+    resize: vertical;
+  }
+  .import-area button {
+    margin-top: 6px;
+    margin-right: 6px;
+  }
+
+  /* Parser */
+  #parser textarea {
+    min-height: 100px;
+    margin-bottom: 12px;
+    resize: vertical;
+  }
+  .parser-actions {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .parse-section {
+    margin-bottom: 14px;
+    border-bottom: 1px solid #2a2a2a;
+    padding-bottom: 14px;
+  }
+  .parse-section:last-child { border-bottom: none; }
+  .parse-section-title {
+    font-weight: 500;
+    color: #ccc;
+    font-size: 0.95rem;
+    margin-bottom: 6px;
+  }
+  .parse-section-title .count {
+    color: #666;
+    font-size: 0.8rem;
+    margin-left: 6px;
+  }
+  .tag-list {
+    color: #999;
+    font-size: 0.85rem;
+    word-break: break-all;
+  }
+  .unknown-note {
+    color: #e0a800;
+    font-size: 0.8rem;
+    margin-top: 8px;
+  }
+</style>
+</head>
+<body>
+  <h1>Search Toolkit</h1>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="switchTab('builder')">Builder</button>
+    <button class="tab-btn" onclick="switchTab('parser')">Parser</button>
+  </div>
+
+  <!-- Builder Tab -->
+  <div id="builder" class="tab-panel active">
+    <div class="output-box">
+      <span id="output"></span>
+      <div class="box-actions">
+        <button onclick="openSearch()">Go</button>
+        <button onclick="copyOutput()">Copy</button>
+      </div>
+    </div>
+
+    <div id="sections"></div>
+
+    <div class="global-actions">
+      <button onclick="exportAll()">Export</button>
+      <button onclick="toggleImport()">Import</button>
+      <button onclick="clearAllSelected()">Clear All</button>
+      <button onclick="resetAll()">Reset</button>
+    </div>
+
+    <div class="import-area" id="importArea">
+      <textarea id="importText" placeholder="Format: category:tag1,tag2,tag3&#10;Example:&#10;tag:male,female,child&#10;artist:artist1,artist2"></textarea>
+      <button onclick="doImport()">Import</button>
+      <button onclick="toggleImport()">Cancel</button>
+    </div>
+
+    <div class="search-url-config">
+      <label>Search URL (use %s as placeholder)</label>
+      <div class="url-row">
+        <input type="text" id="searchUrl" placeholder="https://example.com/search?q=%s">
+        <button onclick="saveSearchUrl()">Save</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Parser Tab -->
+  <div id="parser" class="tab-panel">
+    <textarea id="parserInput" placeholder="Paste search terms here...
+Example:
+tag:full color tag:ABC parody:hdkdsk artist:someone character:girl"></textarea>
+
+    <div class="parser-actions">
+      <button onclick="parseInput()">Parse</button>
+      <button onclick="clearParser()">Clear</button>
+    </div>
+
+    <div class="result-box" id="exportBox">
+      <span id="exportText"></span>
+      <div class="box-actions">
+        <button onclick="copyExport()">Copy</button>
+      </div>
+    </div>
+
+    <div id="parseSections"></div>
+  </div>
+
+<script>
+const CATEGORIES = ['tag', 'artist', 'parody', 'character', 'group', 'language', 'category'];
+const STORAGE_KEY = 'search_toolkit_data';
+
+let state = {
+  candidates: {},
+  selected: {},
+  searchUrl: ''
+};
+
+// ========== Tab Switching ==========
+function switchTab(name) {
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  event.target.classList.add('active');
+  document.getElementById(name).classList.add('active');
+}
+
+// ========== State Management ==========
+function loadState() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) state = JSON.parse(saved);
+  } catch(e) {}
+  
+  CATEGORIES.forEach(cat => {
+    if (!state.candidates[cat]) state.candidates[cat] = [];
+    if (!state.selected[cat]) state.selected[cat] = [];
+  });
+  if (!state.searchUrl) state.searchUrl = '';
+  
+  document.getElementById('searchUrl').value = state.searchUrl;
+}
+
+function saveState() {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+// ========== Builder ==========
+function renderBuilder() {
+  renderOutput();
+  renderSections();
+}
+
+function renderOutput() {
+  const parts = [];
+  CATEGORIES.forEach(cat => {
+    state.selected[cat].forEach(tag => parts.push(`${cat}:${tag}`));
+  });
+  document.getElementById('output').textContent = parts.join(' ');
+}
+
+function renderSections() {
+  const container = document.getElementById('sections');
+  container.innerHTML = '';
+  
+  CATEGORIES.forEach(cat => {
+    const section = document.createElement('div');
+    section.className = 'section';
+    
+    section.innerHTML = `
+      <div class="section-header">
+        <span class="section-title">${cat}:</span>
+        <div class="section-actions">
+          <button onclick="clearCategory('${cat}')">clear</button>
+        </div>
+      </div>
+    `;
+    
+    const selectedDiv = document.createElement('div');
+    selectedDiv.className = 'selected-tags';
+    state.selected[cat].forEach((tag, idx) => {
+      const chip = document.createElement('span');
+      chip.className = 'tag-chip';
+      chip.innerHTML = `${tag}<span class="remove" onclick="removeSelected('${cat}', ${idx})">×</span>`;
+      selectedDiv.appendChild(chip);
+    });
+    section.appendChild(selectedDiv);
+    
+    const input = document.createElement('input');
+    input.type = 'text';
+    input.placeholder = `Type and press Enter to add ${cat}...`;
+    input.onkeydown = (e) => {
+      if (e.key === 'Enter' && input.value.trim()) {
+        addTag(cat, input.value.trim());
+        input.value = '';
+      }
+    };
+    section.appendChild(input);
+    
+    if (state.candidates[cat].length > 0) {
+      const candDiv = document.createElement('div');
+      candDiv.className = 'candidates';
+      state.candidates[cat].forEach(tag => {
+        const span = document.createElement('span');
+        span.className = 'candidate';
+        span.textContent = tag;
+        span.onclick = () => addTag(cat, tag);
+
+        const removeBtn = document.createElement('span');
+        removeBtn.className = 'remove';
+        removeBtn.textContent = '×';
+        removeBtn.title = 'Remove from suggestions';
+        removeBtn.onclick = (e) => {
+          e.stopPropagation();
+          removeCandidate(cat, tag);
+        };
+        span.appendChild(removeBtn);
+
+        candDiv.appendChild(span);
+      });
+      section.appendChild(candDiv);
+    }
+    
+    container.appendChild(section);
+  });
+}
+
+function addTag(cat, tag) {
+  tag = tag.trim();
+  if (!tag) return;
+  if (!state.selected[cat].includes(tag)) state.selected[cat].push(tag);
+  if (!state.candidates[cat].includes(tag)) state.candidates[cat].push(tag);
+  saveState();
+  renderBuilder();
+}
+
+function removeSelected(cat, idx) {
+  state.selected[cat].splice(idx, 1);
+  saveState();
+  renderBuilder();
+}
+
+function clearCategory(cat) {
+  state.selected[cat] = [];
+  saveState();
+  renderBuilder();
+}
+
+function removeCandidate(cat, tag) {
+  const idx = state.candidates[cat].indexOf(tag);
+  if (idx > -1) {
+    state.candidates[cat].splice(idx, 1);
+    const selIdx = state.selected[cat].indexOf(tag);
+    if (selIdx > -1) state.selected[cat].splice(selIdx, 1);
+    saveState();
+    renderBuilder();
+  }
+}
+
+function clearAllSelected() {
+  CATEGORIES.forEach(cat => state.selected[cat] = []);
+  saveState();
+  renderBuilder();
+}
+
+function copyOutput() {
+  const text = document.getElementById('output').textContent;
+  navigator.clipboard.writeText(text).then(flashCopyBtn);
+}
+
+function flashCopyBtn() {
+  const btn = document.querySelector('#builder .box-actions button:nth-child(2)');
+  const orig = btn.textContent;
+  btn.textContent = 'Done';
+  setTimeout(() => btn.textContent = orig, 1000);
+}
+
+function exportAll() {
+  const lines = [];
+  CATEGORIES.forEach(cat => {
+    if (state.candidates[cat].length > 0) {
+      lines.push(`${cat}:${state.candidates[cat].join(',')}`);
+    }
+  });
+  navigator.clipboard.writeText(lines.join('\n')).then(() => {
+    alert('Exported to clipboard!\n\n' + lines.join('\n'));
+  });
+}
+
+function toggleImport() {
+  const area = document.getElementById('importArea');
+  area.style.display = area.style.display === 'block' ? 'none' : 'block';
+}
+
+function doImport() {
+  const text = document.getElementById('importText').value.trim();
+  if (!text) return;
+  
+  text.split('\n').forEach(line => {
+    line = line.trim();
+    if (!line) return;
+    const colonIdx = line.indexOf(':');
+    if (colonIdx === -1) return;
+    
+    const cat = line.substring(0, colonIdx).trim();
+    const tagsStr = line.substring(colonIdx + 1).trim();
+    
+    if (!CATEGORIES.includes(cat)) return;
+    
+    tagsStr.split(',').map(t => t.trim()).filter(t => t).forEach(tag => {
+      if (!state.candidates[cat].includes(tag)) state.candidates[cat].push(tag);
+    });
+  });
+  
+  saveState();
+  renderBuilder();
+  toggleImport();
+  document.getElementById('importText').value = '';
+}
+
+function resetAll() {
+  if (confirm('Clear all saved data?')) {
+    localStorage.removeItem(STORAGE_KEY);
+    state = { candidates: {}, selected: {}, searchUrl: '' };
+    CATEGORIES.forEach(cat => {
+      state.candidates[cat] = [];
+      state.selected[cat] = [];
+    });
+    document.getElementById('searchUrl').value = '';
+    renderBuilder();
+  }
+}
+
+// ========== Search URL & Jump ==========
+function saveSearchUrl() {
+  state.searchUrl = document.getElementById('searchUrl').value.trim();
+  saveState();
+  const btn = event.target;
+  const orig = btn.textContent;
+  btn.textContent = 'Saved';
+  setTimeout(() => btn.textContent = orig, 1000);
+}
+
+function openSearch() {
+  const urlTemplate = state.searchUrl;
+  if (!urlTemplate) {
+    alert('Please set a search URL first.');
+    return;
+  }
+  const query = document.getElementById('output').textContent;
+  const url = urlTemplate.replace('%s', encodeURIComponent(query));
+  window.open(url, '_blank');
+}
+
+// ========== Parser ==========
+function parseInput() {
+  const raw = document.getElementById('parserInput').value.trim();
+  if (!raw) return;
+
+  const tokens = raw.split(/\s+/).filter(t => t);
+  const groups = {};
+  const unparsed = [];
+
+  tokens.forEach(token => {
+    const colonIdx = token.indexOf(':');
+    if (colonIdx === -1) {
+      unparsed.push(token);
+      return;
+    }
+    
+    const category = token.substring(0, colonIdx).toLowerCase();
+    const value = token.substring(colonIdx + 1);
+    
+    if (!value) {
+      unparsed.push(token);
+      return;
+    }
+    
+    if (!groups[category]) groups[category] = [];
+    if (!groups[category].includes(value)) groups[category].push(value);
+  });
+
+  renderParseResult(groups, unparsed);
+  renderParseExport(groups, unparsed);
+}
+
+function renderParseResult(groups, unparsed) {
+  const container = document.getElementById('parseSections');
+  container.innerHTML = '';
+
+  const ordered = [
+    ...CATEGORIES.filter(c => groups[c]),
+    ...Object.keys(groups).filter(c => !CATEGORIES.includes(c))
+  ];
+
+  ordered.forEach(cat => {
+    const items = groups[cat];
+    const section = document.createElement('div');
+    section.className = 'parse-section';
+    section.innerHTML = `
+      <div class="parse-section-title">${cat}<span class="count">${items.length}</span></div>
+      <div class="tag-list">${items.join(', ')}</div>
+    `;
+    container.appendChild(section);
+  });
+
+  if (unparsed.length > 0) {
+    const section = document.createElement('div');
+    section.className = 'parse-section';
+    section.innerHTML = `
+      <div class="parse-section-title">unparsed<span class="count">${unparsed.length}</span></div>
+      <div class="tag-list">${unparsed.join(', ')}</div>
+      <div class="unknown-note">Tokens without category prefix.</div>
+    `;
+    container.appendChild(section);
+  }
+}
+
+function renderParseExport(groups, unparsed) {
+  const lines = [];
+  const ordered = [
+    ...CATEGORIES.filter(c => groups[c]),
+    ...Object.keys(groups).filter(c => !CATEGORIES.includes(c))
+  ];
+
+  ordered.forEach(cat => lines.push(`${cat}: ${groups[cat].join(',')}`));
+  if (unparsed.length > 0) lines.push(`unparsed: ${unparsed.join(',')}`);
+
+  document.getElementById('exportText').textContent = lines.join('\n');
+}
+
+function copyExport() {
+  const text = document.getElementById('exportText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const btn = document.querySelector('#exportBox .box-actions button');
+    const orig = btn.textContent;
+    btn.textContent = 'Done';
+    setTimeout(() => btn.textContent = orig, 1000);
+  });
+}
+
+function clearParser() {
+  document.getElementById('parserInput').value = '';
+  document.getElementById('exportText').textContent = '';
+  document.getElementById('parseSections').innerHTML = '';
+}
+
+// Init
+loadState();
+renderBuilder();
+</script>
+</body>
+</html>
