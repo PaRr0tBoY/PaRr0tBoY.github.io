@@ -30,10 +30,13 @@ jobs:
       - name: Index search (Pagefind)
         working-directory: ./_blog
         run: npx pagefind --site ../blog --output-subdir ../blog/pagefind 2>&1 || echo "pagefind skipped"
+      - name: Generate site pages from data
+        run: node scripts/generate-site.js
       - name: Assemble deployment
         run: |
           mkdir -p _site
           cp -r index.html product tools docs assets _site/ 2>/dev/null || true
+          cp -r graphify-out _site/ 2>/dev/null || true
           cp -r blog _site/ 2>/dev/null || true
           touch _site/.nojekyll
           ls -la _site/ | head -20

@@ -1,0 +1,51 @@
+[
+  {
+    "name": "Volante",
+    "desc": "一个面向 Vivaldi 的社区整合包：把 CSS 模块、JS 脚本和安装流程整理成可以探索、组合、反复调整的浏览器工作台。",
+    "index": "01 / ACTIVE",
+    "state": "VIVALDI / CSS + JS / OPEN SOURCE",
+    "wide": true,
+    "portal": true,
+    "links": [
+      { "label": "查看产品", "short": "Landing", "href": "/product/volante/landing/", "type": "primary" },
+      { "label": "阅读文档", "short": "Docs", "href": "/product/volante/doc/", "type": "doc" },
+      { "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Awesome-Vivaldi", "type": "github" }
+    ]
+  },
+  {
+    "name": "Techne",
+    "desc": "关于工具、知识和工程实践的实验性产品方向。",
+    "index": "02 / EXPLORING",
+    "state": "TOOLS / KNOWLEDGE / EXPERIMENT",
+    "wide": false,
+    "portal": true,
+    "links": [
+      { "label": "查看产品", "short": "Landing", "href": "/product/techne/landing/", "type": "primary" },
+      { "label": "阅读文档", "short": "Docs", "href": "/product/techne/doc/", "type": "doc" }
+    ]
+  },
+  {
+    "name": "Trace",
+    "desc": "工作空间 · 项目管理与协作",
+    "index": "03 / IDEA",
+    "state": "",
+    "portal": false,
+    "links": []
+  },
+  {
+    "name": "Plateau",
+    "desc": "学习工作台 · 笔记与知识管理",
+    "index": "04 / IDEA",
+    "state": "",
+    "portal": false,
+    "links": []
+  },
+  {
+    "name": "Polaris",
+    "desc": "机械工程领域的编码 Agent",
+    "index": "05 / IDEA",
+    "state": "",
+    "portal": false,
+    "links": []
+  }
+]

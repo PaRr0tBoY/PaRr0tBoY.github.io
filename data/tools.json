@@ -1,0 +1,118 @@
+{
+  "groups": ["Writing", "Planning", "Data", "Explore", "Make"],
+  "tools": [
+    {
+      "name": "Chronos",
+      "href": "/tools/chronos.html",
+      "code": "TIME / 01",
+      "desc": "用于专注与节奏记录的精算计时器，把时间拆成可以观察的工作段。",
+      "group": "Writing",
+      "wide": true
+    },
+    {
+      "name": "LinSo",
+      "href": "/tools/linso.html",
+      "code": "WRITE / 09",
+      "desc": "面向线性思考与文字整理的工具。",
+      "group": "Writing"
+    },
+    {
+      "name": "Snippy",
+      "href": "/tools/snippy.html",
+      "code": "WRITE / 11",
+      "desc": "快速保存和回看片段。",
+      "group": "Writing"
+    },
+    {
+      "name": "FlowDay",
+      "href": "/tools/flowday.html",
+      "code": "PLAN / 04",
+      "desc": "围绕一天的任务流整理工作节奏。",
+      "group": "Planning"
+    },
+    {
+      "name": "GanttLite",
+      "href": "/tools/ganttlite.html",
+      "code": "PLAN / 02",
+      "desc": "轻量的时间线与任务安排界面。",
+      "group": "Planning"
+    },
+    {
+      "name": "SmartGoal",
+      "href": "/tools/smartgoal.html",
+      "code": "PLAN / 03",
+      "desc": "把目标拆成清晰、可回看的行动。",
+      "group": "Planning"
+    },
+    {
+      "name": "DateCal",
+      "href": "/tools/datecal.html",
+      "code": "UTILITY / 15",
+      "desc": "处理日期、间隔和日历计算。",
+      "group": "Data"
+    },
+    {
+      "name": "MathBank",
+      "href": "/tools/mathbank.html",
+      "code": "STUDY / 05",
+      "desc": "用于积累与检索数学题目的题库。",
+      "group": "Data"
+    },
+    {
+      "name": "CombineSearch",
+      "href": "/tools/combinesearch.html",
+      "code": "EXPLORE / 13",
+      "desc": "把多个搜索入口合并到一处。",
+      "group": "Explore"
+    },
+    {
+      "name": "Lookey",
+      "href": "/tools/lookey.html",
+      "code": "EXPLORE / 12",
+      "desc": "从浏览内容中留下值得再次查看的线索。",
+      "group": "Explore"
+    },
+    {
+      "name": "TechFeed",
+      "href": "/tools/techfeed.html",
+      "code": "EXPLORE / 14",
+      "desc": "面向技术阅读的新闻与信息流。",
+      "group": "Explore"
+    },
+    {
+      "name": "LinSoo",
+      "href": "/tools/linsoo.html",
+      "code": "WRITE / 10",
+      "desc": "另一种把想法展开、收束的编辑方式。",
+      "group": "Make"
+    },
+    {
+      "name": "Quadrant",
+      "href": "/tools/quadrant.html",
+      "code": "MAKE / 08",
+      "desc": "把事项放进一个可视化的优先级空间。",
+      "group": "Make"
+    },
+    {
+      "name": "Resume Tool",
+      "href": "/tools/resume-tool.html",
+      "code": "MAKE / 07",
+      "desc": "用于整理简历内容的编辑工作台。",
+      "group": "Make"
+    },
+    {
+      "name": "Check",
+      "href": "/tools/check.html",
+      "code": "STUDY / 06",
+      "desc": "每日备考复盘，把当天的状态留下来。",
+      "group": "Make"
+    },
+    {
+      "name": "LMdify",
+      "href": "/tools/lmdify.html",
+      "code": "UTILITY / 16",
+      "desc": "一个面向文本转换的实验工具。",
+      "group": "Make"
+    }
+  ]
+}
