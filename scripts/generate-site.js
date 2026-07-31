@@ -8,6 +8,10 @@
  *
  * Deterministic: same data in, same HTML out. Run locally before committing,
  * and again in CI before assembling the deployment.
+ *
+ * All emitted hrefs are relative to the target page (absolute /xxx paths break
+ * under file://, resolving to the drive root). Directory-style URLs get an
+ * explicit index.html so file:// opens the page instead of a directory listing.
  */
 const fs = require("node:fs");
 const path = require("node:path");
@@ -22,17 +26,24 @@ const portalProducts = products.filter(p => p.portal);
 // tools page lists cards in code order (TIME / 01 …); JSON array keeps homepage group order
 const byCode = (a, b) => Number(a.code.match(/\d+$/)[0]) - Number(b.code.match(/\d+$/)[0]);
 
+// 站内绝对路径 → 相对路径；目录型 URL 补 index.html
+const rel = (abs, prefix) => {
+  let p = prefix && abs.startsWith("/" + prefix) ? abs.slice(prefix.length + 2) : abs.replace(/^\//, "");
+  if (p.endsWith("/")) p += "index.html";
+  return p;
+};
+
 // ---- serializers -----------------------------------------------------------
 
 const js = (v) => JSON.stringify(v).replace(/"/g, "'");
 
 const productEntry = (p) => {
-  const links = p.links.map(l => `['${l.short}','${l.href}','${l.type === "github" ? "github" : "doc"}']`);
+  const links = p.links.map(l => `['${l.short}','${rel(l.href, "")}','${l.type === "github" ? "github" : "doc"}']`);
   return `{n:${js(p.name)},d:${js(p.desc)},l:[${links.join(",")}]}`;
 };
 
 const toolGroups = tools.groups.map(g => {
-  const items = toolsList.filter(t => t.group === g).map(t => `['${t.name}','${t.href}']`);
+  const items = toolsList.filter(t => t.group === g).map(t => `['${t.name}','${rel(t.href, "")}']`);
   return `['${g}',[${items.join(",")}]]`;
 });
 
@@ -61,7 +72,7 @@ patch("index.html", [
 
 // tools/index.html — card grid + counts
 const toolCard = (t) =>
-  `<a class="tool-card${t.wide ? " tool-card--wide" : ""}" href="${t.href}">` +
+  `<a class="tool-card${t.wide ? " tool-card--wide" : ""}" href="${rel(t.href, "tools")}">` +
   `<span class="tool-code">${t.code}</span><h3>${t.name}</h3><p>${t.desc}</p>` +
   `<span class="tool-open">OPEN TOOL ↗</span></a>`;
 
@@ -76,7 +87,7 @@ const productCard = (p) => {
   const links = p.links.map(l => {
     const ext = l.href.startsWith("http") ? ' target="_blank" rel="noopener"' : "";
     const cls = l.type === "primary" ? "action primary" : "action";
-    return `<a class="${cls}" href="${l.href}"${ext}>${l.label}</a>`;
+    return `<a class="${cls}" href="${rel(l.href, "product")}"${ext}>${l.label}</a>`;
   }).join("");
   return (
     `<article class="product-card${p.wide ? " product-card--wide" : ""}">` +
