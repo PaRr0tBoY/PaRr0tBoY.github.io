@@ -124,36 +124,44 @@ const t = useTranslations(locale);
 
 <style is:global>
   #pagefind-search {
-    --pagefind-ui-font: var(--font-app);
-    --pagefind-ui-text: var(--foreground);
-    --pagefind-ui-background: var(--background);
-    --pagefind-ui-border: var(--border);
+    --pagefind-ui-font: var(--font-sans);
+    --pagefind-ui-text: var(--ink);
+    --pagefind-ui-background: var(--surface);
+    --pagefind-ui-border: var(--line);
     --pagefind-ui-primary: var(--accent);
-    --pagefind-ui-tag: var(--background);
-    --pagefind-ui-border-radius: 0.375rem;
+    --pagefind-ui-tag: var(--surface);
+    --pagefind-ui-border-radius: 8px;
     --pagefind-ui-border-width: 1px;
     --pagefind-ui-image-border-radius: 8px;
     --pagefind-ui-image-box-ratio: 3 / 2;
 
     form::before {
-      background-color: var(--foreground);
+      background-color: var(--ink);
     }
 
     input {
       font-weight: 400;
-      border: 1px solid var(--border);
+      border: 1px solid var(--line);
     }
 
     input:focus-visible {
       outline: 1px solid var(--accent);
     }
 
+    .pagefind-ui__result {
+      border-color: var(--line);
+    }
+
     .pagefind-ui__result-title a {
-      color: var(--accent);
+      color: var(--ink);
       outline-offset: 1px;
       outline-color: var(--accent);
       text-decoration-style: dashed;
       text-underline-offset: 4px;
+    }
+
+    .pagefind-ui__result-title a:hover {
+      color: var(--accent);
     }
 
     .pagefind-ui__result-title a:focus-visible,

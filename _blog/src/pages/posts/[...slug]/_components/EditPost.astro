@@ -25,12 +25,9 @@ const t = useTranslations(Astro.currentLocale);
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      class:list={[
-        "hover:text-accent text-muted-foreground flex justify-baseline gap-1.5",
-        className,
-      ]}
+      class:list={["edit-link", className]}
     >
-      <IconEdit class="inline-block" />
+      <IconEdit class="inline-block" aria-hidden="true" />
       <span>{t.post.editPage}</span>
     </a>
   )

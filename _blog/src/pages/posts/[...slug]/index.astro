@@ -108,26 +108,30 @@ const ogImage = ogImageUrl
 
   <main
     id="main-content"
-    class:list={["app-layout", { "mt-8": !config.features.showBackButton }]}
+    class:list={[
+      "app-layout page-shell pb-4",
+      { "mt-8": !config.features.showBackButton },
+    ]}
     data-pagefind-body
   >
     <h1
       style={{ viewTransitionName: toTransitionName(title) }}
-      class="text-accent inline-block text-2xl font-bold sm:text-3xl"
+      class="article-title"
     >
       {title}
     </h1>
 
-    <div class="my-2 flex items-center gap-2">
-      <Datetime {pubDatetime} {modDatetime} {timezone} size="lg" />
+    <div class="article-meta">
+      <Datetime {pubDatetime} {modDatetime} {timezone} />
       <span
         aria-hidden="true"
+        class="article-meta__sep"
         class:list={[
-          "text-muted-foreground max-sm:hidden",
+          "max-sm:hidden",
           { hidden: !config.features.editPost?.enabled || hideEditPost },
         ]}
       >
-        |
+        /
       </span>
       <EditPost {hideEditPost} {post} class="max-sm:hidden" />
     </div>
@@ -135,27 +139,23 @@ const ogImage = ogImageUrl
     <article
       id="article"
       class:list={[
-        "mt-8 w-full",
-        "app-prose max-w-app",
+        "mt-10 w-full",
+        "app-prose article-body",
         "prose-pre:bg-(--shiki-light-bg) dark:prose-pre:bg-(--shiki-dark-bg)",
       ]}
     >
       <Content />
     </article>
 
-    <hr class="my-8 border-dashed" />
-
     <EditPost class="sm:hidden" {hideEditPost} {post} />
 
     <BackToTopButton />
 
-    <ul class="mt-4 mb-8 flex flex-wrap gap-4 sm:my-8">
-      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} size="sm" />)}
+    <ul class="tag-list mt-10 mb-8 sm:my-10">
+      {tags.map(tag => <Tag tag={slugifyStr(tag)} tagName={tag} />)}
     </ul>
 
     <ShareLinks />
-
-    <hr class="my-8 border-dashed" />
 
     <AdjacentPostNav {prevPost} {nextPost} />
   </main>

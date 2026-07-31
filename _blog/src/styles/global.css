@@ -5,16 +5,67 @@
 
 @custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
 
+/* =====================================================================
+   v7 world — Technical Editorial Minimalism + Tactile Motion (Read mode)
+   Warm-gray paper, dot-matrix ground, matte floating cards, Verdigris.
+   ===================================================================== */
+
 @layer base {
   * {
-    @apply border-border outline-accent/75;
-    scrollbar-width: auto;
-    scrollbar-color: var(--color-muted) transparent;
+    @apply border-border;
+    scrollbar-color: var(--faint) transparent;
   }
+
+  html {
+    scroll-behavior: smooth;
+    /* Themed canvas: keeps the viewport dark during view-transition crossfades
+       and before the bundled CSS lands, instead of flashing white. */
+    background-color: var(--bg);
+  }
+
+  body {
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 16px;
+    background:
+      radial-gradient(circle at 1px 1px, var(--grid) 0.85px, transparent 1.1px)
+        0 0 / 19px 19px,
+      var(--bg);
+    transition:
+      background 0.25s ease,
+      color 0.25s ease;
+    overflow-x: hidden;
+  }
+
+  /* Paper grain — a fixed, extremely light turbulence film over the whole page */
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    opacity: 0.035;
+    z-index: 41;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 180 180' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  ::selection {
+    background: var(--accent-soft);
+    color: var(--ink);
+  }
+
   a,
   button {
-    @apply outline-accent outline-offset-1 focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-dashed;
+    @apply outline-accent;
   }
+
+  a:focus-visible,
+  button:focus-visible,
+  [tabindex]:focus-visible,
+  input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+
   button:not(:disabled),
   [role="button"]:not(:disabled) {
     cursor: pointer;
@@ -26,13 +77,908 @@
 }
 
 @utility app-layout {
-  @apply max-w-app mx-auto w-full px-4;
+  @apply max-w-app mx-auto w-full px-6;
 }
 
-@utility active-nav {
-  @apply underline decoration-wavy decoration-2 underline-offset-8;
+/* Top safety spacing reserved for the floating navigation bar (72px fold rule) */
+@utility page-shell {
+  @apply app-layout;
+  padding-top: 72px;
 }
 
-:target {
-  scroll-margin-block: 1rem;
+/* ---------------------------------------------------------------------
+   Floating navigation — one matte paper card, centered, hides on scroll
+   --------------------------------------------------------------------- */
+.navbar-fixed {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 40;
+  display: flex;
+  justify-content: center;
+  padding-top: 14px;
+  pointer-events: none;
+  transition:
+    transform 0.32s var(--ease),
+    opacity 0.25s ease;
+}
+
+.navbar-fixed.nav-hidden {
+  transform: translateY(calc(-100% - 24px));
+  opacity: 0.001;
+  pointer-events: none;
+}
+
+.navbar {
+  pointer-events: auto;
+  width: min(1180px, calc(100% - 32px));
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 14px;
+  background:
+    radial-gradient(circle at 1px 1px, var(--grid) 0.85px, transparent 1.1px) 0
+      0 / 19px 19px,
+    var(--bg);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: 0 4px 14px var(--shadow);
+  padding: 9px 12px 9px 14px;
+}
+
+/* Simulated file-path brand — all segments grouped as ONE flex item so the
+   navbar's row gap never separates "main / blog"; only 5px between parts. */
+.brand-path {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--accent);
+  white-space: nowrap;
+}
+
+/* Simulated file-path brand: "main / blog" — parent dimmed, current in ink */
+.brand--parent .brand-name {
+  color: var(--faint);
+  transition: color 0.18s;
+}
+
+.brand--parent:hover .brand-name,
+.brand--parent:focus-visible .brand-name {
+  color: var(--accent);
+}
+
+.brand-sep {
+  font: 600 13px var(--font-mono);
+  color: var(--faint);
+  opacity: 0.55;
+}
+
+.brand-mark {
+  display: block;
+  flex: 0 0 auto;
+}
+
+.brand-name {
+  font: 600 13px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--ink);
+}
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.nav-link {
+  padding: 6px 10px;
+  border-radius: 8px;
+  color: var(--muted);
+  font-size: 13px;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.nav-link:hover,
+.nav-link:focus-visible {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.nav-link[aria-current="page"] {
+  color: var(--ink);
+}
+
+.navbar__actions {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.icon-btn {
+  width: 34px;
+  height: 34px;
+  border: 1px solid transparent;
+  background: transparent;
+  color: var(--muted);
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  cursor: pointer;
+  flex: 0 0 auto;
+  transition:
+    background 0.18s,
+    border-color 0.18s,
+    color 0.18s;
+}
+
+.icon-btn:hover,
+.icon-btn:focus-visible {
+  background: var(--accent-soft);
+  border-color: var(--line);
+  color: var(--ink);
+}
+
+.icon-btn svg {
+  width: 15px;
+  height: 15px;
+}
+
+/* Light/dark toggle — sun & moon crossfade in place */
+.theme-btn {
+  position: relative;
+}
+
+.theme-btn svg {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 16px;
+  height: 16px;
+  transform: translate(-50%, -50%);
+  transition:
+    opacity 0.22s ease,
+    transform 0.42s var(--ease);
+}
+
+.theme-btn #iconMoon {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0) scale(1);
+}
+
+.theme-btn #iconSun {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(-90deg) scale(0.55);
+}
+
+[data-theme="dark"] .theme-btn #iconMoon {
+  opacity: 0;
+  transform: translate(-50%, -50%) rotate(90deg) scale(0.55);
+}
+
+[data-theme="dark"] .theme-btn #iconSun {
+  opacity: 1;
+  transform: translate(-50%, -50%) rotate(0) scale(1);
+}
+
+/* Burger — three bars morph into a close glyph */
+.burger {
+  position: relative;
+  width: 15px;
+  height: 11px;
+  display: block;
+}
+
+.burger i {
+  position: absolute;
+  left: 0;
+  width: 100%;
+  height: 1.5px;
+  background: currentColor;
+  border-radius: 2px;
+  font-style: normal;
+  transition:
+    transform 0.28s var(--ease),
+    opacity 0.2s ease,
+    top 0.28s var(--ease);
+}
+
+.burger i:nth-child(1) {
+  top: 0;
+}
+.burger i:nth-child(2) {
+  top: 4.75px;
+}
+.burger i:nth-child(3) {
+  top: 9.5px;
+}
+
+.icon-btn.open .burger i:nth-child(1) {
+  top: 4.75px;
+  transform: rotate(45deg);
+}
+.icon-btn.open .burger i:nth-child(2) {
+  opacity: 0;
+}
+.icon-btn.open .burger i:nth-child(3) {
+  top: 4.75px;
+  transform: rotate(-45deg);
+}
+
+/* Mobile menu — floating bento panel anchored to the burger, never in flow */
+.nav-menu {
+  position: relative;
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .nav {
+    display: none;
+  }
+  .nav-menu {
+    display: block;
+  }
+}
+
+.nav-panel {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  width: 236px;
+  display: none;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  padding: 10px;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 16px 40px var(--shadow);
+  opacity: 0;
+  transform: translateY(-6px) scale(0.98);
+  pointer-events: none;
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s var(--ease);
+  z-index: 50;
+}
+
+.nav-panel.open {
+  display: grid;
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}
+
+.nav-panel__item {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 13px 11px;
+  border-radius: 11px;
+  color: var(--muted);
+  background: var(--surface-2);
+  font-size: 12px;
+  transition:
+    background 0.18s,
+    color 0.18s;
+}
+
+.nav-panel__item:hover,
+.nav-panel__item:focus-visible {
+  background: var(--accent-soft);
+  color: var(--ink);
+}
+
+.nav-panel__item svg {
+  color: var(--accent);
+  width: 16px;
+  height: 16px;
+}
+
+/* Skip link */
+.skip-link {
+  position: absolute;
+  left: 16px;
+  top: -100%;
+  z-index: 60;
+  padding: 10px 14px;
+  background: var(--surface);
+  color: var(--accent);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px var(--shadow);
+  transition: top 0.2s ease;
+}
+
+.skip-link:focus {
+  top: 14px;
+}
+
+/* ---------------------------------------------------------------------
+   Hero (index) — one authored motion moment: the band rises in
+   --------------------------------------------------------------------- */
+.hero {
+  padding: 58px 0 52px;
+}
+
+.hero-reveal {
+  animation: hero-rise 0.7s var(--ease) both;
+}
+
+@keyframes hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.eyebrow {
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--accent);
+  text-transform: uppercase;
+}
+
+.hero__title {
+  font-size: clamp(38px, 4.6vw, 60px);
+  line-height: 1.03;
+  letter-spacing: -0.05em;
+  font-weight: 600;
+  margin: 18px 0 22px;
+  max-width: 700px;
+}
+
+.hero__lead {
+  max-width: 620px;
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.8;
+}
+
+.hero__lead p + p {
+  margin-top: 0.7em;
+}
+
+.inline-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-style: dashed;
+  text-decoration-color: var(--line-strong);
+  text-underline-offset: 4px;
+  transition:
+    color 0.18s,
+    text-decoration-color 0.18s;
+}
+
+.inline-link:hover {
+  color: var(--accent);
+  text-decoration-color: var(--accent);
+}
+
+.hero__actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+
+/* ---------------------------------------------------------------------
+   Actions — quiet bordered buttons; primary uses the accent field
+   --------------------------------------------------------------------- */
+.action {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--line);
+  background: transparent;
+  border-radius: 9px;
+  padding: 8px 13px;
+  font-size: 13px;
+  color: var(--ink);
+  transition:
+    background 0.18s var(--ease),
+    border-color 0.18s,
+    transform 0.18s var(--ease);
+}
+
+.action:hover {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+  transform: translateY(-1px);
+}
+
+.action.primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+  border-color: var(--accent);
+}
+
+.action.primary:hover {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.action[aria-disabled="true"] {
+  opacity: 0.45;
+  pointer-events: none;
+}
+
+.action svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------------------------------------------------------------------
+   Sections & section rules
+   --------------------------------------------------------------------- */
+.section {
+  margin-top: 56px;
+}
+
+.section-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+
+.section-head h2 {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  letter-spacing: -0.01em;
+}
+
+.section-head h2 small {
+  font: 11px var(--font-mono);
+  color: var(--faint);
+  font-weight: 400;
+  margin-left: 8px;
+  letter-spacing: 0.02em;
+}
+
+.section-head > span {
+  font: 10px var(--font-mono);
+  color: var(--faint);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* ---------------------------------------------------------------------
+   Post index rows — editorial list with mono date marginalia
+   --------------------------------------------------------------------- */
+.post-list {
+  display: flex;
+  flex-direction: column;
+}
+.post-row__link {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 12px;
+  margin: 0 -12px;
+  border-radius: 10px;
+  transition: background 0.18s;
+}
+
+.post-row__link:hover {
+  background: var(--accent-soft);
+}
+
+.post-row__body {
+  flex: 1;
+  min-width: 0;
+}
+
+.post-row__title {
+  font-size: 15px;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+  color: var(--ink);
+  transition: color 0.18s;
+}
+
+.post-row__link:hover .post-row__title {
+  color: var(--accent);
+}
+
+.post-row__desc {
+  display: block;
+  margin-top: 4px;
+  font-size: 13px;
+  line-height: 1.7;
+  color: var(--muted);
+  max-width: 560px;
+}
+
+.post-row__date {
+  flex: 0 0 auto;
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   Datetime — mono marginalia
+   --------------------------------------------------------------------- */
+.datetime {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 11px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+.datetime svg {
+  width: 13px;
+  height: 13px;
+}
+
+/* ---------------------------------------------------------------------
+   Tags — mono chips with dashed underline and hash mark
+   --------------------------------------------------------------------- */
+.tag-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+  border-bottom: 1px dashed var(--line-strong);
+  padding-bottom: 2px;
+  transition:
+    color 0.18s,
+    border-color 0.18s;
+}
+
+.tag-chip:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.tag-chip svg {
+  width: 13px;
+  height: 13px;
+  color: var(--accent);
+  opacity: 0.8;
+}
+
+/* ---------------------------------------------------------------------
+   Page head (inner pages) — title over a hairline rule
+   --------------------------------------------------------------------- */
+.page-head {
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 18px;
+  margin-bottom: 26px;
+}
+
+.page-title {
+  font-size: 28px;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.page-desc {
+  margin-top: 6px;
+  font-size: 13px;
+  color: var(--muted);
+}
+
+/* ---------------------------------------------------------------------
+   Breadcrumb — mono path
+   --------------------------------------------------------------------- */
+.breadcrumb {
+  font: 11px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+.breadcrumb a {
+  color: var(--faint);
+  transition: color 0.18s;
+}
+
+.breadcrumb a:hover {
+  color: var(--accent);
+}
+
+.crumb-sep {
+  margin: 0 5px;
+  opacity: 0.45;
+}
+
+/* ---------------------------------------------------------------------
+   Pagination — bordered actions + mono counter
+   --------------------------------------------------------------------- */
+.pagination {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin: 44px 0 8px;
+}
+
+.page-count {
+  font: 11px var(--font-mono);
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  white-space: nowrap;
+}
+
+/* ---------------------------------------------------------------------
+   Footer — mono line, aligned with the shell
+   --------------------------------------------------------------------- */
+.site-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding: 26px 0 30px;
+  margin-top: 72px;
+  color: var(--faint);
+  font: 11px var(--font-mono);
+  letter-spacing: 0.02em;
+}
+
+.socials {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.socials .icon-btn {
+  width: 30px;
+  height: 30px;
+}
+
+.socials svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* ---------------------------------------------------------------------
+   Article page
+   --------------------------------------------------------------------- */
+.article-title {
+  font-size: clamp(28px, 4vw, 38px);
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 14px 0 0;
+}
+
+.article-meta__sep {
+  color: var(--line-strong);
+}
+
+.edit-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font: 11px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+  transition: color 0.18s;
+}
+
+.edit-link:hover {
+  color: var(--accent);
+}
+
+.edit-link svg {
+  width: 13px;
+  height: 13px;
+}
+
+.article-body {
+  max-width: 42rem;
+}
+
+/* Back link */
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: var(--muted);
+  font-size: 13px;
+  transition: color 0.18s;
+}
+
+.back-link:hover {
+  color: var(--accent);
+}
+
+.back-link svg {
+  width: 14px;
+  height: 14px;
+}
+
+/* Adjacent posts — two matte cards */
+.adjacent {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin: 40px 0;
+}
+
+.adjacent__link {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  padding: 18px 20px;
+  background: var(--surface-2);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    transform 0.2s var(--ease);
+}
+
+.adjacent__link:hover {
+  background: var(--accent-soft);
+  border-color: var(--line-strong);
+  transform: translateY(-2px);
+}
+
+.adjacent__label {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font: 10px var(--font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--faint);
+}
+
+.adjacent__label svg {
+  width: 12px;
+  height: 12px;
+}
+
+.adjacent__title {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.35;
+  color: var(--ink);
+  transition: color 0.18s;
+}
+
+.adjacent__link:hover .adjacent__title {
+  color: var(--accent);
+}
+
+/* Back-to-top — matte circle with conic reading progress */
+.btt {
+  position: fixed;
+  right: 20px;
+  bottom: 24px;
+  z-index: 35;
+}
+
+.btt-btn {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--surface);
+  border: 1px solid var(--line);
+  box-shadow: 0 4px 14px var(--shadow);
+  color: var(--muted);
+  transition:
+    background 0.18s,
+    color 0.18s,
+    border-color 0.18s;
+}
+
+.btt-btn:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+  border-color: var(--line-strong);
+}
+
+.btt-btn svg {
+  width: 16px;
+  height: 16px;
+}
+
+.btt-btn__progress {
+  position: absolute;
+  inset: -3px;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* ---------------------------------------------------------------------
+   Archives — year over month columns of index rows
+   --------------------------------------------------------------------- */
+.archive-year {
+  margin-bottom: 36px;
+}
+
+.archive-year__title {
+  font-size: 22px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.archive-year__title sup,
+.archive-month__label sup {
+  font: 11px var(--font-mono);
+  color: var(--faint);
+  margin-left: 4px;
+}
+
+.archive-month {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.archive-month__label {
+  min-width: 120px;
+  margin-top: 20px;
+  font: 500 12px var(--font-mono);
+  letter-spacing: 0.02em;
+  color: var(--faint);
+}
+
+.archive-month .post-list {
+  flex: 1;
+}
+
+/* ---------------------------------------------------------------------
+   404
+   --------------------------------------------------------------------- */
+.notfound-code {
+  font: 600 clamp(64px, 16vw, 120px) var(--font-mono);
+  letter-spacing: -0.04em;
+  color: var(--accent);
+  line-height: 1;
+}
+
+/* ---------------------------------------------------------------------
+   Motion guard — the world honours reduced motion
+   --------------------------------------------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

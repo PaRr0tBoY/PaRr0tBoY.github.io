@@ -46,7 +46,10 @@ export default defineConfig({
       rehypePlugins: [rehypeCallouts],
     }),
     shikiConfig: {
-      themes: { light: "min-light", dark: "night-owl" },
+      themes: {
+        light: "material-theme-lighter",
+        dark: "material-theme-darker",
+      },
       defaultColor: false,
       wrap: false,
       transformers: [
@@ -62,12 +65,21 @@ export default defineConfig({
   },
   fonts: [
     {
-      name: "Google Sans Code",
-      cssVariable: "--font-google-sans-code",
+      name: "Noto Sans SC",
+      cssVariable: "--font-sans",
       provider: fontProviders.google(),
-      fallbacks: ["monospace"],
-      weights: [300, 400, 500, 600, 700],
-      styles: ["normal", "italic"],
+      fallbacks: ["system-ui", "sans-serif"],
+      weights: [400, 500, 600, 700],
+      styles: ["normal"],
+      formats: ["woff", "ttf"],
+    },
+    {
+      name: "IBM Plex Mono",
+      cssVariable: "--font-mono",
+      provider: fontProviders.google(),
+      fallbacks: ["ui-monospace", "monospace"],
+      weights: [400, 500, 600],
+      styles: ["normal"],
       formats: ["woff", "ttf"],
     },
   ],

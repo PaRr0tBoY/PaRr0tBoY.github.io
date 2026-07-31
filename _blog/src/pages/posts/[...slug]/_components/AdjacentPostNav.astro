@@ -21,18 +21,18 @@ const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 ---
 
-<div data-pagefind-ignore class="my-8 grid grid-cols-1 gap-6 sm:grid-cols-2">
+<div data-pagefind-ignore class="adjacent">
   {
     prevPost && (
       <a
         href={getPostUrl(prevPost.id, prevPost.filePath, locale)}
-        class="flex w-full gap-1 hover:opacity-75"
+        class="adjacent__link"
       >
-        <IconArrowLeft class="inline-block flex-none rtl:rotate-180" />
-        <div>
-          <span>{t.post.previousPost}</span>
-          <div class="text-accent/85 text-sm">{prevPost.title}</div>
-        </div>
+        <span class="adjacent__label">
+          <IconArrowLeft class="inline-block rtl:rotate-180" />
+          {t.post.previousPost}
+        </span>
+        <span class="adjacent__title">{prevPost.title}</span>
       </a>
     )
   }
@@ -40,13 +40,13 @@ const t = useTranslations(locale);
     nextPost && (
       <a
         href={getPostUrl(nextPost.id, nextPost.filePath, locale)}
-        class="flex w-full justify-end gap-1 text-end hover:opacity-75 sm:col-start-2"
+        class="adjacent__link adjacent__link--next"
       >
-        <div>
-          <span>{t.post.nextPost}</span>
-          <div class="text-accent/85 text-sm">{nextPost.title}</div>
-        </div>
-        <IconArrowRight class="inline-block flex-none rtl:rotate-180" />
+        <span class="adjacent__label">
+          {t.post.nextPost}
+          <IconArrowRight class="inline-block rtl:rotate-180" />
+        </span>
+        <span class="adjacent__title">{nextPost.title}</span>
       </a>
     )
   }

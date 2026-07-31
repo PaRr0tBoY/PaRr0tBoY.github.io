@@ -26,6 +26,7 @@ export interface UIStrings {
     page: string;
   };
   home: {
+    eyebrow: string;
     socialLinks: string;
     featured: string;
     recentPosts: string;

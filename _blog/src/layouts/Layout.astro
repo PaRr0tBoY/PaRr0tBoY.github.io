@@ -40,13 +40,27 @@ const rssHref = getRelativeLocaleUrl(
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href={getAssetPath("favicon.svg")} />
-    <link rel="icon" href={getAssetPath("favicon.ico")} />
     <link rel="canonical" href={canonicalURL} />
     <meta name="generator" content={Astro.generator} />
 
+    <!-- Critical background: no white flash before the bundled CSS lands,
+         and the themed canvas survives view-transition crossfades. -->
+    <style is:inline>
+      html {
+        background-color: #20211f;
+      }
+      html[data-theme="light"] {
+        background-color: #e9e6dc;
+      }
+    </style>
+
     <!-- Font -->
     <Font
-      cssVariable="--font-google-sans-code"
+      cssVariable="--font-sans"
+      preload={[{ subset: "latin", weight: 400, style: "normal" }]}
+    />
+    <Font
+      cssVariable="--font-mono"
       preload={[{ subset: "latin", weight: 400, style: "normal" }]}
     />
 
@@ -81,7 +95,7 @@ const rssHref = getRelativeLocaleUrl(
     />
 
     <!-- Filled at runtime by theme.ts to match the current background colour -->
-    <meta name="theme-color" content="" />
+    <meta name="theme-color" content="#20211f" />
 
     <!-- Extra head content injected by child layouts (e.g. JSON-LD, article meta) -->
     <slot name="head" />
@@ -113,9 +127,7 @@ const rssHref = getRelativeLocaleUrl(
 
     <ClientRouter />
   </head>
-  <body
-    class="bg-background font-app text-foreground selection:bg-accent/75 selection:text-accent-foreground flex min-h-svh flex-col"
-  >
+  <body class="bg-background font-app text-foreground flex min-h-svh flex-col">
     <slot />
     <script>
       import "@/scripts/theme";

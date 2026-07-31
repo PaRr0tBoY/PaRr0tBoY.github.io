@@ -1,24 +1,20 @@
 ---
 import { getRelativeLocaleUrl } from "astro:i18n";
-import IconUnderline from "@/assets/icons/IconUnderline.svg";
-import IconMenuDeep from "@/assets/icons/IconMenuDeep.svg";
-import IconArchive from "@/assets/icons/IconArchive.svg";
-import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconSearch from "@/assets/icons/IconSearch.svg";
+import IconSunHigh from "@/assets/icons/IconSunHigh.svg";
 import IconMoon from "@/assets/icons/IconMoon.svg";
-import IconX from "@/assets/icons/IconX.svg";
-import LinkButton from "./LinkButton.astro";
+import IconHash from "@/assets/icons/IconHash.svg";
+import IconArchive from "@/assets/icons/IconArchive.svg";
 import { stripBase, stripLocale } from "@/utils/withBase";
 import { useTranslations } from "@/i18n";
 import config from "@/config";
 
-const { site, features } = config;
+const { features } = config;
 
 const locale = Astro.currentLocale ?? config.site.lang;
 const t = useTranslations(locale);
 
 // Strip the base prefix so isActive comparisons work regardless of deploy subdirectory.
-// e.g. with base "/blog": "/blog/posts/slug" → "/posts/slug"
 const relativePath = stripBase(Astro.url.pathname);
 const pathWithoutTrailingSlash =
   relativePath.endsWith("/") && relativePath !== "/"
@@ -32,164 +28,290 @@ const isActive = (path: string) => {
   const pathArray = path.split("/").filter(p => p.trim());
   return currentPath === path || currentPathArray[0] === pathArray[0];
 };
+
+type NavItem = {
+  kind: "posts" | "tags" | "about" | "archives";
+  href: string;
+  label: string;
+  current: boolean;
+};
+
+const navItems: NavItem[] = [
+  {
+    kind: "posts",
+    href: getRelativeLocaleUrl(locale, "posts"),
+    label: t.nav.posts,
+    current: isActive("/posts"),
+  },
+  {
+    kind: "tags",
+    href: getRelativeLocaleUrl(locale, "tags"),
+    label: t.nav.tags,
+    current: isActive("/tags"),
+  },
+  {
+    kind: "about",
+    href: getRelativeLocaleUrl(locale, "about"),
+    label: t.nav.about,
+    current: isActive("/about"),
+  },
+  ...(features.showArchives
+    ? [
+        {
+          kind: "archives" as const,
+          href: getRelativeLocaleUrl(locale, "archives"),
+          label: t.nav.archives,
+          current: isActive("/archives"),
+        },
+      ]
+    : []),
+];
+
+const searchItem =
+  features.search !== false
+    ? {
+        href: getRelativeLocaleUrl(locale, "search"),
+        label: t.nav.search,
+        current: isActive("/search"),
+      }
+    : null;
 ---
 
-<a
-  id="skip-to-content"
-  href="#main-content"
-  class="bg-background text-accent absolute inset-s-16 -top-full z-50 px-3 py-2 backdrop-blur-lg transition-all focus:top-4"
->
+<a id="skip-to-content" href="#main-content" class="skip-link">
   {t.a11y.skipToContent}
 </a>
 
-<header
-  class="app-layout flex flex-col items-center justify-between sm:flex-row"
->
-  <div
-    class="border-border bg-background relative flex w-full items-baseline justify-between border-b py-4 sm:items-center sm:py-6"
-  >
-    <a
-      href={getRelativeLocaleUrl(locale, "")}
-      class="absolute py-1 text-xl leading-8 font-semibold whitespace-nowrap sm:static sm:my-auto sm:text-2xl sm:leading-none"
-    >
-      {site.title}
-    </a>
-    <nav
-      id="nav-menu"
-      class="flex w-full flex-col items-center sm:ms-2 sm:flex-row sm:justify-end sm:space-x-4 sm:py-0"
-    >
-      <button
-        id="menu-btn"
-        class="focus-outline self-end p-2 sm:hidden"
-        aria-label={t.a11y.openMenu}
-        aria-expanded="false"
-        aria-controls="menu-items"
-        data-label-open={t.a11y.openMenu}
-        data-label-close={t.a11y.closeMenu}
-      >
-        <IconX id="close-icon" class="hidden" />
-        <IconMenuDeep id="menu-icon" />
-      </button>
-      <ul
-        id="menu-items"
-        class="[&>li>a]:hover:text-accent mt-4 hidden w-44 grid-cols-2 place-content-center gap-2 sm:mt-0 sm:flex sm:w-auto sm:gap-x-5 sm:gap-y-0 sm:[&>li]:h-8 [&>li>a]:block [&>li>a]:px-4 [&>li>a]:py-3 [&>li>a]:text-center [&>li>a]:font-medium sm:[&>li>a]:px-2 sm:[&>li>a]:py-1"
-      >
-        <li class="col-span-2">
+<div class="navbar-fixed" id="navbar-fixed">
+  <header class="navbar">
+    <div class="brand-path">
+      <a class="brand brand--parent" href="/" aria-label="main">
+        <svg
+          class="brand-mark"
+          width="22"
+          height="22"
+          viewBox="0 0 64 64"
+          aria-hidden="true"
+        >
+          <defs>
+            <mask id="nav-eye">
+              <circle cx="30.5" cy="24" r="4.5" fill="#fff"></circle>
+              <circle cx="29.8" cy="24" r="1.8" fill="#000"></circle>
+            </mask>
+          </defs>
+          <path
+            fill="currentColor"
+            fill-rule="evenodd"
+            d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"></path>
+          <circle
+            cx="30.5"
+            cy="24"
+            r="4.5"
+            fill="currentColor"
+            mask="url(#nav-eye)"></circle>
+          <path
+            fill="currentColor"
+            d="M34.2 21.5 38 24.5 34.2 26.5Z"></path>
+        </svg>
+        <span class="brand-name">main</span>
+      </a>
+      <span class="brand-sep" aria-hidden="true">/</span>
+      <a class="brand brand--current" href="/blog/" aria-label="blog">
+        <span class="brand-name">blog</span>
+      </a>
+    </div>
+
+    <nav class="nav" aria-label="Primary">
+      {
+        navItems.map(item => (
           <a
-            href={getRelativeLocaleUrl(locale, "posts")}
-            class:list={{ "active-nav": isActive("/posts") }}
+            class="nav-link"
+            href={item.href}
+            aria-current={item.current ? "page" : undefined}
           >
-            {t.nav.posts}
+            {item.label}
           </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href={getRelativeLocaleUrl(locale, "tags")}
-            class:list={{ "active-nav": isActive("/tags") }}
-          >
-            {t.nav.tags}
-          </a>
-        </li>
-        <li class="col-span-2">
-          <a
-            href={getRelativeLocaleUrl(locale, "about")}
-            class:list={{ "active-nav": isActive("/about") }}
-          >
-            {t.nav.about}
-          </a>
-        </li>
-        {
-          features.showArchives && (
-            <li class="col-span-2">
-              <LinkButton
-                href={getRelativeLocaleUrl(locale, "archives")}
-                class:list={[
-                  "focus-outline flex size-full justify-center p-3 sm:relative sm:size-8 sm:p-0",
-                  { "active-nav": isActive("/archives") },
-                ]}
-                title={t.nav.archives}
-                aria-label={t.nav.archives}
-              >
-                <IconArchive class="hidden sm:absolute sm:top-1/2 sm:left-1/2 sm:block sm:size-6 sm:-translate-x-1/2 sm:-translate-y-1/2" />
-                <span class="sm:sr-only">{t.nav.archives}</span>
-                {isActive("/archives") && (
-                  <IconUnderline
-                    aria-hidden="true"
-                    class="scale-125 max-sm:hidden sm:absolute sm:bottom-0 sm:w-6"
-                  />
-                )}
-              </LinkButton>
-            </li>
-          )
-        }
-        {
-          features.search !== false && (
-            <li class="col-span-1 flex items-center justify-center">
-              <LinkButton
-                href={getRelativeLocaleUrl(locale, "search")}
-                class:list={["focus-outline relative size-8"]}
-                title={t.nav.search}
-                aria-label={t.nav.search}
-              >
-                <IconSearch class="absolute top-1/2 left-1/2 size-6 -translate-x-1/2 -translate-y-1/2" />
-                <span class="sr-only">{t.nav.search}</span>
-                {isActive("/search") && (
-                  <IconUnderline
-                    aria-hidden="true"
-                    class="absolute bottom-0 w-6 scale-125 max-sm:inset-s-2"
-                  />
-                )}
-              </LinkButton>
-            </li>
-          )
-        }
-        {
-          features.lightAndDarkMode && (
-            <li class="col-span-1 flex items-center justify-center">
-              <button
-                id="theme-btn"
-                class="focus-outline hover:[&>svg]:stroke-accent relative size-12 p-4 sm:size-8"
-                title={t.a11y.toggleTheme}
-                aria-label="auto"
-                aria-live="polite"
-              >
-                <IconMoon class="absolute top-[50%] left-[50%] translate-[-50%] scale-100 rotate-0 transition-all dark:scale-0 dark:-rotate-90" />
-                <IconSunHigh class="absolute top-[50%] left-[50%] translate-[-50%] scale-0 rotate-90 transition-all dark:scale-100 dark:rotate-0" />
-              </button>
-            </li>
-          )
-        }
-      </ul>
+        ))
+      }
     </nav>
-  </div>
-</header>
+
+    <div class="navbar__actions">
+      {
+        searchItem && (
+          <a
+            class="icon-btn"
+            href={searchItem.href}
+            title={searchItem.label}
+            aria-label={searchItem.label}
+            aria-current={searchItem.current ? "page" : undefined}
+          >
+            <IconSearch />
+          </a>
+        )
+      }
+
+      {
+        features.lightAndDarkMode && (
+          <button
+            id="theme-btn"
+            class="icon-btn theme-btn"
+            title={t.a11y.toggleTheme}
+            aria-label="auto"
+            aria-live="polite"
+          >
+            <IconMoon id="iconMoon" />
+            <IconSunHigh id="iconSun" />
+          </button>
+        )
+      }
+
+      <div class="nav-menu">
+        <button
+          id="menu-btn"
+          class="icon-btn"
+          aria-expanded="false"
+          aria-controls="nav-panel"
+          aria-label={t.a11y.openMenu}
+          data-label-open={t.a11y.openMenu}
+          data-label-close={t.a11y.closeMenu}
+        >
+          <span class="burger" aria-hidden="true">
+            <i></i>
+            <i></i>
+            <i></i>
+          </span>
+        </button>
+        <div id="nav-panel" class="nav-panel" role="menu">
+          {
+            navItems.map(item => (
+              <a
+                class="nav-panel__item"
+                href={item.href}
+                role="menuitem"
+                aria-current={item.current ? "page" : undefined}
+              >
+                {item.kind === "posts" && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <path d="M14 3H7a1 1 0 0 0-1 1v16a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V8l-4-5z" />
+                    <path d="M14 3v5h5M9.5 13h5M9.5 16.5h5" />
+                  </svg>
+                )}
+                {item.kind === "about" && (
+                  <svg
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="1.6"
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    aria-hidden="true"
+                  >
+                    <circle cx="12" cy="8" r="3.6" />
+                    <path d="M5.5 20c.6-3.4 3.2-5.2 6.5-5.2s5.9 1.8 6.5 5.2" />
+                  </svg>
+                )}
+                {item.kind === "tags" && <IconHash />}
+                {item.kind === "archives" && <IconArchive />}
+                <span>{item.label}</span>
+              </a>
+            ))
+          }
+        </div>
+      </div>
+    </div>
+  </header>
+</div>
 
 <script>
-  function toggleNav() {
+  function setupHeader() {
+    const navbar = document.querySelector<HTMLElement>("#navbar-fixed");
     const menuBtn = document.querySelector<HTMLButtonElement>("#menu-btn");
-    const menuItems = document.querySelector("#menu-items");
-    const menuIcon = document.querySelector("#menu-icon");
-    const closeIcon = document.querySelector("#close-icon");
+    const panel = document.querySelector<HTMLElement>("#nav-panel");
 
-    if (!menuBtn || !menuItems || !menuIcon || !closeIcon) return;
+    if (!navbar) return;
 
-    const openLabel = menuBtn.dataset.labelOpen ?? "Open menu";
-    const closeLabel = menuBtn.dataset.labelClose ?? "Close menu";
+    let setOpen: ((open: boolean) => void) | null = null;
 
-    menuBtn.addEventListener("click", () => {
-      const openMenu = menuBtn.getAttribute("aria-expanded") === "true";
+    const onClickMenu = () => {
+      setOpen?.(menuBtn?.getAttribute("aria-expanded") !== "true");
+    };
+    const onDocClick = (e: MouseEvent) => {
+      if (
+        panel?.classList.contains("open") &&
+        !panel.contains(e.target as Node) &&
+        !menuBtn?.contains(e.target as Node)
+      ) {
+        setOpen?.(false);
+      }
+    };
+    const onKeydown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen?.(false);
+    };
 
-      menuBtn.setAttribute("aria-expanded", openMenu ? "false" : "true");
-      menuBtn.setAttribute("aria-label", openMenu ? openLabel : closeLabel);
+    if (menuBtn && panel) {
+      const openLabel = menuBtn.dataset.labelOpen ?? "Open menu";
+      const closeLabel = menuBtn.dataset.labelClose ?? "Close menu";
+      setOpen = (open: boolean) => {
+        menuBtn.setAttribute("aria-expanded", String(open));
+        menuBtn.setAttribute("aria-label", open ? closeLabel : openLabel);
+        menuBtn.classList.toggle("open", open);
+        panel.classList.toggle("open", open);
+      };
+      menuBtn.addEventListener("click", onClickMenu);
+      document.addEventListener("click", onDocClick);
+      document.addEventListener("keydown", onKeydown);
+    }
 
-      menuItems.classList.toggle("hidden");
-      menuItems.classList.toggle("grid");
-      menuIcon.classList.toggle("hidden");
-      closeIcon.classList.toggle("hidden");
-    });
+    // Floating visibility: hide on scroll down, reveal on scroll up / at top.
+    let lastScrollY = window.scrollY;
+    let ticking = false;
+    const onScroll = () => {
+      const y = window.scrollY;
+      if (y <= 24) {
+        navbar.classList.remove("nav-hidden");
+      } else if (Math.abs(y - lastScrollY) > 4) {
+        if (y > lastScrollY) {
+          navbar.classList.add("nav-hidden");
+          // Collapse child panels so nothing floats without the bar.
+          setOpen?.(false);
+        } else {
+          navbar.classList.remove("nav-hidden");
+        }
+      }
+      lastScrollY = y;
+      ticking = false;
+    };
+    const onScrollTick = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(onScroll);
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScrollTick, { passive: true });
+
+    // Detach listeners of a previous instance after a view-transition swap.
+    const prev = (
+      window as unknown as {
+        __blogNavCleanup?: () => void;
+      }
+    ).__blogNavCleanup;
+    prev?.();
+    (window as unknown as { __blogNavCleanup?: () => void }).__blogNavCleanup =
+      () => {
+        window.removeEventListener("scroll", onScrollTick);
+        menuBtn?.removeEventListener("click", onClickMenu);
+        document.removeEventListener("click", onDocClick);
+        document.removeEventListener("keydown", onKeydown);
+      };
   }
 
-  toggleNav();
-
-  document.addEventListener("astro:after-swap", toggleNav);
+  setupHeader();
+  document.addEventListener("astro:after-swap", setupHeader);
 </script>

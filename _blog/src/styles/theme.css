@@ -1,34 +1,68 @@
-/* Register design tokens for Tailwind v4 */
+/*
+  Design Language Document v7 — Technical Editorial Minimalism + Tactile Motion.
+  Applied to the AstroPaper surfaces (Read mode). Warm-gray paper foundation,
+  Verdigris accent default, IBM Plex Sans SC + IBM Plex Mono type system.
+*/
+
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-background: var(--bg);
+  --color-foreground: var(--ink);
   --color-accent: var(--accent);
-  --color-accent-foreground: var(--accent-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
-  --color-border: var(--border);
-  --font-app: var(--font-google-sans-code);
+  --color-accent-foreground: var(--accent-ink);
+  --color-muted: var(--surface-2);
+  --color-muted-foreground: var(--muted);
+  --color-border: var(--line);
+  --font-app: var(--font-sans);
 }
 
-/* Light theme values */
+/* Dark mode — paper under lamplight. `:root` default so that any render
+   WITHOUT a data-theme attribute (DOMParser-parsed view-transition snapshots,
+   FOUC window, JS disabled) paints the dark identity — never a flash of
+   light. Light mode must opt in explicitly. */
 :root,
-[data-theme="light"] {
-  --background: #fafafa;
-  --foreground: #09090b;
-  --accent: #2563eb;
-  --accent-foreground: #ffffff;
-  --muted: #f4f4f5;
-  --muted-foreground: #71717a;
-  --border: #e4e4e7;
+[data-theme="dark"] {
+  --bg: #20211f;
+  --surface: #282925;
+  --surface-2: rgba(255, 255, 255, 0.035);
+  --ink: #e8e6de;
+  --muted: #aaa79e;
+  --faint: #77756e;
+  --line: rgba(232, 230, 222, 0.14);
+  --line-strong: rgba(232, 230, 222, 0.25);
+  --grid: rgba(232, 230, 222, 0.1);
+  --accent: #6aa99f;
+  --accent-soft: rgba(106, 169, 159, 0.15);
+  --accent-ink: #17201e;
+  --shadow: rgba(0, 0, 0, 0.18);
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
 }
 
-/* Dark theme values */
-[data-theme="dark"] {
-  --background: #1a1b1e;
-  --foreground: #e4e4e7;
-  --accent: #f97316;
-  --accent-foreground: #ffffff;
-  --muted: #27272a;
-  --muted-foreground: #a1a1aa;
-  --border: #3f3f46;
+/* Light mode — paper in daylight, explicit opt-in */
+[data-theme="light"] {
+  --bg: #e9e6dc;
+  --surface: #f2efe7;
+  --surface-2: rgba(255, 255, 255, 0.42);
+  --ink: #292925;
+  --muted: #716f68;
+  --faint: #aaa79d;
+  --line: rgba(41, 41, 37, 0.15);
+  --line-strong: rgba(41, 41, 37, 0.26);
+  --grid: rgba(41, 41, 37, 0.12);
+  --accent: #39756c;
+  --accent-soft: rgba(57, 117, 108, 0.13);
+  --accent-ink: #f2f7f4;
+  --shadow: rgba(35, 34, 30, 0.08);
+  --radius: 14px;
+  --ease: cubic-bezier(0.2, 0.75, 0.2, 1);
+}
+
+/* Type faces (fallback stacks apply until the astro font integration lands) */
+:root {
+  --font-sans:
+    "Noto Sans SC", "IBM Plex Sans", system-ui, -apple-system, "Segoe UI",
+    "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-mono:
+    "IBM Plex Mono", ui-monospace, SFMono-Regular, "Cascadia Code", Consolas,
+    monospace;
 }

@@ -41,9 +41,11 @@ const monthFormatter = new Intl.DateTimeFormat(locale, { month: "long" });
       )
         .sort(([yearA], [yearB]) => Number(yearB) - Number(yearA))
         .map(([year, yearGroup]) => (
-          <div>
-            <span class="text-2xl font-bold">{year}</span>
-            <sup class="text-muted-foreground text-sm">{yearGroup.length}</sup>
+          <div class="archive-year">
+            <h2 class="archive-year__title">
+              {year}
+              <sup>{yearGroup.length}</sup>
+            </h2>
             {Object.entries(
               getPostsByGroupCondition(
                 yearGroup,
@@ -52,16 +54,12 @@ const monthFormatter = new Intl.DateTimeFormat(locale, { month: "long" });
             )
               .sort(([monthA], [monthB]) => Number(monthB) - Number(monthA))
               .map(([month, monthGroup]) => (
-                <div class="flex flex-col sm:flex-row">
-                  <div class="mt-6 min-w-36 text-lg sm:my-6">
-                    <span class="font-bold">
-                      {monthFormatter.format(
-                        new Date(2000, Number(month) - 1, 1)
-                      )}
-                    </span>
-                    <sup class="text-muted-foreground text-xs">
-                      {monthGroup.length}
-                    </sup>
+                <div class="archive-month">
+                  <div class="archive-month__label">
+                    {monthFormatter.format(
+                      new Date(2000, Number(month) - 1, 1)
+                    )}
+                    <sup>{monthGroup.length}</sup>
                   </div>
                   <ul>
                     {monthGroup

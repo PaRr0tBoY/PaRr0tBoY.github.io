@@ -1,123 +1,255 @@
 @plugin "@tailwindcss/typography";
 
 @layer base {
-  /* ===== Override default Tailwind Typography styles ===== */
+  /* ===== Article prose — v7 editorial reading column ===== */
   .app-prose {
-    @apply prose;
-
-    h1,
-    h2,
-    h3,
-    h4,
-    th {
-      @apply text-foreground mb-3;
-    }
-
-    h3 {
-      @apply italic;
-    }
-
-    p,
-    strong,
-    ol,
-    ul,
-    figcaption,
-    table,
-    code {
-      @apply text-foreground;
-    }
-
-    a {
-      @apply text-foreground hover:text-accent wrap-break-word decoration-dashed underline-offset-4 focus-visible:no-underline;
-    }
-
-    ul {
-      @apply overflow-x-clip;
-    }
-
-    li {
-      @apply marker:text-accent;
-    }
-
-    hr {
-      @apply border-border;
-    }
-
-    img {
-      @apply border-border mx-auto border;
-    }
-
-    img[role="button"] {
-      @apply cursor-zoom-in;
-
-      &:focus-visible {
-        @apply outline-2 outline-offset-2 outline-dashed;
-      }
-    }
-
-    figcaption {
-      @apply opacity-75;
-    }
-
-    table {
-      th,
-      td {
-        @apply border-border border p-2;
-      }
-
-      th {
-        @apply py-1.5;
-      }
-    }
-
-    code {
-      @apply bg-muted/75 text-foreground rounded p-1 wrap-break-word before:content-none after:content-none;
-    }
-
-    .astro-code code {
-      @apply flex-[1_0_100%] bg-inherit p-0;
-    }
-
-    blockquote {
-      @apply border-s-accent/80 wrap-break-word opacity-80;
-    }
-
-    details:not(.callout) {
-      @apply text-foreground inline-block cursor-pointer select-none [&_p]:hidden [&_ul]:my-0!;
-    }
-
-    summary {
-      @apply focus-visible:outline-accent focus-visible:no-underline focus-visible:outline-2 focus-visible:outline-offset-1 focus-visible:outline-dashed;
-    }
-
-    pre {
-      @apply focus-visible:outline-accent focus-visible:border-transparent focus-visible:outline-2 focus-visible:outline-dashed;
-    }
+    font-size: 16px;
+    line-height: 1.8;
+    color: var(--ink);
   }
 
-  /* ===== Code Blocks & Syntax Highlighting ===== */
+  .app-prose :is(h1, h2, h3, h4, h5, h6) {
+    color: var(--ink);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.3;
+    margin: 1.7em 0 0.6em;
+  }
+
+  .app-prose h1 {
+    font-size: 1.55em;
+  }
+
+  .app-prose h2 {
+    font-size: 1.3em;
+  }
+
+  .app-prose h3 {
+    font-size: 1.12em;
+  }
+
+  .app-prose h4,
+  .app-prose h5,
+  .app-prose h6 {
+    font-size: 1em;
+  }
+
+  .app-prose p {
+    margin: 0.9em 0;
+  }
+
+  .app-prose a {
+    color: var(--ink);
+    text-decoration: underline;
+    text-decoration-style: dashed;
+    text-decoration-color: var(--line-strong);
+    text-underline-offset: 4px;
+    transition:
+      color 0.18s,
+      text-decoration-color 0.18s;
+  }
+
+  .app-prose a:hover {
+    color: var(--accent);
+    text-decoration-color: var(--accent);
+  }
+
+  .app-prose strong {
+    font-weight: 600;
+  }
+
+  .app-prose :is(ul, ol) {
+    margin: 0.9em 0;
+    padding-inline-start: 1.5em;
+  }
+
+  .app-prose li {
+    margin: 0.35em 0;
+  }
+
+  .app-prose li::marker {
+    color: var(--accent);
+  }
+
+  .app-prose blockquote {
+    margin: 1.4em 0;
+    padding: 0.3em 0 0.3em 1.1em;
+    border-inline-start: 1px solid var(--accent);
+    color: var(--muted);
+  }
+
+  .app-prose hr {
+    border: 0;
+    width: 5rem;
+    margin: 2.8em auto;
+    border-top: 1px solid var(--line);
+  }
+
+  .app-prose :is(img, video) {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin: 1.4em auto;
+  }
+
+  .app-prose img[role="button"] {
+    cursor: zoom-in;
+  }
+
+  .app-prose figcaption {
+    font: 11px var(--font-mono);
+    letter-spacing: 0.02em;
+    color: var(--faint);
+    text-align: center;
+    margin: -0.8em 0 1.4em;
+  }
+
+  .app-prose code {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+    background: var(--surface-2);
+    border: 1px solid var(--line);
+    border-radius: 4px;
+    padding: 0.15em 0.4em;
+    color: var(--ink);
+    overflow-wrap: anywhere;
+  }
+
+  .app-prose :is(table) {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.4em 0;
+    font-size: 0.9em;
+  }
+
+  .app-prose :is(th, td) {
+    border: 1px solid var(--line);
+    padding: 8px 12px;
+    text-align: start;
+  }
+
+  .app-prose th {
+    background: var(--surface-2);
+    font-weight: 600;
+  }
+
+  .app-prose details:not(.callout) {
+    display: inline-block;
+    cursor: pointer;
+    color: var(--ink);
+    user-select: none;
+  }
+
+  .app-prose details:not(.callout) p {
+    display: none;
+  }
+
+  .app-prose summary {
+    outline-offset: 3px;
+  }
+
+  /* ===== Code blocks — matte pockets on the paper ===== */
   .astro-code {
-    @apply outline-border flex border bg-(--shiki-light-bg) text-(--shiki-light) [&_span]:text-(--shiki-light);
+    margin: 1.4em 0;
+    padding: 16px;
+    overflow-x: auto;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--shiki-light-bg);
+    color: var(--shiki-light);
+    font-size: 13px;
+    line-height: 1.7;
   }
 
   html[data-theme="dark"] .astro-code {
-    @apply bg-(--shiki-dark-bg) text-(--shiki-dark) [&_span]:text-(--shiki-dark);
+    background: var(--shiki-dark-bg);
+    color: var(--shiki-dark);
   }
 
-  /* Styles for Shiki transformers */
-  /* https://shiki.style/packages/transformers */
-  .astro-code {
-    .line.diff.add {
-      @apply relative inline-block w-full bg-green-400/20 before:absolute before:-left-3 before:text-green-500 before:content-['+'];
-    }
-    .line.diff.remove {
-      @apply relative inline-block w-full bg-red-500/20 before:absolute before:-left-3 before:text-red-500 before:content-['-'];
-    }
-    .line.highlighted {
-      @apply inline-block w-full bg-slate-400/20;
-    }
-    .highlighted-word {
-      @apply border-border rounded-sm border px-0.5 py-px;
-    }
+  .astro-code code {
+    background: transparent !important;
+    border: 0;
+    padding: 0;
+    font-size: inherit;
+  }
+
+  .astro-code span {
+    color: inherit;
+  }
+
+  html[data-theme="dark"] .astro-code span {
+    color: var(--shiki-dark);
+  }
+
+  /* Shiki transformer marks */
+  .astro-code .line.diff.add {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    background: rgba(74, 222, 128, 0.16);
+  }
+
+  .astro-code .line.diff.add::before {
+    content: "+";
+    position: absolute;
+    left: -12px;
+    color: #4ade80;
+  }
+
+  .astro-code .line.diff.remove {
+    display: inline-block;
+    position: relative;
+    width: 100%;
+    background: rgba(248, 113, 113, 0.18);
+  }
+
+  .astro-code .line.diff.remove::before {
+    content: "-";
+    position: absolute;
+    left: -12px;
+    color: #f87171;
+  }
+
+  .astro-code .line.highlighted {
+    display: inline-block;
+    width: 100%;
+    background: var(--surface-2);
+  }
+
+  .astro-code .highlighted-word {
+    border: 1px solid var(--line-strong);
+    border-radius: 3px;
+    padding: 0 3px;
+  }
+
+  /* ===== Callouts — paper cards keeping their semantic tint ===== */
+  .callout {
+    --rc-color-default: var(--accent);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    background: var(--surface-2);
+    mix-blend-mode: normal;
+    padding: 14px 16px 14px 22px;
+    margin: 1.4em 0;
+    line-height: 1.7;
+  }
+
+  .callout-title {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.02em;
+    gap: 8px;
+  }
+
+  .callout-title-text {
+    font-weight: 600;
+  }
+
+  .callout-content {
+    font-size: 13.5px;
+    color: var(--muted);
+  }
+
+  .callout-content p {
+    margin: 0.5em 0;
   }
 }

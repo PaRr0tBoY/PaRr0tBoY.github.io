@@ -13,19 +13,20 @@ const { variant: Heading = "h2", id, data, filePath } = Astro.props;
 const { title, description, ...props } = data;
 ---
 
-<li class="my-6">
+<li class="post-row">
   <a
     href={getPostUrl(id, filePath, Astro.currentLocale)}
-    class:list={[
-      "text-accent inline-block text-lg font-medium",
-      "decoration-dashed underline-offset-4 hover:underline",
-      "focus-visible:no-underline focus-visible:underline-offset-0",
-    ]}
+    class="post-row__link"
   >
-    <Heading transition:name={toTransitionName(title)}>
-      {title}
-    </Heading>
+    <span class="post-row__body">
+      <Heading
+        transition:name={toTransitionName(title)}
+        class="post-row__title"
+      >
+        {title}
+      </Heading>
+      {description && <span class="post-row__desc">{description}</span>}
+    </span>
+    <Datetime {...props} bare class="post-row__date" />
   </a>
-  <Datetime {...props} />
-  <p>{description}</p>
 </li>

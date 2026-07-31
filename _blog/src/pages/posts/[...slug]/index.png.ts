@@ -18,7 +18,7 @@ export async function getStaticPaths() {
 
   return posts.map(post => ({
     params: { slug: getPostSlug(post.id, post.filePath) },
-    props: post,
+    props: { post },
   }));
 }
 
@@ -27,7 +27,7 @@ export const GET: APIRoute = async ({ props, url }) => {
     return new Response(null, { status: 404, statusText: "Not found" });
   }
 
-  const fonts = fontData["--font-google-sans-code"];
+  const fonts = fontData["--font-sans"];
   const regularFontPath = getFontPathByWeight(fonts, 400);
   const boldFontPath = getFontPathByWeight(fonts, 700);
 
@@ -49,12 +49,14 @@ export const GET: APIRoute = async ({ props, url }) => {
       type: "div",
       props: {
         style: {
-          background: "#fefbfb",
+          background: "#20211f",
+          color: "#e8e6de",
           width: "100%",
           height: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
+          fontFamily: "IBM Plex Sans SC",
         },
         children: [
           {
@@ -64,9 +66,8 @@ export const GET: APIRoute = async ({ props, url }) => {
                 position: "absolute",
                 top: "-1px",
                 right: "-1px",
-                border: "4px solid #000",
-                background: "#ecebeb",
-                opacity: "0.9",
+                border: "1px solid rgba(232,230,222,.24)",
+                background: "#282925",
                 borderRadius: "4px",
                 display: "flex",
                 justifyContent: "center",
@@ -80,8 +81,8 @@ export const GET: APIRoute = async ({ props, url }) => {
             type: "div",
             props: {
               style: {
-                border: "4px solid #000",
-                background: "#fefbfb",
+                border: "1px solid rgba(232,230,222,.24)",
+                background: "#20211f",
                 borderRadius: "4px",
                 display: "flex",
                 justifyContent: "center",
@@ -127,21 +128,16 @@ export const GET: APIRoute = async ({ props, url }) => {
                           {
                             type: "span",
                             props: {
+                              style: { color: "#aaa79e" },
                               children: [
                                 "by ",
-                                {
-                                  type: "span",
-                                  props: {
-                                    style: { color: "transparent" },
-                                    children: '"',
-                                  },
-                                },
                                 {
                                   type: "span",
                                   props: {
                                     style: {
                                       overflow: "hidden",
                                       fontWeight: "bold",
+                                      color: "#e8e6de",
                                     },
                                     children: props.data.author,
                                   },
@@ -152,7 +148,11 @@ export const GET: APIRoute = async ({ props, url }) => {
                           {
                             type: "span",
                             props: {
-                              style: { overflow: "hidden", fontWeight: "bold" },
+                              style: {
+                                overflow: "hidden",
+                                fontWeight: "bold",
+                                color: "#6aa99f",
+                              },
                               children: config.site.title,
                             },
                           },
@@ -173,13 +173,13 @@ export const GET: APIRoute = async ({ props, url }) => {
       embedFont: true,
       fonts: [
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: regularData,
           weight: 400,
           style: "normal",
         },
         {
-          name: "Google Sans Code",
+          name: "Noto Sans SC",
           data: boldData,
           weight: 700,
           style: "normal",
