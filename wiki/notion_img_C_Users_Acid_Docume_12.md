@@ -1,0 +1,25 @@
+# notion img C Users Acid Docume
+
+> 1 nodes · cohesion 1.00
+
+## Key Concepts
+
+- **Image: 8.png** (0 connections) — `C:/Users/Acid/Documents/repo/notion/Archive/HTML notes/机械/弹簧和滚动轴承/8.png`
+
+## Relationships
+
+- No strong cross-community connections detected
+
+## Source Files
+
+- `C:/Users/Acid/Documents/repo/notion/Archive/HTML notes/机械/弹簧和滚动轴承/8.png`
+
+## Audit Trail
+
+- EXTRACTED: 0 (0%)
+- INFERRED: 0 (0%)
+- AMBIGUOUS: 0 (0%)
+
+---
+
+*Part of the graphify knowledge wiki. See [index](index.md) to navigate.*

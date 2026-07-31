@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 232 64" role="img" aria-labelledby="t d">
+  <title id="t">PaRr0tBoY wordmark with Blueprint mark</title>
+  <desc id="d">Drafting-A mark and PaRr0tBoY wordmark for light backgrounds</desc>
+  <g transform="translate(0 10) scale(0.75)">
+    <path d="M32 2v54" stroke="#aaa79d" stroke-width="1.5" stroke-dasharray="3 4"/>
+    <g fill="none" stroke="#292925" stroke-width="3" stroke-linecap="butt">
+      <path d="M32 8 10 56"/>
+      <path d="M32 8 54 56"/>
+      <path d="M20.5 37 43.5 37"/>
+    </g>
+    <path d="M6 56h8M50 56h8" stroke="#716f68" stroke-width="2"/>
+    <circle cx="32" cy="37" r="2.2" fill="#39756c"/>
+  </g>
+  <text x="64" y="47" font-family="'IBM Plex Mono','JetBrains Mono',Consolas,monospace" font-size="30" font-weight="600" letter-spacing="0.5" fill="#292925">PaRr0tBoY</text>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-labelledby="t d">
+  <title id="t">PaRr0tBoY Beak mark</title>
+  <desc id="d">Green A with a parrot head, beak and eye in its upper counter</desc>
+  <defs>
+    <mask id="eye">
+      <circle cx="30.5" cy="24" r="4.5" fill="#fff"/>
+      <circle cx="29.8" cy="24" r="1.8" fill="#000"/>
+    </mask>
+  </defs>
+  <path fill="#6aa99f" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/>
+  <circle cx="30.5" cy="24" r="4.5" fill="#6aa99f" mask="url(#eye)"/>
+  <path fill="#6aa99f" d="M34.2 21.5 38 24.5 34.2 26.5Z"/>
+</svg>
