@@ -350,9 +350,7 @@
       fill: none;
       stroke: var(--accent);
       stroke-width: 1;
-      stroke-dasharray: 3 9;
-      animation: spin 18s linear infinite;
-      transform-origin: 50% 50%
+      stroke-dasharray: 3 9
     }
 
     .node {
@@ -372,11 +370,6 @@
       fill: var(--muted)
     }
 
-    @keyframes spin {
-      to {
-        transform: rotate(360deg)
-      }
-    }
 
     .section {
       margin-top: 28px;
@@ -1262,11 +1255,11 @@
         </div>
         <div class="instrument reveal" aria-label="Projects in a working constellation"><svg
             viewBox="0 0 440 330" role="img">
-            <ellipse class="orbit" cx="220" cy="164" rx="158" ry="93" />
-            <ellipse class="orbit-dash" cx="220" cy="164" rx="126" ry="126" />
-            <ellipse class="orbit" cx="220" cy="164" rx="74" ry="43" />
-            <path class="orbit" d="M61 164h318M220 38v252" />
-            <circle class="node-soft" cx="220" cy="164" r="48" /><circle class="node" cx="220" cy="164" r="7" /><circle class="node" cx="88" cy="126" r="5" /><circle class="node" cx="330" cy="102" r="5" /><path class="orbit" d="M220 164 88 126M220 164 330 102" /><text x="205" y="184">ACID</text><text x="54" y="115">VOLANTE</text><text x="326" y="91">POLA AGENT</text><text x="82" y="230">HIVE</text><text x="365" y="237">TRACE</text><text x="70" y="260">PLATEAU</text><text x="230" y="44">TAU</text>
+            <ellipse class="orbit" id="orbit-1" cx="220" cy="164" rx="150" ry="143" />
+            <ellipse class="orbit-dash" id="orbit-2" cx="220" cy="164" rx="126" ry="74" />
+            <ellipse class="orbit" id="orbit-3" cx="220" cy="164" rx="96" ry="83" />
+            <ellipse class="orbit" id="orbit-4" cx="220" cy="164" rx="62" ry="33" />
+            <circle class="node-soft" cx="220" cy="164" r="48" /><circle class="node" cx="220" cy="164" r="7" /><text x="205" y="184">ACID</text><text id="lbl-volante" x="370" y="164" text-anchor="middle" dominant-baseline="middle">VOLANTE</text><text id="lbl-pola" x="229" y="238" text-anchor="middle" dominant-baseline="middle">POLA AGENT</text><text id="lbl-hive" x="127" y="184" text-anchor="middle" dominant-baseline="middle">HIVE</text><text id="lbl-trace" x="70" y="156" text-anchor="middle" dominant-baseline="middle">TRACE</text><text id="lbl-plateau" x="218" y="90" text-anchor="middle" dominant-baseline="middle">PLATEAU</text><text id="lbl-tau" x="275" y="149" text-anchor="middle" dominant-baseline="middle">TAU</text>
           </svg></div>
       </div>
       <div class="section-head products-head"><h2><span data-zh>产品</span><span data-en hidden>Products</span> <small><span data-zh>Products</span><span data-en hidden>产品</span></small></h2><span>3 products</span></div>
@@ -1359,6 +1352,39 @@
     const featured = BLOG[0]; els.featured.innerHTML = `<div class="featured-note__body"><h3>${featured[0]}</h3><p><span data-zh>最近更新内容</span><span data-en hidden>Recently updated</span></p><a class="read-link" href="blog/posts/${featured[1]}/index.html"><span data-zh>打开博客</span><span data-en hidden>Open blog</span>${ICON.external}</a></div>`;
     els.blog.innerHTML = BLOG.slice(1, 5).map(([n, s], i) => `<li><a class="blog-item" href="blog/posts/${s}/index.html"><i></i><span>${n}</span><small>${String(i + 2).padStart(2, '0')}</small></a></li>`).join('');
     els.directory.innerHTML = `<a href="product/volante/index.html"><span class="dir-icon">${ICON.doc}</span><span><b>Volante</b><small>Vivaldi 整合包</small></span></a><a href="product/techne/index.html"><span class="dir-icon">${ICON.doc}</span><span><b>Techne</b><small>技能仓库</small></span></a><a href="graphify-out/graph.html"><span class="dir-icon">${ICON.wiki}</span><span><b>Wiki</b><small>Graphify knowledge graph</small></span></a>`;
+    (function () {
+      const svg = document.querySelector('.instrument svg');
+      if (!svg || !window.requestAnimationFrame || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      const DEG = Math.PI / 180;
+      const orbs = [
+        { el: document.getElementById('orbit-1'), cx: 220, cy: 164, R: 150, alpha: 18, w: 0.35, labels: [['lbl-volante', 0.0], ['lbl-trace', 3.2]] },
+        { el: document.getElementById('orbit-2'), cx: 220, cy: 164, R: 126, alpha: 54, w: 0.35, labels: [['lbl-pola', 1.5], ['lbl-plateau', 4.7]] },
+        { el: document.getElementById('orbit-3'), cx: 220, cy: 164, R: 96, alpha: 30, w: 0.35, labels: [['lbl-hive', 2.9]] },
+        { el: document.getElementById('orbit-4'), cx: 220, cy: 164, R: 62, alpha: 58, w: 0.35, labels: [['lbl-tau', 5.8]] }
+      ];
+      orbs.forEach(o => { o.ca = Math.cos(o.alpha * DEG); o.sa = Math.sin(o.alpha * DEG); });
+      const t0 = performance.now();
+      const frame = now => {
+        const t = (now - t0) / 1000;
+        const b = 40 * DEG * Math.sin(0.12 * t), cb = Math.cos(b), sb = Math.sin(b);
+        for (const o of orbs) {
+          const R2 = o.R * o.R;
+          const a = R2 * (cb * cb + o.sa * o.sa * sb * sb), b = R2 * o.sa * sb * o.ca, c = R2 * o.ca * o.ca;
+          const mid = (a + c) / 2, diff = (a - c) / 2;
+          const h = Math.sqrt(diff * diff + b * b);
+          o.el.setAttribute('rx', Math.sqrt(mid + h).toFixed(1));
+          o.el.setAttribute('ry', Math.sqrt(mid - h).toFixed(1));
+          o.el.setAttribute('transform', 'rotate(' + (0.5 * Math.atan2(2 * b, a - c) / DEG).toFixed(2) + ' ' + o.cx + ' ' + o.cy + ')');
+          for (const [id, phi] of o.labels) {
+            const th = phi + o.w * t;
+            document.getElementById(id).setAttribute('x', (o.cx + o.R * (Math.cos(th) * cb + Math.sin(th) * o.sa * sb)).toFixed(1));
+            document.getElementById(id).setAttribute('y', (o.cy + o.R * Math.sin(th) * o.ca).toFixed(1));
+          }
+        }
+        requestAnimationFrame(frame);
+      };
+      requestAnimationFrame(frame);
+    })();
   </script>
 </body>
 
