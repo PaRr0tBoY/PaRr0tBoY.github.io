@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>数学题库 · MathBank</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <title>数学题库 / MathBank</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="用于积累与检索数学题目的题库。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/mathbank.html" />
     <link
       href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap"
       rel="stylesheet"
@@ -1828,7 +1830,7 @@
               class="sbox"
               type="text"
               id="SI"
-              placeholder="搜索题目、知识点…"
+              placeholder="搜索题目，知识点…"
               oninput="applyF()"
             />
           </div>
@@ -2067,7 +2069,7 @@
               >
                 <div class="ico">🖼</div>
                 <p>点击上传或拖拽图片</p>
-                <p style="font-size: 11px; margin-top: 3px">支持 JPG、PNG</p>
+                <p style="font-size: 11px; margin-top: 3px">支持 JPG，PNG</p>
               </div>
               <input
                 type="file"
@@ -2617,7 +2619,7 @@
         document.getElementById("DStat").innerHTML =
           `<span class="sdot s-${sc}">${st}</span>`;
         document.getElementById("DMeta").innerHTML =
-          `<span class="badge b-${sj}">${p.subject}</span> · ${p.type}题 · <span class="badge b-${dc}">${p.difficulty}</span>`;
+          `<span class="badge b-${sj}">${p.subject}</span> / ${p.type}题 / <span class="badge b-${dc}">${p.difficulty}</span>`;
 
         document.getElementById("EditBtn").style.display = "";
         document.getElementById("DelBtn").style.display = "";
@@ -3407,14 +3409,14 @@
 重要要求：
 1. 数学公式全部用LaTeX格式：行内公式用 $公式$，独立公式换行用 $$公式$$
 2. 严格按照以下XML格式输出，每个标签内只写该字段的实际内容
-3. 不要在输出中包含任何格式说明、字段解释或其他文字
+3. 不要在输出中包含任何格式说明，字段解释或其他文字
 
 <known>
 （在此写出题目给出的全部已知条件，包括显性和可直接读出的信息）
 </known>
 
 <hidden>
-（在此写出需要挖掘的隐含条件，例如定义域约束、连续性、可微性等隐含信息）
+（在此写出需要挖掘的隐含条件，例如定义域约束，连续性，可微性等隐含信息）
 </hidden>
 
 <goal>
@@ -3426,7 +3428,7 @@
 </breakthrough>
 
 <warnings>
-（在此写出常见错误、易混淆点和注意事项）
+（在此写出常见错误，易混淆点和注意事项）
 </warnings>
 
 <steps>

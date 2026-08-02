@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>四象限 — 任务管理</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="把事项放进一个可视化的优先级空间。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/quadrant.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap"
@@ -1407,7 +1409,7 @@
 四象限定义：
 1. 重要不紧急（计划/成长）- 对长期目标有价值，但不紧迫
 2. 重要且紧急（立即执行）- 必须马上做，有截止日期或后果严重
-3. 不重要不紧急（减少投入）- 休闲娱乐、无价值事务
+3. 不重要不紧急（减少投入）- 休闲娱乐，无价值事务
 4. 不重要但紧急（尽量委托）- 干扰性事务，可推迟或委托
 
 用户背景：{userContext}
@@ -1416,8 +1418,8 @@
 [{"content":"任务内容","quadrant":1-4}]
 
 规则：
-- 只输出 JSON 数组，不要解释、不要前缀、不要 markdown 格式
-- quadrant 必须是 1、2、3 或 4
+- 只输出 JSON 数组，不要解释，不要前缀，不要 markdown 格式
+- quadrant 必须是 1，2，3 或 4
 - content 为任务原文
 - 解析所有任务，即使输入不明确`;
 

@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Linso — 智能搜索</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="面向线性思考与文字整理的工具。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/linso.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link
       href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=DM+Mono:wght@400;500&display=swap"
@@ -1619,7 +1621,7 @@
                 </button>
               </div>
               <div class="field-hint">
-                聚焦自动获取列表 · 回车添加自定义模型 · 留空默认 glm-4-flash
+                聚焦自动获取列表 / 回车添加自定义模型 / 留空默认 glm-4-flash
               </div>
               <div class="model-list-wrap">
                 <div class="model-list-hd">
@@ -1630,7 +1632,7 @@
                     fill="currentColor"
                   >
                     <path d="M3 8h18M3 12h18M3 16h18" /></svg
-                  >优先级列表 · 拖动排序
+                  >优先级列表 / 拖动排序
                 </div>
                 <div class="model-list" id="modelList"></div>
               </div>
@@ -1834,7 +1836,7 @@ REQUIRED: 3–5 carefully chosen keywords that best match how real content is wr
   • Translate/expand: if user wrote Chinese, consider whether English keywords find more results
   • Use synonyms or alternate phrasings that appear in actual documents
 FORBIDDEN: site:, filetype:, after:, intitle:, inurl:, any quoted phrases, any -exclusions
-HINT TEXT: Always "核心词组，最大覆盖率 · 无算子"
+HINT TEXT: Always "核心词组，最大覆盖率 / 无算子"
 
 ── WORKED EXAMPLE ──
 Query: "什么样的本地大语言模型适合 mac m3 pro 跑"
@@ -2441,7 +2443,7 @@ ABSOLUTE RULES:
     <div class="clarify-card">
       <div class="clarify-hd">
         <span class="clarify-badge">明确搜索意图</span>
-        <span class="clarify-round-txt">第 ${APP.clarRound} 轮 · 最多 3 轮</span>
+        <span class="clarify-round-txt">第 ${APP.clarRound} 轮 / 最多 3 轮</span>
       </div>
       ${historyHtml}
       <div class="clarify-q">${esc(question)}</div>
@@ -2511,7 +2513,7 @@ ABSOLUTE RULES:
         );
 
         // Header
-        const histContext = APP.clarHistory.map((h) => h.answer).join(" · ");
+        const histContext = APP.clarHistory.map((h) => h.answer).join(" / ");
         const subLabel = histContext
           ? `<span style="color:var(--text3);font-size:11px;margin-left:4px">（${esc(histContext)}）</span>`
           : "";
@@ -2682,7 +2684,7 @@ ABSOLUTE RULES:
       });
 
       // ═══════════════════════════════════════════════════════════
-      //  MODEL FETCH & LIST
+      //  MODEL FETCH and LIST
       // ═══════════════════════════════════════════════════════════
       async function fetchModels() {
         const base =

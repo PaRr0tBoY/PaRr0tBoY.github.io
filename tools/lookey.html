@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Key Info Dashboard</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="从浏览内容中留下值得再次查看的线索。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/lookey.html" />
     <style>
       :root {
         --bg: #0b1020;
@@ -238,7 +240,7 @@
       <div class="title">Key Info Dashboard</div>
       <div class="subtitle">
         这个页面会根据你输入的 <b>base</b> 和 <b>key</b>， 查询
-        <code>/v1/dashboard/billing/subscription</code>、
+        <code>/v1/dashboard/billing/subscription</code>，
         <code>/v1/dashboard/billing/usage</code> 和 <code>/v1/models</code>，
         然后把结果翻译成更直观的面板。
       </div>
@@ -455,7 +457,7 @@
           item.className = "model-item";
 
           const endpointTypes = Array.isArray(model.supported_endpoint_types)
-            ? model.supported_endpoint_types.join("、")
+            ? model.supported_endpoint_types.join("，")
             : "未提供";
 
           item.innerHTML = `
@@ -506,7 +508,7 @@
         }
 
         setButtonsDisabled(true);
-        setStatus("正在查询额度、用量与模型列表……");
+        setStatus("正在查询额度，用量与模型列表……");
 
         const subscriptionUrl = `${base}/v1/dashboard/billing/subscription`;
         const usageUrl = `${base}/v1/dashboard/billing/usage`;

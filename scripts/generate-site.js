@@ -6,6 +6,8 @@
  *   - data/tools.json     -> index.html (TOOL_GROUPS) + tools/index.html (cards)
  *   - data/products.json  -> index.html (PRODUCTS) + product/index.html (cards)
  *
+ * Also emits the main-site sitemap (sitemap-main.xml) and the sitemap index
+ * (sitemap-index.xml) referencing it plus the Astro-built blog sitemap.
  * Deterministic: same data in, same HTML out. Run locally before committing,
  * and again in CI before assembling the deployment.
  *
@@ -23,6 +25,8 @@ const products = JSON.parse(fs.readFileSync(path.join(ROOT, "data/products.json"
 
 const toolsList = tools.tools;
 const portalProducts = products.filter(p => p.portal);
+const coreProducts = products.filter(p => p.core);
+const buildingProducts = products.filter(p => !p.core);
 // tools page lists cards in code order (TIME / 01 …); JSON array keeps homepage group order
 const byCode = (a, b) => Number(a.code.match(/\d+$/)[0]) - Number(b.code.match(/\d+$/)[0]);
 
@@ -64,10 +68,11 @@ const patch = (file, rules) => {
 
 // index.html — data consts + section counts
 patch("index.html", [
-  [/^const PRODUCTS=.*;$/m, () => `const PRODUCTS=[${products.map(productEntry).join(",")}];`, "const PRODUCTS"],
-  [/^const TOOL_GROUPS=.*;$/m, () => `const TOOL_GROUPS=[${toolGroups.join(",")}];`, "const TOOL_GROUPS"],
+  [/^\s*const PRODUCTS\s*=.*;$/m, () => `    const PRODUCTS = [${products.map(productEntry).join(",")}];`, "const PRODUCTS"],
+  [/^\s*const TOOL_GROUPS\s*=.*;$/m, () => `    const TOOL_GROUPS = [${toolGroups.join(",")}];`, "const TOOL_GROUPS"],
   [/<span>(\d+) tools<\/span>/, () => `<span>${toolsList.length} tools</span>`, "tools count"],
-  [/<span>(\d+) projects<\/span>/, () => `<span>${products.length} projects</span>`, "projects count"],
+  [/<span>(\d+) products<\/span>/, () => `<span>${coreProducts.length} products</span>`, "products count"],
+  [/<span>(\d+) projects<\/span>/, () => `<span>${buildingProducts.length} projects</span>`, "projects count"],
 ]);
 
 // tools/index.html — card grid + counts
@@ -102,4 +107,34 @@ patch("product/index.html", [
   [/<span>(\d+) PROJECTS<\/span>/, () => `<span>${String(portalProducts.length).padStart(2, "0")} PROJECTS</span>`, "PROJECTS count"],
 ]);
 
-console.log(`[generate-site] OK — ${toolsList.length} tools, ${products.length} products (${portalProducts.length} on product portal)`);
+// ---- sitemaps ----------------------------------------------------------------
+
+const SITE = "https://acidev.cc";
+// Indexable main-site URLs. Excluded: meta-refresh redirect pages
+// (product/*/index.html), noindexed experiments, and tools/claude/ exports.
+const mainUrls = [
+  "/",
+  "/tools/",
+  ...toolsList.map(t => t.href),
+  "/product/",
+  "/product/volante/landing/",
+  "/product/techne/landing/",
+  "/product/techne/doc/",
+  "/docs/",
+  "/graphify-out/graph.html",
+];
+
+const xml = (tag, urls) =>
+  `<?xml version="1.0" encoding="UTF-8"?>\n<${tag} xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+  urls.map(u => `  <url><loc>${SITE}${u}</loc></url>`).join("\n") +
+  `\n</${tag}>\n`;
+
+fs.writeFileSync(path.join(ROOT, "sitemap-main.xml"), xml("urlset", mainUrls));
+fs.writeFileSync(
+  path.join(ROOT, "sitemap-index.xml"),
+  `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
+    `  <sitemap><loc>${SITE}/sitemap-main.xml</loc></sitemap>\n` +
+    `  <sitemap><loc>${SITE}/blog/sitemap-0.xml</loc></sitemap>\n</sitemapindex>\n`
+);
+
+console.log(`[generate-site] OK — ${toolsList.length} tools, ${products.length} products (${portalProducts.length} on product portal), sitemaps written`);

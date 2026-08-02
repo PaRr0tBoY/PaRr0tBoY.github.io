@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>The Tech Feed Gazette</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="面向技术阅读的新闻与信息流。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/techfeed.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -1172,8 +1174,8 @@
     <div class="sheet">
       <div class="overlay" id="overlay">
         <div class="settings-panel">
-          <div class="sp-title">Gazette Office · 配置室</div>
-          <div class="sp-sub">编辑 RSS 源、条目数量，以及自动翻译引擎设置。</div>
+          <div class="sp-title">Gazette Office / 配置室</div>
+          <div class="sp-sub">编辑 RSS 源，条目数量，以及自动翻译引擎设置。</div>
           <button class="sp-close" onclick="closeSettings()">×</button>
 
           <div class="sp-section" style="margin-top: 0; padding-top: 0; border-top: 0">
@@ -1236,7 +1238,7 @@
                   <input type="checkbox" id="aiTransEnabled" />
                   <span class="toggle-slider"></span>
                 </label>
-                <span class="toggle-label">启用 AI 翻译（免费 · 无限额度）</span>
+                <span class="toggle-label">启用 AI 翻译（免费 / 无限额度）</span>
               </div>
               <div class="sp-deepl">
                 <label class="feed-label">Endpoint</label>
@@ -1338,7 +1340,7 @@
 
       <div class="editor-line">
         <span>Special Technical Edition</span>
-        <span>Vol. 1 · No. 20</span>
+        <span>Vol. 1 / No. 20</span>
         <span>Printed for the Curious Mind</span>
       </div>
 
@@ -1353,12 +1355,12 @@
             <div class="mast-kicker">A Victorian Ledger of Networks, Labs &amp; Machines</div>
             <h1 class="nameplate">The Tech Feed</h1>
             <p class="mast-sub">
-              将 Techmeme、Hacker News、Solidot、Product Hunt、GitHub 与产品更新编排为一张旧时代新闻纸。
+              将 Techmeme，Hacker News，Solidot，Product Hunt，GitHub 与产品更新编排为一张旧时代新闻纸。
             </p>
           </div>
           <div class="mast-digest">
             <p>
-              视觉方向沿用维多利亚报纸的重牌匾、双线分栏与旧纸纹理，但内容仍保持可点开、可刷新、可翻译的现代工具属性。
+              视觉方向沿用维多利亚报纸的重牌匾，双线分栏与旧纸纹理，但内容仍保持可点开，可刷新，可翻译的现代工具属性。
             </p>
           </div>
         </div>
@@ -2062,7 +2064,7 @@
         // Update section tags
         tagEl.textContent = updates
           .map((u) => u.name || host(u.url))
-          .join(" · ");
+          .join(" / ");
 
         // Load each
         await Promise.allSettled(

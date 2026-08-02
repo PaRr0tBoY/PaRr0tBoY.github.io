@@ -3,7 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowDay · AI 每日规划</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <title>FlowDay / AI 每日规划</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="围绕一天的任务流整理工作节奏。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/flowday.html" />
     <link
       href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@300;400;500;600;700&display=swap"
       rel="stylesheet"
@@ -867,7 +869,7 @@
         transform: scale(0.95);
       }
 
-      /* ═══════════════════════ TASK GROUPS & CARDS ═══════════════════════ */
+      /* ═══════════════════════ TASK GROUPS and CARDS ═══════════════════════ */
       .tasks-list {
         min-height: 40px;
       }
@@ -2090,7 +2092,7 @@
         <div class="input-card">
           <textarea
             id="main-input"
-            placeholder="告诉我今天你想做什么...&#10;&#10;随意输入，如：写完项目报告、下午有会议、去健身、晚上读书..."
+            placeholder="告诉我今天你想做什么...&#10;&#10;随意输入，如：写完项目报告，下午有会议，去健身，晚上读书..."
           ></textarea>
           <div class="input-footer">
             <span class="input-hint">Ctrl+Enter 开始规划</span>
@@ -2470,7 +2472,7 @@
               </div>
             </div>
             <div class="divider"></div>
-            <div class="s-hd">时间轴 & 调整</div>
+            <div class="s-hd">时间轴 and 调整</div>
             <div class="f-grp">
               <label class="f-lbl">主刻度间隔（小时）</label
               ><input
@@ -2657,9 +2659,9 @@
       const DP = {
         step1: `你是专业任务整理助手。将用户的模糊待办转化为清晰的分类任务列表。
 规则：
-1. 识别所有任务，合理分类（工作、学习、生活、健康、创意等）
+1. 识别所有任务，合理分类（工作，学习，生活，健康，创意等）
 2. 每个任务估算时长（分钟，最少{taskMinDuration}最多{taskMaxDuration}）
-3. 为每个任务填写 note（执行提示，不少于一句话，例如具体步骤、注意事项）
+3. 为每个任务填写 note（执行提示，不少于一句话，例如具体步骤，注意事项）
 4. 如果用户提到了上午/下午/晚上/早/夜等时间意图，务必记录在 note 中
 5. 起一个简洁的今日标题（6-10字）
 
@@ -2802,7 +2804,7 @@
           .replace(/{userRawInput}/g, extra.userRawInput || "（未提供）");
       }
 
-      // ═══════════════════════ TOAST & UNDO ═══════════════════════
+      // ═══════════════════════ TOAST and UNDO ═══════════════════════
       function showToast(msg, ms = 2200) {
         const t = document.getElementById("toast");
         t.textContent = msg;
@@ -3741,7 +3743,7 @@
             <span class="e-label-sm">标签（回车添加）</span>
             <div class="tag-input-wrap" data-f="tags" onclick="this.querySelector('.tag-input').focus()">
               ${(t.tags || [t.category].filter(Boolean)).map((tag) => `<span class="tag-pill">${esc(tag)}<button class="tag-pill-rm" onclick="removeTagPill(this)" type="button">×</button></span>`).join("")}
-              <input class="tag-input" placeholder="${(t.tags || [t.category].filter(Boolean)).length ? "" : "工作、学习…"}" onkeydown="handleTagInput(event,this)">
+              <input class="tag-input" placeholder="${(t.tags || [t.category].filter(Boolean)).length ? "" : "工作，学习…"}" onkeydown="handleTagInput(event,this)">
             </div>
           </div>
           <div>
@@ -4256,7 +4258,7 @@
           const pills = wrap.querySelectorAll(".tag-pill");
           if (pills.length) pills[pills.length - 1].remove();
           if (!wrap.querySelectorAll(".tag-pill").length)
-            inp.placeholder = "工作、学习…";
+            inp.placeholder = "工作，学习…";
         }
       }
       function removeTagPill(btn) {
@@ -4264,7 +4266,7 @@
         btn.closest(".tag-pill").remove();
         const inp = wrap.querySelector(".tag-input");
         if (inp && !wrap.querySelectorAll(".tag-pill").length)
-          inp.placeholder = "工作、学习…";
+          inp.placeholder = "工作，学习…";
       }
       function getTagsFromWrap(wrap) {
         return [...wrap.querySelectorAll(".tag-pill")]
@@ -4973,7 +4975,7 @@
             const t = new Date(h.date),
               ts = `${String(t.getHours()).padStart(2, "0")}:${String(t.getMinutes()).padStart(2, "0")}`;
             html += `<div class="hist-item${h.id === state.currentHistId ? " active" : ""}" data-hid="${h.id}">
-        <div class="hi-body"><div class="hi-title">${esc(h.dayTitle)}</div><div class="hi-sub">${ts} · ${h.taskCount || 0} 个任务</div></div>
+        <div class="hi-body"><div class="hi-title">${esc(h.dayTitle)}</div><div class="hi-sub">${ts} / ${h.taskCount || 0} 个任务</div></div>
         <button class="hist-del" data-del-hid="${h.id}" title="删除">✕</button>
       </div>`;
           });

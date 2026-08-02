@@ -1,6 +1,7 @@
 ---
 import Layout from "./Layout.astro";
 import config from "@/config";
+import { resolveDefaultOgImagePath } from "@/utils/resolveDefaultOgImagePath";
 
 type Props = {
   title?: string;
@@ -16,11 +17,18 @@ const { site } = config;
 const { title, description, ogImage, canonicalURL, pubDatetime, modDatetime } =
   Astro.props;
 
+const imageURL = ogImage
+  ? new URL(ogImage, site.url).href
+  : new URL(resolveDefaultOgImagePath(config), site.url).href;
+const pageURL = canonicalURL ?? new URL(Astro.url.pathname, site.url).href;
+
 const structuredData = {
   "@context": "https://schema.org",
   "@type": "BlogPosting",
   headline: title ?? site.title,
-  image: ogImage,
+  image: imageURL,
+  url: pageURL,
+  mainEntityOfPage: { "@type": "WebPage", "@id": pageURL },
   ...(pubDatetime && { datePublished: pubDatetime.toISOString() }),
   ...(modDatetime && { dateModified: modDatetime.toISOString() }),
   author: [

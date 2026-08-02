@@ -4,6 +4,8 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>ResumeCraft | 简历定制工具</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="用于整理简历内容的编辑工作台。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/resume-tool.html" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -496,7 +498,7 @@
             <label class="input-label">📝 项目/工作经历</label>
             <textarea
               id="experienceInput"
-              placeholder="输入项目或工作经历，一行一条...&#10;&#10;V带传动直齿轮减速器设计：完成机械结构设计、参数计算、3D建模&#10;Creo连杆机构建模：建立多关节连杆机构三维模型，进行运动学分析"
+              placeholder="输入项目或工作经历，一行一条...&#10;&#10;V带传动直齿轮减速器设计：完成机械结构设计，参数计算，3D建模&#10;Creo连杆机构建模：建立多关节连杆机构三维模型，进行运动学分析"
             ></textarea>
           </div>
 
@@ -708,10 +710,10 @@
         const resume = `
 <span class="resume-name">${name}</span>
 ${title}
-<span style="color: var(--accent-secondary); padding-bottom: 0.5rem; display: block; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">机电一体化 · 机械+软件 · 交叉学科工程师</span>
+<span style="color: var(--accent-secondary); padding-bottom: 0.5rem; display: block; border-bottom: 1px solid var(--border-color); margin-bottom: 1rem;">机电一体化 / 机械+软件 / 交叉学科工程师</span>
 
 <span class="resume-section-title">专业总结</span>
-具备机械设计与软件工程双重背景的复合型工程师。熟练使用Creo进行3D建模与机构设计，掌握Node.js生态系统与CLI工作流。专注于工业自动化、智能控制、嵌入式系统等交叉领域，致力于通过软件技术赋能传统机械工程。
+具备机械设计与软件工程双重背景的复合型工程师。熟练使用Creo进行3D建模与机构设计，掌握Node.js生态系统与CLI工作流。专注于工业自动化，智能控制，嵌入式系统等交叉领域，致力于通过软件技术赋能传统机械工程。
 
 <span class="resume-section-title">核心技能</span>
 <strong>机械设计：</strong>${
@@ -726,8 +728,8 @@ ${title}
                 "CAD/SolidWorks",
               ].includes(s),
             )
-            .join(" · ") ||
-          "V带传动设计 · 齿轮减速器 · Creo 3D建模 · 连杆机构 · 机构仿真"
+            .join(" / ") ||
+          "V带传动设计 / 齿轮减速器 / Creo 3D建模 / 连杆机构 / 机构仿真"
         }
 
 <strong>软件开发：</strong>${
@@ -743,23 +745,23 @@ ${title}
                 "系统集成",
               ].includes(s),
             )
-            .join(" · ") ||
-          "Node.js · SQL Server · Python · 自动化脚本 · 数据处理"
+            .join(" / ") ||
+          "Node.js / SQL Server / Python / 自动化脚本 / 数据处理"
         }
 
-<strong>JD匹配关键词：</strong>${matchedSkills.length > 0 ? matchedSkills.join(" · ") : "建议更详细JD描述"}
+<strong>JD匹配关键词：</strong>${matchedSkills.length > 0 ? matchedSkills.join(" / ") : "建议更详细JD描述"}
 
 <span class="resume-section-title">项目经验</span>
 ${
   experiences ||
   `
-<div class="resume-item"><strong>V带传动直齿轮减速器设计</strong><br>完成机械结构设计、齿轮传动参数计算、工程图绘制与三维建模</div>
+<div class="resume-item"><strong>V带传动直齿轮减速器设计</strong><br>完成机械结构设计，齿轮传动参数计算，工程图绘制与三维建模</div>
 <div class="resume-item"><strong>Creo连杆机构建模</strong><br>建立多关节连杆机构三维模型，进行运动学分析与仿真验证</div>
 `
 }
 
 <span class="resume-section-title">职业定位</span>
-优先考虑：机电一体化工程师、工业自动化工程师、嵌入式控制系统工程师
+优先考虑：机电一体化工程师，工业自动化工程师，嵌入式控制系统工程师
 `;
 
         elements.outputPreview.innerHTML = resume.trim();

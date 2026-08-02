@@ -5,6 +5,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Linsoo — AI 搜索对话</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+  <meta name="description" content="另一种把想法展开、收束的编辑方式。由 Acid 制作的本地优先小工具，打开即用。" />
+  <link rel="canonical" href="https://acidev.cc/tools/linsoo.html" />
   <script>
     (function () {
       try {
@@ -6837,7 +6839,7 @@
             <div>
               <div class="setting-title">工具调用</div>
               <div class="setting-subtitle">
-                流程:工具调用按照位置、问题卡、构造搜索词、网络搜索的顺序进行;
+                流程:工具调用按照位置，问题卡，构造搜索词，网络搜索的顺序进行;
                 自动:由AI决定调用哪些工具</div>
             </div>
             <div class="segmented web-mode-group" id="toolCallModeGroup">
@@ -6968,7 +6970,7 @@
           <div class="setting-row" data-setting-key="retryOnFailure" data-setting-tab="ai">
             <div>
               <div class="setting-title">失败重做</div>
-              <div class="setting-subtitle">单次模型请求失败或空输出时，按 1s、2s、3s 间隔重试。</div>
+              <div class="setting-subtitle">单次模型请求失败或空输出时，按 1s，2s，3s 间隔重试。</div>
             </div>
             <label class="switch"><input id="cfgRetryOnFailure" type="checkbox" /><span></span></label>
           </div>
@@ -6983,9 +6985,9 @@
           <div class="search-provider-list" id="searchProviderList"></div>
           <div class="field" data-setting-key="amapKey" data-setting-tab="search">
             <div class="field-label">高德地图 Key</div>
-            <input class="input mono" id="cfgAmapKey" type="password" placeholder="用于天气、附近、路线等位置服务" autocomplete="off"
+            <input class="input mono" id="cfgAmapKey" type="password" placeholder="用于天气，附近，路线等位置服务" autocomplete="off"
               spellcheck="false" />
-            <div class="field-hint">当问题涉及当前位置、附近、出行路线或基于你所在位置的天气时，会先请求浏览器定位权限，再调用高德 Web 服务 API。</div>
+            <div class="field-hint">当问题涉及当前位置，附近，出行路线或基于你所在位置的天气时，会先请求浏览器定位权限，再调用高德 Web 服务 API。</div>
           </div>
           <div class="field" data-setting-key="jinaApiKey" data-setting-tab="search">
             <div class="field-label">Jina Reader API Key</div>
@@ -7025,7 +7027,7 @@
               </button>
               <div class="provider-dropdown" id="searchCountryDropdown"></div>
             </div>
-            <div class="field-hint">只允许从中国、新加坡、马来西亚、美国、日本、韩国中选择；Exa 使用地区代码，Serper / SerpAPI 使用国家代码，Tavily 会尽量同步映射。
+            <div class="field-hint">只允许从中国，新加坡，马来西亚，美国，日本，韩国中选择；Exa 使用地区代码，Serper / SerpAPI 使用国家代码，Tavily 会尽量同步映射。
             </div>
           </div>
           <div class="settings-section-title">个性化结果</div>
@@ -7046,7 +7048,7 @@
                 autocomplete="off" spellcheck="false" />
               <button class="outline-btn" id="addBlockedDomainBtn" type="button">添加</button>
             </div>
-            <div class="field-hint">屏蔽域名会从未来 Web Search 结果中直接剔除，也不会出现在来源面板、搜索页或发送给 AI 的搜索上下文里。</div>
+            <div class="field-hint">屏蔽域名会从未来 Web Search 结果中直接剔除，也不会出现在来源面板，搜索页或发送给 AI 的搜索上下文里。</div>
             <div class="source-pref-list" id="blockedDomainList"></div>
           </div>
         </div>
@@ -7073,7 +7075,7 @@
           <div class="setting-row" data-setting-key="themeMode" data-setting-tab="appearance">
             <div>
               <div class="setting-title">主题</div>
-              <div class="setting-subtitle">切换亮色、暗色或跟随系统。</div>
+              <div class="setting-subtitle">切换亮色，暗色或跟随系统。</div>
             </div>
             <div class="segmented web-mode-group" id="themeModeGroup">
               <button type="button" data-theme-mode="light">亮色</button>
@@ -7125,7 +7127,7 @@
               <button class="outline-btn" id="importConfigBtn">导入配置</button>
               <input id="importConfigInput" type="file" accept="application/json,.json" hidden />
             </div>
-            <div class="field-hint">导出或导入 AI Provider、模型列表、System Prompt、搜索 Provider、高德地图 Key、Jina Reader Key
+            <div class="field-hint">导出或导入 AI Provider，模型列表，System Prompt，搜索 Provider，高德地图 Key，Jina Reader Key
               与来源偏好；不会覆盖通用与外观设置。</div>
           </div>
           <div class="field">
@@ -7200,8 +7202,8 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
     const SUGGESTIONS = [
       {
         title: "追踪最新动态",
-        body: "Claude、Grok、Perplexity 最近的搜索体验差异",
-        prompt: "Claude、Grok、Perplexity 最近的搜索体验有什么差异？请按设计、引用、追问体验比较。",
+        body: "Claude，Grok，Perplexity 最近的搜索体验差异",
+        prompt: "Claude，Grok，Perplexity 最近的搜索体验有什么差异？请按设计，引用，追问体验比较。",
       },
       {
         title: "找资料并给出处",
@@ -9727,7 +9729,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       };
       const toolCallCopy = {
         auto: "由 AI 自主决定是否调用工具，关闭的工具会明确告知 AI 不可用",
-        flow: "按位置、问题卡、构造搜索词、网络搜索和 Lucky Shot 的顺序执行",
+        flow: "按位置，问题卡，构造搜索词，网络搜索和 Lucky Shot 的顺序执行",
       };
       const webSearchCopy = {
         auto: "由 Linsoo 判断是否需要网络搜索，需要提供 <button class=\"inline-link\" type=\"button\" data-settings-focus-api=\"providers\">搜索 API 密钥</button>",
@@ -9744,7 +9746,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         off: "不弹出问题卡片，直接按当前 prompt 继续处理",
       };
       const luckyShotCopy = {
-        smart: "搜索完成后由 AI 按意图、提权域名和点击习惯挑选顶部来源",
+        smart: "搜索完成后由 AI 按意图，提权域名和点击习惯挑选顶部来源",
         bet: "直接使用搜索结果第一条作为顶部来源",
         off: "不生成顶部直达来源",
       };
@@ -9753,7 +9755,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
         summary: "只使用搜索结果标题和概要，不额外读取网页正文",
       };
       const locationCopy = {
-        enabled: "允许当前位置、附近、路线和天气类问题调用高德位置服务，需要 <button class=\"inline-link\" type=\"button\" data-settings-focus-api=\"amap\">高德 api 密钥</button>",
+        enabled: "允许当前位置，附近，路线和天气类问题调用高德位置服务，需要 <button class=\"inline-link\" type=\"button\" data-settings-focus-api=\"amap\">高德 api 密钥</button>",
         disabled: "不调用位置服务，位置相关问题会说明无法获取当前位置",
       };
       const resultCountCopy = {
@@ -9788,7 +9790,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       setSettingSubtitle("contentGranularityMode", contentCopy[normalizeContentGranularityMode(state.contentGranularityMode)]);
       setSettingSubtitle("locationServiceMode", locationCopy[normalizeLocationServiceMode(state.locationServiceMode)]);
       setSettingSubtitle("queueFallback", `${switchSettingLabel(state.queueFallback === true)}后，当前 AI 配置失效会按卡片顺序尝试下一套配置`);
-      setSettingSubtitle("retryOnFailure", `${switchSettingLabel(state.retryOnFailure !== false)}后，单次模型请求失败或空输出会按 1s、2s、3s 间隔重试`);
+      setSettingSubtitle("retryOnFailure", `${switchSettingLabel(state.retryOnFailure !== false)}后，单次模型请求失败或空输出会按 1s，2s，3s 间隔重试`);
       setSettingSubtitle("searchResultCountMode", resultCountCopy[normalizeSearchResultCountMode(state.searchResultCountMode)]);
       setSettingSubtitle("searchCallLimitMode", searchLimitCopy[normalizeSearchCallLimitMode(state.searchCallLimitMode)]);
       setSettingSubtitle("themeMode", themeCopy[state.themeMode || state.theme || "light"] || themeCopy.light);
@@ -11428,10 +11430,10 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
       if (name === "lucky_shot") {
         const count = args.count ? `获取 ${normalizeLuckyShotCount(args.count, 1)} 条` : "";
         const source = args.sourceId || (Array.isArray(args.sourceIds) ? args.sourceIds[0] : "") || args.url || args.reason || "";
-        return [count, source].filter(Boolean).join(" · ");
+        return [count, source].filter(Boolean).join(" / ");
       }
       if (name === "get_webpage_content") return domainOf(args.url) || String(args.url || "").trim();
-      if (name === "amap_explore") return [args.kind, args.keyword || args.destination].filter(Boolean).join(" · ");
+      if (name === "amap_explore") return [args.kind, args.keyword || args.destination].filter(Boolean).join(" / ");
       if (name === "ask_user_question") return Array.isArray(args.questions) ? `${args.questions.length} 个问题` : "";
       return "";
     }
@@ -11603,7 +11605,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
               body: JSON.stringify({
                 model: config.model,
                 messages: [
-                  { role: "system", content: "根据用户问题和AI回答，用一句自然的中文短句总结AI完成了什么工作。不要用逗号句号冒号。不要以完成、已完成、调查了开头。不要提来源数量、检索数量。直接描述做了什么事，如「整理了四月新番信息」「对比了三款手机性能」「定位了登录超时原因」。8-18个汉字。" },
+                  { role: "system", content: "根据用户问题和AI回答，用一句自然的中文短句总结AI完成了什么工作。不要用逗号句号冒号。不要以完成，已完成，调查了开头。不要提来源数量，检索数量。直接描述做了什么事，如「整理了四月新番信息」「对比了三款手机性能」「定位了登录超时原因」。8-18个汉字。" },
                   { role: "user", content: `用户问题：${prompt}\n\n回答摘要：${content}` },
                 ],
                 temperature: 0.5,
@@ -12243,7 +12245,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
             <button class="search-group-card${index === 0 ? " active" : ""}" type="button">
               <span class="search-group-icon">⌕</span>
               <span>
-                <span class="search-group-meta">Searched web · ${esc(providerLabel(group.provider))}</span>
+                <span class="search-group-meta">Searched web / ${esc(providerLabel(group.provider))}</span>
                 <span class="search-group-query">${esc(group.query)}</span>
               </span>
               <span class="search-group-count">${group.results?.length || 0}</span>
@@ -12664,7 +12666,7 @@ Output normal Markdown. Do not output XML tags, ask:// links, or JSON unless the
           updateRunMessage(run, assistant.id, { loading: false, searchStatus: "", agentLoopOpen: false, interrupted: true });
         } else {
           updateRunMessage(run, assistant.id, {
-            content: `请求失败：${error.message || error}\n\n请检查 Base URL、API Key、模型名，或换一个支持搜索/联网的模型。`,
+            content: `请求失败：${error.message || error}\n\n请检查 Base URL，API Key，模型名，或换一个支持搜索/联网的模型。`,
             loading: false,
           });
         }
@@ -13585,7 +13587,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
 
     async function fetchPageContentForTool(url, signal) {
       if (!isContentGranularityEnabledForCurrentMode()) {
-        return { ok: false, disabled: true, error: "get_webpage_content 当前已在设置中禁用。请基于搜索摘要、已有网页正文和上下文回答。" };
+        return { ok: false, disabled: true, error: "get_webpage_content 当前已在设置中禁用。请基于搜索摘要，已有网页正文和上下文回答。" };
       }
       const annotated = annotateSource({ url, title: domainOf(url) || "Untitled" });
       if (!annotated.url) return { ok: false, error: "无效 URL。" };
@@ -13940,7 +13942,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
             return {
               ok: false,
               disabled: true,
-              error: "读取网页正文已在设置中关闭。不要再次调用 get_webpage_content，请直接基于搜索摘要、已有来源和上下文回答。",
+              error: "读取网页正文已在设置中关闭。不要再次调用 get_webpage_content，请直接基于搜索摘要，已有来源和上下文回答。",
             };
           }
           const reserved = reserveWebpageContentToolUrl(String(args.url || "").trim(), run);
@@ -14154,7 +14156,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       const modelList = configModels(firstConfig);
       if (!configs.length || !modelList.length) {
         openSettings();
-        throw new Error("请先在设置中添加 AI 配置、API Key 和调用模型。");
+        throw new Error("请先在设置中添加 AI 配置，API Key 和调用模型。");
       }
       const useToolMode = isAutoToolModeForRun(run) && !run?.searchOnly;
       syncActiveAiConfigToLegacy(firstConfig);
@@ -14248,7 +14250,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
           messages: withRealtimeMessagePrefix([
             {
               role: "system",
-              content: "判断当前用户请求是否应该优先调用高德地图位置服务。只返回紧凑 JSON，字段仅限 shouldUse、kind、skipClarification。kind 只能是 weather、nearby、route、trip、empty。规则：只有当问题和用户当前地理位置、附近搜索、天气、路线、出行、周边旅游强相关时，shouldUse 才为 true。若高德返回的数据通常就足够直接回答该请求，例如当前位置天气、附近找店、从当前位置去某地的路线，则 skipClarification 设为 true；否则为 false。不要输出任何解释。",
+              content: "判断当前用户请求是否应该优先调用高德地图位置服务。只返回紧凑 JSON，字段仅限 shouldUse，kind，skipClarification。kind 只能是 weather，nearby，route，trip，empty。规则：只有当问题和用户当前地理位置，附近搜索，天气，路线，出行，周边旅游强相关时，shouldUse 才为 true。若高德返回的数据通常就足够直接回答该请求，例如当前位置天气，附近找店，从当前位置去某地的路线，则 skipClarification 设为 true；否则为 false。不要输出任何解释。",
             },
             { role: "user", content: planningContext },
           ]),
@@ -14416,8 +14418,8 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         ],
         items: pois.slice(0, 5).map((poi) => ({
           title: poi.name || "附近地点",
-          meta: [poi.address, poi.distance ? `${poi.distance} 米` : ""].filter(Boolean).join(" · "),
-          snippet: [poi.type, poi.adname, poi.business?.tag].filter(Boolean).join(" · "),
+          meta: [poi.address, poi.distance ? `${poi.distance} 米` : ""].filter(Boolean).join(" / "),
+          snippet: [poi.type, poi.adname, poi.business?.tag].filter(Boolean).join(" / "),
         })),
       };
     }
@@ -14453,7 +14455,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
       ];
       const items = steps.slice(0, 4).map((step, index) => ({
         title: `第 ${index + 1} 步`,
-        meta: [step.road_name, formatDistance(step.step_distance)].filter(Boolean).join(" · "),
+        meta: [step.road_name, formatDistance(step.step_distance)].filter(Boolean).join(" / "),
         snippet: step.instruction || step.assistant_action || "",
       }));
       if (intent.kind === "trip") {
@@ -14467,7 +14469,7 @@ Linsoo only needs the query strings; web_search will run them. Call this at most
         pois.slice(0, 3).forEach((poi) => {
           items.push({
             title: `目的地周边：${poi.name || "景点"}`,
-            meta: [poi.address, poi.distance ? `${poi.distance} 米` : ""].filter(Boolean).join(" · "),
+            meta: [poi.address, poi.distance ? `${poi.distance} 米` : ""].filter(Boolean).join(" / "),
             snippet: poi.type || "",
           });
         });
@@ -14847,7 +14849,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
 
     function normalizeSearchTopicText(text) {
       return String(text || "")
-        .replace(/、/g, " ")
+        .replace(/，/g, " ")
         .replace(/\s+(和|与|及|以及)\s+/g, " ")
         .replace(/\s+/g, " ")
         .trim()
@@ -14904,7 +14906,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           messages: withRealtimeMessagePrefix([
             {
               role: "system",
-              content: "判断当前用户问题是否应该先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk、title、questions。title、question、options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串、options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。除非明显只能单选，否则优先使用多选题形式并设置 multiple=true，让用户可以更快圈定范围。只要补充答案会明显改变回答范围、目标对象、地区、时间、预算、用途、比较标准、输出形式或搜索方向，就返回 shouldAsk=true；不要等到完全无法回答才提问。如果接下来你会在普通回复里问用户一个问题，则必须返回 shouldAsk=true。如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置、哪个城市或哪里。只有当当前信息已经足以直接开始且追问不会改变答案质量时，才返回 shouldAsk=false 和空 questions 数组。",
+              content: "判断当前用户问题是否应该先补充 1 到 3 个澄清问题，再决定后续如何回答或是否联网搜索。只返回紧凑 JSON，字段仅限 shouldAsk，title，questions。title，question，options 必须全部使用简体中文，不要输出任何英文。每个问题对象必须包含 question 字符串，options 数组，以及可选的 multiple 布尔值。options 里只提供 1 到 3 个预设短选项，不要包含“其它”“其他”“Other”“Something else”，界面会自动补最后一个“其它”输入项。除非明显只能单选，否则优先使用多选题形式并设置 multiple=true，让用户可以更快圈定范围。只要补充答案会明显改变回答范围，目标对象，地区，时间，预算，用途，比较标准，输出形式或搜索方向，就返回 shouldAsk=true；不要等到完全无法回答才提问。如果接下来你会在普通回复里问用户一个问题，则必须返回 shouldAsk=true。如果上下文已经明确给出了用户当前位置，就不要再重复追问用户想查哪个位置，哪个城市或哪里。只有当当前信息已经足以直接开始且追问不会改变答案质量时，才返回 shouldAsk=false 和空 questions 数组。",
             },
             { role: "user", content: planningContext },
           ]),
@@ -15598,7 +15600,7 @@ ${metrics ? `数据：\n${metrics}\n` : ""}${items ? `明细：\n${items}` : ""}
           messages: withRealtimeMessagePrefix([
             {
               role: "system",
-              content: "从搜索结果里选择最多 3 个最值得读取完整正文的 URL，用于更准确回答用户问题。只返回紧凑 JSON，字段仅限 urls 数组。只有当网页正文可能显著改善答案时才选择；不要选择已经足够由摘要回答、明显无关、重复或低质量的链接。",
+              content: "从搜索结果里选择最多 3 个最值得读取完整正文的 URL，用于更准确回答用户问题。只返回紧凑 JSON，字段仅限 urls 数组。只有当网页正文可能显著改善答案时才选择；不要选择已经足够由摘要回答，明显无关，重复或低质量的链接。",
             },
             {
               role: "user",
@@ -16871,7 +16873,7 @@ ${formatClarification(clarification)}
                   <div class="search-provider-head">
                     <div>
                       <div class="search-provider-name">${esc(def.label)}</div>
-                      <div class="setting-subtitle"><a href="${esc(def.keyUrl)}" target="_blank" rel="noopener noreferrer">get key</a>${id === "serpapi" ? " · 浏览器直连可能被 CORS 拦截" : ""}</div>
+                      <div class="setting-subtitle"><a href="${esc(def.keyUrl)}" target="_blank" rel="noopener noreferrer">get key</a>${id === "serpapi" ? " / 浏览器直连可能被 CORS 拦截" : ""}</div>
                     </div>
                     <label class="switch"><input class="search-provider-enabled" type="checkbox" ${cfg.enabled ? "checked" : ""} /><span></span></label>
                   </div>
@@ -17520,8 +17522,8 @@ ${formatClarification(clarification)}
         if (node) stage.appendChild(node.cloneNode(true));
       });
       const pageLink = currentChat?.slug
-        ? `https://parr0tboy.github.io/tools/linsoo.html#chat/${encodeURIComponent(currentChat.slug)}`
-        : "https://parr0tboy.github.io/tools/linsoo.html";
+        ? `https://acidev.cc/tools/linsoo.html#chat/${encodeURIComponent(currentChat.slug)}`
+        : "https://acidev.cc/tools/linsoo.html";
       stage.insertAdjacentHTML("beforeend", `
         <footer class="export-shot-footer">
           <div class="export-shot-brand">
@@ -18014,7 +18016,7 @@ ${formatClarification(clarification)}
         if (open) renderSettingsModelDropdown(filter ?? input?.value ?? "", "", config?.id);
         return fetchedModels;
       } catch (error) {
-        modelFetchMessage = `获取模型失败：${error.message}。部分服务的 /models 端点会校验 API Key、限制跨域，或不公开模型枚举；可以在设置里手动输入模型名称。`;
+        modelFetchMessage = `获取模型失败：${error.message}。部分服务的 /models 端点会校验 API Key，限制跨域，或不公开模型枚举；可以在设置里手动输入模型名称。`;
         if (open) renderSettingsModelDropdown(filter ?? input?.value ?? "", modelFetchMessage, config?.id);
         return [];
       } finally {
@@ -18054,7 +18056,7 @@ ${formatClarification(clarification)}
         Accept: "application/json",
       };
       if (/openrouter\.ai/i.test(baseUrl)) {
-        headers["HTTP-Referer"] = location.origin || "https://parr0tboy.github.io";
+        headers["HTTP-Referer"] = location.origin || "https://acidev.cc";
         headers["X-Title"] = "Linsoo";
       }
       return headers;

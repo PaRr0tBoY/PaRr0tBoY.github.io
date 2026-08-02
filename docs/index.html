@@ -1,9 +1,17 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-theme="dark">
+<html lang="zh-CN" data-mode="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Awesome Vivaldi — Technical Documentation</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+<title>Awesome Vivaldi 文档 — 技术文档 / Technical Docs</title><link rel="canonical" href="https://acidev.cc/docs/"><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+<meta name="description" content="Awesome Vivaldi 文档：设计哲学、模块架构、API 参考与逆向工程内部资料，全部集中在一处。">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Acid / PaRr0tBoY">
+<meta property="og:title" content="Awesome Vivaldi 文档 — 技术文档 / Technical Docs">
+<meta property="og:description" content="设计哲学、模块架构、API 参考与逆向工程内部资料，全部集中在一处。">
+<meta property="og:url" content="https://acidev.cc/docs/">
+<meta property="og:image" content="https://acidev.cc/assets/og-default.png">
+<meta name="twitter:card" content="summary_large_image">
 <style>
 /* ============================================================
    CSS Custom Properties — Design Tokens
@@ -22,7 +30,7 @@
 }
 
 /* Dark theme (default) */
-[data-theme="dark"] {
+[data-mode="dark"] {
   --bg-root: #101112;
   --bg-surface: #18191b;
   --bg-surface-raised: #1e1f22;
@@ -49,7 +57,7 @@
 }
 
 /* Light theme */
-[data-theme="light"] {
+[data-mode="light"] {
   --bg-root: #f5f4f2;
   --bg-surface: #faf9f8;
   --bg-surface-raised: #ffffff;
@@ -76,7 +84,7 @@
 }
 
 /* ============================================================
-   Reset & Base
+   Reset and Base
    ============================================================ */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -707,7 +715,7 @@ a:hover { text-decoration: underline; }
   --ease: cubic-bezier(.2,.75,.2,1);
 }
 
-[data-theme="light"] {
+[data-mode="light"] {
   --bg-root: #e9e6dc;
   --bg-surface: #f2efe7;
   --bg-surface-raised: #f7f4ec;
@@ -766,9 +774,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 }
 .sidebar-header { padding: 20px 20px 16px; border-bottom: 1px solid var(--border-subtle); }
 .sidebar-header .logo { gap: 10px; font: 600 13px var(--font-mono); letter-spacing: .02em; }
-.sidebar-header .logo .icon { width: 24px; height: 24px; border-radius: 7px; background: transparent; color: var(--accent); font-size: 0; position: relative; }
-.sidebar-header .logo .icon::before { content: ""; width: 15px; height: 15px; border: 1.5px solid currentColor; border-radius: 4px; transform: rotate(45deg); position: absolute; inset: 4px; }
-.sidebar-header .logo .icon::after { content: ""; width: 4px; height: 4px; background: currentColor; border-radius: 50%; position: absolute; right: 1px; top: 1px; }
+    .sidebar-header .logo .icon { width: 24px; height: 24px; border-radius: 7px; background: transparent; color: var(--accent); display: grid; place-items: center; }
 .sidebar-header .subtitle { padding-left: 34px; margin-top: 5px; font: 11px var(--font-mono); letter-spacing: .02em; color: var(--fg-tertiary); }
 .sidebar-nav { padding: 12px 10px; }
 .nav-category { margin-bottom: 5px; }
@@ -786,7 +792,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 .topbar { position: sticky; top: 0; z-index: 50; display: grid; grid-template-columns: minmax(180px,1fr) minmax(240px,380px) minmax(180px,1fr); align-items: center; gap: 20px; margin: 0 auto; width: min(1120px, calc(100% - 56px)); padding: 18px 0 14px; background: transparent; transform: translateY(0); opacity: 1; transition: transform .32s var(--ease), opacity .25s ease; }
 .topbar.nav-hidden { transform: translateY(-140%); opacity: .001; pointer-events: none; }
 .topbar-path { min-width: 0; display: flex; align-items: center; gap: 8px; overflow: hidden; font: 11px var(--font-mono); white-space: nowrap; }
-.topbar-root { color: var(--accent); text-decoration: none; font-weight: 600; letter-spacing: .04em; }
+    .topbar-root { color: var(--accent); text-decoration: none; font-weight: 600; letter-spacing: .04em; display: inline-flex; align-items: center; gap: 6px; }
 .topbar-root:hover { text-decoration: none; color: var(--fg-primary); }
 .topbar-separator { color: var(--fg-tertiary); }
 .topbar-current { color: var(--fg-secondary); }
@@ -891,10 +897,10 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-header">
     <a href="#" class="logo" data-nav="home">
-      <span class="icon">📚</span>
+      <span class="icon"><svg class="brand-mark" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="side-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#side-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg></span>
       Awesome Vivaldi
     </a>
-    <div class="subtitle">Documentation Portal</div>
+    <div class="subtitle"><span data-zh>文档中心</span><span data-en hidden>Documentation Portal</span></div>
   </div>
 
   <nav class="sidebar-nav" id="sidebarNav">
@@ -914,7 +920,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
 <main class="main" id="mainContent">
   <div class="topbar" id="topbar">
     <div class="topbar-path" aria-label="Breadcrumb">
-      <a href="#" class="topbar-root" data-nav="home">AV</a>
+      <a href="../index.html" class="topbar-root"><svg class="brand-mark" width="16" height="16" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="nav-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#nav-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg>main</a>
       <span class="topbar-separator" aria-hidden="true">/</span>
       <span class="topbar-current">docs</span>
       <span class="topbar-separator" aria-hidden="true">/</span>
@@ -928,10 +934,11 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
       </div>
     </div>
     <div class="topbar-actions">
+      <button class="theme-toggle" id="langBtn" type="button" title="切换语言 / Switch language" aria-label="切换语言 / Switch language"><svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.2"><circle cx="8" cy="8" r="6.2"/><path d="M2 8h12M8 1.8c2.1 1.7 2.1 10.7 0 12.4M8 1.8c-2.1 1.7-2.1 10.7 0 12.4"/></svg></button>
       <button class="theme-toggle" id="themeToggle" title="Toggle dark/light theme" aria-label="Toggle dark/light theme">
         <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <span>Theme</span>
+        <span><span data-zh>主题</span><span data-en hidden>Theme</span></span>
       </button>
       <a class="topbar-github" href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -984,7 +991,7 @@ const DOCUMENTS = [
   { id:'mod-autohidepanel',title:'AutoHidePanel.md',       cat:'mod-en', path:'mod/AutoHidePanel.md',
     desc:'Auto-collapse side panel on mouse leave' },
   { id:'mod-easyfiles',    title:'EasyFiles.md',           cat:'mod-en', path:'mod/EasyFiles.md',
-    desc:'Quick file attach via clipboard & downloads when dragging' },
+    desc:'Quick file attach via clipboard and downloads when dragging' },
   { id:'mod-interactionfeedback', title:'InteractionFeedback.md', cat:'mod-en', path:'mod/InteractionFeedback.md',
     desc:'Button click micro-feedback animations' },
   { id:'mod-modconfig',    title:'ModConfig.md',           cat:'mod-en', path:'mod/ModConfig.md',
@@ -1022,7 +1029,7 @@ const DOCUMENTS = [
   { id:'modzh-autohidepanel',title:'AutoHidePanel.md',       cat:'mod-zh', path:'mod/modzh/AutoHidePanel.md',
     desc:'Auto-collapse side panel on mouse leave (Chinese translation)', lang:'zh' },
   { id:'modzh-easyfiles',    title:'EasyFiles.md',           cat:'mod-zh', path:'mod/modzh/EasyFiles.md',
-    desc:'Quick file attach via clipboard & downloads (Chinese translation)', lang:'zh' },
+    desc:'Quick file attach via clipboard and downloads (Chinese translation)', lang:'zh' },
   { id:'modzh-interactionfeedback', title:'InteractionFeedback.md', cat:'mod-zh', path:'mod/modzh/InteractionFeedback.md',
     desc:'Button click micro-feedback animations (Chinese translation)', lang:'zh' },
   { id:'modzh-modconfig',    title:'ModConfig.md',           cat:'mod-zh', path:'mod/modzh/ModConfig.md',
@@ -1125,15 +1132,15 @@ const ALL_DOCS = [...DOCUMENTS, ...LONMDOC_ENTRIES];
    Category Definitions
    ============================================================ */
 const CATEGORIES = [
-  { id:'design',   icon:'🎨', label:'Design Philosophy',   desc:'Color strategy, typography, spacing, components, motion, anti-patterns' },
-  { id:'dev',      icon:'🔧', label:'Development',          desc:'Installer architecture and engineering documentation' },
-  { id:'mod-en',   icon:'🧩', label:'Mod Docs (English)',   desc:'Per-mod design and implementation analysis' },
-  { id:'mod-zh',   icon:'🧩', label:'Mod Docs (Chinese)',   desc:'Chinese translations of all mod documentation' },
-  { id:'api',      icon:'📖', label:'API Reference',        desc:'Vivaldi internal API surfaces, preferences, and quick reference' },
-  { id:'reverse',  icon:'🔬', label:'Reverse Engineering',  desc:'Deconstructed Vivaldi internals: tab drag, tiling, sync, autohide' },
-  { id:'lonmdoc',  icon:'📋', label:'LonmDoc API Collection', desc:'Complete vivaldi.* API documentation by Lonm (41 files)' },
-  { id:'console',  icon:'🛠️', label:'Console Scripts',      desc:'Browser console debugging and lab scripts' },
-  { id:'readmezh', icon:'🌐', label:'README Translations',  desc:'Chinese translations of project README files' },
+  { id:'design',   icon:'🎨', label:'Design Philosophy',   labelZh:'设计哲学', desc:'Color strategy, typography, spacing, components, motion, anti-patterns', descZh:'色彩策略、字体、间距、组件、动效与反模式' },
+  { id:'dev',      icon:'🔧', label:'Development',          labelZh:'开发', desc:'Installer architecture and engineering documentation', descZh:'安装器架构与工程文档' },
+  { id:'mod-en',   icon:'🧩', label:'Mod Docs (English)',   labelZh:'模块文档（英文）', desc:'Per-mod design and implementation analysis', descZh:'每个模块的设计与实现分析' },
+  { id:'mod-zh',   icon:'🧩', label:'Mod Docs (Chinese)',   labelZh:'模块文档（中文）', desc:'Chinese translations of all mod documentation', descZh:'全部模块文档的中文翻译' },
+  { id:'api',      icon:'📖', label:'API Reference',        labelZh:'API 参考', desc:'Vivaldi internal API surfaces, preferences, and quick reference', descZh:'Vivaldi 内部 API、偏好设置与速查' },
+  { id:'reverse',  icon:'🔬', label:'Reverse Engineering',  labelZh:'逆向工程', desc:'Deconstructed Vivaldi internals: tab drag, tiling, sync, autohide', descZh:'拆解 Vivaldi 内部实现：标签拖拽、分屏、同步、自动隐藏' },
+  { id:'lonmdoc',  icon:'📋', label:'LonmDoc API Collection', labelZh:'LonmDoc API 合集', desc:'Complete vivaldi.* API documentation by Lonm (41 files)', descZh:'Lonm 整理的完整 vivaldi.* API 文档（41 个文件）' },
+  { id:'console',  icon:'🛠️', label:'Console Scripts',      labelZh:'控制台脚本', desc:'Browser console debugging and lab scripts', descZh:'浏览器控制台调试与实验脚本' },
+  { id:'readmezh', icon:'🌐', label:'README Translations',  labelZh:'README 翻译', desc:'Chinese translations of project README files', descZh:'项目 README 的中文翻译' },
 ];
 
 /* ============================================================
@@ -1141,6 +1148,7 @@ const CATEGORIES = [
    ============================================================ */
 let activeDocId = null;
 let activeCategory = null;
+let activeDoc = null;
 
 /* ============================================================
    DOM Refs
@@ -1165,19 +1173,40 @@ const docBody = $('#docBody');
 const themeToggle = $('#themeToggle');
 const themeIconSun = $('#themeIconSun');
 const themeIconMoon = $('#themeIconMoon');
+const langBtn = $('#langBtn');
 
 /* ============================================================
    Theme
    ============================================================ */
-function getTheme() { return localStorage.getItem('av-docs-theme') || 'dark'; }
+function getTheme() { return localStorage.getItem('mode') || 'dark'; }
 function setTheme(t) {
-  localStorage.setItem('av-docs-theme', t);
-  document.documentElement.setAttribute('data-theme', t);
+  localStorage.setItem('mode', t);
+  document.documentElement.setAttribute('data-mode', t);
   themeIconSun.style.display = t === 'dark' ? '' : 'none';
   themeIconMoon.style.display = t === 'dark' ? 'none' : '';
 }
+const t = pair => pair[document.documentElement.lang === 'en' ? 1 : 0];
+const catLabel = cat => t([cat.labelZh, cat.label]);
+const catDesc = cat => t([cat.descZh, cat.desc]);
+function applyLang(en) {
+  document.documentElement.lang = en ? 'en' : 'zh-CN';
+  localStorage.setItem('lang', document.documentElement.lang);
+  document.querySelectorAll('[data-zh]').forEach(e => { e.hidden = en; });
+  document.querySelectorAll('[data-en]').forEach(e => { e.hidden = !en; });
+  langBtn.title = en ? 'Switch to Chinese' : '切换为英文';
+  langBtn.setAttribute('aria-label', langBtn.title);
+  themeToggle.title = en ? 'Toggle dark/light theme' : '切换明暗模式';
+  themeToggle.setAttribute('aria-label', themeToggle.title);
+  searchInput.placeholder = en ? 'Search documentation…' : '搜索文档…';
+  buildSidebar();
+  if (!homeView.classList.contains('hidden')) buildHomeView();
+  if (activeDoc) renderDocHeader(activeDoc);
+  else if (activeCategory) navigateToCategory(activeCategory);
+}
 setTheme(getTheme());
+applyLang(localStorage.getItem('lang') === 'en');
 themeToggle.addEventListener('click', () => setTheme(getTheme() === 'dark' ? 'light' : 'dark'));
+langBtn.addEventListener('click', () => applyLang(document.documentElement.lang !== 'en'));
 
 /* ============================================================
    Mobile sidebar
@@ -1204,7 +1233,7 @@ function buildSidebar() {
     section.innerHTML = `
       <button type="button" class="nav-category-header" aria-expanded="${activeCategory === cat.id ? 'true' : 'false'}">
         <svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
-        <span>${cat.icon} ${cat.label}</span>
+        <span>${cat.icon} ${catLabel(cat)}</span>
         <span class="nav-badge">${count}</span>
       </button>
       <div class="nav-category-items">
@@ -1241,8 +1270,8 @@ function buildSidebar() {
 function buildHomeView() {
   homeView.innerHTML = `
     <div class="home-hero">
-      <h1>Awesome Vivaldi Documentation</h1>
-      <p>Design philosophy, mod architecture, API references, and reverse-engineered internals — all in one place.</p>
+      <h1>${t(['Awesome Vivaldi 文档', 'Awesome Vivaldi Documentation'])}</h1>
+      <p>${t(['设计哲学、模块架构、API 参考与逆向工程内部资料，全部集中在一处。', 'Design philosophy, mod architecture, API references, and reverse-engineered internals — all in one place.'])}</p>
     </div>
     <div class="category-grid">
       ${CATEGORIES.map(cat => {
@@ -1251,11 +1280,11 @@ function buildHomeView() {
         return `
           <button type="button" class="category-card" data-nav-cat="${cat.id}">
             <span class="card-icon" aria-hidden="true">${cat.icon}</span>
-            <h3>${cat.label}</h3>
-            <p>${cat.desc}</p>
+            <h3>${catLabel(cat)}</h3>
+            <p>${catDesc(cat)}</p>
             <span class="card-count">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-              ${count} document${count !== 1 ? 's' : ''}
+              ${t([count + ' 篇文档', count + ' document' + (count !== 1 ? 's' : '')])}
             </span>
           </button>
         `;
@@ -1280,23 +1309,16 @@ function navigateToDoc(docId) {
   const doc = ALL_DOCS.find(d => d.id === docId);
   if (!doc) return;
 
+  activeDoc = doc;
   activeCategory = doc.cat;
   homeView.classList.add('hidden');
   docView.classList.add('active');
   breadcrumb.textContent = doc.path;
 
   // Render doc header
-  const catInfo = CATEGORIES.find(c => c.id === doc.cat);
-  docHeader.innerHTML = `
-    <div class="doc-meta">
-      <span class="doc-tag">${catInfo ? catInfo.label : doc.cat}</span>
-      ${doc.lang ? `<span class="doc-lang">${doc.lang === 'zh' ? 'Chinese' : 'English'}</span>` : ''}
-    </div>
-    <h1>${doc.title}</h1>
-    <div class="doc-path">Doc/${doc.path}</div>
-  `;
+  renderDocHeader(doc);
 
-  // Load & render document
+  // Load and render document
   loadDocument(doc);
 
   // Update sidebar
@@ -1308,6 +1330,17 @@ function navigateToDoc(docId) {
   // Scroll to top
   mainContent.scrollTop = 0;
 }
+function renderDocHeader(doc) {
+  const catInfo = CATEGORIES.find(c => c.id === doc.cat);
+  docHeader.innerHTML = `
+    <div class="doc-meta">
+      <span class="doc-tag">${catInfo ? catLabel(catInfo) : doc.cat}</span>
+      ${doc.lang ? `<span class="doc-lang">${t([doc.lang === 'zh' ? '中文' : '英文', doc.lang === 'zh' ? 'Chinese' : 'English'])}</span>` : ''}
+    </div>
+    <h1>${doc.title}</h1>
+    <div class="doc-path">Doc/${doc.path}</div>
+  `;
+}
 
 function navigateToCategory(catId) {
   activeCategory = catId;
@@ -1318,12 +1351,12 @@ function navigateToCategory(catId) {
 
   const catInfo = CATEGORIES.find(c => c.id === catId);
   const docs = ALL_DOCS.filter(d => d.cat === catId);
-  breadcrumb.textContent = catInfo ? catInfo.label : catId;
+  breadcrumb.textContent = catInfo ? catLabel(catInfo) : catId;
 
   docBody.innerHTML = `
     <div style="padding-top:8px">
-      <h1 style="font-size:1.4rem;font-weight:700;margin-bottom:6px">${catInfo.icon} ${catInfo.label}</h1>
-      <p style="color:var(--fg-secondary);margin-bottom:24px">${docs.length} document${docs.length !== 1 ? 's' : ''}</p>
+      <h1 style="font-size:1.4rem;font-weight:700;margin-bottom:6px">${catInfo.icon} ${catLabel(catInfo)}</h1>
+      <p style="color:var(--fg-secondary);margin-bottom:24px">${t([docs.length + ' 篇文档', docs.length + ' document' + (docs.length !== 1 ? 's' : '')])}</p>
       <div style="display:flex;flex-direction:column;gap:2px">
         ${docs.map(d => `
           <a href="#" data-doc-link="${d.id}" style="
@@ -1368,13 +1401,12 @@ function navigateHome() {
 $('.logo').addEventListener('click', e => { e.preventDefault(); navigateHome(); });
 
 /* ============================================================
-   Document Loading & Markdown Rendering
+   Document Loading and Markdown Rendering
    ============================================================ */
 async function loadDocument(doc) {
   docBody.innerHTML = `
     <div class="doc-loading">
-      <div class="spinner"></div>
-      <p>Loading document…</p>
+      <p>${t(['正在加载文档…', 'Loading document…'])}</p>
     </div>
   `;
 
@@ -1399,11 +1431,11 @@ async function loadDocument(doc) {
   } catch (err) {
     docBody.innerHTML = `
       <div class="doc-error">
-        <p>Could not load this document inline.</p>
+        <p>${t(['无法在此处加载文档。', 'Could not load this document inline.'])}</p>
         <p style="font-size:0.82rem;color:var(--fg-tertiary);margin-top:4px">${escapeHtml(err.message)}</p>
         <a class="gh-btn" href="https://github.com/PaRr0tBoY/Awesome-Vivaldi/blob/main/Doc/${doc.path}" target="_blank">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12z"/></svg>
-          View on GitHub
+          ${t(['在 GitHub 查看', 'View on GitHub'])}
         </a>
       </div>
     `;
@@ -1435,7 +1467,7 @@ function doSearch(query) {
   ).slice(0, 20);
 
   if (!results.length) {
-    searchResults.innerHTML = '<div class="search-empty">No results found</div>';
+    searchResults.innerHTML = `<div class="search-empty">${t(['没有找到结果', 'No results found'])}</div>`;
   } else {
     searchResults.innerHTML = results.map(d => {
       const catInfo = CATEGORIES.find(c => c.id === d.cat);
@@ -1445,7 +1477,7 @@ function doSearch(query) {
             <div class="result-title">${highlightMatch(d.title, q)}</div>
             <div class="result-desc">${highlightMatch(d.desc, q)}</div>
           </div>
-          <span class="result-cat">${catInfo ? catInfo.icon + ' ' + catInfo.label : d.cat}</span>
+          <span class="result-cat">${catInfo ? catInfo.icon + ' ' + catLabel(catInfo) : d.cat}</span>
         </div>
       `;
     }).join('');

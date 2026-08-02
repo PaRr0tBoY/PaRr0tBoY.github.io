@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Personal chat exports — not meant for search
+Disallow: /tools/claude/
+
+Sitemap: https://acidev.cc/sitemap-index.xml

@@ -7,6 +7,8 @@
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover"
     />
     <title>Chronos 精算计时器</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+    <meta name="description" content="用于专注与节奏记录的精算计时器，把时间拆成可以观察的工作段。由 Acid 制作的本地优先小工具，打开即用。" />
+    <link rel="canonical" href="https://acidev.cc/tools/chronos.html" />
     <!-- 引入 Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
@@ -1127,7 +1129,7 @@
                     <div class="session-item">
                         <div class="session-info">
                             <span class="title">${s.title || "任务 " + (p.sessions.length - idx)}</span>
-                            <span class="meta">${new Date(s.date).toLocaleDateString()} · ${formatTimeSimple(s.actual)}</span>
+                            <span class="meta">${new Date(s.date).toLocaleDateString()} / ${formatTimeSimple(s.actual)}</span>
                         </div>
                         <div class="session-eff">${s.eff.toFixed(0)}%</div>
                         <button class="session-del" onclick="deleteSession(${realIdx})" title="删除">×</button>
