@@ -18,9 +18,9 @@
   --shadow: rgba(0,0,0,.18);
 
   /* 排版 - 字体家族 */
-  --font-sans: "IBM Plex Sans", system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, monospace;
-  --font-sans-sc: "IBM Plex Sans SC", system-ui, sans-serif;
+  --font-sans: JetBrains Mono NF, a more engineering-oriented alternative;
+  --font-mono: Not specified;
+  --font-sans-sc: Not specified;
 
   /* 间距 */
   --spacing-dot-grid: 19px;
@@ -40,4 +40,9 @@
   --shadow-dropdown: 0 14px 35px var(--shadow);
   --shadow-panel: 0 16px 40px var(--shadow);
 
+  /* 布局 */
+  --layout-section-gap: The Fold reserves 72px of top safety spacing for the floating navigation; Hero vertical padding is 12px.;
+  --layout-card-padding: 22px; floating cards use the shared matte surface language with a 1px border, unified radius token, and restrained shadow.;
+  --layout-element-gap: The background dot matrix uses a 19px interval.;
+  --layout-max-width: The Footer declares its own max-width with margin:auto and independent padding; no numeric maximum width is specified.;
 }

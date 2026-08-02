@@ -96,97 +96,8 @@
 
 ## Components
 
-### Editable Container Control
-**Role:** Low-chrome editing control
-
-The container itself is the control. Do not nest another input, border, or background layer inside a container. This rule extends beyond text inputs: any component—code blocks, media slots, data panels—must not be wrapped in an additional card or surface container when it already sits inside a card. A code block inside a card should render directly as the code block, not as a card within a card.
-
-Editing must not alter geometry. Use `contenteditable`, not `<input>`. This is the key conclusion of this revision: `<input>` inherently introduces two problems—its width is fixed and does not match the actual text length, causing the container to jump before and after editing; and default styles easily introduce borders or highlights. `contenteditable` gives the same element editing capability in place. Before and after editing, container size, background color, and font size remain identical; only the caret and selection become visible.
-
-Tab renaming and the navigation site title use this implementation. They support double-click editing as well as keyboard entry after focus with `Enter` or `F2`.
-
-Affordance is implicit: do not use text or graphics to announce “this can be clicked.” Double-click or focus and press Enter to edit. Discoverability comes from the interaction itself, not decoration.
-
-### Paper Surface
-**Role:** Matte paper material for cards and floating UI
-
-The global background combines a fine dot matrix with extremely light noise: a `19px` interval, approximately `0.85px` dots at low contrast, and SVG turbulence noise at `opacity 0.035`.
-
-This is paper, not glass. Glassmorphism—`backdrop-filter: blur()` combined with a translucent background and a large shadow—is explicitly prohibited. The floating navigation originally used that combination, but it conflicted with the paper dot-and-noise foundation and was judged “too abrupt.”
-
-The navigation, `.menu`, and `.card` use the same matte material: solid `var(--surface)`, a `1px` border, a unified border-radius token, and a restrained shadow. Any element floating above the page—navigation bar, dropdown menu, or mobile menu panel—must retain this matte-card material language. Floating does not authorize a separate glass treatment.
-
-### Dividers
-**Role:** Minimal use of visible separators to reduce visual clutter
-
-Excessive lines make a design look busy. Prefer spacing, grouping, and surface-level differences to distinguish regions over visible dividers.
-
-- **Between cards:** Use the bento gap and distinct surface backgrounds; do not insert `<hr>` or hard-border separators between cards.
-- **Inside a card:** Separate sections with padding and typographic hierarchy. If a divider is unavoidable, use a single `1px` line at `var(--line)` opacity, and only between semantically distinct blocks.
-- **In lists:** Omit dividers between items when spacing alone provides sufficient separation. When a list is dense and dividers are necessary, use the lowest contrast available and keep them to `1px`.
-- **Inline editing areas:** Follow the Editable Container Control rule—no inner borders or separator lines. The container surface itself defines the boundary.
-
-### Icon-First Controls
-**Role:** Compact, icon-priority functional buttons
-
-When a functional button's action can be clearly expressed by a universally recognized icon, use the icon alone without a text label. The button's function is conveyed through the icon itself; a text description appears only on hover after a short delay via the `title` attribute, with `aria-label` providing accessibility fallback.
-
-- **Applicable scenarios:** Download, share, bookmark, search toggle, theme toggle, language switch, close, and similar actions with well-established icon conventions.
-- **Not applicable:** Actions with less intuitive semantics (e.g., dropdown menu items, mobile navigation panel entries) should retain icon-plus-text treatment for clarity.
-- Icon-only buttons must carry both `aria-label` and `title`, dynamically updated when the language changes.
-
-### Decorative Accent System
-**Role:** Distributed visual punctuation across the page
-
-Curves, dots, and geometric forms are dispersed accents on backgrounds and cards, not an illustration concentrated in one location. An earlier version stacked all decoration into one composite SVG scene in the Hero area, which could be misread as “an illustration slot” rather than a page-wide accent method.
-
-Split the same visual language—thin-line curves, small dots, dashed folded corners, and rounded small squares—into small pieces placed across the Hero background, logo mark, and corners of multiple cards. Each instance remains restrained, generally at opacity between `0.2` and `0.55`; together they create the impression of one system.
-
-Hero background curves must use a continuous single-stroke line, not a dashed line. Dashed lines resemble reference lines or grid guides rather than hand-drawn marks. Use the theme color `var(--accent)`, not a neutral-gray line color. A thinner, lower-opacity ghost line may be layered to create a slight brushstroke feel, but the main line must remain one continuous stroke. The intended effect is “a casually drawn stroke,” not a precise geometric curve: control points may be asymmetrical to avoid an appearance generated by a mathematical formula.
-
-### Floating Navigation Bar
-**Role:** Persistent site navigation with contextual controls
-
-The navigation bar is floating rather than flush-top fixed: use `position: fixed`, leave whitespace above and at both sides, and do not make it full-width edge-to-edge.
-
-When scrolling down, hide it by translating it out of the viewport with `translateY`. When scrolling up or returning to the top of the page at `scrollY ≤ ~24px`, show it again. When hiding, simultaneously collapse every expanded child panel—search, menu, and mobile navigation panel—to avoid the strange state where the navigation bar leaves the screen while a dropdown remains suspended.
-
-The fold reserves `72px` of top safety spacing for this floating navigation so initial rendering does not cover content.
-
-Apply `justify-content: space-between` directly to the navigation container. Do not rely on a child element’s `margin-inline-end: auto` to push other elements apart. That approach fails at responsive breakpoints when an element is hidden, causing all elements to pile up on the left while the right side is empty. The brand area, navigation items, and action area must each continue to occupy their respective ends at both wide and narrow widths.
-
-The left side contains the site icon—a geometric logo mark that is also part of the distributed-accent system—and an editable site title. The center contains regular navigation items on desktop; at `≤760px`, these move into the mobile menu. The right side contains search, language, light/dark mode, theme color, and the mobile hamburger menu.
-
-### Navigation Icon Controls
-**Role:** Compact language, appearance, and theme controls
-
-In the navigation bar, language, light/dark mode, and theme controls retain icons only and do not include text. The navigation already includes brand, navigation items, and search, so additional text would feel crowded.
-
-This is a contextual exception, not a reversal of the general principle that ambiguous semantics should include text. The icons are sufficiently conventional—globe for language, sun/moon for light/dark mode, palette for theme—and `aria-label` and `title` provide accessibility fallback.
-
-In other contexts, such as dropdown menu actions and the mobile navigation panel, follow the principle that less-direct semantics require text. Use icon and text together consistently; do not mix icon-only and icon-plus-text treatments there.
-
-Icon buttons without visible text require both `aria-label` and `title`, dynamically updated when the language changes, including the current theme name and current light/dark state.
-
-### Search Control
-**Role:** Expandable navigation search
-
-The default state shows only an icon button. On click, it expands rightward into a borrowing-space input field.
-
-Do not allow a circular icon background and a rectangular highlighted input field to clash as two competing shapes. When expanded, place the icon and input together inside one unified rounded pill rather than maintaining separate visual boundaries.
-
-The input itself does not use the default `:focus-visible` outline, because that outline is a square-cornered rectangle that conflicts with the surrounding rounded environment. The pill container border already communicates the current search state and does not need another outline layer.
-
-The icon reuses the “form is state” motion language: search and close use two switchable SVGs and share the same icon-state switching logic as the hamburger menu and `+` button.
-
-### Mobile Navigation Menu
-**Role:** Responsive navigation panel at `≤760px`
-
-At `≤760px`, the hamburger button changes into a close icon using the shared icon-morph animation.
-
-The submenu must be a floating layer and must not enter document flow or push page content downward. An earlier implementation stacked four links vertically and directly increased page height; this is an explicit bug to avoid.
-
-The floating layer sits close to the hamburger button, expands right-aligned, and uses a bento-style `2×2` grid of cards. Each item includes a small icon and text, rather than forming a single-column text-only list. This reuses the existing bento visual language while making touch targets larger and easier to tap.
+组件规范与实现拆在 `references/components/` 下，按需读取（索引见 `components/README.md`）。
+**页面结构由需求决定——组件文件里的示例布局是实例，不是规范。** 跨组件的动效系统保留在本章：
 
 ### Motion System
 **Role:** Restrained, accessible interaction feedback
@@ -232,63 +143,26 @@ Where the performance cost is low and no layout or paint recalculation is trigge
 
 These animations are supplementary, not structural. They must never block interaction, delay content display, or run continuously without user initiation.
 
-### Footer Elastic Pull-Down
-**Role:** Simulated bottom-of-page elastic interaction
+### 组件索引
 
-This interaction references diabrowser.com’s “pulling at the bottom creates an elastic rebound” effect, simulated through ordinary webpage scrolling events because browsers do not expose a native pull-distance interface.
-
-It must use fixed positioning above page content rather than new document-flow content. Adding content in document flow continuously changes `document.scrollHeight`, which is also used to determine whether the page has reached the bottom; this feedback loop causes stutter and inconsistent behavior. With `position: fixed`, the feedback loop is fully removed.
-
-Use discrete layered reveal instead of continuous pixel-level interpolation. Changing `height` directly on each wheel or touch event with a CSS transition continuously interrupts and redirects transition targets, producing visible stutter. Instead, reveal and hide by thresholds: five tower-card layers, each with independent transform and opacity transitions. Each layer triggers one clean transition only when crossing its threshold.
-
-Map accumulated pull distance through an exponential easing function to the displayed value. Resistance increases as the user pulls farther, approaching a maximum without abruptly hard-stopping, which better matches the intuition of elasticity than linear mapping.
-
-The shape is a layered tower, not one large gradient triangle. Five layers stack from wide to narrow, representing base to tip. They appear sequentially during pull-down and retract in reverse order after approximately `220ms` without input.
-
-As an easter egg, if the tower is fully expanded at its upper limit and the user releases it, the tower retracts and the page smoothly scrolls back to the top. This is an optional detail: if it feels too playful, remove the `wasFull` condition lines in `release()`.
-
-This remains a simulation using `wheel` and `touch` events rather than native browser overscroll physics. Its feel on trackpads and touchscreens is somewhat less smooth than native behavior. Matching diabrowser’s smoothness completely would generally require a dedicated smooth-scrolling library, such as Lenis, to take over page scrolling; this template does not currently do that.
-
-### Bento Grid
-**Role:** Content-weighted page composition
-
-The bento grid is composed of rounded-rectangle cards of varying sizes. Card size is determined by content importance: higher-importance cards occupy larger areas, while cards of equal importance share the same size. Regardless of the number of cards, the grid must be fully filled with no empty gaps or missing corners.
-
-The template additionally includes two image-placeholder grid positions for later replacement with real images or screenshots: one `4:3` position in the Hero and one `21:9` wide banner position in the bento grid.
-
-Dimensions and proportions follow three principles: container size matches content expectations; interactive-state size changes match the element's own proportions; and distance communicates relatedness.
-
-### Fold and Hero
-**Role:** Complete desktop first-screen composition
-
-On desktop, Tab navigation plus the Hero fill one screen with `min-height:100svh`. Avoid a container taller than the viewport where only half of a box is visible in the first screen.
-
-On mobile, this rule is not forced because mobile is inherently scroll-based; forcing it can create empty space when content is insufficiently tall.
-
-The floating navigation requires safety spacing above the Hero. This can make the desktop composition feel too low, with more top whitespace than visually necessary. This revision tightened two values: reserved spacing changed from approximately `86px` to `72px`, and the Hero’s vertical padding changed from `34px` to `12px`. This places more centering logic in the available space itself rather than stacking it across two padding layers.
-
-If the composition still feels too low after adjustment, a possible next step is to replace “brand area/navigation items fixed at the top, Hero centered separately” with “Tab plus Hero centered as one unit in the remaining space.” That would place the Tab in a nonstandard position rather than directly below the navigation bar, so confirm whether that placement meets expectations before changing it.
-
-### Horizontal Scroll Container
-**Role:** Touch-safe horizontal navigation and overflow content
-
-Touch horizontal-scroll containers must explicitly declare `overflow-y:hidden` and `touch-action:pan-x`.
-
-Using only `overflow-x:auto` allows browsers to infer `overflow-y:auto`. Even without vertical overflow, touch devices may then allow the entire horizontal container to be dragged vertically. The Tab bar encountered this issue. Apply this rule to all horizontal scrolling containers in the template.
-
-### Footer
-**Role:** Page-ending content aligned with the main shell
-
-The Footer must retain the same horizontal whitespace as `.shell`. It must not lose padding simply because it is outside the `.shell` container.
-
-An earlier version placed the footer as a sibling of `.shell`, where it did not inherit inner padding and nearly touched both edges. The footer now declares its own `max-width`, `margin:auto`, and independent padding rather than relying on its parent container.
-
-### Internationalization and Accessibility
-**Role:** Bilingual, keyboard-accessible, semantic interface
-
-For Chinese and English bilingual content, translatable copy uses paired `data-zh` and `data-en` spans. JavaScript switches them with the `hidden` attribute, removing inactive content from the accessibility tree rather than merely hiding it with CSS. User-created content, including Tab names and the site title, is not wrapped in translation pairs.
-
-Use semantic navigation and ARIA state: `aria-expanded`, `aria-current`, `role="menu"`, and `role="menuitem"`.
+| 组件 | 文件 |
+|---|---|
+| 页面基座（token/纸面/焦点/reveal） | `components/00-base.md` |
+| 导航（浮动顶栏 / 侧栏变体） | `components/01-nav.md` |
+| Bento 网格 + 纸卡 + 配图占位 | `components/02-bento.md` |
+| Hero 首屏 | `components/03-hero.md` |
+| 图标变形（+⇄× / 汉堡⇄关闭 / 搜索⇄关闭） | `components/04-icon-morph.md` |
+| 搜索胶囊 | `components/05-search-pill.md` |
+| 纯图标按钮 | `components/06-icon-buttons.md` |
+| 下拉菜单 / 移动端浮层菜单 | `components/07-menus.md` |
+| 五主题 × 明暗切换 | `components/08-theme-mode.md` |
+| 中英双语 + ARIA | `components/09-i18n.md` |
+| 就地编辑（contenteditable） | `components/10-editable.md` |
+| Tab 栏 / 分段滑动指示器 | `components/11-tabs.md` |
+| 骨架屏加载 | `components/12-skeleton.md` |
+| 底部弹性下拉（可选） | `components/13-elastic-pull.md` |
+| 分散装饰系统 | `components/14-decorative.md` |
+| Footer | `components/15-footer.md` |
 
 ## Do's and Don'ts
 

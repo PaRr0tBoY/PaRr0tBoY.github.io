@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="light dark">
 <meta name="theme-color" content="#20211f">
-<title>Technical Tactile — Design Template v6</title><link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+<title>Technical Tactile — Design Template v6</title><link rel="icon" type="image/svg+xml" href="/assets/logo/favicon.svg">
 <style>
 @import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans+SC:wght@400;500;600;700&display=swap');
 
@@ -398,7 +398,7 @@ footer.footer-spring{transition:transform .4s var(--ease)}
               <svg class="media-slot__ticks" viewBox="0 0 100 100" preserveAspectRatio="none">
                 <path d="M6 18V6h12M82 6h12v12M94 82v12H82M18 94H6V82" fill="none" stroke="var(--line-strong)" stroke-width="1.2"/>
               </svg>
-              <span class="media-slot__label"><span data-zh>配图占位 · 建议比例 4:3</span><span data-en hidden>Image placeholder · 4:3 suggested</span></span>
+              <span class="media-slot__label"><span data-zh>配图占位 / 建议比例 4:3</span><span data-en hidden>Image placeholder / 4:3 suggested</span></span>
             </figure>
           </div>
         </section>
@@ -421,7 +421,7 @@ footer.footer-spring{transition:transform .4s var(--ease)}
         </article>
         <article class="card">
           <h3><span data-zh>真正就地编辑</span><span data-en hidden>True In-place Editing</span></h3>
-          <p><span data-zh>顶部标题、左侧 Tab 双击即可改名：不出现输入框、背景不变、字号前后一致，容器大小随文字自然伸缩。</span><span data-en hidden>Double-click the title above or a tab: no input box appears, background stays the same, type size is unchanged, the container simply resizes with the text.</span></p>
+          <p><span data-zh>顶部标题，左侧 Tab 双击即可改名：不出现输入框，背景不变，字号前后一致，容器大小随文字自然伸缩。</span><span data-en hidden>Double-click the title above or a tab: no input box appears, background stays the same, type size is unchanged, the container simply resizes with the text.</span></p>
           <span class="tag">02 / EDIT</span>
           <svg class="card-deco card-deco--dots" viewBox="0 0 60 60" aria-hidden="true">
             <circle class="art-fill float" cx="10" cy="42" r="4"/>
@@ -448,7 +448,7 @@ footer.footer-spring{transition:transform .4s var(--ease)}
         </article>
         <article class="card">
           <h3><span data-zh>默认可访问</span><span data-en hidden>Accessible by Default</span></h3>
-          <p><span data-zh>键盘焦点、语义标签、响应式断点、reduced-motion，都是设计的一部分。</span><span data-en hidden>Keyboard focus, semantic markup, breakpoints and reduced motion are part of the design.</span></p>
+          <p><span data-zh>键盘焦点，语义标签，响应式断点，reduced-motion，都是设计的一部分。</span><span data-en hidden>Keyboard focus, semantic markup, breakpoints and reduced motion are part of the design.</span></p>
           <span class="tag">05 / A11Y</span>
           <svg class="card-deco card-deco--rounded" viewBox="0 0 60 60" aria-hidden="true">
             <rect class="art-fill" x="6" y="6" width="18" height="18" rx="6"/>
@@ -459,7 +459,7 @@ footer.footer-spring{transition:transform .4s var(--ease)}
           <svg class="media-slot__ticks" viewBox="0 0 100 100" preserveAspectRatio="none">
             <path d="M6 18V6h12M82 6h12v12M94 82v12H82M18 94H6V82" fill="none" stroke="var(--line-strong)" stroke-width="1.2"/>
           </svg>
-          <span class="media-slot__label"><span data-zh>配图占位 · 建议比例 21:9（宽幅横幅）</span><span data-en hidden>Image placeholder · 21:9 suggested (wide banner)</span></span>
+          <span class="media-slot__label"><span data-zh>配图占位 / 建议比例 21:9（宽幅横幅）</span><span data-en hidden>Image placeholder / 21:9 suggested (wide banner)</span></span>
         </figure>
       </div>
     </section>
@@ -515,34 +515,34 @@ footer.footer-spring{transition:transform .4s var(--ease)}
     <section class="section reveal legend">
       <div class="section-title">INDEX / 设计要素索引</div>
       <dl>
-        <dt>Floating Navbar</dt><dd><span data-zh>顶部悬浮导航栏，材质与 .menu/.card 一致的哑光纸质（无玻璃拟态），向下滚动隐藏、向上滚动或回到顶部时显示</span><span data-en hidden>A floating navbar in the same matte-paper material as .menu/.card (no glassmorphism) — hides on scroll-down, reappears on scroll-up or near the top</span></dd>
+        <dt>Floating Navbar</dt><dd><span data-zh>顶部悬浮导航栏，材质与 .menu/.card 一致的哑光纸质（无玻璃拟态），向下滚动隐藏，向上滚动或回到顶部时显示</span><span data-en hidden>A floating navbar in the same matte-paper material as .menu/.card (no glassmorphism) — hides on scroll-down, reappears on scroll-up or near the top</span></dd>
         <dt>Even Distribution</dt><dd><span data-zh>导航栏用 justify-content: space-between 让品牌 / 导航 / 操作区始终两端对齐，窄屏也不会挤在一侧</span><span data-en hidden>The navbar uses space-between so brand / nav / actions stay spread out, even on narrow screens</span></dd>
         <dt>Floating Bento Mega-menu</dt><dd><span data-zh>窄屏汉堡菜单是紧贴按钮悬浮的 2×2 网格面板，不占用页面空间</span><span data-en hidden>The mobile hamburger opens a floating 2×2 grid panel anchored to the button, never pushing page content down</span></dd>
         <dt>Borderless Search Pill</dt><dd><span data-zh>点击展开为一个整体圆角胶囊，输入焦点不再单独出现方形高光</span><span data-en hidden>Expands into one rounded pill; focus no longer shows a clashing square ring</span></dd>
-        <dt>Low-Chrome / Borderless</dt><dd><span data-zh>导航图标按钮、Tab 与标题的就地编辑</span><span data-en hidden>Navbar icon buttons, in-place editing on tabs and title</span></dd>
+        <dt>Low-Chrome / Borderless</dt><dd><span data-zh>导航图标按钮，Tab 与标题的就地编辑</span><span data-en hidden>Navbar icon buttons, in-place editing on tabs and title</span></dd>
         <dt>Container-as-Control</dt><dd><span data-zh>双击 Tab 或站点标题直接编辑，不出现框中框</span><span data-en hidden>Double-click a tab or the site title to edit in place — no box inside a box</span></dd>
-        <dt>True In-place Editing</dt><dd><span data-zh>用 contenteditable 而非 input 实现：容器大小、背景色、字号编辑前后完全一致</span><span data-en hidden>Implemented with contenteditable instead of an input — container size, background and type size are identical before and after</span></dd>
-        <dt>Scattered Decoration</dt><dd><span data-zh>Hero 背景一笔连贯的手绘感曲线、Logo 标记、三张卡片角标——分散点缀，不是一张插画</span><span data-en hidden>A single continuous hand-drawn-feel curve behind the hero, a logo mark, three card corner accents — scattered touches, not one illustration</span></dd>
+        <dt>True In-place Editing</dt><dd><span data-zh>用 contenteditable 而非 input 实现：容器大小，背景色，字号编辑前后完全一致</span><span data-en hidden>Implemented with contenteditable instead of an input — container size, background and type size are identical before and after</span></dd>
+        <dt>Scattered Decoration</dt><dd><span data-zh>Hero 背景一笔连贯的手绘感曲线，Logo 标记，三张卡片角标——分散点缀，不是一张插画</span><span data-en hidden>A single continuous hand-drawn-feel curve behind the hero, a logo mark, three card corner accents — scattered touches, not one illustration</span></dd>
         <dt>Dot Grid + Paper Grain</dt><dd><span data-zh>全局背景，暖灰基调</span><span data-en hidden>Global background, warm-gray base</span></dd>
         <dt>Off-Black / Off-White</dt><dd><span data-zh>全局配色 token，两种模式均不用纯黑纯白</span><span data-en hidden>Global color tokens — neither mode uses pure black or white</span></dd>
         <dt>5 Accent Themes × Dark Mode</dt><dd><span data-zh>导航栏主题按钮，青绿 + 暗色为默认组合</span><span data-en hidden>Navbar theme button — verdigris + dark is the default pairing</span></dd>
-        <dt>Icon Morph</dt><dd><span data-zh>"+" 按钮、导航汉堡、搜索图标关闭态、Motion State 演示，共用同一套动效</span><span data-en hidden>The "+" button, nav hamburger, search-close icon and Motion State demo all share the same morph</span></dd>
+        <dt>Icon Morph</dt><dd><span data-zh>"+" 按钮，导航汉堡，搜索图标关闭态，Motion State 演示，共用同一套动效</span><span data-en hidden>The "+" button, nav hamburger, search-close icon and Motion State demo all share the same morph</span></dd>
         <dt>Icon-only Controls (dense navbar)</dt><dd><span data-zh>语言 / 明暗 / 主题在导航栏中为纯图标，靠 aria-label / title 兜底语义</span><span data-en hidden>Language, mode and theme are icon-only in the navbar, with aria-label / title as the semantic fallback</span></dd>
         <dt>Icon + Text Consistency (elsewhere)</dt><dd><span data-zh>下拉菜单与移动端网格菜单中的操作项统一图标+文字，不混用</span><span data-en hidden>Dropdown and mobile grid-menu items are uniformly icon+text — never mixed</span></dd>
-        <dt>Reserved Media Space</dt><dd><span data-zh>Hero 与 Bento 网格中各留了一处配图占位（4:3、21:9）</span><span data-en hidden>One media placeholder in the hero (4:3) and one in the bento grid (21:9)</span></dd>
+        <dt>Reserved Media Space</dt><dd><span data-zh>Hero 与 Bento 网格中各留了一处配图占位（4:3，21:9）</span><span data-en hidden>One media placeholder in the hero (4:3) and one in the bento grid (21:9)</span></dd>
         <dt>Skeleton Loading</dt><dd><span data-zh>PROGRESSIVE 区块首卡片</span><span data-en hidden>First card in the Progressive section</span></dd>
         <dt>Viewport Reveal</dt><dd><span data-zh>各区块滚动进入视口后渐入</span><span data-en hidden>Sections fade in as they enter the viewport</span></dd>
         <dt>First-screen Completeness</dt><dd><span data-zh>Tab + Hero 独占一屏（桌面端），悬浮导航栏叠加其上，不挤占版面</span><span data-en hidden>Tabs + hero occupy exactly one screen on desktop; the floating navbar overlays without taking layout space</span></dd>
         <dt>Elastic Footer Pull</dt><dd><span data-zh>固定悬浮在页面底部之上（非文档流内容）；继续下拉时塔层按橡皮筋缓动逐层展开——塔基先出现，松手后逐层收回；完全展开后松手会弹回页面顶部。用 wheel / touch 事件配合缓动模拟，并非浏览器原生 overscroll</span><span data-en hidden>Fixed above the page (not document-flow content); continued pulling reveals tiers one by one with rubber-band easing — base first, then narrower tiers toward the peak; releasing at full extension bounces the page back to top. Approximated via wheel / touch listeners with easing, not native browser overscroll</span></dd>
-        <dt>Reduced Motion / Keyboard / ARIA</dt><dd><span data-zh>全站遵循 prefers-reduced-motion、:focus-visible、语义化标签</span><span data-en hidden>Site-wide support for prefers-reduced-motion, :focus-visible and semantic markup</span></dd>
+        <dt>Reduced Motion / Keyboard / ARIA</dt><dd><span data-zh>全站遵循 prefers-reduced-motion，:focus-visible，语义化标签</span><span data-en hidden>Site-wide support for prefers-reduced-motion, :focus-visible and semantic markup</span></dd>
       </dl>
     </section>
   </main>
 </div>
 
 <footer>
-  <span><span data-zh>触感数字 · 模板 v6</span><span data-en hidden>TACTILE DIGITAL / TEMPLATE v6</span></span>
-  <span>RESPONSIVE · A11Y · REDUCED MOTION · BILINGUAL</span>
+  <span><span data-zh>触感数字 / 模板 v6</span><span data-en hidden>TACTILE DIGITAL / TEMPLATE v6</span></span>
+  <span>RESPONSIVE / A11Y / REDUCED MOTION / BILINGUAL</span>
 </footer>
 <div class="elastic-pull" id="elasticPull" aria-hidden="true">
   <span class="elastic-pull__tier" style="--w:100%;--o:.55"></span>
