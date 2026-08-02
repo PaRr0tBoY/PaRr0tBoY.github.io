@@ -28,7 +28,7 @@ export default {
     page: "Page",
   },
   home: {
-    eyebrow: "Ideas · Notes · Writing",
+    eyebrow: "Ideas / Notes / Writing",
     socialLinks: "Social Links",
     featured: "Featured",
     recentPosts: "Recent Posts",

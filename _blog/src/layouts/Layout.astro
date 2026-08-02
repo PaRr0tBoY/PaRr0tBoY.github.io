@@ -34,6 +34,7 @@ const rssHref = getRelativeLocaleUrl(
 <html
   dir={site.dir ?? "ltr"}
   lang={Astro.currentLocale ?? site.lang}
+  data-mode="dark"
   class="overflow-y-scroll scroll-smooth"
 >
   <head>
@@ -46,12 +47,8 @@ const rssHref = getRelativeLocaleUrl(
     <!-- Critical background: no white flash before the bundled CSS lands,
          and the themed canvas survives view-transition crossfades. -->
     <style is:inline>
-      html {
-        background-color: #20211f;
-      }
-      html[data-theme="light"] {
-        background-color: #e9e6dc;
-      }
+      html { background-color: #20211f; }
+      html[data-mode="light"] { background-color: #e9e6dc; }
     </style>
 
     <!-- Font -->
@@ -115,13 +112,10 @@ const rssHref = getRelativeLocaleUrl(
     -->
     <script is:inline>
       (function () {
-        const stored = localStorage.getItem("theme");
-        const theme = stored ?? "dark";
-        const root = document.firstElementChild;
-        root?.setAttribute("data-theme", theme);
-        root?.classList.toggle("dark", theme === "dark");
-        // Expose value so theme.ts can skip re-detection.
-        window.__theme = { value: theme };
+        const mode = localStorage.getItem("mode") ?? "dark";
+        const root = document.documentElement;
+        root.setAttribute("data-mode", mode);
+        window.__theme = { value: mode };
       })();
     </script>
 

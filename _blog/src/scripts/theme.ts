@@ -1,4 +1,4 @@
-const THEME_KEY = "theme";
+const THEME_KEY = "mode";
 const LIGHT = "light";
 const DARK = "dark";
 
@@ -21,17 +21,12 @@ function persist(): void {
 }
 
 function reflect(): void {
-  const root = document.firstElementChild;
-  root?.setAttribute("data-theme", themeValue);
-  root?.classList.toggle("dark", themeValue === DARK);
+  const root = document.documentElement;
+  root.setAttribute("data-mode", themeValue);
+  root.classList.toggle("dark", themeValue === DARK);
   document.querySelector("#theme-btn")?.setAttribute("aria-label", themeValue);
-
-  // Fill <meta name="theme-color"> with the computed background colour so
-  // Android's browser chrome matches the page background.
   const bg = window.getComputedStyle(document.body).backgroundColor;
-  document
-    .querySelector("meta[name='theme-color']")
-    ?.setAttribute("content", bg);
+  document.querySelector("meta[name='theme-color']")?.setAttribute("content", bg);
 }
 
 function setup(): void {
@@ -61,13 +56,7 @@ document.addEventListener("astro:before-swap", event => {
       .querySelector("meta[name='theme-color']")
       ?.setAttribute("content", color);
   }
-  // Astro's swapRootAttributes copies the incoming <html> attributes onto the
-  // live document, dropping any the incoming one lacks. The incoming document
-  // is parsed with DOMParser, so its inline FOUC script never ran and
-  // data-theme is absent — without carrying it here the page falls back to the
-  // CSS `:root` default (light) for a frame, and the view-transition snapshot
-  // captures exactly that flash.
-  newDoc.documentElement.setAttribute("data-theme", themeValue);
+  newDoc.documentElement.setAttribute("data-mode", themeValue);
   newDoc.documentElement.classList.toggle("dark", themeValue === DARK);
 });
 

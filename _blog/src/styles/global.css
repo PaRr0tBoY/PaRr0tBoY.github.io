@@ -1,9 +1,10 @@
+@import "../../../assets/site-shell.css";
 @import "tailwindcss";
 @import "./theme.css";
 @import "./typography.css";
 @import "rehype-callouts/theme/obsidian";
 
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@custom-variant dark (&:where([data-mode=dark], [data-mode=dark] *));
 
 /* =====================================================================
    v7 world — Technical Editorial Minimalism + Tactile Motion (Read mode)

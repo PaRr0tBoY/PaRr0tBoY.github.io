@@ -20,8 +20,7 @@
    FOUC window, JS disabled) paints the dark identity — never a flash of
    light. Light mode must opt in explicitly. */
 :root,
-[data-theme="dark"] {
-  --bg: #20211f;
+[data-mode="dark"] {
   --surface: #282925;
   --surface-2: rgba(255, 255, 255, 0.035);
   --ink: #e8e6de;
@@ -39,8 +38,7 @@
 }
 
 /* Light mode — paper in daylight, explicit opt-in */
-[data-theme="light"] {
-  --bg: #e9e6dc;
+[data-mode="light"] {
   --surface: #f2efe7;
   --surface-2: rgba(255, 255, 255, 0.42);
   --ink: #292925;
