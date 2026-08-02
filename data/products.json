@@ -1,51 +1,75 @@
 [
   {
     "name": "Volante",
-    "desc": "一个面向 Vivaldi 的社区整合包：把 CSS 模块、JS 脚本和安装流程整理成可以探索、组合、反复调整的浏览器工作台。",
-    "index": "01 / ACTIVE",
+    "desc": "Rebuild Vivaldi into a modern AI browser with mods.",
+    "index": "01 / OPEN SOURCE",
     "state": "VIVALDI / CSS + JS / OPEN SOURCE",
     "wide": true,
     "portal": true,
+    "core": true,
     "links": [
       { "label": "查看产品", "short": "Landing", "href": "/product/volante/landing/", "type": "primary" },
-      { "label": "阅读文档", "short": "Docs", "href": "/product/volante/doc/", "type": "doc" },
+      { "label": "阅读文档", "short": "Docs", "href": "/docs/", "type": "doc" },
       { "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Awesome-Vivaldi", "type": "github" }
     ]
   },
   {
+    "name": "Pola Agent",
+    "desc": "SolidWorks AI agent that models, assembles and exports via COM.",
+    "index": "02 / OPEN SOURCE",
+    "state": "SOLIDWORKS / AI / COM",
+    "wide": false,
+    "portal": false,
+    "core": true,
+    "links": [{ "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Pola-Agent", "type": "github" }]
+  },
+  {
+    "name": "hive",
+    "desc": "My fork of herdr, which keeps you in flow.",
+    "wide": false,
+    "portal": false,
+    "core": true,
+    "state": "FLOW / DESKTOP / FORK",
+    "links": [{ "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/hive", "type": "github" }]
+  },
+  {
     "name": "Techne",
-    "desc": "关于工具、知识和工程实践的实验性产品方向。",
-    "index": "02 / EXPLORING",
+    "desc": "My skills and slash commands for AI coding agents.",
+    "index": "04 / OPEN SOURCE",
     "state": "TOOLS / KNOWLEDGE / EXPERIMENT",
     "wide": false,
     "portal": true,
     "links": [
       { "label": "查看产品", "short": "Landing", "href": "/product/techne/landing/", "type": "primary" },
-      { "label": "阅读文档", "short": "Docs", "href": "/product/techne/doc/", "type": "doc" }
+      { "label": "阅读文档", "short": "Docs", "href": "/product/techne/doc/", "type": "doc" },
+      { "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Techne", "type": "github" }
     ]
   },
   {
     "name": "Trace",
-    "desc": "工作空间 · 项目管理与协作",
-    "index": "03 / IDEA",
-    "state": "",
+    "desc": "AI-native task manager that lives on your desktop edge.",
+    "index": "05 / OPEN SOURCE",
+    "state": "TASKS / DESKTOP / AI",
+    "wide": false,
     "portal": false,
-    "links": []
+    "links": [{ "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Trace", "type": "github" }]
   },
   {
     "name": "Plateau",
-    "desc": "学习工作台 · 笔记与知识管理",
-    "index": "04 / IDEA",
-    "state": "",
+    "desc": "My personal workbench, yet to be open sourced.",
+    "index": "06 / PRIVATE",
+    "state": "WORKBENCH / PRIVATE",
+    "wide": false,
     "portal": false,
-    "links": []
+    "links": [{ "label": "打开主页", "short": "Website", "href": "https://acidev.cc/", "type": "primary" }]
   },
   {
-    "name": "Polaris",
-    "desc": "机械工程领域的编码 Agent",
-    "index": "05 / IDEA",
-    "state": "",
+    "name": "Tau",
+    "desc": "My fork of oh-my-pi.",
+    "index": "07 / OPEN SOURCE",
+    "state": "AGENTS / FORK",
+    "wide": false,
     "portal": false,
-    "links": []
+    "links": [{ "label": "GitHub ↗", "short": "GitHub", "href": "https://github.com/PaRr0tBoY/Tau", "type": "github" }]
   }
 ]
