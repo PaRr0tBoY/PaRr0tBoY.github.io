@@ -8,7 +8,6 @@ draft: false
 tags:
   - general
 description: "测试文章带图片。"
-ogImage: /img/posts/test-image.png
 ---
 
 这是一篇测试文章带图片。
