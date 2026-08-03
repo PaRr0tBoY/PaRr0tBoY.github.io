@@ -3,7 +3,7 @@ import { defineAstroPaperConfig } from "./src/types/config";
 export default defineAstroPaperConfig({
   site: {
     url: "https://acidev.cc",
-    title: "Mortalman",
+    title: "Acidev",
     description: "A personal blog that hosts ideas, products, resources and everything about me.",
     author: "Acid",
     profile: "https://github.com/PaRr0tBoY",
