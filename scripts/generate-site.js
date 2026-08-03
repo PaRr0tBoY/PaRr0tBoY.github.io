@@ -171,11 +171,13 @@ const xml = (tag, urls) =>
   `\n</${tag}>\n`;
 
 fs.writeFileSync(path.join(ROOT, "sitemap-main.xml"), xml("urlset", mainUrls));
-fs.writeFileSync(
-  path.join(ROOT, "sitemap-index.xml"),
+const indexXml =
   `<?xml version="1.0" encoding="UTF-8"?>\n<sitemapindex xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
-    `  <sitemap><loc>${SITE}/sitemap-main.xml</loc></sitemap>\n` +
-    `  <sitemap><loc>${SITE}/blog/sitemap-0.xml</loc></sitemap>\n</sitemapindex>\n`
-);
+  `  <sitemap><loc>${SITE}/sitemap-main.xml</loc></sitemap>\n` +
+  `  <sitemap><loc>${SITE}/blog/sitemap-0.xml</loc></sitemap>\n</sitemapindex>\n`;
+// sitemap.xml is an alias of the index: the most commonly guessed sitemap URL
+// (and what some tools/plugins submit) must resolve instead of 404.
+fs.writeFileSync(path.join(ROOT, "sitemap-index.xml"), indexXml);
+fs.writeFileSync(path.join(ROOT, "sitemap.xml"), indexXml);
 
 console.log(`[generate-site] OK — ${toolsList.length} tools, ${products.length} products (${portalProducts.length} on product portal), sitemaps written`);
