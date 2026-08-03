@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-CN" data-mode="dark">
+<html lang="en" data-mode="dark">
 <head>
 <script>(function(){var r=document.documentElement;if(localStorage.getItem("mode")==="light"){r.setAttribute("data-mode","light")}})()</script>
 <meta charset="UTF-8">
@@ -901,7 +901,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
       <span class="icon"><svg class="brand-mark" width="20" height="20" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="side-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#side-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg></span>
       Awesome Vivaldi
     </a>
-    <div class="subtitle"><span data-zh>文档中心</span><span data-en hidden>Documentation Portal</span></div>
+    <div class="subtitle"><span data-zh hidden>文档中心</span><span data-en>Documentation Portal</span></div>
   </div>
 
   <nav class="sidebar-nav" id="sidebarNav">
@@ -939,7 +939,7 @@ a:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid 
       <button class="theme-toggle" id="themeToggle" title="Toggle dark/light theme" aria-label="Toggle dark/light theme">
         <svg id="themeIconSun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
         <svg id="themeIconMoon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display:none"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
-        <span><span data-zh>主题</span><span data-en hidden>Theme</span></span>
+        <span><span data-zh hidden>主题</span><span data-en>Theme</span></span>
       </button>
       <a class="topbar-github" href="https://github.com/PaRr0tBoY/Awesome-Vivaldi" target="_blank" rel="noreferrer">GitHub <span aria-hidden="true">↗</span></a>
       <button class="menu-btn" id="menuBtn" aria-label="Toggle navigation menu" aria-expanded="false">
@@ -1205,7 +1205,7 @@ function applyLang(en) {
   else if (activeCategory) navigateToCategory(activeCategory);
 }
 setTheme(getTheme());
-applyLang(localStorage.getItem('lang') === 'en');
+applyLang((localStorage.getItem('lang') || 'en') === 'en');
 themeToggle.addEventListener('click', () => setTheme(getTheme() === 'dark' ? 'light' : 'dark'));
 langBtn.addEventListener('click', () => applyLang(document.documentElement.lang !== 'en'));
 

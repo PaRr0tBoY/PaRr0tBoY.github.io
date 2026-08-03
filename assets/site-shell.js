@@ -22,7 +22,7 @@
     localStorage.setItem('lang', en ? 'en' : 'zh-CN');
   };
   setMode(savedMode !== 'light');
-  setLang(savedLang === 'en');
+  setLang((savedLang || 'en') === 'en');
   lang?.addEventListener('click', () => setLang(root.lang !== 'en'));
   mode?.addEventListener('click', () => setMode(root.dataset.mode !== 'dark'));
   let last = scrollY, ticking = false;

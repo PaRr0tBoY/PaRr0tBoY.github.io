@@ -1,21 +1,23 @@
 <!doctype html>
-<html lang="zh-CN" data-theme="verdigris" data-mode="dark">
+<html lang="en" data-theme="verdigris" data-mode="dark">
 
 <head>
-<script>(function(){var r=document.documentElement;if(localStorage.getItem("mode")==="light"){r.setAttribute("data-mode","light")}})()</script>
+  <script>(function () { var r = document.documentElement; if (localStorage.getItem("mode") === "light") { r.setAttribute("data-mode", "light") } })()</script>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#20211f">
   <title>Acid / PaRr0tBoY — 机械工程 · 工具 · 博客</title>
-  <meta name="description" content="Acid / PaRr0tBoY — 机械工程、浏览器工具、产品与博客 / mechanical engineering, tools, products, blog and wiki.">
+  <meta name="description"
+    content="Acid / PaRr0tBoY — 机械工程、浏览器工具、产品与博客 / mechanical engineering, tools, products, blog and wiki.">
   <link rel="canonical" href="https://acidev.cc/">
   <link rel="icon" type="image/svg+xml" href="assets/logo/favicon.svg">
   <link rel="stylesheet" href="assets/site-shell.css">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Acid / PaRr0tBoY">
   <meta property="og:title" content="Acid / PaRr0tBoY — 机械工程 · 工具 · 博客">
-  <meta property="og:description" content="Acid / PaRr0tBoY — 机械工程、浏览器工具、产品与博客 / mechanical engineering, tools, products, blog and wiki.">
+  <meta property="og:description"
+    content="Acid / PaRr0tBoY — 机械工程、浏览器工具、产品与博客 / mechanical engineering, tools, products, blog and wiki.">
   <meta property="og:url" content="https://acidev.cc/">
   <meta property="og:image" content="https://acidev.cc/assets/og-default.png">
   <meta name="twitter:card" content="summary_large_image">
@@ -251,7 +253,10 @@
       padding-top: 72px
     }
 
-    .hero{transform:translateY(-18px)}
+    .hero {
+      transform: translateY(-18px)
+    }
+
     .hero {
       display: grid;
       grid-template-columns: minmax(0, 1.06fr) minmax(330px, .94fr);
@@ -266,6 +271,7 @@
       color: var(--accent);
       text-transform: uppercase
     }
+
 
     .hero h1 {
       font-size: clamp(48px, 8vw, 110px);
@@ -392,8 +398,15 @@
       margin: 0
     }
 
-    .products-head{border-bottom:0;padding-bottom:0;margin-bottom:8px}
-    .products-head h2{font-size:13px}
+    .products-head {
+      border-bottom: 0;
+      padding-bottom: 0;
+      margin-bottom: 8px
+    }
+
+    .products-head h2 {
+      font-size: 13px
+    }
 
     .section-head h2 small {
       font: 11px "IBM Plex Mono";
@@ -414,7 +427,43 @@
       gap: 12px
     }
 
-    .core-products{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:8px}.core-products .project{min-height:154px}.core-products .project h3{margin-top:22px}.core-products .project .links{position:static;margin-top:16px}@media(max-width:900px){.core-products{grid-template-columns:1fr 1fr;margin-top:0}}@media(max-width:600px){.core-products{grid-template-columns:1fr}.core-products .project{min-height:140px}}
+    .core-products {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 8px
+    }
+
+    .core-products .project {
+      min-height: 154px
+    }
+
+    .core-products .project h3 {
+      margin-top: 22px
+    }
+
+    .core-products .project .links {
+      position: static;
+      margin-top: 16px
+    }
+
+    @media(max-width:900px) {
+      .core-products {
+        grid-template-columns: 1fr 1fr;
+        margin-top: 0
+      }
+    }
+
+    @media(max-width:600px) {
+      .core-products {
+        grid-template-columns: 1fr
+      }
+
+      .core-products .project {
+        min-height: 140px
+      }
+    }
+
     .project {
       position: relative;
       min-height: 218px;
@@ -437,7 +486,21 @@
       grid-row: 1 / span 2;
       min-height: 448px
     }
-    .project-grid .project:nth-child(2){grid-column:2;grid-row:1}.project-grid .project:nth-child(3){grid-column:3;grid-row:1}.project-grid .project:nth-child(4){grid-column:2 / span 2;grid-row:2}
+
+    .project-grid .project:nth-child(2) {
+      grid-column: 2;
+      grid-row: 1
+    }
+
+    .project-grid .project:nth-child(3) {
+      grid-column: 3;
+      grid-row: 1
+    }
+
+    .project-grid .project:nth-child(4) {
+      grid-column: 2 / span 2;
+      grid-row: 2
+    }
 
     .project .num {
       font: 10px "IBM Plex Mono";
@@ -487,6 +550,7 @@
       color: var(--accent);
       opacity: .12
     }
+
     .project-grid .project:first-child .mark {
       font-size: 160px;
       right: -2px;
@@ -827,6 +891,7 @@
       .project-grid {
         display: block
       }
+
       .project,
       .project-grid .project:first-child {
         min-height: 205px;
@@ -875,9 +940,9 @@
     }
 
     .hero h1 {
-      font-size: clamp(42px, 6.1vw, 76px);
-      line-height: 1.02;
-      letter-spacing: -.06em;
+      font-size: clamp(32px, 4.6vw, 48px);
+      line-height: 1.08;
+      letter-spacing: -.015em;
       max-width: 650px
     }
 
@@ -885,6 +950,7 @@
       color: var(--accent);
       font-weight: 600
     }
+
 
     .hero-title {
       display: block
@@ -924,7 +990,7 @@
 
     @media(max-width:600px) {
       .hero h1 {
-        font-size: clamp(42px, 12vw, 62px)
+        font-size: clamp(30px, 10vw, 44px)
       }
     }
 
@@ -1221,10 +1287,10 @@
           <circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#nav-eye)" />
           <path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z" />
         </svg><span class="brand-name">main</span></a>
-      <nav class="nav" aria-label="Primary"><a href="#work"><span data-zh>作品</span><span data-en
-            hidden>Work</span></a><a href="#tools"><span data-zh>工具</span><span data-en hidden>Tools</span></a><a
-          href="#blog"><span data-zh>博客</span><span data-en hidden>Blog</span></a><a
-          href="graphify-out/graph.html"><span data-zh>Wiki</span><span data-en hidden>Wiki</span></a></nav>
+      <nav class="nav" aria-label="Primary"><a href="#work"><span data-zh hidden>作品</span><span
+            data-en>Work</span></a><a href="#tools"><span data-zh hidden>工具</span><span data-en>Tools</span></a><a
+          href="#blog"><span data-zh hidden>博客</span><span data-en>Blog</span></a><a
+          href="graphify-out/graph.html"><span data-zh hidden>Wiki</span><span data-en>Wiki</span></a></nav>
       <div class="controls"><button class="control" id="langBtn" type="button" aria-label="切换语言 / Switch language"
           title="切换语言 / Switch language"><svg viewBox="0 0 16 16" aria-hidden="true">
             <circle cx="8" cy="8" r="6.2" />
@@ -1244,39 +1310,49 @@
     <section class="fold" aria-labelledby="intro-title">
       <div class="hero">
         <div class="copy reveal">
-          <div class="eyebrow"><span data-zh>机械工程与数字实践</span><span data-en hidden>Mechanical engineering and digital practice</span></div>
-          <h1 id="intro-title"><span class="hero-title" data-zh>Fire and <strong>Motion.</strong></span><span
-              class="hero-title" data-en hidden>Fire and <strong>Motion.</strong></span></h1>
-          <p class="lead"><span data-zh>我是 <strong>Acid</strong>，机械工程师。爱好 Agentic Engineering。</span><span
-              data-en hidden>I'm <strong>Acid</strong>, a mechanical engineer. My hobby is Agentic Engineering.</span></p>
-          <div class="hero-actions"><a class="action primary" href="#work"><span data-zh>查看作品</span><span data-en
-                hidden>Explore work</span></a><a class="action" href="https://github.com/PaRr0tBoY" target="_blank"
+          <div class="eyebrow"><span data-zh hidden>Fire and Motion</span><span data-en>Fire and Motion</span></div>
+          <h1 id="intro-title"><span class="hero-title" data-zh hidden>造轮子<br><strong>用来造轮子</strong></span><span
+              class="hero-title" data-en>Building the tools<br><strong>to build the tools.</strong></span></h1>
+          <p class="lead"><span data-zh hidden>我是 <strong>Acid</strong>，消磨时间，折腾配置，偶尔整点有用的。</span><span data-en>I'm
+              <strong>Acid</strong>, wasting time, breaking things, occasionally building stuff.</span></p>
+          <div class="hero-actions"><a class="action primary" href="#work"><span data-zh hidden>查看作品</span><span
+                data-en>Explore work</span></a><a class="action" href="https://github.com/PaRr0tBoY" target="_blank"
               rel="noopener">GitHub</a></div>
         </div>
-        <div class="instrument reveal" aria-label="Projects in a working constellation"><svg
-            viewBox="0 0 440 330" role="img">
+        <div class="instrument reveal" aria-label="Projects in a working constellation"><svg viewBox="0 0 440 330"
+            role="img">
             <ellipse class="orbit" id="orbit-1" cx="220" cy="164" rx="150" ry="143" />
             <ellipse class="orbit-dash" id="orbit-2" cx="220" cy="164" rx="126" ry="74" />
             <ellipse class="orbit" id="orbit-3" cx="220" cy="164" rx="96" ry="83" />
             <ellipse class="orbit" id="orbit-4" cx="220" cy="164" rx="62" ry="33" />
-            <circle class="node-soft" cx="220" cy="164" r="48" /><circle class="node" cx="220" cy="164" r="7" /><text x="205" y="184">ACID</text><text id="lbl-volante" x="370" y="164" text-anchor="middle" dominant-baseline="middle">VOLANTE</text><text id="lbl-pola" x="229" y="238" text-anchor="middle" dominant-baseline="middle">POLA AGENT</text><text id="lbl-hive" x="127" y="184" text-anchor="middle" dominant-baseline="middle">HIVE</text><text id="lbl-trace" x="70" y="156" text-anchor="middle" dominant-baseline="middle">TRACE</text><text id="lbl-plateau" x="218" y="90" text-anchor="middle" dominant-baseline="middle">PLATEAU</text><text id="lbl-tau" x="275" y="149" text-anchor="middle" dominant-baseline="middle">TAU</text>
+            <circle class="node-soft" cx="220" cy="164" r="48" />
+            <circle class="node" cx="220" cy="164" r="7" /><text x="205" y="184">ACID</text><text id="lbl-volante"
+              x="370" y="164" text-anchor="middle" dominant-baseline="middle">VOLANTE</text><text id="lbl-pola" x="229"
+              y="238" text-anchor="middle" dominant-baseline="middle">POLA AGENT</text><text id="lbl-hive" x="127"
+              y="184" text-anchor="middle" dominant-baseline="middle">HIVE</text><text id="lbl-trace" x="70" y="156"
+              text-anchor="middle" dominant-baseline="middle">TRACE</text><text id="lbl-plateau" x="218" y="90"
+              text-anchor="middle" dominant-baseline="middle">PLATEAU</text><text id="lbl-tau" x="275" y="149"
+              text-anchor="middle" dominant-baseline="middle">TAU</text>
           </svg></div>
       </div>
-      <div class="section-head products-head"><h2><span data-zh>产品</span><span data-en hidden>Products</span> <small><span data-zh>Products</span><span data-en hidden>产品</span></small></h2><span>3 products</span></div>
+      <div class="section-head products-head">
+        <h2><span data-zh hidden>产品</span><span data-en>Products</span> <small><span data-zh hidden>Products</span><span
+              data-en>产品</span></small></h2><span>3 products</span>
+      </div>
       <div class="core-products" id="core-products"></div>
     </section>
     <section id="work" class="section">
       <div class="section-head">
-        <h2><span data-zh>正在构建</span><span data-en hidden>Building</span> <small><span data-zh>Building</span><span
-              data-en hidden>正在构建</span></small></h2><span>4 projects</span>
+        <h2><span data-zh hidden>正在构建</span><span data-en>Building</span> <small><span data-zh
+              hidden>Building</span><span data-en>正在构建</span></small></h2><span>4 projects</span>
       </div>
       <div class="project-grid" id="projects"></div>
     </section>
     <section class="section content-grid">
       <div id="tools" class="content-column">
         <div class="section-head">
-          <h2><span data-zh>工具</span><span data-en hidden>Tools</span> <small><span data-zh>Tools</span><span data-en
-                hidden>工具</span></small></h2><span>16 tools</span>
+          <h2><span data-zh hidden>工具</span><span data-en>Tools</span> <small><span data-zh hidden>Tools</span><span
+                data-en>工具</span></small></h2><span>16 tools</span>
         </div>
         <div class="content-panel">
           <div class="launcher" id="tool-grid"></div>
@@ -1284,14 +1360,14 @@
       </div>
       <div id="blog" class="content-column">
         <div class="section-head">
-          <h2><span data-zh>博客</span><span data-en hidden>Blog</span> <small><span data-zh>Blog</span><span data-en
-                hidden>博客</span></small></h2><span>4 notes</span>
+          <h2><span data-zh hidden>博客</span><span data-en>Blog</span> <small><span data-zh hidden>Blog</span><span
+                data-en>博客</span></small></h2><span>4 notes</span>
         </div>
         <div class="content-panel">
           <div class="blog-layout">
             <article class="featured-note" id="featured-note"></article>
             <div>
-              <div class="recent-title"><span data-zh>最近更新</span><span data-en hidden>Recent notes</span></div>
+              <div class="recent-title"><span data-zh hidden>最近更新</span><span data-en>Recent notes</span></div>
               <ul class="blog-list" id="blog-list"></ul>
             </div>
           </div>
@@ -1300,8 +1376,8 @@
     </section>
     <section class="section">
       <div class="section-head">
-        <h2><span data-zh>入口</span><span data-en hidden>Explore</span> <small><span data-zh>Explore</span><span data-en
-              hidden>入口</span></small></h2>
+        <h2><span data-zh hidden>入口</span><span data-en>Explore</span> <small><span data-zh hidden>Explore</span><span
+              data-en>入口</span></small></h2>
       </div>
       <div class="directory" id="directory"></div>
     </section>
@@ -1343,7 +1419,7 @@
     const ICON = { external: `<svg class="icon-external" viewBox="0 0 16 16" aria-hidden="true"><path d="M6 3h7v7M13 3 7 9M12 9v3.5a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-8a.5.5 0 0 1 .5-.5H7"/></svg>`, github: `<svg class="tool-icon" viewBox="0 0 24 24" aria-hidden="true"><path fill="currentColor" d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0 0 24 12c0-6.63-5.37-12-12-12Z"/></svg>`, doc: `<svg class="tool-icon" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 1.5h7l3 3v10H3zM10 1.5v3h3M5.5 8h5M5.5 10.5h5" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>`, wiki: `<svg class="dir-icon" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M3 12h18M12 3c3 3 3 15 0 18M12 3c-3 3-3 15 0 18" fill="none" stroke="currentColor" stroke-width="1.2"/></svg>` };
     const PRODUCTS = [{n:'Volante',d:'Rebuild Vivaldi into a modern AI browser with mods.',l:[['Landing','product/volante/landing/index.html','doc'],['Docs','docs/index.html','doc'],['GitHub','https://github.com/PaRr0tBoY/Awesome-Vivaldi','github']]},{n:'Pola Agent',d:'SolidWorks AI agent that models, assembles and exports via COM.',l:[['GitHub','https://github.com/PaRr0tBoY/Pola-Agent','github']]},{n:'hive',d:'My fork of herdr, which keeps you in flow.',l:[['GitHub','https://github.com/PaRr0tBoY/hive','github']]},{n:'Techne',d:'My skills and slash commands for AI coding agents.',l:[['Landing','product/techne/landing/index.html','doc'],['Docs','product/techne/doc/index.html','doc'],['GitHub','https://github.com/PaRr0tBoY/Techne','github']]},{n:'Trace',d:'AI-native task manager that lives on your desktop edge.',l:[['GitHub','https://github.com/PaRr0tBoY/Trace','github']]},{n:'Plateau',d:'My personal workbench, yet to be open sourced.',l:[['Website','https://acidev.cc/index.html','doc']]},{n:'Tau',d:'My fork of oh-my-pi.',l:[['GitHub','https://github.com/PaRr0tBoY/Tau','github']]}];
     const TOOL_GROUPS = [['Writing',[['Chronos','tools/chronos.html'],['LinSo','tools/linso.html'],['Snippy','tools/snippy.html']]],['Planning',[['FlowDay','tools/flowday.html'],['GanttLite','tools/ganttlite.html'],['SmartGoal','tools/smartgoal.html']]],['Data',[['DateCal','tools/datecal.html'],['MathBank','tools/mathbank.html']]],['Explore',[['CombineSearch','tools/combinesearch.html'],['Lookey','tools/lookey.html'],['TechFeed','tools/techfeed.html']]],['Make',[['LinSoo','tools/linsoo.html'],['Quadrant','tools/quadrant.html'],['Resume Tool','tools/resume-tool.html'],['Check','tools/check.html'],['LMdify','tools/lmdify.html']]]];
-    const BLOG = [['简单记点东西', 'first-post'], ['How to configure AstroPaper', 'how-to-configure-astropaper-theme'], ['Customizing color schemes', 'customizing-astropaper-theme-color-schemes'], ['Adding new posts', 'adding-new-posts-in-astro-paper-blog-posts'], ['Dynamic OG images', 'dynamic-og-image-generation-in-astro-paper-blog-posts'], ['How to add LaTeX equations', 'how-to-add-latex-equations-in-blog-posts'], ['How to update dependencies', 'how-to-update-dependencies'], ['Integrate Giscus comments', 'how-to-integrate-giscus-comments'], ['Setting dates via git hooks', 'setting-dates-via-git-hooks'], ['Predefined color schemes', 'predefined-color-schemes'], ['AstroPaper v6', 'astro-paper-v6'], ['AstroPaper v5', 'astro-paper-v5'], ['AstroPaper v4', 'astro-paper-v4'], ['AstroPaper v3', 'astro-paper-v3'], ['AstroPaper v2', 'astro-paper-2']];
+    const BLOG = [['SQL Server Practice: Multibyte Characters Displayed With Incorrect Encoding','multibyte-character-display-issues'],['Install-Sql-Server-on-Mac-With-Container','null'],['自由的代价','price-of-librime'],['Mac通用指南其一之访达','mac-universal-guide-1'],['Hexo框架迁移记录','hexo_framework'],['Arc浏览器Win版常见问题解决方法','arc_browser_problems_solved'],['Utools Crack','utools_crack'],['Chatgpt的最佳实践','chatgptsolvissues'],['用DNSBench找出解析域名速度最快的DNS','dnsbench'],['Git见解和常用指令','git_command']];
     const els = { projects: document.querySelector('#projects'), core: document.querySelector('#core-products'), tools: document.querySelector('#tool-grid'), blog: document.querySelector('#blog-list'), featured: document.querySelector('#featured-note'), directory: document.querySelector('#directory') };
     const productCard = (p, i, mark) => `<article class="project"><span class="num">0${i + 1}</span><h3>${p.n}</h3><p>${p.d}</p><div class="links">${p.l.map(([t, h, type]) => `<a href="${h}"${h.startsWith('http') ? ' target="_blank" rel="noopener"' : ''}>${type === 'github' ? ICON.github : ICON.doc}<span>${t}</span></a>`).join('')}</div>${mark ? `<span class="mark">${String(i + 1).padStart(2, '0')}</span>` : ''}</article>`;
     els.core.innerHTML = PRODUCTS.slice(0, 3).map((p, i) => productCard(p, i, false)).join('');

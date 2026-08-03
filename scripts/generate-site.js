@@ -30,6 +30,25 @@ const buildingProducts = products.filter(p => !p.core);
 // tools page lists cards in code order (TIME / 01 …); JSON array keeps homepage group order
 const byCode = (a, b) => Number(a.code.match(/\d+$/)[0]) - Number(b.code.match(/\d+$/)[0]);
 
+// tools/ 目录扫描：data/tools.json 未登记的新 .html 自动归入 Others 组
+const toolFiles = fs.readdirSync(path.join(ROOT, "tools")).filter(f => /\.html$/.test(f) && f !== "index.html");
+const knownHrefs = new Set(toolsList.map(t => t.href));
+const autoTools = [];
+for (const f of toolFiles) {
+  const href = "/tools/" + f;
+  if (knownHrefs.has(href)) continue;
+  const slug = f.replace(/\.html$/, "");
+  const name = slug.split(/[-_]/).map(w => (w ? w[0].toUpperCase() + w.slice(1) : w)).join(" ");
+  autoTools.push({
+    name,
+    href,
+    code: `OTHER / ${String(toolsList.length + autoTools.length + 1).padStart(2, "0")}`,
+    desc: "A tool hosted on this site.",
+    group: "Others"
+  });
+}
+const mergedTools = [...toolsList, ...autoTools];
+
 // 站内绝对路径 → 相对路径；目录型 URL 补 index.html
 const rel = (abs, prefix) => {
   let p = prefix && abs.startsWith("/" + prefix) ? abs.slice(prefix.length + 2) : abs.replace(/^\//, "");
@@ -47,9 +66,29 @@ const productEntry = (p) => {
 };
 
 const toolGroups = tools.groups.map(g => {
-  const items = toolsList.filter(t => t.group === g).map(t => `['${t.name}','${rel(t.href, "")}']`);
+  const items = mergedTools.filter(t => t.group === g).map(t => `['${t.name}','${rel(t.href, "")}']`);
   return `['${g}',[${items.join(",")}]]`;
 });
+if (autoTools.length) toolGroups.push(`['Others',[${autoTools.map(t => `['${t.name}','${rel(t.href, "")}']`).join(",")}]]`);
+
+// ---- blog sync: 从 _blog 源文件提取文章列表（构建时自动更新首页 BLOG 列表）----
+const POSTS_DIR = path.join(ROOT, "_blog/src/content/posts");
+const blogEntries = [];
+if (fs.existsSync(POSTS_DIR)) {
+  const posts = fs.readdirSync(POSTS_DIR).filter(f => f.endsWith(".md")).map(f => {
+    const raw = fs.readFileSync(path.join(POSTS_DIR, f), "utf8");
+    const fm = raw.match(/^---\r?\n([\s\S]*?)\r?\n---/);
+    const kv = {};
+    if (fm) for (const line of fm[1].split(/\r?\n/)) {
+      const m = line.match(/^(\w+):\s*(.*)$/);
+      if (m) kv[m[1]] = m[2].trim().replace(/^['"]|['"]$/g, "");
+    }
+    return { title: kv.title || f.replace(/\.md$/, ""), date: kv.pubDatetime || kv.date || "", slug: kv.slug || f.replace(/\.md$/, ""), draft: kv.draft === "true" };
+  }).filter(p => !p.draft && p.title)
+    .sort((a, b) => (b.date || "").localeCompare(a.date || ""))
+    .map(p => `['${p.title.replace(/[\\']/g, "\\$&")}','${p.slug}']`);
+  blogEntries.push(...posts);
+}
 
 // ---- page transforms ---------------------------------------------------------
 
@@ -67,13 +106,15 @@ const patch = (file, rules) => {
 };
 
 // index.html — data consts + section counts
-patch("index.html", [
+const indexRules = [
   [/^\s*const PRODUCTS\s*=.*;$/m, () => `    const PRODUCTS = [${products.map(productEntry).join(",")}];`, "const PRODUCTS"],
   [/^\s*const TOOL_GROUPS\s*=.*;$/m, () => `    const TOOL_GROUPS = [${toolGroups.join(",")}];`, "const TOOL_GROUPS"],
-  [/<span>(\d+) tools<\/span>/, () => `<span>${toolsList.length} tools</span>`, "tools count"],
+  ...(blogEntries.length ? [[/^\s*const BLOG\s*=.*;$/m, () => `    const BLOG = [${blogEntries.join(",")}];`, "const BLOG"]] : []),
+  [/<span>(\d+) tools<\/span>/, () => `<span>${mergedTools.length} tools</span>`, "tools count"],
   [/<span>(\d+) products<\/span>/, () => `<span>${coreProducts.length} products</span>`, "products count"],
   [/<span>(\d+) projects<\/span>/, () => `<span>${buildingProducts.length} projects</span>`, "projects count"],
-]);
+];
+patch("index.html", indexRules);
 
 // tools/index.html — card grid + counts
 const toolCard = (t) =>
@@ -82,9 +123,9 @@ const toolCard = (t) =>
   `<span class="tool-open">OPEN TOOL ↗</span></a>`;
 
 patch("tools/index.html", [
-  [/(<div class="tool-grid">)[\s\S]*?(<\/div><\/section>)/, (_, a, b) => `${a}${[...toolsList].sort(byCode).map(toolCard).join("")}${b}`, "tool grid"],
-  [/<span>(\d+) ENTRIES<\/span>/, () => `<span>${toolsList.length} ENTRIES</span>`, "ENTRIES count"],
-  [/TOOLBOX \/ \d+/, () => `TOOLBOX / ${toolsList.length}`, "TOOLBOX count"],
+  [/(<div class="tool-grid">)[\s\S]*?(<\/div><\/section>)/, (_, a, b) => `${a}${[...mergedTools].sort(byCode).map(toolCard).join("")}${b}`, "tool grid"],
+  [/<span>(\d+) ENTRIES<\/span>/, () => `<span>${mergedTools.length} ENTRIES</span>`, "ENTRIES count"],
+  [/TOOLBOX \/ \d+/, () => `TOOLBOX / ${mergedTools.length}`, "TOOLBOX count"],
 ]);
 
 // product/index.html — card grid + count
