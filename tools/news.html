@@ -1,0 +1,647 @@
+<!doctype html>
+<html lang="en" data-theme="verdigris" data-mode="dark">
+<head>
+<script>(function(){var r=document.documentElement;if(localStorage.getItem("mode")==="light"){r.setAttribute("data-mode","light")}})()</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="dark light">
+<meta name="theme-color" content="#20211f">
+<title>资讯台 · Acidev</title>
+<meta name="description" content="按自己定义的分类与来源聚合的资讯台，每小时一刷，避开推荐流。由 Acid 制作的本地优先小工具。">
+<link rel="canonical" href="https://acidev.cc/tools/news.html">
+<link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
+<link rel="stylesheet" href="../assets/site-shell.css">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root{--radius:14px;--small:8px;--ease:cubic-bezier(.2,.75,.2,1);--card-h:332px;--cols:3}
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{margin:0;padding-top:84px;font-family:"Noto Sans SC","IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+
+  /* floating nav (mirrors site shell) */
+  .navbar-fixed{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;padding-top:14px;pointer-events:none;transition:transform .32s var(--ease),opacity .25s ease}
+  .navbar-fixed.is-hidden{transform:translateY(calc(-100% - 20px));opacity:.001}
+  .navbar{pointer-events:auto;width:min(1180px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 4px 14px var(--shadow);padding:9px 12px 9px 14px}
+  .brand-path{display:flex;align-items:center;gap:7px;min-width:0;font-size:13px;color:var(--muted)}
+  .brand-path a{color:var(--muted);text-decoration:none;transition:color .2s}
+  .brand-path a:hover{color:var(--accent)}
+  .brand-path .here{color:var(--ink);font-weight:500}
+  .brand-path .sep{color:var(--faint)}
+  .brand-mark{width:20px;height:20px;color:var(--accent);flex:none}
+  .controls{display:flex;gap:4px}
+  .control{width:30px;height:30px;border:0;border-radius:var(--small);background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
+  .control:hover{background:var(--accent-soft);color:var(--accent)}
+  .control svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.2}
+  #modeBtn{position:relative}
+  #modeBtn svg{position:absolute;inset:7px;width:15px;height:15px;fill:currentColor;stroke:none}
+  #iconSun{opacity:0;transform:rotate(-90deg) scale(.55);transition:opacity .25s,transform .25s}
+  #iconMoon{opacity:1;transform:rotate(0) scale(1);transition:opacity .25s,transform .25s}
+  #modeBtn.is-light #iconSun{opacity:1;transform:rotate(0) scale(1)}
+  #modeBtn.is-light #iconMoon{opacity:0;transform:rotate(90deg) scale(.55)}
+
+  .sheet{max-width:1180px;margin:0 auto;padding:2px 16px 64px}
+
+  /* compact top bar — dateline + status + actions on one line */
+  .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px;padding:6px 0;color:var(--faint);font:500 11px/1.4 "IBM Plex Mono";letter-spacing:.04em;border-bottom:1px solid var(--line)}
+  .topbar .left,.topbar .right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .topbar .pip{width:5px;height:5px;border-radius:50%;background:var(--faint);flex:none}
+  .topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);flex:none}
+  .topbar .dot.busy{animation:pulse 1.4s ease-in-out infinite}
+  .topbar .pip-auto{color:var(--faint)}
+  .topbar b{color:var(--ink);font-weight:500}
+  .t-actions{display:flex;gap:6px}
+  .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font:500 11px/1 "IBM Plex Mono";letter-spacing:.04em;padding:7px 11px;border-radius:var(--small);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
+  .btn:hover{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+  .btn svg{width:13px;height:13px;fill:none;stroke:currentColor;stroke-width:1.6}
+  .btn.ghost{border-color:var(--line)}
+  .btn.spin svg{animation:rot .8s linear infinite}
+  .btn .label{display:none}
+  @media(max-width:560px){.btn .label{display:inline}}
+  @keyframes rot{to{transform:rotate(360deg)}}
+
+  /* sections (分区) */
+  .news-section + .news-section{margin-top:42px}
+  .sec-head{display:flex;align-items:baseline;gap:14px;margin:0 0 12px;flex-wrap:wrap}
+  .sec-idx{font:600 11px/1.4 "IBM Plex Mono";letter-spacing:.08em;color:var(--accent)}
+  .sec-title{margin:0;font-size:20px;font-weight:600;letter-spacing:-.01em;color:var(--ink)}
+  .sec-count{font:10px/1.4 "IBM Plex Mono";color:var(--faint);letter-spacing:.04em}
+  .sec-rule{flex:1;height:1px;background:var(--line);align-self:center;margin-left:4px}
+
+  /* source bento within a section */
+  .sec-bento{display:grid;grid-template-columns:repeat(var(--cols),minmax(0,1fr));grid-auto-rows:var(--card-h);gap:12px}
+  .src-card{position:relative;min-width:0;min-height:0;display:flex;flex-direction:column;background:var(--surface-2);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden;transition:transform .2s var(--ease),border-color .2s}
+  .src-card:hover{transform:translateY(-2px);border-color:var(--line-strong)}
+  .src-card.featured{grid-column:span 2}
+  .src-head{display:flex;align-items:center;gap:9px;padding:13px 16px 11px;border-bottom:1px solid var(--line);flex:none}
+  .src-name{font-size:14px;font-weight:600;color:var(--ink);margin:0;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .src-tag{font:10px/1 "IBM Plex Mono";color:var(--faint);letter-spacing:.04em;text-transform:uppercase;flex:none;border:1px solid var(--line);border-radius:999px;padding:3px 7px}
+  .src-count{font:11px/1 "IBM Plex Mono";color:var(--accent);flex:none;font-weight:500}
+  .src-list{list-style:none;margin:0;padding:5px 8px 8px;flex:1;min-height:0;overflow-y:auto;scrollbar-width:thin;scrollbar-color:var(--line-strong) transparent}
+  .src-list::-webkit-scrollbar{width:7px}
+  .src-list::-webkit-scrollbar-thumb{background:var(--line-strong);border-radius:6px}
+  .src-list::-webkit-scrollbar-track{background:transparent}
+  .src-list li{margin:0}
+  .item{display:block;padding:9px 9px;border-radius:var(--small);text-decoration:none;transition:background .15s}
+  .item:hover{background:var(--surface)}
+  .item .i-title{font-size:13.5px;line-height:1.45;color:var(--ink);display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;font-weight:500}
+  .src-card.featured .i-title{font-size:15px;line-height:1.4;-webkit-line-clamp:4}
+  .item .i-byline{display:flex;align-items:center;gap:7px;margin-top:6px;color:var(--faint);font:10px/1 "IBM Plex Mono";letter-spacing:.03em}
+  .i-author{color:var(--muted)}
+  .i-author:empty{display:none}
+  .i-sep:empty{display:none}
+  .i-empty{padding:20px 16px;color:var(--faint);font-size:12px;line-height:1.6}
+  .i-empty.err{color:#c98b6a}
+
+  /* skeleton */
+  .skel{padding:8px 9px}
+  .skel .sline{display:block;height:11px;border-radius:6px;background:linear-gradient(90deg,var(--line) 25%,var(--line-strong) 37%,var(--line) 63%);background-size:400% 100%;animation:shimmer 1.6s ease-in-out infinite;margin-bottom:12px}
+  .skel .sline:nth-child(1){height:15px;width:60%}
+  .skel .sline:nth-child(2){width:92%}
+  .skel .sline:nth-child(3){width:74%;height:9px}
+  .skel .sline:nth-child(4){width:80%;height:9px}
+  @keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
+
+  .colophon{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font:11px/1.6 "IBM Plex Mono";display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  .colophon a{color:var(--muted);text-decoration:none}
+  .colophon a:hover{color:var(--accent)}
+
+  /* config panel */
+  .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.42);display:flex;justify-content:center;align-items:flex-start;padding:64px 16px 16px;opacity:0;pointer-events:none;transition:opacity .25s ease;overflow-y:auto}
+  .overlay.open{opacity:1;pointer-events:auto}
+  .panel{width:min(660px,100%);background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);box-shadow:0 16px 40px var(--shadow);padding:20px 22px 22px;transform:translateY(8px);transition:transform .25s var(--ease)}
+  .overlay.open .panel{transform:none}
+  .panel h2{margin:0 0 4px;font-size:17px;font-weight:600}
+  .panel .hint{margin:0 0 16px;color:var(--faint);font-size:12px;line-height:1.6}
+  .c-block{border:1px solid var(--line);border-radius:var(--small);padding:13px 14px;margin-bottom:12px;background:var(--surface-2)}
+  .c-top{display:flex;align-items:center;gap:8px;margin-bottom:11px;flex-wrap:wrap}
+  .src-row{display:flex;align-items:center;gap:7px;margin-bottom:7px;flex-wrap:wrap;padding-left:30px}
+  .src-row:last-child{margin-bottom:0}
+  input.fld,select.fld{background:var(--bg);border:1px solid var(--line);border-radius:var(--small);color:var(--ink);font:13px/1.4 "Noto Sans SC",sans-serif;padding:7px 9px;transition:border-color .2s,background .2s}
+  input.fld:focus,select.fld:focus{outline:none;border-color:var(--accent);background:var(--accent-soft)}
+  input.fld.em{width:42px;text-align:center;font-size:15px}
+  input.fld.nm{flex:1;min-width:120px}
+  input.fld.lb{width:120px}
+  input.fld.url{flex:1;min-width:140px}
+  select.fld.ty{width:148px}
+  .mini{border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:var(--small);font-size:12px;padding:6px 9px;cursor:pointer;transition:background .2s,color .2s}
+  .mini:hover{background:var(--accent-soft);color:var(--accent)}
+  .mini.danger:hover{background:rgba(201,139,106,.16);color:#c98b6a}
+  .add{margin-top:6px}
+  .p-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+  @media(max-width:900px){:root{--cols:2} .sheet{padding:6px 14px 56px} .src-card.featured{grid-column:span 2}}
+  @media(max-width:620px){:root{--cols:1;--card-h:360px} .src-card.featured{grid-column:auto}}
+  @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}
+</style>
+</head>
+<body>
+<div class="navbar-fixed" id="nav">
+  <header class="navbar">
+    <div class="brand-path">
+      <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="nav-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#nav-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg>
+      <a href="../index.html">main</a><span class="sep">/</span><a href="index.html">tools</a><span class="sep">/</span><span class="here">news</span>
+    </div>
+    <div class="controls">
+      <button class="control" id="langBtn" type="button" aria-label="切换语言 / Switch language" title="切换语言 / Switch language"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M2 8h12M8 1.8c2.1 1.7 2.1 10.7 0 12.4M8 1.8c-2.1 1.7-2.1 10.7 0 12.4"/></svg></button>
+      <button class="control" id="modeBtn" type="button" aria-label="切换明暗模式 / Toggle light and dark mode" title="切换明暗模式 / Toggle light and dark mode"><svg id="iconMoon" viewBox="0 0 16 16" aria-hidden="true"><path d="M13 9.2A5.6 5.6 0 1 1 6.8 3a4.4 4.4 0 0 0 6.2 6.2Z"/></svg><svg id="iconSun" viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="3"/><path d="M8 1.2v2M8 12.8v2M1.2 8h2M12.8 8h2M3.3 3.3l1.4 1.4M11.3 11.3l1.4 1.4M12.7 3.3l-1.4 1.4M4.7 11.3l-1.4 1.4"/></svg></button>
+    </div>
+  </header>
+</div>
+
+<main class="sheet">
+  <div class="topbar">
+    <div class="left">
+      <span class="pip"></span>
+      <span id="dateStr"></span>
+      <span class="pip"></span>
+      <span data-zh hidden>资讯台 · NEWS DESK</span><span data-en>NEWS DESK</span>
+    </div>
+    <div class="right">
+      <span class="dot" id="liveDot"></span>
+      <span><span data-zh hidden>更新于</span><span data-en>updated</span> <b id="updatedAt">—</b></span>
+      <span class="pip pip-auto"></span>
+      <span id="autoTag"><span data-zh hidden>每小时自动刷新</span><span data-en>auto · hourly</span></span>
+      <button class="btn" id="refreshBtn" type="button" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2v3h-3"/></svg></button>
+      <button class="btn ghost" id="configBtn" type="button" aria-label="Configure"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/><path d="M8 1.4v1.9M8 12.7v1.9M2.2 5.1l1.6.9M12.2 11l1.6.9M2.2 11l1.6-.9M12.2 5l1.6-.9M14 8h-3M5 8H2"/></svg></button>
+    </div>
+  </div>
+
+  <div id="sections" aria-label="news sections"></div>
+  <footer class="colophon">
+    <span>© <span id="year"></span> Acid · PaRr0tBoY</span>
+    <span><a href="index.html"><span data-zh hidden>工具箱</span><span data-en>tools</span></a> · <a href="../index.html"><span data-zh hidden>主页</span><span data-en>main</span></a> · news</span>
+  </footer>
+</main>
+
+<div class="overlay" id="overlay" role="dialog" aria-modal="true" aria-labelledby="cfgTitle">
+  <div class="panel">
+    <h2 id="cfgTitle"><span data-zh hidden>配置分区与来源</span><span data-en>Sections &amp; sources</span></h2>
+    <p class="hint"><span data-zh hidden>增删分区（分类），管理每个分区下的来源。RSS 填订阅地址；GitHub Releases 填 owner / repo；AIHOT 用内置精选 API。</span><span data-en>Add or remove sections, manage sources under each. RSS: paste a feed URL. GitHub Releases: owner / repo. AIHOT: built-in curated API.</span></p>
+    <div id="cfgBody"></div>
+    <div class="p-actions">
+      <button class="btn ghost" id="cfgCancel" type="button"><span data-zh hidden>取消</span><span data-en>Cancel</span></button>
+      <button class="btn" id="cfgSave" type="button"><span data-zh hidden>保存</span><span data-en>Save</span></button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/site-shell.js" defer></script>
+<script>
+(function(){
+  "use strict";
+  const DEBUG = false;
+  const log = (...a)=>{ if(DEBUG) console.debug("[News]",...a); };
+  const err = (...a)=>console.error("[News]",...a);
+  const NS = "news_cfg", HOUR = 3600000;
+  const REDUCED = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ── defaults (mirror 日报.md source table) ─────────────────────
+  // hnrss.org/classic is dead → use frontpage. AIHOT uses its curated API (alive, CORS-ok).
+  const DEFAULTS = {
+    autoH: 1,
+    rssLimit: 20,
+    aihotLimit: 20,
+    ghLimit: 5,
+    sections: [
+      { id:"tech", emoji:"🗞️", name:{zh:"科技新闻",en:"Tech News"}, sources:[
+        { id:"hn",  type:"rss",   label:{zh:"Hacker News",en:"Hacker News"}, url:"https://hnrss.org/frontpage" },
+        { id:"tm",  type:"rss",   label:{zh:"Techmeme",en:"Techmeme"},       url:"https://www.techmeme.com/feed.xml" },
+        { id:"sd",  type:"rss",   label:{zh:"Solidot",en:"Solidot"},         url:"https://www.solidot.org/index.rss" },
+        { id:"ah",  type:"aihot", label:{zh:"AIHOT",en:"AIHOT"} },
+      ]},
+      { id:"fresh", emoji:"🪀", name:{zh:"新玩意",en:"Fresh Finds"}, sources:[
+        { id:"ph",  type:"rss", label:{zh:"Product Hunt",en:"Product Hunt"}, url:"https://www.producthunt.com/feed?category=undefined" },
+        { id:"gh",  type:"rss", label:{zh:"GitHub Trending",en:"GitHub Trending"}, url:"https://mshibanami.github.io/GitHubTrendingRSS/daily/all.xml" },
+      ]},
+      { id:"rel", emoji:"🚀", name:{zh:"项目动态",en:"Releases"}, sources:[
+        { id:"omp", type:"github", label:{zh:"oh-my-pi",en:"oh-my-pi"}, owner:"can1357", repo:"oh-my-pi" },
+        { id:"hdr", type:"github", label:{zh:"herdr",en:"herdr"}, owner:"herdrdev", repo:"herdr" },
+        { id:"alc", type:"github", label:{zh:"alacritty",en:"alacritty"}, owner:"alacritty", repo:"alacritty" },
+        { id:"orc", type:"github", label:{zh:"orca",en:"orca"}, owner:"stablyai", repo:"orca" },
+        { id:"cdc", type:"github", label:{zh:"claude-code",en:"claude-code"}, owner:"anthropics", repo:"claude-code" },
+      ]},
+    ]
+  };
+
+  function clone(o){ return JSON.parse(JSON.stringify(o)); }
+  function uid(){ return "x" + Math.random().toString(36).slice(2,8); }
+  function loadCfg(){
+    try{
+      const s = localStorage.getItem(NS);
+      if(!s) return clone(DEFAULTS);
+      const c = JSON.parse(s);
+      if(!c || !Array.isArray(c.sections) || !c.sections.length) return clone(DEFAULTS);
+      return Object.assign({autoH:1,rssLimit:20,aihotLimit:20,ghLimit:5}, c);
+    }catch(e){ return clone(DEFAULTS); }
+  }
+  let CFG = loadCfg();
+  const saveCfg = ()=>localStorage.setItem(NS, JSON.stringify(CFG));
+
+  // ── i18n ─────────────────────────────────────────────────────
+  const en = ()=>document.documentElement.lang === "en";
+  const L = (o)=>{ if(!o) return ""; return (typeof o === "string") ? o : (en() ? o.en : o.zh); };
+
+  // ── fetch with timeout ────────────────────────────────────────
+  async function fetchT(url, ms, opts){
+    const ctl = new AbortController();
+    const t = setTimeout(()=>ctl.abort(), ms);
+    try{ return await fetch(url, Object.assign({ cache:"no-store", signal: ctl.signal }, opts)); }
+    finally{ clearTimeout(t); }
+  }
+
+  // ── helpers ───────────────────────────────────────────────────
+  const stripTags = (s)=> (s||"").replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
+  const trunc = (s,n)=>{ s=stripTags(s); return s.length>n ? s.slice(0,n-1)+"…" : s; };
+  function ts(date){ const t=date?Date.parse(date):NaN; return isNaN(t)?0:t; }
+  function relTime(date){
+    const t = ts(date); if(!t) return "";
+    const d = (Date.now() - t) / 1000;
+    const e = en();
+    if(d < 60) return e ? "now" : "刚刚";
+    if(d < 3600) return Math.floor(d/60) + (e?"m":"分前");
+    if(d < 86400) return Math.floor(d/3600) + (e?"h":"时前");
+    if(d < 86400*7) return Math.floor(d/86400) + (e?"d":"天前");
+    return new Date(t).toLocaleDateString(e?"en":"zh-CN");
+  }
+  function escapeHtml(s){ return (s==null?"":String(s)).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"}[c])); }
+  function escapeAttr(s){ return escapeHtml(s).replace(/"/g,"&quot;"); }
+
+  // ── primary: proxy.cors.sh → raw XML → DOMParser (CORS passthrough, no per-request limit) ──
+  // parser handles RSS 2.0 <item> and Atom <entry> (incl. GitHub releases.atom) plus dc:date
+  function parseFeed(xml){
+    let doc;
+    try{ doc = new DOMParser().parseFromString(xml, "text/xml"); }
+    catch(e){ return []; }
+    if(doc.querySelector("parsererror")) return [];
+    const items = Array.from(doc.querySelectorAll("item"));
+    if(items.length) return items.map(it=>{
+      const linkEl = it.querySelector("link");
+      const guid = it.querySelector("guid");
+      return {
+        title: (it.querySelector("title")?.textContent || "—").trim(),
+        link: linkEl?.textContent.trim() || guid?.textContent.trim() || "",
+        date: (it.querySelector("pubDate")?.textContent || it.querySelector("date")?.textContent || "").trim(),
+        desc: trunc(it.querySelector("description")?.textContent || "", 180),
+        author: stripTags(it.querySelector("author")?.textContent || it.querySelector("creator")?.textContent || "")
+      };
+    });
+    const entries = Array.from(doc.querySelectorAll("entry"));
+    return entries.map(e=>{
+      const linkEl = Array.from(e.children).find(c=>c.tagName.toLowerCase()==="link");
+      const authorEl = e.querySelector("author name");
+      return {
+        title: (e.querySelector("title")?.textContent || "—").trim(),
+        link: linkEl?.getAttribute("href") || "",
+        date: (e.querySelector("published")?.textContent || e.querySelector("updated")?.textContent || "").trim(),
+        desc: trunc((e.querySelector("summary")||e.querySelector("content"))?.textContent || "", 180),
+        author: authorEl?.textContent.trim() || ""
+      };
+    });
+  }
+  // end =>
+  async function corsSh(url){
+    const r = await fetchT("https://proxy.cors.sh/" + url, 12000);
+    if(!r.ok) throw new Error("cors.sh " + r.status);
+    const t = await r.text();
+    if(t.length < 60) throw new Error("cors.sh empty");
+    return parseFeed(t);
+  }
+  // end =>
+  // ── fallback 1: rss2json (server-side parse, easier on flaky XML but per-request rate-limited) ──
+  async function rss2json(url, limit){
+    const r = await fetchT("https://api.rss2json.com/v1/api.json?rss_url=" + encodeURIComponent(url), 12000);
+    if(!r.ok) throw new Error("r2j " + r.status);
+    const d = await r.json();
+    if(d.status !== "ok") throw new Error("r2j status " + d.status);
+    return (d.items||[]).slice(0, limit).map(it=>({
+      title: it.title || "—",
+      link: it.link || it.guid || "",
+      date: it.pubDate || "",
+      desc: trunc(it.description || it.content || "", 180),
+      author: stripTags(it.author || "")
+    }));
+  }
+  // ── fallback 2: allorigins /get → raw XML → DOMParser ───────────
+  async function allorigins(url){
+    const r = await fetchT("https://api.allorigins.win/get?url=" + encodeURIComponent(url), 7000);
+    if(!r.ok) throw new Error("ao " + r.status);
+    const d = await r.json();
+    return parseFeed(d.contents || "");
+  }
+
+  async function fetchRSS(src){
+    const limit = CFG.rssLimit || 20;
+    try{ return (await corsSh(src.url)).slice(0, limit); }
+    catch(e1){ log("cors.sh fail", L(src.label), e1.message); }
+    try{ return await rss2json(src.url, limit); }
+    catch(e2){ log("rss2json fail", L(src.label), e2.message); }
+    try{ return (await allorigins(src.url)).slice(0, limit); }
+    catch(e3){ log("allorigins fail", L(src.label), e3.message); }
+    throw new Error("all fetchers failed");
+  }
+
+  // ── AIHOT curated API (alive, CORS-ok, rich summaries) ────────
+  async function fetchAihot(src){
+    const limit = CFG.aihotLimit || 20;
+    const r = await fetchT("https://aihot.virxact.com/api/v1/items?mode=selected&window=24h&limit=" + limit, 12000);
+    if(!r.ok) throw new Error("aihot " + r.status);
+    const d = await r.json();
+    return (d.items||[]).slice(0, limit).map(it=>({
+      title: it.title || it.originalTitle || "—",
+      link: (it.links && (it.links.original || it.links.aihot)) || "",
+      date: it.publishedAt || it.discoveredAt || "",
+      desc: trunc(it.summary || "", 200),
+      author: it.source && it.source.name ? it.source.name : ""
+    }));
+  }
+
+  // ── GitHub Releases — via releases.atom feed (no API auth, no rate limit) ──
+  async function fetchGithub(src){
+    const atom = "https://github.com/" + src.owner + "/" + src.repo + "/releases.atom";
+    const items = await fetchRSS({ type:"rss", url:atom, label:src.label });   // unify with rss2json → allorigins path
+    return items.slice(0, CFG.ghLimit || 5);
+  }
+
+  async function fetchSource(src){
+    if(src.type === "rss") return fetchRSS(src);
+    if(src.type === "aihot") return fetchAihot(src);
+    if(src.type === "github") return fetchGithub(src);
+    return [];
+  }
+
+  // ── rendering ─────────────────────────────────────────────────
+  const root = document.getElementById("sections");
+  const secEls = new Map();   // section.id -> { sec, grid }
+  const cardEls = new Map();  // src.id   -> { card, list, count }
+  const cache = new Map();    // src.id   -> items
+
+  function buildSection(sec, idx){
+    const s = document.createElement("section");
+    s.className = "news-section"; s.dataset.sec = sec.id;
+    s.innerHTML =
+      '<div class="sec-head">' +
+        '<span class="sec-idx" data-idx></span>' +
+        '<span class="sec-title" data-name></span>' +
+        '<span class="sec-count" data-count></span>' +
+        '<span class="sec-rule"></span>' +
+      '</div>' +
+      '<div class="sec-bento" data-grid></div>';
+    s.querySelector("[data-idx]").textContent = String(idx).padStart(2,"0") + " / SECTION";
+    s.querySelector("[data-name]").textContent = (sec.emoji ? sec.emoji + " " : "") + L(sec.name);
+    const grid = s.querySelector("[data-grid]");
+    sec.sources.forEach((src, si)=>{
+      const card = document.createElement("article");
+      card.className = "src-card" + (si === 0 ? " featured" : "");
+      card.dataset.src = src.id;
+      card.innerHTML =
+        '<div class="src-head">' +
+          '<h3 class="src-name" data-lbl></h3>' +
+          '<span class="src-tag" data-type></span>' +
+          '<span class="src-count" data-count></span>' +
+        '</div>' +
+        '<ul class="src-list" data-list></ul>';
+      card.querySelector("[data-lbl]").textContent = L(src.label);
+      card.querySelector("[data-type]").textContent = src.type;
+      showSkeleton(card.querySelector("[data-list]"));
+      grid.appendChild(card);
+      cardEls.set(src.id, { card, list:card.querySelector("[data-list]"), count:card.querySelector("[data-count]") });
+    });
+    root.appendChild(s);
+    secEls.set(sec.id, { sec:s, grid });
+    return { sec:s, grid };
+  }
+
+  function showSkeleton(listEl){
+    let h = "";
+    for(let i=0;i<5;i++) h += '<div class="skel"><span class="sline"></span><span class="sline"></span><span class="sline"></span><span class="sline"></span></div>';
+    listEl.innerHTML = h;
+  }
+
+  function renderItems(src, items){
+    const info = cardEls.get(src.id); if(!info) return;
+    const { list, count } = info;
+    if(!items.length){
+      list.innerHTML = '<li class="i-empty err">' + (en() ? "Source unreachable — check the URL in Configure." : "来源不可达——请在配置里检查地址。") + '</li>';
+      count.textContent = ""; return;
+    }
+    count.textContent = String(items.length);
+    list.innerHTML = items.map(it=>{
+      const href = it.link ? escapeAttr(it.link) : "";
+      const author = it.author ? '<span class="i-author">' + escapeHtml(it.author) + '</span><span class="i-sep">·</span>' : '';
+      const rt = relTime(it.date);
+      const byline = author + (rt ? '<span>' + escapeHtml(rt) + '</span>' : '');
+      return '<li><a class="item" href="'+href+'" target="_blank" rel="noopener noreferrer">' +
+        '<div class="i-title">'+escapeHtml(it.title)+'</div>' +
+        (byline ? '<div class="i-byline">'+byline+'</div>' : '') +
+      '</a></li>';
+    }).join("");
+  }
+
+  function rebuildSections(){
+    root.innerHTML = "";
+    secEls.clear(); cardEls.clear(); cache.clear();
+    CFG.sections.forEach((sec,i)=>buildSection(sec, i+1));
+    applyFillAll();
+  }
+
+  // no-gap: in each section's grid, widen the last row's final card to fill the partial row
+  function colsForGrid(grid){
+    const c = parseInt(getComputedStyle(document.documentElement).getPropertyValue("--cols"),10);
+    return (c || 2);
+  }
+  function applyFill(grid){
+    const cardsArr = Array.from(grid.children).filter(c=>c.classList.contains("src-card"));
+    const C = colsForGrid(grid);
+    cardsArr.forEach(c=>{ c.style.gridColumn = ""; });
+    if(!cardsArr.length) return;
+    // simulate grid flow: featured=span2, normal=span1; record the row each card lands on
+    let col = 0, row = 1;
+    const place = [];
+    cardsArr.forEach(c=>{
+      const span = (c.classList.contains("featured") && C >= 2) ? 2 : 1;
+      if(col + span > C){ row++; col = 0; }       // wrap to next row
+      place.push({ c, row, span });
+      col += span;
+      if(col >= C){ row++; col = 0; }             // row exactly full → next card starts new row
+    });
+    const maxR = Math.max(...place.map(p=>p.row));
+    const lastRow = place.filter(p=>p.row === maxR);
+    const used = lastRow.reduce((s,p)=> s + p.span, 0);
+    if(lastRow.length && used > 0 && used < C){     // partial last row → widen final card to fill
+      const need = C - used + 1;
+      lastRow[lastRow.length-1].c.style.gridColumn = "span " + need + " / span " + need;
+    }
+  }
+  function applyFillAll(){ secEls.forEach(({grid})=>applyFill(grid)); }
+
+  // ── refresh ───────────────────────────────────────────────────
+  let busy = false;
+  const liveDot = document.getElementById("liveDot");
+  const updatedAt = document.getElementById("updatedAt");
+  const refreshBtn = document.getElementById("refreshBtn");
+  function markUpdated(){
+    updatedAt.textContent = new Date().toLocaleTimeString(en()?"en":"zh-CN", {hour:"2-digit",minute:"2-digit"});
+  }
+  async function refreshSrc(src){
+    const info = cardEls.get(src.id); if(!info) return;
+    try{
+      const items = await fetchSource(src);
+      cache.set(src.id, items);
+      renderItems(src, items);
+    }catch(e){
+      err("source", L(src.label), e.message);
+      cache.set(src.id, []);
+      renderItems(src, []);
+    }
+  }
+  function rerenderLang(){
+    CFG.sections.forEach((sec,i)=>{
+      const se = secEls.get(sec.id); if(!se) return;
+      se.sec.querySelector("[data-idx]").textContent = String(i+1).padStart(2,"0") + " / SECTION";
+      se.sec.querySelector("[data-name]").textContent = (sec.emoji ? sec.emoji + " " : "") + L(sec.name);
+      sec.sources.forEach(src=>{
+        const ce = cardEls.get(src.id); if(!ce) return;
+        ce.card.querySelector("[data-lbl]").textContent = L(src.label);
+        const items = cache.get(src.id);
+        if(items) renderItems(src, items);
+      });
+    });
+    markUpdated(); applyFillAll();
+  }
+  async function refresh(){
+    if(busy) return;
+    busy = true; liveDot.classList.add("busy");
+    if(!REDUCED) refreshBtn.classList.add("spin");
+    log("refresh");
+    const srcs = [];
+    CFG.sections.forEach(sec=>sec.sources.forEach(src=>{ const info=cardEls.get(src.id); if(info){ showSkeleton(info.list); srcs.push(src); } }));
+    // pace fetches so the shared rss2json endpoint isn't throttled by a single burst
+    const pace = 350;
+    let i = 0;
+    await Promise.all(srcs.map(async src=>{ const wait = (i++) * pace; if(wait) await new Promise(r=>setTimeout(r, wait)); return refreshSrc(src); }));
+    markUpdated();
+    busy = false; liveDot.classList.remove("busy");
+    refreshBtn.classList.remove("spin");
+  }
+  refreshBtn.addEventListener("click", refresh);
+  setInterval(()=>refresh(), (CFG.autoH||1) * HOUR);
+
+  // ── config panel ───────────────────────────────────────────────
+  const overlay = document.getElementById("overlay");
+  const cfgBody = document.getElementById("cfgBody");
+  document.getElementById("configBtn").addEventListener("click", openPanel);
+  document.getElementById("cfgCancel").addEventListener("click", closePanel);
+  overlay.addEventListener("click", e=>{ if(e.target === overlay) closePanel(); });
+  document.getElementById("cfgSave").addEventListener("click", ()=>{
+    collectPanel(); saveCfg(); closePanel();
+    rebuildSections(); refresh();
+  });
+  document.addEventListener("keydown", e=>{ if(e.key==="Escape" && overlay.classList.contains("open")) closePanel(); });
+  function openPanel(){ renderPanel(clone(CFG)); overlay.classList.add("open"); }
+  function closePanel(){ overlay.classList.remove("open"); }
+
+  function srcFieldsHtml(s){
+    const labelVal = typeof s.label==="string" ? s.label : (s.label ? (s.label[en()?"en":"zh"]||"") : "");
+    let f = '';
+    if(s.type === "github"){
+      f = '<input class="fld url" data-k="owner" placeholder="owner" value="'+escapeAttr(s.owner||"")+'">'+
+          '<input class="fld url" data-k="repo" placeholder="repo" value="'+escapeAttr(s.repo||"")+'">';
+    } else if(s.type === "aihot"){
+      f = '<span class="src-tag" style="border:0;padding:0;color:var(--faint)">'+(en()?'built-in API':'内置 API')+'</span>';
+    } else {
+      f = '<input class="fld url" data-k="url" placeholder="'+(en()?'feed URL':'订阅地址')+'" value="'+escapeAttr(s.url||"")+'">';
+    }
+    return'<select class="fld ty" data-k="type">'+
+        '<option value="rss"'+(s.type==="rss"?" selected":"")+'>RSS</option>'+
+        '<option value="aihot"'+(s.type==="aihot"?" selected":"")+'>AIHOT API</option>'+
+        '<option value="github"'+(s.type==="github"?" selected":"")+'>GitHub Release</option>'+
+      '</select>'+
+      '<input class="fld lb" data-k="label" placeholder="'+(en()?'label':'标签')+'" value="'+escapeAttr(labelVal||"")+'">'+f;
+  }
+  function blockHtml(sec){
+    let sh = "";
+    sec.sources.forEach(s=>{ sh += '<div class="src-row" data-si>'+ srcFieldsHtml(s) + '<button class="mini danger" data-act="rm-src">'+(en()?'remove':'删除')+'</button></div>'; });
+    return '<div class="c-block" data-sec>'+
+      '<div class="c-top">'+
+        '<input class="fld em" data-cat="emoji" maxlength="2" value="'+escapeAttr(sec.emoji||"")+'">'+
+        '<input class="fld nm" data-cat="name" placeholder="'+(en()?'section name':'分区名称')+'" value="'+escapeAttr(typeof sec.name==="string"?sec.name:(sec.name?(sec.name[en()?"en":"zh"]||""):""))+'">'+
+        '<button class="mini danger" data-act="rm-cat">'+(en()?'remove section':'删除分区')+'</button>'+
+      '</div>'+
+      '<div class="srcs">'+sh+'</div>'+
+      '<div class="add"><button class="mini" data-act="add-src">+'+(en()?' add source':' 添加来源')+'</button></div>';
+  }
+  function renderPanel(draft){
+    cfgBody.innerHTML = "";
+    draft.sections.forEach(sec=>{ const b=document.createElement("div"); b.innerHTML=blockHtml(sec); const block=b.firstElementChild; cfgBody.appendChild(block); wireBlock(block); });
+    const addCat=document.createElement("div"); addCat.className="add";
+    addCat.innerHTML='<button class="mini" data-act="add-cat">+'+(en()?' add section':' 添加分区')+'</button>';
+    cfgBody.appendChild(addCat);
+    addCat.querySelector('[data-act=add-cat]').addEventListener("click", ()=>{
+      const block=document.createElement("div"); block.innerHTML=blockHtml({id:uid(),emoji:"▪",name:{zh:"新分区",en:"New section"},sources:[]});
+      const b=block.firstElementChild; cfgBody.appendChild(b); wireBlock(b);
+    });
+  }
+  function wireBlock(block){
+    block.querySelector('[data-act=rm-cat]').addEventListener("click", ()=>block.remove());
+    block.querySelector('[data-act=add-src]').addEventListener("click", ()=>{
+      const srcs=block.querySelector(".srcs");
+      const row=document.createElement("div"); row.className="src-row"; row.dataset.si="";
+      row.innerHTML=srcFieldsHtml({type:"rss",label:{zh:"",en:""},url:""})+'<button class="mini danger" data-act="rm-src">'+(en()?'remove':'删除')+'</button>';
+      srcs.appendChild(row);
+    });
+    block.addEventListener("click", e=>{ const rm=e.target.closest('[data-act=rm-src]'); if(rm) rm.closest(".src-row").remove(); });
+    block.addEventListener("change", e=>{ const sel=e.target.closest('[data-k=type]'); if(sel) swaType(sel); });
+  }
+  function swaType(sel){
+    const row=sel.closest(".src-row");
+    const label=row.querySelector('[data-k=label]')?.value || "";
+    const owner=row.querySelector('[data-k=owner]')?.value || "";
+    const repo=row.querySelector('[data-k=repo]')?.value || "";
+    const url=row.querySelector('[data-k=url]')?.value || "";
+    row.innerHTML = srcFieldsHtml({ type:sel.value, label:{zh:label,en:label}, owner, repo, url }) + '<button class="mini danger" data-act="rm-src">'+(en()?'remove':'删除')+'</button>';
+  }
+  function collectPanel(){
+    const secs=[];
+    cfgBody.querySelectorAll(".c-block").forEach(block=>{
+      const emoji=block.querySelector('[data-cat=emoji]').value.trim()||"▪";
+      const name=block.querySelector('[data-cat=name]').value.trim();
+      const sec={ id:uid(), emoji, name:name?{zh:name,en:name}:{zh:"未命名",en:"Untitled"}, sources:[] };
+      block.querySelectorAll(".src-row").forEach(row=>{
+        const type=row.querySelector('[data-k=type]').value;
+        const lv=row.querySelector('[data-k=label]').value.trim();
+        const label=lv?{zh:lv,en:lv}:null;
+        if(type==="github"){
+          const owner=row.querySelector('[data-k=owner]').value.trim(), repo=row.querySelector('[data-k=repo]').value.trim();
+          if(owner&&repo) sec.sources.push({id:uid(),type:"github",label,owner,repo});
+        }else if(type==="aihot"){
+          sec.sources.push({id:uid(),type:"aihot",label});
+        }else{
+          const url=row.querySelector('[data-k=url]').value.trim();
+          if(/https?:\/\//.test(url)) sec.sources.push({id:uid(),type:"rss",label,url});
+        }
+      });
+      secs.push(sec);
+    });
+    CFG.sections = secs;
+  }
+
+  // ── re-render dynamic chrome + items on language change ────────
+  new MutationObserver(()=>rerenderLang()).observe(document.documentElement, { attributes:true, attributeFilter:["lang"] });
+
+  // recompute fill on resize
+  let rT;
+  window.addEventListener("resize", ()=>{ clearTimeout(rT); rT=setTimeout(applyFillAll,120); });
+
+  // ── boot ──────────────────────────────────────────────────────
+  const dateStr = document.getElementById("dateStr");
+  dateStr.textContent = new Date().toLocaleDateString(en()?"en":"zh-CN", { year:"numeric", month:"short", day:"numeric", weekday:"short" });
+  document.getElementById("year").textContent = new Date().getFullYear();
+  rebuildSections();
+  refresh();
+  window.addEventListener("load", applyFillAll);
+})();
+</script>
+</body>
+</html>

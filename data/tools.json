@@ -73,10 +73,10 @@
       "group": "Explore"
     },
     {
-      "name": "TechFeed",
-      "href": "/tools/techfeed.html",
+      "name": "News",
+      "href": "/tools/news.html",
       "code": "EXPLORE / 14",
-      "desc": "面向技术阅读的新闻与信息流。",
+      "desc": "按自己定义的分类与来源聚合的资讯台，每小时一刷，避开推荐流。",
       "group": "Explore"
     },
     {
