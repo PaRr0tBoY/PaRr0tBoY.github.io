@@ -6,7 +6,7 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="color-scheme" content="dark light">
 <meta name="theme-color" content="#20211f">
-<title>资讯台 · Acidev</title>
+<title data-zh="资讯台 · Acidev" data-en="News Desk · Acidev">资讯台 · Acidev</title>
 <meta name="description" content="按自己定义的分类与来源聚合的资讯台，每小时一刷，避开推荐流。由 Acid 制作的本地优先小工具。">
 <link rel="canonical" href="https://acidev.cc/tools/news.html">
 <link rel="icon" type="image/svg+xml" href="../assets/logo/favicon.svg">
@@ -15,31 +15,9 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
-  :root{--radius:14px;--small:8px;--ease:cubic-bezier(.2,.75,.2,1);--card-h:332px;--cols:3}
-  *{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  body{margin:0;padding-top:84px;font-family:"Noto Sans SC","IBM Plex Sans",system-ui,sans-serif;-webkit-font-smoothing:antialiased}
+  :root{--card-h:332px;--cols:3}
+  body{padding-top:84px}
 
-  /* floating nav (mirrors site shell) */
-  .navbar-fixed{position:fixed;top:0;left:0;right:0;z-index:100;display:flex;justify-content:center;padding-top:14px;pointer-events:none;transition:transform .32s var(--ease),opacity .25s ease}
-  .navbar-fixed.is-hidden{transform:translateY(calc(-100% - 20px));opacity:.001}
-  .navbar{pointer-events:auto;width:min(1180px,calc(100% - 32px));display:flex;align-items:center;justify-content:space-between;gap:14px;background:var(--bg);border:1px solid var(--line);border-radius:var(--radius);box-shadow:0 4px 14px var(--shadow);padding:9px 12px 9px 14px}
-  .brand-path{display:flex;align-items:center;gap:7px;min-width:0;font-size:13px;color:var(--muted)}
-  .brand-path a{color:var(--muted);text-decoration:none;transition:color .2s}
-  .brand-path a:hover{color:var(--accent)}
-  .brand-path .here{color:var(--ink);font-weight:500}
-  .brand-path .sep{color:var(--faint)}
-  .brand-mark{width:20px;height:20px;color:var(--accent);flex:none}
-  .controls{display:flex;gap:4px}
-  .control{width:30px;height:30px;border:0;border-radius:var(--small);background:transparent;color:var(--muted);display:grid;place-items:center;cursor:pointer;transition:background .2s,color .2s}
-  .control:hover{background:var(--accent-soft);color:var(--accent)}
-  .control svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:1.2}
-  #modeBtn{position:relative}
-  #modeBtn svg{position:absolute;inset:7px;width:15px;height:15px;fill:currentColor;stroke:none}
-  #iconSun{opacity:0;transform:rotate(-90deg) scale(.55);transition:opacity .25s,transform .25s}
-  #iconMoon{opacity:1;transform:rotate(0) scale(1);transition:opacity .25s,transform .25s}
-  #modeBtn.is-light #iconSun{opacity:1;transform:rotate(0) scale(1)}
-  #modeBtn.is-light #iconMoon{opacity:0;transform:rotate(90deg) scale(.55)}
 
   .sheet{max-width:1180px;margin:0 auto;padding:2px 16px 64px}
 
@@ -103,9 +81,6 @@
   .skel .sline:nth-child(4){width:80%;height:9px}
   @keyframes shimmer{0%{background-position:100% 0}100%{background-position:0 0}}
 
-  .colophon{margin-top:34px;padding-top:16px;border-top:1px solid var(--line);color:var(--faint);font:11px/1.6 "IBM Plex Mono";display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
-  .colophon a{color:var(--muted);text-decoration:none}
-  .colophon a:hover{color:var(--accent)}
 
   /* config panel */
   .overlay{position:fixed;inset:0;z-index:200;background:rgba(0,0,0,.42);display:flex;justify-content:center;align-items:flex-start;padding:64px 16px 16px;opacity:0;pointer-events:none;transition:opacity .25s ease;overflow-y:auto}
@@ -133,15 +108,14 @@
 
   @media(max-width:900px){:root{--cols:2} .sheet{padding:6px 14px 56px} .src-card.featured{grid-column:span 2}}
   @media(max-width:620px){:root{--cols:1;--card-h:360px} .src-card.featured{grid-column:auto}}
-  @media(prefers-reduced-motion:reduce){*{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}html{scroll-behavior:auto}}
 </style>
 </head>
 <body>
 <div class="navbar-fixed" id="nav">
   <header class="navbar">
     <div class="brand-path">
-      <svg class="brand-mark" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="nav-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#nav-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg>
-      <a href="../index.html">main</a><span class="sep">/</span><a href="index.html">tools</a><span class="sep">/</span><span class="here">news</span>
+      <svg class="brand-mark" width="22" height="22" viewBox="0 0 64 64" fill="none" aria-hidden="true"><defs><mask id="nav-eye"><circle cx="30.5" cy="24" r="4.5" fill="#fff"/><circle cx="29.8" cy="24" r="1.8" fill="#000"/></mask></defs><path fill="currentColor" fill-rule="evenodd" d="M32 4 6 58h9L23.5 37h17L49 58h9Z M23.5 30 32 4 40.5 30Z"/><circle cx="30.5" cy="24" r="4.5" fill="currentColor" mask="url(#nav-eye)"/><path fill="currentColor" d="M34.2 21.5 38 24.5 34.2 26.5Z"/></svg>
+      <a class="brand brand--parent" href="../index.html"><span class="brand-name">main</span></a><span class="brand-sep">/</span><a class="brand brand--parent" href="index.html"><span class="brand-name">tools</span></a><span class="brand-sep">/</span><a class="brand" href="" aria-current="page"><span class="brand-name">news</span></a>
     </div>
     <div class="controls">
       <button class="control" id="langBtn" type="button" aria-label="切换语言 / Switch language" title="切换语言 / Switch language"><svg viewBox="0 0 16 16" aria-hidden="true"><circle cx="8" cy="8" r="6.2"/><path d="M2 8h12M8 1.8c2.1 1.7 2.1 10.7 0 12.4M8 1.8c-2.1 1.7-2.1 10.7 0 12.4"/></svg></button>
@@ -169,7 +143,7 @@
   </div>
 
   <div id="sections" aria-label="news sections"></div>
-  <footer class="colophon">
+  <footer class="footer">
     <span>© <span id="year"></span> Acid · PaRr0tBoY</span>
     <span><a href="index.html"><span data-zh hidden>工具箱</span><span data-en>tools</span></a> · <a href="../index.html"><span data-zh hidden>主页</span><span data-en>main</span></a> · news</span>
   </footer>

@@ -61,15 +61,15 @@ const rel = (abs, prefix) => {
 const js = (v) => JSON.stringify(v).replace(/"/g, "'");
 
 const productEntry = (p) => {
-  const links = p.links.map(l => `['${l.short}','${rel(l.href, "")}','${l.type === "github" ? "github" : "doc"}']`);
-  return `{n:${js(p.name)},d:${js(p.desc)},l:[${links.join(",")}]}`;
+  const links = p.links.map(l => `['${l.short}','${l.shortZh || l.short}','${rel(l.href, "")}','${l.type === "github" ? "github" : "doc"}']`);
+  return `{n:${js(p.name)},d:${js(p.desc)},dz:${js(p.descZh || "")},l:[${links.join(",")}]}`;
 };
 
 const toolGroups = tools.groups.map(g => {
   const items = mergedTools.filter(t => t.group === g).map(t => `['${t.name}','${rel(t.href, "")}']`);
-  return `['${g}',[${items.join(",")}]]`;
+  return `['${g}','${tools.groupZh[g] || g}',[${items.join(",")}]]`;
 });
-if (autoTools.length) toolGroups.push(`['Others',[${autoTools.map(t => `['${t.name}','${rel(t.href, "")}']`).join(",")}]]`);
+if (autoTools.length) toolGroups.push(`['Others','其他',[${autoTools.map(t => `['${t.name}','${rel(t.href, "")}']`).join(",")}]]`);
 
 // ---- blog sync: 从 _blog 源文件提取文章列表（构建时自动更新首页 BLOG 列表）----
 const POSTS_DIR = path.join(ROOT, "_blog/src/content/posts");
@@ -119,7 +119,8 @@ patch("index.html", indexRules);
 // tools/index.html — card grid + counts
 const toolCard = (t) =>
   `<a class="tool-card${t.wide ? " tool-card--wide" : ""}" href="${rel(t.href, "tools")}">` +
-  `<span class="tool-code">${t.code}</span><h3>${t.name}</h3><p>${t.desc}</p>` +
+  `<span class="tool-code">${t.code}</span><h3>${t.name}</h3>` +
+  `<p><span data-zh hidden>${t.desc}</span><span data-en>${t.descEn || t.desc}</span></p>` +
   `<span class="tool-open">OPEN TOOL ↗</span></a>`;
 
 patch("tools/index.html", [
@@ -128,16 +129,16 @@ patch("tools/index.html", [
   [/TOOLBOX \/ \d+/, () => `TOOLBOX / ${mergedTools.length}`, "TOOLBOX count"],
 ]);
 
-// product/index.html — card grid + count
 const productCard = (p) => {
   const links = p.links.map(l => {
     const ext = l.href.startsWith("http") ? ' target="_blank" rel="noopener"' : "";
     const cls = l.type === "primary" ? "action primary" : "action";
-    return `<a class="${cls}" href="${rel(l.href, "product")}"${ext}>${l.label}</a>`;
+    return `<a class="${cls}" href="${rel(l.href, "product")}"${ext}><span data-zh hidden>${l.label}</span><span data-en>${l.labelEn || l.label}</span></a>`;
   }).join("");
   return (
     `<article class="product-card${p.wide ? " product-card--wide" : ""}">` +
-    `<div><span class="product-index">${p.index}</span><h3>${p.name}</h3><p>${p.desc}</p></div>` +
+    `<div><span class="product-index">${p.index}</span><h3>${p.name}</h3>` +
+    `<p><span data-zh hidden>${p.descZh || p.desc}</span><span data-en>${p.desc}</span></p></div>` +
     `<div><div class="product-links">${links}</div>` +
     `<div class="product-state">${p.state}</div></div></article>`
   );

@@ -1,11 +1,19 @@
 {
   "groups": ["Writing", "Planning", "Data", "Explore", "Make"],
+  "groupZh": {
+    "Writing": "写作",
+    "Planning": "规划",
+    "Data": "数据",
+    "Explore": "探索",
+    "Make": "制作"
+  },
   "tools": [
     {
       "name": "Chronos",
       "href": "/tools/chronos.html",
       "code": "TIME / 01",
       "desc": "用于专注与节奏记录的精算计时器，把时间拆成可以观察的工作段。",
+      "descEn": "A precise timer for focus and rhythm tracking — splitting time into observable work segments.",
       "group": "Writing",
       "wide": true
     },
@@ -14,6 +22,7 @@
       "href": "/tools/linso.html",
       "code": "WRITE / 09",
       "desc": "面向线性思考与文字整理的工具。",
+      "descEn": "A tool for linear thinking and text organization.",
       "group": "Writing"
     },
     {
@@ -21,6 +30,7 @@
       "href": "/tools/snippy.html",
       "code": "WRITE / 11",
       "desc": "快速保存和回看片段。",
+      "descEn": "Save and revisit snippets fast.",
       "group": "Writing"
     },
     {
@@ -28,6 +38,7 @@
       "href": "/tools/flowday.html",
       "code": "PLAN / 04",
       "desc": "围绕一天的任务流整理工作节奏。",
+      "descEn": "Shape your work rhythm around the day's task flow.",
       "group": "Planning"
     },
     {
@@ -35,6 +46,7 @@
       "href": "/tools/ganttlite.html",
       "code": "PLAN / 02",
       "desc": "轻量的时间线与任务安排界面。",
+      "descEn": "A lightweight timeline and task scheduling view.",
       "group": "Planning"
     },
     {
@@ -42,6 +54,7 @@
       "href": "/tools/smartgoal.html",
       "code": "PLAN / 03",
       "desc": "把目标拆成清晰、可回看的行动。",
+      "descEn": "Break goals into clear, reviewable actions.",
       "group": "Planning"
     },
     {
@@ -49,6 +62,7 @@
       "href": "/tools/datecal.html",
       "code": "UTILITY / 15",
       "desc": "处理日期、间隔和日历计算。",
+      "descEn": "Date, interval and calendar math.",
       "group": "Data"
     },
     {
@@ -56,6 +70,7 @@
       "href": "/tools/mathbank.html",
       "code": "STUDY / 05",
       "desc": "用于积累与检索数学题目的题库。",
+      "descEn": "A question bank for collecting and searching math problems.",
       "group": "Data"
     },
     {
@@ -63,6 +78,7 @@
       "href": "/tools/combinesearch.html",
       "code": "EXPLORE / 13",
       "desc": "把多个搜索入口合并到一处。",
+      "descEn": "Combine multiple search entry points in one place.",
       "group": "Explore"
     },
     {
@@ -70,6 +86,7 @@
       "href": "/tools/lookey.html",
       "code": "EXPLORE / 12",
       "desc": "从浏览内容中留下值得再次查看的线索。",
+      "descEn": "Keep leads worth revisiting from what you browse.",
       "group": "Explore"
     },
     {
@@ -77,6 +94,7 @@
       "href": "/tools/news.html",
       "code": "EXPLORE / 14",
       "desc": "按自己定义的分类与来源聚合的资讯台，每小时一刷，避开推荐流。",
+      "descEn": "A news desk you define — your categories, your sources, refreshed hourly, no recommendation feeds.",
       "group": "Explore"
     },
     {
@@ -84,6 +102,7 @@
       "href": "/tools/linsoo.html",
       "code": "WRITE / 10",
       "desc": "另一种把想法展开、收束的编辑方式。",
+      "descEn": "Another way to unfold and collect your thoughts.",
       "group": "Make"
     },
     {
@@ -91,6 +110,7 @@
       "href": "/tools/quadrant.html",
       "code": "MAKE / 08",
       "desc": "把事项放进一个可视化的优先级空间。",
+      "descEn": "Place tasks in a visual priority space.",
       "group": "Make"
     },
     {
@@ -98,6 +118,7 @@
       "href": "/tools/resume-tool.html",
       "code": "MAKE / 07",
       "desc": "用于整理简历内容的编辑工作台。",
+      "descEn": "A workbench for shaping your resume content.",
       "group": "Make"
     },
     {
@@ -105,6 +126,7 @@
       "href": "/tools/check.html",
       "code": "STUDY / 06",
       "desc": "每日备考复盘，把当天的状态留下来。",
+      "descEn": "Daily study review — keep a record of each day's state.",
       "group": "Make"
     },
     {
@@ -112,6 +134,7 @@
       "href": "/tools/lmdify.html",
       "code": "UTILITY / 16",
       "desc": "一个面向文本转换的实验工具。",
+      "descEn": "An experimental tool for text transformation.",
       "group": "Make"
     }
   ]

@@ -10,8 +10,10 @@
     mode?.classList.toggle('is-light', !dark);
     const sun = document.getElementById('iconSun');
     const moon = document.getElementById('iconMoon');
-    if (sun) sun.hidden = dark;
-    if (moon) moon.hidden = !dark;
+    // toggleAttribute (not `hidden =`): the SVG hidden IDL property does not
+    // reflect to the attribute in Chromium, so a baked hidden attr would stick.
+    if (sun) sun.toggleAttribute('hidden', dark);
+    if (moon) moon.toggleAttribute('hidden', !dark);
     localStorage.setItem('mode', root.dataset.mode);
   };
   const setLang = en => {
@@ -19,12 +21,16 @@
     document.querySelectorAll('[data-zh]').forEach(e => { e.hidden = en; });
     document.querySelectorAll('[data-en]').forEach(e => { e.hidden = !en; });
     if (lang) lang.title = en ? 'Switch to Chinese' : '切换为英文';
+    const titleEl = document.querySelector('title[data-zh][data-en]');
+    if (titleEl) document.title = en ? titleEl.dataset.en : titleEl.dataset.zh;
     localStorage.setItem('lang', en ? 'en' : 'zh-CN');
   };
   setMode(savedMode !== 'light');
   setLang((savedLang || 'en') === 'en');
   lang?.addEventListener('click', () => setLang(root.lang !== 'en'));
   mode?.addEventListener('click', () => setMode(root.dataset.mode !== 'dark'));
+  const year = document.getElementById('year');
+  if (year) year.textContent = new Date().getFullYear();
   let last = scrollY, ticking = false;
   addEventListener('scroll', () => {
     if (ticking) return;
