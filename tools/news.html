@@ -69,6 +69,13 @@
   .i-author{color:var(--muted)}
   .i-author:empty{display:none}
   .i-sep:empty{display:none}
+  .item .i-desc{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-top:3px;font-size:12px;line-height:1.45;color:var(--muted)}
+  .i-ver{color:var(--muted)}
+  .src-list li.has-cmt{display:flex;align-items:center}
+  .has-cmt .item{flex:1;min-width:0}
+  .i-cmt{flex:none;display:inline-flex;align-items:center;justify-content:center;width:27px;height:27px;margin-right:3px;border-radius:var(--small);color:var(--faint);transition:color .15s,background .15s}
+  .i-cmt:hover{color:var(--accent);background:var(--accent-soft)}
+  .i-cmt svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
   .i-empty{padding:20px 16px;color:var(--faint);font-size:12px;line-height:1.6}
   .i-empty.err{color:#c98b6a}
 
@@ -138,7 +145,7 @@
       <span class="pip pip-auto"></span>
       <span id="autoTag"><span data-zh hidden>每小时自动刷新</span><span data-en>auto · hourly</span></span>
       <button class="btn" id="refreshBtn" type="button" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2v3h-3"/></svg></button>
-      <button class="btn ghost" id="configBtn" type="button" aria-label="Configure"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M8 5.2a2.8 2.8 0 1 0 0 5.6 2.8 2.8 0 0 0 0-5.6Z"/><path d="M8 1.4v1.9M8 12.7v1.9M2.2 5.1l1.6.9M12.2 11l1.6.9M2.2 11l1.6-.9M12.2 5l1.6-.9M14 8h-3M5 8H2"/></svg></button>
+      <button class="btn ghost" id="configBtn" type="button" aria-label="Configure"><svg viewBox="0 0 16 16" aria-hidden="true"><g transform="scale(.667)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></g></svg></button>
     </div>
   </div>
 
@@ -228,6 +235,34 @@
   // ── helpers ───────────────────────────────────────────────────
   const stripTags = (s)=> (s||"").replace(/<[^>]*>/g," ").replace(/&[a-z]+;/g," ").replace(/\s+/g," ").trim();
   const trunc = (s,n)=>{ s=stripTags(s); return s.length>n ? s.slice(0,n-1)+"…" : s; };
+  const parseHtml = (s)=> new DOMParser().parseFromString(s||"", "text/html");
+  const decEl = document.createElement("textarea");
+  const decodeEntities = (s)=>{ if(!s || s.indexOf("&")===-1) return s; decEl.innerHTML = s; return decEl.value; };
+  // one meaningful line from a rich-text description (first paragraph; hnrss metadata block → "")
+  function firstPara(html){
+    const t = stripTags(html);
+    if(!t || /^(Article URL|Comments URL|Points|# Comments)/.test(t)) return "";
+    const doc = parseHtml(html);
+    const el = Array.from(doc.querySelectorAll("p,li")).find(e=>e.textContent.trim()) || doc.body;
+    return trunc(el ? el.textContent : t, 180);
+  }
+  // one-liner from GitHub release notes: a Summary section, else the first bullet.
+  // stub bodies (a bare version line, "No content.") yield nothing → keep the version title.
+  function releaseSummary(html){
+    const doc = parseHtml(html);
+    const text = (doc.body && doc.body.textContent || "").replace(/\s+/g," ").trim();
+    if(!text || /^no content\.?$/i.test(text)) return "";
+    const rich = doc.querySelectorAll("li,h1,h2,h3,h4").length > 0 || doc.querySelectorAll("p").length > 1;
+    if(!rich) return "";
+    for(const h of doc.querySelectorAll("h1,h2,h3,h4")){
+      if(!/^(summary|tl;?dr)/i.test(h.textContent.trim())) continue;
+      let n = h.nextElementSibling;
+      while(n && !/^(P|LI|UL)$/i.test(n.tagName)) n = n.nextElementSibling;
+      if(n) return trunc((n.tagName === "UL" ? (n.querySelector("li") || n) : n).textContent, 200);
+    }
+    const el = Array.from(doc.querySelectorAll("li,p")).find(e=>e.textContent.trim()) || doc.body;
+    return trunc(el ? el.textContent : text, 200);
+  }
   function ts(date){ const t=date?Date.parse(date):NaN; return isNaN(t)?0:t; }
   function relTime(date){
     const t = ts(date); if(!t) return "";
@@ -257,20 +292,23 @@
         title: (it.querySelector("title")?.textContent || "—").trim(),
         link: linkEl?.textContent.trim() || guid?.textContent.trim() || "",
         date: (it.querySelector("pubDate")?.textContent || it.querySelector("date")?.textContent || "").trim(),
-        desc: trunc(it.querySelector("description")?.textContent || "", 180),
-        author: stripTags(it.querySelector("author")?.textContent || it.querySelector("creator")?.textContent || "")
+        desc: firstPara(it.querySelector("description")?.textContent || ""),
+        author: stripTags(it.querySelector("author")?.textContent || it.querySelector("creator")?.textContent || ""),
+        comments: (it.querySelector("comments")?.textContent || "").trim()
       };
     });
     const entries = Array.from(doc.querySelectorAll("entry"));
     return entries.map(e=>{
       const linkEl = Array.from(e.children).find(c=>c.tagName.toLowerCase()==="link");
       const authorEl = e.querySelector("author name");
+      const bodyHtml = (e.querySelector("content")||e.querySelector("summary"))?.textContent || "";
       return {
         title: (e.querySelector("title")?.textContent || "—").trim(),
         link: linkEl?.getAttribute("href") || "",
         date: (e.querySelector("published")?.textContent || e.querySelector("updated")?.textContent || "").trim(),
-        desc: trunc((e.querySelector("summary")||e.querySelector("content"))?.textContent || "", 180),
-        author: authorEl?.textContent.trim() || ""
+        desc: firstPara(bodyHtml),
+        author: authorEl?.textContent.trim() || "",
+        summary: releaseSummary(bodyHtml)
       };
     });
   }
@@ -289,13 +327,18 @@
     if(!r.ok) throw new Error("r2j " + r.status);
     const d = await r.json();
     if(d.status !== "ok") throw new Error("r2j status " + d.status);
-    return (d.items||[]).slice(0, limit).map(it=>({
-      title: it.title || "—",
-      link: it.link || it.guid || "",
-      date: it.pubDate || "",
-      desc: trunc(it.description || it.content || "", 180),
-      author: stripTags(it.author || "")
-    }));
+    return (d.items||[]).slice(0, limit).map(it=>{
+      const html = decodeEntities(it.description || it.content || "");
+      return {
+        title: it.title || "—",
+        link: it.link || it.guid || "",
+        date: it.pubDate || "",
+        desc: firstPara(html),
+        author: stripTags(it.author || ""),
+        summary: releaseSummary(html),
+        comments: /^https:\/\/news\.ycombinator\.com\//.test(it.guid || "") ? (it.guid || "") : ""
+      };
+    });
   }
   // ── fallback 2: allorigins /get → raw XML → DOMParser ───────────
   async function allorigins(url){
@@ -393,6 +436,8 @@
     listEl.innerHTML = h;
   }
 
+  const CMT_ICON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2.992 16.342a2 2 0 0 1 .094 1.167l-1.065 3.29a1 1 0 0 0 1.236 1.168l3.413-.998a2 2 0 0 1 1.099.092 10 10 0 1 0-4.777-4.719"/></svg>';
+
   function renderItems(src, items){
     const info = cardEls.get(src.id); if(!info) return;
     const { list, count } = info;
@@ -401,15 +446,28 @@
       count.textContent = ""; return;
     }
     count.textContent = String(items.length);
+    const gh = src.type === "github";
     list.innerHTML = items.map(it=>{
       const href = it.link ? escapeAttr(it.link) : "";
-      const author = it.author ? '<span class="i-author">' + escapeHtml(it.author) + '</span><span class="i-sep">·</span>' : '';
       const rt = relTime(it.date);
-      const byline = author + (rt ? '<span>' + escapeHtml(rt) + '</span>' : '');
-      return '<li><a class="item" href="'+href+'" target="_blank" rel="noopener noreferrer">' +
-        '<div class="i-title">'+escapeHtml(it.title)+'</div>' +
-        (byline ? '<div class="i-byline">'+byline+'</div>' : '') +
-      '</a></li>';
+      // releases: headline = first meaningful line of the notes; the version moves to the byline
+      let title = it.title, byline;
+      if(gh && it.summary){
+        title = it.summary;
+        byline = '<span class="i-ver">' + escapeHtml(it.title) + '</span><span class="i-sep">·</span>' + (rt ? '<span>' + escapeHtml(rt) + '</span>' : '');
+      } else {
+        const author = it.author ? '<span class="i-author">' + escapeHtml(it.author) + '</span><span class="i-sep">·</span>' : '';
+        byline = author + (rt ? '<span>' + escapeHtml(rt) + '</span>' : '');
+      }
+      const desc = (!gh && it.desc) ? '<div class="i-desc">' + escapeHtml(it.desc) + '</div>' : '';
+      const cmt = it.comments ? '<a class="i-cmt" href="' + escapeAttr(it.comments) + '" target="_blank" rel="noopener noreferrer" title="' + (en() ? "comments" : "评论区") + '" aria-label="' + (en() ? "comments" : "评论区") + '">' + CMT_ICON + '</a>' : '';
+      return '<li' + (cmt ? ' class="has-cmt"' : '') + '>' +
+        '<a class="item" href="'+href+'" target="_blank" rel="noopener noreferrer">' +
+          '<div class="i-title">'+escapeHtml(title)+'</div>' +
+          desc +
+          (byline ? '<div class="i-byline">'+byline+'</div>' : '') +
+        '</a>' + cmt +
+      '</li>';
     }).join("");
   }
 
