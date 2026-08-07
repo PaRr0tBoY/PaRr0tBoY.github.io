@@ -135,19 +135,26 @@
       const data = await r.json();
       const segs = data && data[0];
       if (Array.isArray(segs)) {
-        batch.forEach((core, i) => {
-          const tr = segs[i] && segs[i][0];
-          if (typeof tr !== 'string') return;
-          zhDone.set(core, tr.replace(/\n+$/, ''));
-          const nodes = zhNodeMap.get(core);
-          if (!nodes) return;
-          zhNodeMap.delete(core);
+        // Match segments by their source text, never by position: gtx drops or
+        // merges lines (version strings, duplicates), which would shift every
+        // later segment onto the wrong text and mix content across cards.
+        for (const seg of segs) {
+          const tr = seg && seg[0];
+          const src = seg && seg[1];
+          if (typeof src !== 'string' || typeof tr !== 'string') continue;
+          const norm = src.replace(/\s+/g, ' ');
+          if (!zhNodeMap.has(norm)) continue;
+          zhDone.set(norm, tr.replace(/\n+$/, ''));
+          const nodes = zhNodeMap.get(norm);
+          zhNodeMap.delete(norm);
           for (const node of nodes) {
             if (!node.isConnected) continue;
             const m = CORE_RE.exec(node.nodeValue);
-            node.nodeValue = m[1] + zhDone.get(core) + m[3];
+            // Guard: the node must still hold the text that was queued.
+            if (!m || m[2].replace(/\s+/g, ' ') !== norm) continue;
+            node.nodeValue = m[1] + zhDone.get(norm) + m[3];
           }
-        });
+        }
       }
       return true;
     } catch (e) {
