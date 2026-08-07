@@ -135,25 +135,38 @@
       const data = await r.json();
       const segs = data && data[0];
       if (Array.isArray(segs)) {
-        // Match segments by their source text, never by position: gtx drops or
-        // merges lines (version strings, duplicates), which would shift every
-        // later segment onto the wrong text and mix content across cards.
-        for (const seg of segs) {
-          const tr = seg && seg[0];
-          const src = seg && seg[1];
-          if (typeof src !== 'string' || typeof tr !== 'string') continue;
-          const norm = src.replace(/\s+/g, ' ');
-          if (!zhNodeMap.has(norm)) continue;
-          zhDone.set(norm, tr.replace(/\n+$/, ''));
-          const nodes = zhNodeMap.get(norm);
-          zhNodeMap.delete(norm);
-          for (const node of nodes) {
-            if (!node.isConnected) continue;
-            const m = CORE_RE.exec(node.nodeValue);
-            // Guard: the node must still hold the text that was queued.
-            if (!m || m[2].replace(/\s+/g, ' ') !== norm) continue;
-            node.nodeValue = m[1] + zhDone.get(norm) + m[3];
+        // gtx returns one segment per line — but keeps the trailing newline in
+        // every segment except the last, and splits long lines (by sentence)
+        // into consecutive segments. Match by joined source text, never by
+        // position: a dropped or split line would otherwise shift every later
+        // segment onto the wrong text and mix content across cards.
+        const entries = segs.map(s => ({
+          tr: (s && typeof s[0] === 'string' ? s[0] : '').replace(/\n+$/, ''),
+          src: (s && typeof s[1] === 'string' ? s[1] : '').trim().replace(/\s+/g, ' '),
+        }));
+        for (let i = 0; i < entries.length; ) {
+          let buf = entries[i].src, trBuf = entries[i].tr, applied = false;
+          if (buf) {
+            for (let j = i + 1; j <= entries.length; j++) {
+              if (zhNodeMap.has(buf)) {
+                zhDone.set(buf, trBuf);
+                const nodes = zhNodeMap.get(buf);
+                zhNodeMap.delete(buf);
+                for (const node of nodes) {
+                  if (!node.isConnected) continue;
+                  const m = CORE_RE.exec(node.nodeValue);
+                  // Guard: the node must still hold the text that was queued.
+                  if (!m || m[2].replace(/\s+/g, ' ') !== buf) continue;
+                  node.nodeValue = m[1] + zhDone.get(buf) + m[3];
+                }
+                i = j;
+                applied = true;
+                break;
+              }
+              if (j < entries.length) { buf += ' ' + entries[j].src; trBuf += entries[j].tr; }
+            }
           }
+          if (!applied) i++;
         }
       }
       return true;
