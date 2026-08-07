@@ -149,6 +149,27 @@ const searchItem =
         )
       }
 
+      <button
+        id="langBtn"
+        class="icon-btn"
+        type="button"
+        title="切换语言 / Switch language"
+        aria-label="切换语言 / Switch language"
+      >
+        <svg
+          viewBox="0 0 16 16"
+          width="16"
+          height="16"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.2"
+          aria-hidden="true"
+        >
+          <circle cx="8" cy="8" r="6.2" />
+          <path d="M2 8h12M8 1.8c2.1 1.7 2.1 10.7 0 12.4M8 1.8c-2.1 1.7-2.1 10.7 0 12.4" />
+        </svg>
+      </button>
+
       {
         features.lightAndDarkMode && (
           <button
@@ -230,6 +251,10 @@ const searchItem =
 </div>
 
 <script>
+  // Shared shell: lang/mode buttons + Google-Translate engine for [data-translate]
+  // content (blog post body). Re-applied on view-transition swaps below.
+  import "../../../assets/site-shell.js";
+
   function setupHeader() {
     const navbar = document.querySelector<HTMLElement>("#navbar-fixed");
     const menuBtn = document.querySelector<HTMLButtonElement>("#menu-btn");
@@ -312,6 +337,17 @@ const searchItem =
       };
   }
 
+  function setupLang() {
+    if (!window.siteShell) return;
+    // The shell wires the click handler (idempotently); here we only re-attach
+    // it after a swap replaced the header, and re-apply the saved view language.
+    window.siteShell.wireLang(document.querySelector("#langBtn"));
+    const saved = localStorage.getItem("lang");
+    if (saved) window.siteShell.setLang(saved === "en");
+  }
+
   setupHeader();
+  setupLang();
   document.addEventListener("astro:after-swap", setupHeader);
+  document.addEventListener("astro:after-swap", setupLang);
 </script>

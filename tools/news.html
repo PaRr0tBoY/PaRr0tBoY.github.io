@@ -24,10 +24,6 @@
   /* compact top bar — dateline + status + actions on one line */
   .topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:0 0 10px;padding:6px 0;color:var(--faint);font:500 11px/1.4 "IBM Plex Mono";letter-spacing:.04em;border-bottom:1px solid var(--line)}
   .topbar .left,.topbar .right{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-  .topbar .pip{width:5px;height:5px;border-radius:50%;background:var(--faint);flex:none}
-  .topbar .dot{width:7px;height:7px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 3px var(--accent-soft);flex:none}
-  .topbar .dot.busy{animation:pulse 1.4s ease-in-out infinite}
-  .topbar .pip-auto{color:var(--faint)}
   .topbar b{color:var(--ink);font-weight:500}
   .t-actions{display:flex;gap:6px}
   .btn{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line-strong);background:transparent;color:var(--ink);font:500 11px/1 "IBM Plex Mono";letter-spacing:.04em;padding:7px 11px;border-radius:var(--small);cursor:pointer;transition:background .2s,color .2s,border-color .2s}
@@ -134,15 +130,11 @@
 <main class="sheet">
   <div class="topbar">
     <div class="left">
-      <span class="pip"></span>
       <span id="dateStr"></span>
-      <span class="pip"></span>
       <span data-zh hidden>资讯台 · NEWS DESK</span><span data-en>NEWS DESK</span>
     </div>
     <div class="right">
-      <span class="dot" id="liveDot"></span>
       <span><span data-zh hidden>更新于</span><span data-en>updated</span> <b id="updatedAt">—</b></span>
-      <span class="pip pip-auto"></span>
       <span id="autoTag"><span data-zh hidden>每小时自动刷新</span><span data-en>auto · hourly</span></span>
       <button class="btn" id="refreshBtn" type="button" aria-label="Refresh"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M13 8a5 5 0 1 1-1.5-3.6M13 2v3h-3"/></svg></button>
       <button class="btn ghost" id="configBtn" type="button" aria-label="Configure"><svg viewBox="0 0 16 16" aria-hidden="true"><g transform="scale(.667)" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"/><circle cx="12" cy="12" r="3"/></g></svg></button>
@@ -459,11 +451,11 @@
         const author = it.author ? '<span class="i-author">' + escapeHtml(it.author) + '</span><span class="i-sep">·</span>' : '';
         byline = author + (rt ? '<span>' + escapeHtml(rt) + '</span>' : '');
       }
-      const desc = (!gh && it.desc) ? '<div class="i-desc">' + escapeHtml(it.desc) + '</div>' : '';
+      const desc = (!gh && it.desc) ? '<div class="i-desc" data-translate>' + escapeHtml(it.desc) + '</div>' : '';
       const cmt = it.comments ? '<a class="i-cmt" href="' + escapeAttr(it.comments) + '" target="_blank" rel="noopener noreferrer" title="' + (en() ? "comments" : "评论区") + '" aria-label="' + (en() ? "comments" : "评论区") + '">' + CMT_ICON + '</a>' : '';
       return '<li' + (cmt ? ' class="has-cmt"' : '') + '>' +
         '<a class="item" href="'+href+'" target="_blank" rel="noopener noreferrer">' +
-          '<div class="i-title">'+escapeHtml(title)+'</div>' +
+          '<div class="i-title" data-translate>'+escapeHtml(title)+'</div>' +
           desc +
           (byline ? '<div class="i-byline">'+byline+'</div>' : '') +
         '</a>' + cmt +
@@ -510,7 +502,6 @@
 
   // ── refresh ───────────────────────────────────────────────────
   let busy = false;
-  const liveDot = document.getElementById("liveDot");
   const updatedAt = document.getElementById("updatedAt");
   const refreshBtn = document.getElementById("refreshBtn");
   function markUpdated(){
@@ -544,7 +535,7 @@
   }
   async function refresh(){
     if(busy) return;
-    busy = true; liveDot.classList.add("busy");
+    busy = true;
     if(!REDUCED) refreshBtn.classList.add("spin");
     log("refresh");
     const srcs = [];
@@ -554,7 +545,7 @@
     let i = 0;
     await Promise.all(srcs.map(async src=>{ const wait = (i++) * pace; if(wait) await new Promise(r=>setTimeout(r, wait)); return refreshSrc(src); }));
     markUpdated();
-    busy = false; liveDot.classList.remove("busy");
+    busy = false;
     refreshBtn.classList.remove("spin");
   }
   refreshBtn.addEventListener("click", refresh);
