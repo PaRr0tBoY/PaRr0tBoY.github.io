@@ -26,14 +26,18 @@
     "links": [{ "label": "GitHub ↗", "labelEn": "GitHub ↗", "short": "GitHub", "shortZh": "GitHub", "href": "https://github.com/PaRr0tBoY/Pola-Agent", "type": "github" }]
   },
   {
-    "name": "hive",
-    "desc": "My fork of herdr, which keeps you in flow.",
-    "descZh": "herdr 的 fork，让你保持心流。",
+    "name": "Trace",
+    "desc": "AI-native task manager that lives on your desktop edge.",
+    "descZh": "驻留在桌面边缘的 AI 原生任务管理器。",
+    "index": "02 / OPEN SOURCE",
+    "state": "TASKS / DESKTOP / AI",
     "wide": false,
-    "portal": false,
+    "portal": true,
     "core": true,
-    "state": "FLOW / DESKTOP / FORK",
-    "links": [{ "label": "GitHub ↗", "labelEn": "GitHub ↗", "short": "GitHub", "shortZh": "GitHub", "href": "https://github.com/PaRr0tBoY/hive", "type": "github" }]
+    "links": [
+      { "label": "查看产品", "labelEn": "Landing", "short": "Landing", "shortZh": "落地页", "href": "/product/trace/landing/", "type": "primary" },
+      { "label": "GitHub ↗", "labelEn": "GitHub ↗", "short": "GitHub", "shortZh": "GitHub", "href": "https://github.com/PaRr0tBoY/Trace", "type": "github" }
+    ]
   },
   {
     "name": "Techne",
@@ -50,14 +54,13 @@
     ]
   },
   {
-    "name": "Trace",
-    "desc": "AI-native task manager that lives on your desktop edge.",
-    "descZh": "驻留在桌面边缘的 AI 原生任务管理器。",
-    "index": "05 / OPEN SOURCE",
-    "state": "TASKS / DESKTOP / AI",
+    "name": "hive",
+    "desc": "My fork of herdr, which keeps you in flow.",
+    "descZh": "herdr 的 fork，让你保持心流。",
     "wide": false,
     "portal": false,
-    "links": [{ "label": "GitHub ↗", "labelEn": "GitHub ↗", "short": "GitHub", "shortZh": "GitHub", "href": "https://github.com/PaRr0tBoY/Trace", "type": "github" }]
+    "state": "FLOW / DESKTOP / FORK",
+    "links": [{ "label": "GitHub ↗", "labelEn": "GitHub ↗", "short": "GitHub", "shortZh": "GitHub", "href": "https://github.com/PaRr0tBoY/hive", "type": "github" }]
   },
   {
     "name": "Plateau",

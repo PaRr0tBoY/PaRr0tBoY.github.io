@@ -162,6 +162,7 @@ const mainUrls = [
   "/product/volante/landing/",
   "/product/techne/landing/",
   "/product/techne/doc/",
+  "/product/trace/landing/",
   "/docs/",
   "/graphify-out/graph.html",
 ];
