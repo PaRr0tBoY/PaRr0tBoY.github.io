@@ -1,0 +1,1696 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>线性代数复习全书 · Acidev</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Crect width='100' height='100' rx='18' fill='%2320242a'/%3E%3Ctext x='50' y='70' font-size='58' text-anchor='middle' fill='%23c0392b' font-family='serif' font-weight='bold'%3E秩%3C/text%3E%3C/svg%3E">
+<meta name="description" content="以秩为核心串联六章的李永乐线性代数强化复习全书：定义定理公式总表、题型条件反射、等价表述网络，附两套自测与勘误清单。">
+<link rel="canonical" href="https://acidev.cc/tools/la.html">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.css">
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/katex.min.js"></script>
+<script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.11/dist/contrib/auto-render.min.js"></script>
+<link rel="stylesheet" href="https://miaoda.feishu.cn/fonts/css2?family=Noto+Serif+SC:wght@400;600;700;900&family=Noto+Sans+SC:wght@300;400;500;700&display=swap">
+<style>
+:root{
+  --paper:#f6f3ec; --card:#fffdf7; --ink:#20242a; --ink-soft:#575d66; --faint:#8b909a;
+  --line:#e2dccf; --line-strong:#cfc7b4;
+  --vermilion:#c0392b; --vermilion-soft:#fbeae7;
+  --blue:#1f5c99; --blue-soft:#e9f0f8;
+  --green:#2e7d5b; --green-soft:#e8f3ee;
+  --ochre:#a8740a; --ochre-soft:#faf1dc;
+  --sidebar-w:268px; --content-max:920px;
+  --serif:"Noto Serif SC","Songti SC",serif; --sans:"Noto Sans SC","PingFang SC",system-ui,sans-serif;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);
+  font-size:15.5px;line-height:1.75;-webkit-font-smoothing:antialiased}
+h1,h2,h3,h4{font-family:var(--serif);color:var(--ink);line-height:1.35;font-weight:700}
+p{margin:.5em 0}
+a{color:var(--blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.katex{font-size:1.04em}
+.katex-display{margin:.7em 0;overflow-x:auto;overflow-y:hidden;padding:2px 0}
+
+/* ---------- 侧边导航 ---------- */
+.layout{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;bottom:0;width:var(--sidebar-w);background:#fbf8f1;
+  border-right:1px solid var(--line);display:flex;flex-direction:column;z-index:50}
+.brand{padding:20px 22px 14px;border-bottom:1px solid var(--line)}
+.brand .t{font-family:var(--serif);font-weight:900;font-size:19px;letter-spacing:1px}
+.brand .t span{color:var(--vermilion)}
+.brand .s{font-size:12px;color:var(--faint);margin-top:3px;letter-spacing:.5px}
+.searchbox{padding:12px 16px;border-bottom:1px solid var(--line);position:relative}
+.searchbox input{width:100%;padding:8px 12px;border:1px solid var(--line-strong);border-radius:8px;
+  font-family:var(--sans);font-size:14px;background:#fff;outline:none}
+.searchbox input:focus{border-color:var(--blue)}
+.search-results{position:absolute;left:16px;right:16px;top:52px;background:#fff;border:1px solid var(--line-strong);
+  border-radius:8px;box-shadow:0 8px 24px rgba(40,35,20,.16);max-height:360px;overflow-y:auto;
+  display:none;z-index:60}
+.search-results.show{display:block}
+.search-results .sr{padding:9px 12px;border-bottom:1px solid var(--line);cursor:pointer;font-size:13.5px}
+.search-results .sr:last-child{border-bottom:none}
+.search-results .sr:hover{background:var(--blue-soft)}
+.search-results .sr .grp{color:var(--faint);font-size:11.5px;display:block}
+.nav{flex:1;overflow-y:auto;padding:10px 10px 24px}
+.nav-group{margin-bottom:2px}
+.nav-group>.nav-label{font-size:11.5px;color:var(--faint);letter-spacing:2px;padding:12px 14px 4px;font-weight:500}
+.nav-item{display:flex;align-items:center;gap:9px;padding:7px 14px;border-radius:7px;cursor:pointer;
+  font-size:14px;color:var(--ink-soft);font-weight:500}
+.nav-item:hover{background:#efe9db;color:var(--ink)}
+.nav-item.active{background:var(--ink);color:#fff}
+.nav-item .dot{width:7px;height:7px;border-radius:50%;flex:none;background:var(--line-strong)}
+.nav-item.active .dot{background:var(--vermilion)}
+.nav-item[data-view="rankmap"] .dot{background:var(--vermilion)}
+.nav-item[data-view="signals"] .dot{background:var(--green)}
+.nav-item[data-view="tables"] .dot{background:var(--blue)}
+.menu-toggle{display:none}
+
+.main{margin-left:var(--sidebar-w);flex:1;min-width:0}
+.content{max-width:var(--content-max);margin:0 auto;padding:42px 48px 90px}
+.view{display:none;animation:fade .25s ease}
+.view.active{display:block}
+@keyframes fade{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.view{animation:none}html{scroll-behavior:auto}}
+
+/* ---------- 通用排版 ---------- */
+.page-head{border-bottom:2px solid var(--ink);padding-bottom:16px;margin-bottom:26px}
+.page-head .kicker{font-size:12.5px;letter-spacing:3px;color:var(--vermilion);font-weight:700;margin-bottom:6px}
+.page-head h1{font-size:30px;margin:0 0 6px}
+.page-head .lead{color:var(--ink-soft);font-size:15px;margin:0}
+h2.sec{font-size:22px;margin:38px 0 14px;padding-left:12px;border-left:5px solid var(--vermilion)}
+h3.sub{font-size:17.5px;margin:24px 0 10px;color:var(--ink)}
+h3.sub::before{content:"";display:inline-block;width:10px;height:10px;background:var(--blue);
+  margin-right:8px;transform:rotate(45deg);vertical-align:1px}
+h4{font-size:15.5px;margin:16px 0 6px;color:var(--ink)}
+strong{color:var(--ink);font-weight:700}
+.term{color:var(--vermilion);font-weight:700}
+ul,ol{padding-left:22px;margin:.5em 0}
+li{margin:.28em 0}
+hr.soft{border:none;border-top:1px dashed var(--line-strong);margin:26px 0}
+
+/* 卡片/批注块 */
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 20px;margin:14px 0;
+  box-shadow:0 1px 2px rgba(60,50,20,.04)}
+.callout{border-radius:10px;padding:13px 18px 13px 16px;margin:14px 0;border:1px solid;font-size:14.8px}
+.callout .tag{display:inline-block;font-family:var(--serif);font-weight:700;font-size:13px;
+  padding:1px 9px;border-radius:5px;margin-right:8px;vertical-align:1px}
+.c-def{background:var(--vermilion-soft);border-color:#ecc4bd}
+.c-def .tag{background:var(--vermilion);color:#fff}
+.c-thm{background:var(--blue-soft);border-color:#c2d4e8}
+.c-thm .tag{background:var(--blue);color:#fff}
+.c-sig{background:var(--green-soft);border-color:#b9d9cb}
+.c-sig .tag{background:var(--green);color:#fff}
+.c-warn{background:var(--ochre-soft);border-color:#e6d0a3}
+.c-warn .tag{background:var(--ochre);color:#fff}
+.c-core{background:#f3eef7;border-color:#d9cde8}
+.c-core .tag{background:#5b3d8c;color:#fff}
+.c-key{background:#f5f5f2;border-color:var(--line-strong)}
+.c-key .tag{background:var(--ink);color:#fff}
+
+/* 表格 */
+.table-wrap{overflow-x:auto;margin:14px 0}
+table{border-collapse:collapse;width:100%;font-size:14.2px;background:var(--card);border:1px solid var(--line-strong)}
+table.fixed{table-layout:fixed}
+th,td{border:1px solid var(--line);padding:8px 11px;text-align:left;vertical-align:top}
+th{background:#efe9db;font-family:var(--serif);font-weight:700;font-size:13.6px}
+tr:nth-child(even) td{background:#fbf9f3}
+td .katex{font-size:.98em}
+.tbl-narrow{width:auto}
+
+/* 折叠 */
+details{margin:10px 0;border:1px solid var(--line);border-radius:9px;background:var(--card);overflow:hidden}
+details summary{cursor:pointer;padding:11px 16px;font-family:var(--serif);font-weight:600;font-size:14.6px;
+  background:#f3eee2;list-style:none;display:flex;align-items:center;gap:8px}
+details summary::-webkit-details-marker{display:none}
+details summary::before{content:"▸";color:var(--vermilion);transition:transform .2s}
+details[open] summary::before{transform:rotate(90deg)}
+details .d-body{padding:12px 18px 16px}
+
+/* 信号/条件反射卡 */
+.signal-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:14px 0}
+.signal-grid .sg{background:var(--card);border:1px solid var(--line);border-top:3px solid var(--green);
+  border-radius:9px;padding:13px 15px}
+.signal-grid .sg .cond{font-weight:700;color:var(--green);font-family:var(--serif);font-size:14.5px;margin-bottom:4px}
+.signal-grid .sg .arrow{color:var(--vermilion);font-weight:700;margin:0 5px}
+@media (max-width:760px){.signal-grid{grid-template-columns:1fr}}
+
+/* 章节 tab */
+.ch-tabs{display:flex;flex-wrap:wrap;gap:7px;margin:18px 0 22px}
+.ch-tabs button{font-family:var(--sans);font-size:13.8px;font-weight:500;padding:7px 14px;border-radius:20px;
+  border:1px solid var(--line-strong);background:var(--card);color:var(--ink-soft);cursor:pointer}
+.ch-tabs button.on{background:var(--vermilion);color:#fff;border-color:var(--vermilion)}
+.ch-pane{display:none}
+.ch-pane.on{display:block}
+
+/* 秩网络 */
+.hub{display:flex;justify-content:center;margin:24px 0}
+.hub svg{max-width:100%;height:auto}
+.pill{display:inline-block;padding:2px 10px;border-radius:20px;font-size:12.8px;font-weight:600;margin:2px 4px 2px 0}
+.pill.r{background:var(--vermilion-soft);color:var(--vermilion)}
+.pill.b{background:var(--blue-soft);color:var(--blue)}
+.pill.g{background:var(--green-soft);color:var(--green)}
+.pill.o{background:var(--ochre-soft);color:var(--ochre)}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.two-col{grid-template-columns:1fr}}
+
+.cover{text-align:center;padding:50px 20px 30px}
+.cover .big{font-family:var(--serif);font-weight:900;font-size:46px;letter-spacing:4px;margin:0}
+.cover .big .z{color:var(--vermilion)}
+.cover .sub{font-size:17px;color:var(--ink-soft);margin-top:12px}
+.cover .meta{margin-top:26px;color:var(--faint);font-size:13px}
+.flowstrip{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:26px 0}
+.flowstrip .node{background:var(--card);border:1px solid var(--line-strong);border-radius:8px;padding:8px 14px;
+  font-size:13.8px;font-weight:600}
+.flowstrip .arr{color:var(--vermilion);align-self:center;font-weight:700}
+
+.q{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 16px;margin:12px 0;box-shadow:0 1px 2px rgba(60,50,40,.05)}
+.q details{margin-top:10px}
+.qhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.qtype{font-family:var(--serif);font-weight:700;font-size:16px;color:var(--ink)}
+.qbadge{font-size:11.5px;font-weight:700;color:#fff;background:var(--green);border-radius:5px;padding:2px 8px}
+.ex{font-size:14.2px;color:var(--ink-soft);margin:6px 0 10px;padding-left:12px;border-left:3px solid var(--line-strong)}
+.ans{font-size:14.2px}
+.ans b{color:var(--blue)}
+.todo-flag{display:inline-block;font-size:11px;font-weight:700;background:var(--ochre);color:#fff;
+  border-radius:4px;padding:0 6px;margin-left:6px;vertical-align:2px}
+
+/* 移动端 */
+@media (max-width:860px){
+  html,body{overflow-x:hidden}
+  .sidebar{display:none}
+  .sidebar.open{display:block;box-shadow:0 0 40px rgba(0,0,0,.25)}
+  .main{margin-left:0}
+  .content{padding:26px 18px 70px}
+  .menu-toggle{display:flex;position:fixed;top:12px;left:12px;z-index:70;width:42px;height:42px;
+    border-radius:9px;border:1px solid var(--line-strong);background:#fffdf7;align-items:center;justify-content:center;
+    font-size:20px;cursor:pointer;color:var(--ink)}
+  .cover .big{font-size:34px}
+  .page-head h1{font-size:24px}
+}
+@media print{
+  .sidebar,.menu-toggle,.searchbox,.ch-tabs{display:none!important}
+  .main{margin:0}
+  .content{max-width:100%;padding:0}
+  .view{display:block!important;page-break-after:always}
+  .ch-pane{display:block!important}
+  details{break-inside:avoid}
+  .card,.callout,.table-wrap{break-inside:avoid}
+  body{background:#fff;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+  <!-- ================= 侧边导航 ================= -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="t">线代复习<span>·秩</span></div>
+      <div class="s">李永乐强化 · 六合一复习全书</div>
+    </div>
+    <div class="searchbox">
+      <input id="searchInput" type="text" placeholder="搜知识点 / 题型 / 信号…" autocomplete="off">
+      <div class="search-results" id="searchResults"></div>
+    </div>
+    <nav class="nav" id="nav">
+      <div class="nav-group">
+        <div class="nav-label">总纲</div>
+        <div class="nav-item" data-view="home"><span class="dot"></span>导读与使用说明</div>
+        <div class="nav-item" data-view="rankmap"><span class="dot"></span>秩总图（核心地图）</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">第一部分 · 分章</div>
+        <div class="nav-item" data-view="ch"><span class="dot"></span>六章分讲（定义/定理/公式/题型）</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">第二部分 · 横向</div>
+        <div class="nav-item" data-view="tables"><span class="dot"></span>定义·定理·公式总表</div>
+        <div class="nav-item" data-view="signals"><span class="dot"></span>题型条件反射手册</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">第三部分 · 串联</div>
+        <div class="nav-item" data-view="ranknet"><span class="dot"></span>以秩为核心的等价网络</div>
+      </div>
+      <div class="nav-group">
+        <div class="nav-label">收尾</div>
+        <div class="nav-item" data-view="selftest"><span class="dot"></span>两套综合自测</div>
+        <div class="nav-item" data-view="errata"><span class="dot"></span>勘误与待核清单</div>
+      </div>
+    </nav>
+  </aside>
+
+  <main class="main">
+    <button class="menu-toggle" id="menuToggle" aria-label="菜单" style="padding:0;color:var(--ink)"><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg></button>
+    <div class="content">
+
+      <!-- VIEW: home -->
+      <section class="view" id="view-home">
+        <div class="cover">
+          <div class="big">线性代数 · 以<span class="z">「秩」</span>为纲</div>
+          <div class="sub">李永乐强化课 · 六合一复习全书<br>把六章读成一张网，把题型读成条件反射</div>
+          <div class="flowstrip">
+            <span class="node">行列式</span><span class="arr">→</span>
+            <span class="node">矩阵</span><span class="arr">→</span>
+            <span class="node">向量</span><span class="arr">→</span>
+            <span class="node">方程组</span><span class="arr">→</span>
+            <span class="node">特征值</span><span class="arr">→</span>
+            <span class="node">二次型</span>
+          </div>
+          <div class="meta">依据《李永乐线代辅导讲义（强化）》整理 · 配 158 道讲义例题与严选练习 · 含课程补充与勘误</div>
+        </div>
+
+        <div class="page-head">
+          <div class="kicker">核 心 主 张</div>
+          <h1>整本书只有一个数：$r(A)$</h1>
+          <p class="lead">线性代数看似分六章，其实是<strong>同一个对象在五种语言下的来回翻译</strong>。这个对象是一个方阵（或矩阵），贯穿始终的数字是它的<strong>秩</strong>。把秩想透，六章自动打通。</p>
+        </div>
+
+        <div class="callout c-core">
+          <span class="tag">一句话</span>
+          对一个 $n$ 阶方阵 $A$，"<strong>秩满不满</strong>"这一个问题，可以在五个章节里用五种完全不同的话问出来——行列式问 $|A|\ne0$ 吗？向量问列向量组相关吗？方程组问 $Ax=0$ 有非零解吗？特征值问 $0$ 是特征值吗？二次型问它是否正定/满秩。<strong>答案是同一个，问法有五种</strong>。这就是"七大等价命题"的来历。
+        </div>
+
+        <h2 class="sec">这份资料怎么用</h2>
+        <div class="two-col">
+          <div class="card">
+            <h4 style="color:var(--vermilion);margin-top:0">第一部分 · 分章 + 横切</h4>
+            <ul>
+              <li><strong>六章分讲</strong>：每章压缩成"定义 / 定理 / 公式 / 题型与通法 / 练习"，是查阅用的主干。</li>
+              <li><strong>定义·定理·公式总表</strong>：把六章的定义、定理、公式分别汇总到一起，<strong>长得像的公式并排对比</strong>（如 $A^{-1}$ 与 $A^{*}$ 的公式、三种对角化）。</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h4 style="color:var(--green);margin-top:0">第二部分 · 条件反射</h4>
+            <ul>
+              <li><strong>题型条件反射手册</strong>：按"题目给的条件 → 等于在告诉你什么 → 立刻想到什么思路"组织，解决"看题不知道在问什么"。</li>
+              <li>做法相近的题归并为一类，每类配识别信号、通法、代表例题、易错点。</li>
+            </ul>
+          </div>
+        </div>
+        <div class="card" style="border-left:4px solid var(--vermilion)">
+          <h4 style="color:var(--vermilion);margin-top:0">第三部分 · 以秩为核心的等价网络（最值得先看）</h4>
+          <p style="margin:6px 0">把全书知识用秩串成一张网：秩的<strong>五种语言</strong>、两个核心数 $r(A)$ 与 $n-r(A)$、秩的全部不等式、可逆/不可逆的等价链、$AB=O$、$r(A^{*})$ 三值公式、公共解/同解/包含、以及<strong>等价 / 相似 / 合同</strong>三大关系收口。</p>
+        </div>
+
+        <h2 class="sec">建议的三条复习路线</h2>
+        <table>
+          <colgroup><col style="width:18%"><col style="width:30%"><col style="width:52%"></colgroup>
+          <thead><tr><th>你的状态</th><th>路线</th><th>目的</th></tr></thead>
+          <tbody>
+            <tr><td><strong>时间紧（考前）</strong></td><td>秩总图 → 条件反射手册 → 勘误清单</td><td>先看"秩总图"建立全局，再用"条件反射"快速过题型，最后扫易错点。</td></tr>
+            <tr><td><strong>系统过一遍</strong></td><td>六章分讲 → 总表对比 → 秩网络</td><td>逐章恢复细节，再用总表消除混淆，最后用秩网络把六章焊死。</td></tr>
+            <tr><td><strong>查某个点</strong></td><td>左上角搜索框直接搜</td><td>如"伴随矩阵的秩""公共解""正定"，直达对应卡片。</td></tr>
+          </tbody>
+        </table>
+
+        <h2 class="sec">六章在秩主线上的角色</h2>
+        <table>
+          <colgroup><col style="width:16%"><col style="width:22%"><col style="width:62%"></colgroup>
+          <thead><tr><th>章</th><th>角色</th><th>与秩的关系</th></tr></thead>
+          <tbody>
+            <tr><td><strong>一 · 行列式</strong></td><td>判据入口</td><td>只对方阵有意义。$|A|=0\Leftrightarrow r(A)&lt;n$ 是最古老的"满秩判据"，整章为判断"可不可逆"提供数值工具。</td></tr>
+            <tr><td><strong>二 · 矩阵</strong></td><td>语法层</td><td>秩是矩阵的"有效维数"。初等变换、逆、伴随、分块，全在围绕"秩如何变化、如何计算"。</td></tr>
+            <tr><td><strong>三 · 向量</strong></td><td>秩的几何真身</td><td>向量组的秩 = 极大无关组个数 = 对应矩阵的秩。线性相关、表出，都是秩的几何翻译。</td></tr>
+            <tr><td><strong>四 · 方程组</strong></td><td>秩的应用高潮</td><td>$Ax=0$ 解空间维数 $=n-r(A)$；$Ax=b$ 有没有解、几个解，全由秩夹逼决定。</td></tr>
+            <tr><td><strong>五 · 特征值</strong></td><td>综合枢纽</td><td>$\lambda=0$ 的个数（代数/几何重数）连着秩；相似把矩阵分类，对角化是秩与特征值的总汇合。</td></tr>
+            <tr><td><strong>六 · 二次型</strong></td><td>实对称化身 + 收口</td><td>二次型 = 实对称矩阵。正定是"满秩"在二次型里的新名字；合同与相似、等价构成全书三大关系。</td></tr>
+          </tbody>
+        </table>
+
+        <div class="callout c-warn">
+          <span class="tag">勘误说明</span>
+          讲义中存在个别<strong>印刷错误</strong>，且 2026 年最新真题在讲义里<strong>只列了题、没给答案</strong>。这些地方在"勘误与待核清单"中按风险分级如实标注，复习时请特别留意，不要把存疑结论背下来。
+        </div>
+      </section>
+
+      <!-- VIEW: rankmap -->
+      <section class="view" id="view-rankmap">
+        <div class="page-head">
+          <div class="kicker">核 心 地 图</div>
+          <h1>秩总图：一个数，五种说法</h1>
+          <p class="lead">下面这张图是全书的"主索引"。同一个判断（方阵满秩 / 可逆），在五章里有五种等价说法；顺着任意一个方向，就能把问题翻译成最顺手的语言。</p>
+        </div>
+
+        <div class="hub">
+          <svg viewBox="0 0 900 530" xmlns="http://www.w3.org/2000/svg" font-family="Noto Sans SC,sans-serif" aria-label="秩为核心的五语言枢纽图">
+            <g stroke="#c9b99a" stroke-width="2">
+              <line x1="450" y1="265" x2="450" y2="96"/>
+              <line x1="450" y1="265" x2="608" y2="226"/>
+              <line x1="450" y1="265" x2="544" y2="400"/>
+              <line x1="450" y1="265" x2="356" y2="400"/>
+              <line x1="450" y1="265" x2="292" y2="226"/>
+            </g>
+            <circle cx="450" cy="265" r="74" fill="#c0392b"/>
+            <circle cx="450" cy="265" r="74" fill="none" stroke="#8f2a1f" stroke-width="2"/>
+            <text x="450" y="256" text-anchor="middle" font-size="30" font-weight="700" fill="#fff" font-family="Noto Serif SC,serif">秩 r(A)</text>
+            <text x="450" y="292" text-anchor="middle" font-size="17" fill="#ffe9e5">r(A) = n 满秩</text>
+            <g>
+              <rect x="378" y="40" width="144" height="56" rx="10" fill="#fffdf7" stroke="#1f5c99" stroke-width="2"/>
+              <text x="450" y="64" text-anchor="middle" font-size="16" font-weight="700" fill="#1f5c99">行列式</text>
+              <text x="450" y="85" text-anchor="middle" font-size="14" fill="#20242a">|A| ≠ 0</text>
+            </g>
+            <g>
+              <rect x="560" y="170" width="150" height="62" rx="10" fill="#fffdf7" stroke="#1f5c99" stroke-width="2"/>
+              <text x="635" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#1f5c99">特征值</text>
+              <text x="635" y="215" text-anchor="middle" font-size="13.5" fill="#20242a">0 不是特征值</text>
+            </g>
+            <g>
+              <rect x="480" y="372" width="150" height="62" rx="10" fill="#fffdf7" stroke="#1f5c99" stroke-width="2"/>
+              <text x="555" y="396" text-anchor="middle" font-size="16" font-weight="700" fill="#1f5c99">二次型</text>
+              <text x="555" y="417" text-anchor="middle" font-size="13.5" fill="#20242a">对称阵 正定</text>
+            </g>
+            <g>
+              <rect x="270" y="372" width="150" height="62" rx="10" fill="#fffdf7" stroke="#1f5c99" stroke-width="2"/>
+              <text x="345" y="396" text-anchor="middle" font-size="16" font-weight="700" fill="#1f5c99">n维向量</text>
+              <text x="345" y="417" text-anchor="middle" font-size="13.5" fill="#20242a">列向量组 无关</text>
+            </g>
+            <g>
+              <rect x="190" y="170" width="150" height="62" rx="10" fill="#fffdf7" stroke="#1f5c99" stroke-width="2"/>
+              <text x="265" y="194" text-anchor="middle" font-size="16" font-weight="700" fill="#1f5c99">线性方程组</text>
+              <text x="265" y="215" text-anchor="middle" font-size="13.5" fill="#20242a">Ax=0 只有零解</text>
+            </g>
+            <text x="450" y="482" text-anchor="middle" font-size="14" fill="#8b909a">五个命题互相等价，且都等价于 A 可逆（A 为 n 阶方阵）</text>
+          </svg>
+        </div>
+
+        <div class="callout c-core">
+          <span class="tag">读图法</span>
+          做题时先判断题目在用<strong>哪一种语言</strong>，然后把它<strong>翻译到秩</strong>，再从秩翻译到你需要的那种语言。比如二次型题告诉你"$A$ 不可逆"，你立刻要能读出：$|A|=0$、列向量相关、$Ax=0$ 有非零解、$0$ 是特征值、$A$ 不正定。这一串"自动浮现"，就是线代的全部直觉。
+        </div>
+
+        <h2 class="sec">两个核心数：$r(A)$ 与 $n-r(A)$</h2>
+        <p>秩不仅是"满不满"的开关，它还给出两个<strong>数</strong>，几乎所有"几个、几维、几个自由变量"的问题都由这两个数回答。</p>
+        <div class="two-col">
+          <div class="card" style="border-top:4px solid var(--vermilion)">
+            <h4 style="margin-top:0;color:var(--vermilion)">$r(A)$ 数的是"有的东西"</h4>
+            <ul>
+              <li>非零行 / 主元的个数（初等行变换后）</li>
+              <li>列向量组极大无关组的个数（也等于行向量组的秩）</li>
+              <li>列空间（值域）的维数 $\dim R(A)$</li>
+              <li>可对角化时，<strong>非零特征值</strong>的个数（含重数）</li>
+            </ul>
+          </div>
+          <div class="card" style="border-top:4px solid var(--green)">
+            <h4 style="margin-top:0;color:var(--green)">$n-r(A)$ 数的是"缺的东西"</h4>
+            <ul>
+              <li>$Ax=0$ 的<strong>基础解系</strong>含向量个数</li>
+              <li>零空间（解空间）的维数 $\dim N(A)$</li>
+              <li>阶梯形中<strong>自由变量</strong>的个数</li>
+              <li>特征值 $\lambda=0$ 的<strong>几何重数</strong></li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout c-sig">
+          <span class="tag">维数公式</span>
+          这是线性代数的"第一守恒律"：$\underbrace{r(A)}_{\text{列空间维数}}+\underbrace{(n-r(A))}_{\text{零空间维数}}=n$。列空间管"能表示出什么"，零空间管"被压成零的东西"，两者加起来正好是总维数 $n$。
+        </div>
+
+        <h2 class="sec">秩的五种语言：满秩与非满秩对照</h2>
+        <div class="table-wrap">
+          <table class="fixed">
+            <colgroup><col style="width:14%"><col style="width:43%"><col style="width:43%"></colgroup>
+            <thead><tr><th>语言</th><th>$r(A)=n$（满秩 / 可逆）</th><th>$r(A)&lt;n$（降秩 / 不可逆）</th></tr></thead>
+            <tbody>
+              <tr><td><strong>行列式</strong></td><td>$|A|\ne 0$</td><td>$|A|=0$</td></tr>
+              <tr><td><strong>矩阵</strong></td><td>$A$ 可逆，$A$ 能化成单位阵 $E$</td><td>不可逆，存在非零 $B$ 使 $AB=O$ 或 $BA=O$</td></tr>
+              <tr><td><strong>向量</strong></td><td>列（行）向量组线性无关，$\dim= n$</td><td>列（行）向量组线性相关，极大无关组少于 $n$ 个</td></tr>
+              <tr><td><strong>方程组</strong></td><td>$Ax=0$ 只有零解；$Ax=b$ 有唯一解</td><td>$Ax=0$ 有非零解（$n-r(A)$ 个自由变量）；$Ax=b$ 无解或无穷多解</td></tr>
+              <tr><td><strong>特征值</strong></td><td>所有特征值非零，$\prod\lambda_i=|A|\ne0$</td><td>$0$ 是特征值（$|A-0\cdot E|=|A|=0$）</td></tr>
+              <tr><td><strong>二次型</strong></td><td>实对称阵正定（各阶顺序主子式为正）</td><td>非正定；有零特征值，规范形中正平方项个数少于 $n$</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p style="margin-top:8px"><span class="pill r nav-item" data-view="ranknet" style="cursor:pointer">进入"以秩为核心的等价网络"看完整不等式与等价链 →</span></p>
+      </section>
+
+      <!-- VIEW: ch -->
+      <section class="view" id="view-ch">
+        <div class="page-head">
+          <div class="kicker">第 一 部 分 · 分 章</div>
+          <h1>六章分讲</h1>
+          <p class="lead">每章按"定义 → 定理 → 公式 → 题型与通法 → 练习"五段压缩。题型卡片用 <b style="color:var(--green)">绿色识别信号</b> 告诉你"看到什么条件该想到什么"；练习答案在折叠区。</p>
+        </div>
+        <div class="ch-tabs" id="chTabs">
+          <button data-ch="ch1" class="on">第一章 行列式</button>
+          <button data-ch="ch2">第二章 矩阵</button>
+          <button data-ch="ch3">第三章 n维向量</button>
+          <button data-ch="ch4">第四章 方程组</button>
+          <button data-ch="ch5">第五章 特征值</button>
+          <button data-ch="ch6">第六章 二次型</button>
+        </div>
+        <!-- PANE_CH1 -->
+        <div class="ch-pane on" id="pane-ch1">
+          <h2 class="sec">第一章 行列式 · 判据入口</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            行列式是<strong>一个数</strong>，只对方阵有意义。它把"矩阵可不可逆"变成一个数值判据：$|A|=0\Leftrightarrow r(A)&lt;n$。本章不单独出大题，但特征多项式 $|\lambda E-A|$、抽象行列式 $|AB|$、伴随 $|A^*|$、克拉默法则全部直连后续各章。
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <div class="table-wrap"><table>
+            <colgroup><col style="width:22%"><col style="width:78%"></colgroup>
+            <tbody>
+              <tr><td><strong>n 阶行列式</strong></td><td>所有取自<strong>不同行、不同列</strong>的 $n$ 个元素乘积的代数和：$\displaystyle|a_{ij}|=\sum_{j_1\cdots j_n}(-1)^{\tau(j_1\cdots j_n)}a_{1j_1}\cdots a_{nj_n}$，共 $n!$ 项。偶排列取正、奇排列取负（$\tau$ 为逆序数）。</td></tr>
+              <tr><td><strong>余子式 / 代数余子式</strong></td><td>划去第 $i$ 行第 $j$ 列后剩下的 $n-1$ 阶行列式为余子式 $M_{ij}$；代数余子式 $A_{ij}=(-1)^{i+j}M_{ij}$。</td></tr>
+            </tbody>
+          </table></div>
+
+          <h3 class="sub">重要定理</h3>
+          <div class="callout c-thm"><span class="tag">定理</span>
+            <strong>展开定理</strong>：$D=\sum_k a_{ik}A_{ik}$（按行）$=\sum_k a_{kj}A_{kj}$（按列）——降阶用。<br>
+            <strong>异行（列）乘积和为 0</strong>：$i\ne k$ 时 $\sum_j a_{ij}A_{kj}=0$——代数余子式求和的关键。<br>
+            <strong>乘积行列式</strong>：$|AB|=|A||B|$（同阶方阵）。<br>
+            <strong>最重要恒等式</strong>：$AA^*=A^*A=|A|E$（伴随矩阵的定义由此而来）。
+          </div>
+
+          <h3 class="sub">核心公式</h3>
+          <div class="table-wrap"><table>
+            <colgroup><col style="width:40%"><col style="width:60%"></colgroup>
+            <thead><tr><th>公式</th><th>说明 / 易错</th></tr></thead>
+            <tbody>
+              <tr><td>上（下）三角 $=$ 主对角线乘积</td><td>化三角法的终点</td></tr>
+              <tr><td>副对角 $=(-1)^{\frac{n(n-1)}2}a_{1n}a_{2,n-1}\cdots a_{n1}$</td><td><b>符号别丢</b>；$n=4$ 时指数 $6$ 为正</td></tr>
+              <tr><td>分块 $\begin{vmatrix}A&*\\O&B\end{vmatrix}=|A||B|$</td><td>主对角块直接乘</td></tr>
+              <tr><td>分块 $\begin{vmatrix}O&A\\B&*\end{vmatrix}=(-1)^{mn}|A||B|$</td><td>副对角块<b>必乘 $(-1)^{mn}$</b></td></tr>
+              <tr><td>范德蒙德 $=\prod_{j&lt;i}(x_i-x_j)$</td><td>下标<b>大减小</b></td></tr>
+              <tr><td>$|A^T|=|A|$</td><td>行=列对等</td></tr>
+              <tr><td>$\boldsymbol{|kA|=k^n|A|}$</td><td><b>每行提一个 $k$，共 $n$ 行</b>，不是 $k|A|$</td></tr>
+              <tr><td>$\boldsymbol{|A^*|=|A|^{n-1}}$</td><td>由 $AA^*=|A|E$ 取行列式推</td></tr>
+              <tr><td>$|A^{-1}|=|A|^{-1}=\dfrac1{|A|}$</td><td>$A$ 可逆时</td></tr>
+              <tr><td>$\boldsymbol{|A|=\prod\lambda_i}$</td><td>特征值乘积</td></tr>
+              <tr><td>$A\sim B\Rightarrow|A|=|B|,\ |A+kE|=|B+kE|$</td><td>相似保特征多项式</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout c-warn"><span class="tag">易混并排</span>
+            $(kA)^{-1}=\dfrac1k A^{-1}$（系数取倒数）<b>vs</b> $(kA)^*=k^{n-1}A^*$（系数指数 $n-1$）；$|A^{-1}|=|A|^{-1}$ <b>vs</b> $|A^*|=|A|^{n-1}$；$A^{-1}=\dfrac1{|A|}A^*$（伴随转逆必除 $|A|$）。$|A+B|$ <b>无运算法则</b>，必插 $E$ 造乘积。
+          </div>
+          <div class="callout c-thm"><span class="tag">克拉默</span>
+            $n$ 方程 $n$ 未知数、$D\ne0$ 时 $x_j=\dfrac{D_j}{D}$。<b>最关键接口</b>：齐次 $Ax=0$ 有非零解 $\Rightarrow |A|=0$；$D\ne0\Rightarrow$ 只有零解。
+          </div>
+
+          <h3 class="sub">题型与通法</h3>
+
+          <div class="card">
+            <div class="qhead"><span class="qtype">题型1 · 数字型行列式</span><span class="qbadge">例1.1–1.9</span></div>
+            <div class="callout c-sig" style="margin:8px 0"><span class="tag">信号</span>给具体数字矩阵求值，或求 $f(x)$ 中 $x^k$ 系数 / 常数项。</div>
+            <p style="margin:6px 0"><b>通法</b>：三角化 / 拉普拉斯分块 / 范德蒙德 / 递推；三大化简构思——①某行 $k$ 倍加到其余各行；②各行都加到第 1 行；③逐行相加。</p>
+            <div class="ex"><b>典型结构</b>：爪型（例1.6 提公因子消首行）、相反数行（例1.4 各列加至首列）、三对角（例1.8 递推 $D_n-D_{n-1}=3(D_{n-1}-D_{n-2})$）、循环型（例1.2 排除法 + 逆序数）、$\sum a_i+b$ 型（例1.7 提公因子）。</div>
+          </div>
+
+          <div class="card">
+            <div class="qhead"><span class="qtype">题型2 · 抽象型行列式</span><span class="qbadge">例1.10–1.17</span></div>
+            <div class="callout c-sig" style="margin:8px 0"><span class="tag">信号</span>不给具体矩阵，给列向量关系 / 矩阵方程 / 相似 / 特征值 / 正交条件，求 $|A|,|A^*|,|A+kE|$。</div>
+            <p style="margin:6px 0"><b>四条路径</b>：①提公因子 / 拆分；②写成 $B=AC$ 用 $|B|=|A||C|$（含列向量线性组合配范德蒙德矩阵）；③$|A\pm B|$ 无公式，<b>插 $E$ 造乘积</b>（如 $A^{-1}+B^{-1}=A^{-1}(B+A)B^{-1}$）；④特征值 / 相似（$|A|=\prod\lambda_i$，$A+kE$ 的特征值为 $\lambda_i+k$）。</p>
+            <div class="ex"><b>易错</b>：$|A+B|$ 必拆成 $2^n$ 个行列式（不是两项），优先插 $E$；正交矩阵先由 $AA^T=E$ 定 $|A|=\pm1$，再按符号取定。</div>
+          </div>
+
+          <div class="card">
+            <div class="qhead"><span class="qtype">题型3 · 特征多项式求根 / 克拉默</span><span class="qbadge">例1.18–1.20</span></div>
+            <div class="callout c-sig" style="margin:8px 0"><span class="tag">信号</span>$|\lambda E-A|=0$ 求特征值；$n$ 阶方程组求某 $x_j$；$AB=O,\ B\ne O$ 求参数。</div>
+            <p style="margin:6px 0"><b>通法</b>：特征多项式<strong>两行加加减减找公因子</strong> $(\lambda-a)$，再解二次因子，<b>不硬展开三次</b>；范德蒙德型方程组直接套克拉默；$AB=O,\ B\ne O\Rightarrow Ax=0$ 有非零解 $\Rightarrow|A|=0$。</p>
+          </div>
+
+          <div class="card">
+            <div class="qhead"><span class="qtype">题型4 · 证明 $|A|=0$</span><span class="qbadge">例1.21–1.22</span></div>
+            <div class="callout c-sig" style="margin:8px 0"><span class="tag">信号</span>"证明 $|A|=0$ / $|A|\ne0$"。</div>
+            <p style="margin:6px 0"><b>五条路径</b>：①$Ax=0$ 有非零解；②反证（可逆则推出矛盾，如 $A^2=A,A\ne E$）；③$r(A)&lt;n$；④$0$ 是特征值；⑤$|A|=-|A|$（反对称奇数阶：$|A|=|A^T|=|-A|=(-1)^n|A|$，$n$ 奇则 $|A|=0$）。</p>
+            <div class="ex"><b>易错</b>：$A^2=A$ 取行列式得 $|A|^2=|A|$ 不能直接断言 $|A|=0$，因为 $A\ne E$ 推不出 $|A|\ne1$；要用反证或秩。</div>
+          </div>
+
+          <div class="card">
+            <div class="qhead"><span class="qtype">题型5 · 代数余子式求和</span><span class="qbadge">例1.23–1.24</span></div>
+            <div class="callout c-sig" style="margin:8px 0"><span class="tag">信号</span>求 $\sum c_j A_{ij}$ 或全部 $A_{ij}$ 的线性组合。</div>
+            <p style="margin:6px 0"><b>通法</b>：系数恰是某行(列)→同行和 $=|A|$、异行和 $=0$；系数与各行都不同→<b>构造辅助行列式</b>（把该行换成系数再展开）；全部 $A_{ij}$ 之和 = $A^*$ 元素之和，用 $A^*=|A|A^{-1}$ 分块求逆。</p>
+          </div>
+
+          <details>
+            <summary>练习严选 · 13 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① $x=1,2,6$（化拉普拉斯分块）　② $1$（逐行相加）　③ $x^3+2x^2+3x+4$（例1.5型）　④ $n!$（首行加其余、各列提 $j$）　⑤ $\dfrac12 n(n+1)$（各列加至首列）　⑥ $189$（$27(|A|+2|B|)$）　⑦ $2$（$B=AC$，$C$ 为范德蒙德）　⑧ $60$（常数项 $=f(0)$）</p>
+              <h4>选择</h4>
+              <p>① (C) $32$（$8(|A|+|B|)$）　② (C) $-2a-2b$（拆分 + 移列变号）　③ (B) 必有一行是其余行的线性组合（"两行成比例/某列全0"只是充分非必要）</p>
+              <h4>解答</h4>
+              <p>① $A^2=E\Rightarrow(A+E)(A-E)=O$，$A\ne E\Rightarrow(A+E)x=0$ 有非零解 $\Rightarrow|A+E|=0$。　② 系数行列式化三角 $=-(a^2+b^2+c^2)\ne0$，只有零解。</p>
+              <p class="ans"><b>讲义留白补出</b>：$AB+2A+B+E=O$ 凑 $(A+E)(B+2E)=E\Rightarrow|A+E|=\frac1{30}$；$A,A-2E,3A+2E$ 不可逆 $\Rightarrow$ 特征值 $0,2,-\frac23$，$|A+E|=1$；每行和为 2、$|A|=3\Rightarrow A_{11}+A_{21}+A_{31}=\frac32$；范德蒙 $A^Tx=B$ 解 $x=(1,0,\dots,0)^T$。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            $|A|=0\Leftrightarrow r(A)&lt;n\Leftrightarrow A$ 不可逆 $\Leftrightarrow$ 行(列)向量相关 $\Leftrightarrow Ax=0$ 有非零解 $\Leftrightarrow 0$ 是特征值 $\Leftrightarrow|A^*|=0$（$n\ge2$）。
+          </div>
+        </div>
+
+        <!-- PANE_CH2 -->
+        <div class="ch-pane" id="pane-ch2">
+          <h2 class="sec">第二章 矩阵 · 语法层</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            矩阵是全书运算与表达的<strong>语法层</strong>：它是向量组、方程组、线性变换的载体。本章把运算、特殊矩阵（伴随/可逆/正交）、初等变换、分块四套工具打通，最终收敛到<strong>秩</strong>。
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <ul>
+            <li><strong>伴随矩阵</strong>：$A^*$ 由各代数余子式 $A_{ij}$ 构成后<strong>再转置排列</strong>（$A^*=(A_{ji})$）。二阶口诀：主对角互换、副对角变号。</li>
+            <li><strong>可逆矩阵</strong>：存在 $B$ 使 $AB=BA=E$，记 $B=A^{-1}$。</li>
+            <li><strong>初等变换 / 初等矩阵</strong>：倍乘、互换、倍加；$E$ 作一次初等变换得初等矩阵。</li>
+            <li><strong>矩阵等价</strong>：$A$ 经有限次初等变换到 $B$，记 $A\cong B$（等价保秩）。</li>
+            <li><strong>正交矩阵</strong>：$AA^T=A^TA=E$。对称 $A^T=A$、反对称 $A^T=-A$（对角线为 0）。</li>
+          </ul>
+
+          <h3 class="sub">重要定理</h3>
+          <div class="callout c-thm"><span class="tag">定理2.2</span>
+            <strong>可逆等价链（背熟）</strong>：$A$ 可逆 $\Leftrightarrow|A|\ne0\Leftrightarrow r(A)=n\Leftrightarrow$ 列(行)向量组无关 $\Leftrightarrow A=P_1P_2\cdots P_s$（初等矩阵之积）$\Leftrightarrow A\cong E$ $\Leftrightarrow 0$ 不是特征值。
+          </div>
+          <div class="callout c-thm"><span class="tag">定理</span>
+            <strong>左行右列</strong>：初等矩阵 $P$ 左乘 $A$ = 对 $A$ 作同型<strong>行</strong>变换，右乘 = <strong>列</strong>变换。初等矩阵均可逆，逆是同型初等矩阵（倍加变号、倍乘取倒数、互换不变）。<br>
+            <strong>半判据</strong>：同阶方阵 $AB=E\Rightarrow BA=E$（求逆只验一边；非方阵不行）。<br>
+            <strong>秩</strong>：$r(A)=$ 列秩 $=$ 行秩；初等变换不改变秩。
+          </div>
+
+          <h3 class="sub">核心公式</h3>
+          <div class="two-col">
+            <div class="card">
+              <h4 style="margin-top:0;color:var(--blue)">可逆公式</h4>
+              <p>$(kA)^{-1}=\dfrac1k A^{-1}$；$(AB)^{-1}=B^{-1}A^{-1}$（反序）；$(A^n)^{-1}=(A^{-1})^n$；$(A^{-1})^T=(A^T)^{-1}$；$A^{-1}=\dfrac1{|A|}A^*$。</p>
+              <p style="color:var(--vermilion)"><b>$(A+B)^{-1}$ 无公式，$\ne A^{-1}+B^{-1}$。</b></p>
+            </div>
+            <div class="card">
+              <h4 style="margin-top:0;color:var(--blue)">伴随公式（必考必混）</h4>
+              <p>核心恒等式 $AA^*=A^*A=|A|E$；$A^*=|A|A^{-1}$；$|A^*|=|A|^{n-1}$；$(A^*)^{-1}=(A^{-1})^*=\dfrac1{|A|}A$；$(kA)^*=k^{n-1}A^*$；$(AB)^*=B^*A^*$（反序）；$(A^*)^*=|A|^{n-2}A$（$n\ge3$）。</p>
+            </div>
+          </div>
+          <div class="callout c-warn"><span class="tag">易混并排</span>
+            反序三兄弟：$(AB)^{-1}$、$(AB)^*$、$(AB)^T$ 都<strong>反序</strong>（$B$ 在前 $A$ 在后）。但 $(A+B)^T=A^T+B^T$ 成立，而 $(A+B)^{-1}$ 不存在分配律。<b>只有可交换 $AB=BA$ 时</b>才有完全平方、平方差、二项式；与 $E$ 恒可交换，$(A+E)^2=A^2+2A+E$ 永远成立。
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0;color:var(--blue)">秩公式（秩网络详列，此处给骨架）</h4>
+            <p>$r(A)=r(A^T)=r(A^TA)=r(AA^T)$；$k\ne0$ 时 $r(kA)=r(A)$；$r(A+B)\le r(A,B)\le r(A)+r(B)$；
+            <strong>Sylvester</strong>：$r(A)+r(B)-n\le r(AB)\le\min\{r(A),r(B)\}$；<strong>$AB=O\Rightarrow r(A)+r(B)\le n$</strong>；
+            <strong>Frobenius</strong>：$r(AB)+r(BC)\le r(ABC)+r(B)$；可逆阵相乘保秩。</p>
+          </div>
+          <div class="card">
+            <h4 style="margin-top:0;color:var(--blue)">分块求逆</h4>
+            <p>$\begin{pmatrix}B&O\\O&C\end{pmatrix}^{-1}=\begin{pmatrix}B^{-1}&O\\O&C^{-1}\end{pmatrix}$；$\begin{pmatrix}O&B\\C&O\end{pmatrix}^{-1}=\begin{pmatrix}O&C^{-1}\\B^{-1}&O\end{pmatrix}$；$\begin{pmatrix}A&C\\O&B\end{pmatrix}^{-1}=\begin{pmatrix}A^{-1}&-A^{-1}CB^{-1}\\O&B^{-1}\end{pmatrix}$。</p>
+          </div>
+
+          <h3 class="sub">题型与通法</h3>
+          <div class="signal-grid">
+            <div class="sg"><div class="cond">秩1 / 每行成比例</div>秩 1 矩阵：$A=\alpha\beta^T$，$l=\operatorname{tr}A=\sum a_{ii}$，$\boldsymbol{A^n=l^{n-1}A}$。<span class="arrow">→</span>例2.2</div>
+            <div class="sg"><div class="cond">求 $A^n$</div>秩1公式 / 幂零 $B^k=O$ / $A=E+B$ 二项式 / 分块对角 / 相似对角 $A^n=P\Lambda^nP^{-1}$。<span class="arrow">→</span>例2.3–2.5</div>
+            <div class="sg"><div class="cond">同时出现 $A$ 与 $A^*$</div>万能钥匙：见到 $A^*$ 就左/右乘 $A$，用 $AA^*=|A|E$ 消掉。<span class="arrow">→</span>例2.6–2.9</div>
+            <div class="sg"><div class="cond">求 $A^{-1}$（抽象）</div>定义法凑 $A(\;)=E$；数值用 $(A|E)\to(E|A^{-1})$；低阶用 $\frac1{|A|}A^*$；分块套公式。<span class="arrow">→</span>例2.10–2.14</div>
+            <div class="sg"><div class="cond">正交矩阵 $AA^T=E$</div>$A^T=A^{-1}$，$|A|=\pm1$（先定符号），列向量标准正交；$Ax=b\Rightarrow x=A^Tb$。<span class="arrow">→</span>例2.15–2.17</div>
+            <div class="sg"><div class="cond">"第 i 行作某变换得 B"</div>行变换左乘、列变换右乘；$B=P_1AP_2\Rightarrow B^{-1}=P_2^{-1}A^{-1}P_1^{-1}$。<span class="arrow">→</span>例2.18–2.21</div>
+            <div class="sg"><div class="cond">高阶阵含大量 0</div>分块对角分别求幂/求逆；$|E-AB|=|E-BA|$ 分块行列式。<span class="arrow">→</span>例2.22–2.26</div>
+            <div class="sg"><div class="cond">求 $r(A)$ / 含参数</div>化阶梯 + 子式给下界、$AB=O$/$|A|=0$ 给上界，<b>夹逼</b>；伴随用 $r(A^*)$ 三值公式。<span class="arrow">→</span>例2.27–2.30</div>
+            <div class="sg"><div class="cond">矩阵方程 $AX=B$</div>可逆：$X=A^{-1}B$；不可逆：按列分块解同系数方程组；抽象式先提公因子。<span class="arrow">→</span>例2.31–2.32</div>
+          </div>
+          <div class="callout c-thm"><span class="tag">伴随秩三值</span>
+            $r(A^*)=\begin{cases}n,&r(A)=n\\1,&r(A)=n-1\\0,&r(A)&lt;n-1\end{cases}$　——已知 $r(A)+r(A^*)$ 或 $r(A^*)$ 反推 $r(A)$ 的标准工具（例2.27、选择5）。
+          </div>
+
+          <details>
+            <summary>练习严选 · 16 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① 全 $-1$ 三阶 $A^4+2A^3$：$l=-3$，$=-9A$（元素全 9）。　②四个求逆：(A) 置换 $\begin{pmatrix}0&\frac12&0&0\\0&0&\frac13&0\\0&0&0&\frac14\\1&0&0&0\end{pmatrix}$；(B) $\begin{pmatrix}-5&2&0&0\\3&-1&0&0\\0&0&3&5\\0&0&1&2\end{pmatrix}$；(C) $\begin{pmatrix}1&-1&-2\\0&1&1\\0&0&-1\end{pmatrix}$；(D) $\begin{pmatrix}0&1&0\\\frac12&0&-\frac12\\\frac12&-1&\frac12\end{pmatrix}$。　③ $(A-2E)^{-1}=-\dfrac{3A+6E}{13}$。　④ $a=-3$。　⑤ $B=\begin{pmatrix}1&-1\\1&1\end{pmatrix}$。　⑥ 行列式 $=2$。　⑦ $Q^{-1}AQ=\begin{pmatrix}1&2&0\\1&1&0\\0&0&2\end{pmatrix}$。　⑧ $X=\begin{pmatrix}4&-7&11\\-1&6&-6\end{pmatrix}$。</p>
+              <h4>选择</h4>
+              <p>① C　② C（$(A^*)^*=|A|^{n-2}A$）　③ B（错的是 $A^2=A$，实为 $A^2=E$）　④ A（$|B|=-16$）　⑤ C（$a=-\frac13$）</p>
+              <h4>解答</h4>
+              <p>① $(A+E)^3=O\Rightarrow A(-A^2-3A-3E)=E$，$A$ 可逆。　② $A=\operatorname{diag}(2,1,3)$，$A^n=\operatorname{diag}(2^n,1,3^n)$，$BA^*=6E_{12}=\begin{pmatrix}0&6&0\\6&0&0\\0&0&6\end{pmatrix}$。　③ $A=E-B^T(BB^T)^{-1}B$，令 $P=B^T(BB^T)^{-1}B$，$P^2=P$，故 $A^T=A$、$A^2=A$。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            可逆链见定理2.2；伴随秩三值链：$r(A)=n\Leftrightarrow r(A^*)=n$；$r(A)=n-1\Leftrightarrow r(A^*)=1$；$r(A)&lt;n-1\Leftrightarrow r(A^*)=0$。
+          </div>
+        </div>
+        <!-- PANE_CH3 -->
+        <div class="ch-pane" id="pane-ch3">
+          <h2 class="sec">第三章 n 维向量 · 秩的几何真身</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            本章把"相关/无关、能否表出、谁代表谁、两组谁大谁小"全部翻译成<strong>秩</strong>与<strong>方程组解</strong>：
+            <b>相关</b> $\Leftrightarrow Ax=0$ 有非零解 $\Leftrightarrow r(A)&lt;$ 向量个数；<b>表出</b> $\Leftrightarrow Ax=\beta$ 有解 $\Leftrightarrow r(A)=r(A,\beta)$。
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <ul>
+            <li><strong>线性相关</strong>：存在<strong>不全为零</strong>的 $k_1,\dots,k_s$ 使 $k_1\alpha_1+\cdots+k_s\alpha_s=0$；否则无关。</li>
+            <li><strong>线性表出</strong>：$\beta=k_1\alpha_1+\cdots+k_s\alpha_s$ 有解。<strong>向量组等价</strong>：两组互相可表出。</li>
+            <li><strong>极大无关组</strong>：无关，且再添任一向量就相关；其向量个数 $r$ 即<strong>向量组的秩</strong>。</li>
+            <li><span class="pill o">仅数一</span> 向量空间 / 子空间 / 基 / 维数 / 坐标 / 规范正交基 / 过渡矩阵。</li>
+          </ul>
+
+          <h3 class="sub">核心定理（判定的根）</h3>
+          <div class="callout c-thm"><span class="tag">两个根</span>
+            <strong>定理3.1</strong>：$\alpha_1,\dots,\alpha_s$ 相关 $\Leftrightarrow[\alpha_1,\dots,\alpha_s]x=0$ 有非零解 $\Leftrightarrow r(\alpha_1,\dots,\alpha_s)&lt;s$。<br>
+            <strong>定理3.4</strong>：$\beta$ 可由 $\alpha_1,\dots,\alpha_s$ 表出 $\Leftrightarrow[\alpha_1,\dots,\alpha_s]x=\beta$ 有解 $\Leftrightarrow r(\alpha_1,\dots,\alpha_s)=r(\alpha_1,\dots,\alpha_s,\beta)$。
+          </div>
+          <div class="table-wrap"><table>
+            <colgroup><col style="width:30%"><col style="width:70%"></colgroup>
+            <tbody>
+              <tr><td>推论</td><td>$n$ 个 $n$ 维向量相关 $\Leftrightarrow|\alpha_1,\dots,\alpha_n|=0$；$n+1$ 个 $n$ 维向量<strong>必相关</strong>。</td></tr>
+              <tr><td>定理3.2</td><td>部分相关→整体相关；整体无关→部分无关（反之不成立）。</td></tr>
+              <tr><td>定理3.3</td><td>无关组<strong>加分量（延伸）仍无关</strong>；相关组<strong>减分量（缩短）仍相关</strong>。基础解系取单位向量就靠它。</td></tr>
+              <tr><td>定理3.5</td><td>相关 $\Leftrightarrow$ 必有<strong>某一个</strong>可由其余表出（不指明哪个）。</td></tr>
+              <tr><td>定理3.6</td><td>无关组添一个 $\beta$ 就相关 $\Rightarrow\beta$ 可由旧组<strong>唯一</strong>表出（证明题高频模板）。</td></tr>
+              <tr><td>定理3.7</td><td><strong>多数由少数表出→多数必相关</strong>（$s&gt;t$ 且 $s$ 个由 $t$ 个表出）。无关组若能由另一组表出，个数不超过对方。</td></tr>
+              <tr><td>定理3.8</td><td>(I) 可由 (II) 表出 $\Rightarrow r(I)\le r(II)$；等价向量组秩相等。</td></tr>
+              <tr><td>三秩相等</td><td>$r(A)=$ 列秩 $=$ 行秩；$r(A)=r$ 时有 $r$ 个无关列，其余列是它们的组合。</td></tr>
+              <tr><td>定理3.10</td><td>$Ax=0$ 解向量组的秩 $=n-r(A)$（基础解系个数）。</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout c-warn"><span class="tag">注意</span>
+            <strong>秩相等只是向量组等价的必要条件，不充分</strong>：$(1,0,0),(0,1,0)$ 与 $(1,0,0),(0,0,1)$ 秩都为 2 却不等价。等价充要：$r(I)=r(II)=r(I,II)$。
+          </div>
+
+          <h3 class="sub">必背秩不等式（二章已给，秩网络总列）</h3>
+          <div class="card"><p style="margin:4px 0">
+            $r(AB)\le\min(r(A),r(B))$；<strong>Sylvester</strong>：$r(A)+r(B)-n\le r(AB)$；<strong>$AB=O\Rightarrow r(A)+r(B)\le n$</strong>；
+            $r(A+B)\le r(A,B)\le r(A)+r(B)$；$r\begin{pmatrix}A&O\\O&B\end{pmatrix}=r(A)+r(B)$；
+            可逆（及列满秩）保秩；$r(A)=r(A^T)=r(A^TA)=r(AA^T)$。
+          </p></div>
+
+          <h3 class="sub">题型与通法</h3>
+          <div class="signal-grid">
+            <div class="sg"><div class="cond">具体向量判相关/求参</div>$s=n$ 算行列式令其为 0；$s\ne n$ 拼列阵化阶梯看 $r&lt;s$。含零/成比例直接判相关。<span class="arrow">→</span>例3.1–3.3</div>
+            <div class="sg"><div class="cond">抽象向量证无关</div>三法：①定义法重组、证系数行列式≠0；②$[\beta]=[\alpha]C$，$C$ 可逆则无关；③带 $A\alpha=\lambda\alpha$ 时左乘 $A^{m-1}$ 逐项降次。<span class="arrow">→</span>例3.4–3.9</div>
+            <div class="sg"><div class="cond">无关组的线性组合判相关</div>写过渡矩阵 $C$：$[\beta]=[\alpha]C$，方阵则 $|C|=0$ 相关、$|C|\ne0$ 无关；个数更多则必相关。<span class="arrow">→</span>例3.10–3.11</div>
+            <div class="sg"><div class="cond">β 能否由 α 表出</div>增广阵 $[A|\beta]$ 化阶梯：$0=d\ne0$ 无解；$r(A)=r(\bar A)$ 与未知数个数比，定唯一/无穷。<span class="arrow">→</span>例3.12–3.13</div>
+            <div class="sg"><div class="cond">抽象表出证明</div>用定理3.5/3.6/3.7 + 秩 $r(A)=r(A,\beta)$；"只能由含 β 的大组表出"用表出系数 $l_m\ne0$。<span class="arrow">→</span>例3.14–3.16</div>
+            <div class="sg"><div class="cond">求秩/极大无关组/表出式</div>向量按列拼阵，<b>只做行变换</b>化行最简；主元列=极大无关组，非主元列数值=表出系数。<span class="arrow">→</span>例3.17–3.18</div>
+            <div class="sg"><div class="cond">两组向量判等价</div>拼成大矩阵化阶梯；等价 $\Leftrightarrow r(I)=r(II)=r(I,II)$；秩相等不够。<span class="arrow">→</span>例3.19</div>
+            <div class="sg"><div class="cond">抽象矩阵证秩</div>方程组夹逼（解空间包含）、分块初等变换（可逆左乘化对角）、$AB$ 列由 $A$ 列 / 行由 $B$ 行表出。<span class="arrow">→</span>例3.20–3.23</div>
+            <div class="sg"><div class="cond">基/维数/坐标/过渡矩阵<span class="pill o">数一</span></div>$C=[\alpha]^{-1}[\beta]$；坐标 $x=Cy$；$L(\alpha_1,\dots,\alpha_s)$ 维数=秩；Schmidt 正交化。<span class="arrow">→</span>例3.24–3.27</div>
+          </div>
+          <div class="callout c-sig"><span class="tag">抽象证无关的"左乘降次"</span>
+            见 $A^m\alpha=0$、$A\alpha=\lambda\alpha$ 这类条件，对 $k_1\alpha+k_2A\alpha+\cdots=0$ 两端<strong>左乘 $A^{m-1}$ 把最高次项单独揪出</strong>，得 $k_1=0$，再降次左乘依次得其余系数全 0（例3.5、3.6）。
+          </div>
+
+          <details>
+            <summary>练习严选 · 13 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① $a\ne1$（是 $R^3$ 的基，行列式≠0）　② $a=-1$（两式公共根）　③ $a=-2$（阶梯第三行 $a+2=0$）　④ 秩 $2$（$A[\alpha_1,\alpha_2,\alpha_3]$，后者可逆）　⑤ $a\ne1,b=2$ 或 $a=1,b\ne2$　⑥ $a=5$（$A+2E$ 可逆，秩 $=r(B)$）</p>
+              <h4>选择</h4>
+              <p>① B（A 相加为 0；C 组合为 0；D 三个由两个表出必相关）　② B（前三列前三维行列式 $5\ne0$，延伸组无关）　③ C（任意 $r+1$ 个必相关）　④ D（无关的充要条件）</p>
+              <h4>解答</h4>
+              <p>① $r(I)=r(I,\beta)$ 即方程组有解，可表出。　② 设组合为 0，左乘 $\alpha_1^T$ 得 $k_1\|\alpha_1\|^2=0$，依次全为 0。　③ 公共非零 $\gamma=k(0,1,1)^T$，$k\ne0$。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            无关 $\Leftrightarrow r=s\Leftrightarrow$ 齐次只有零解 $\Leftrightarrow$ 任一向量不能由其余表出；可表出 $\Leftrightarrow r(A)=r(A,\beta)$；等价 $\Leftrightarrow r(I)=r(II)=r(I,II)$。
+          </div>
+        </div>
+        <!-- PANE_CH4 -->
+        <div class="ch-pane" id="pane-ch4">
+          <h2 class="sec">第四章 线性方程组 · 秩的应用高潮</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            一切有解性、解数、解的结构都由 $r(A)$ 与 $r(\bar A)$ 的<strong>夹逼</strong>决定。讲义原话：有方程组就加减消元、讨论参数；没有方程组大概需求秩，用解的结构推理。
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <ul>
+            <li><strong>非齐次</strong> $Ax=b$（$b$ 不全为 0）与<strong>齐次（导出组）</strong> $Ax=0$；增广矩阵 $\bar A=[A\mid b]$。</li>
+            <li><strong>主变量 / 自由变量</strong>：阶梯形中主元对应的是主变量；自由变量个数 $=n-r(A)$。</li>
+            <li><strong>基础解系</strong>：$Ax=0$ 的一组<strong>解</strong>、<strong>线性无关</strong>、且任一解都能被它表出（即解空间的极大无关组）；<strong>不唯一</strong>。</li>
+          </ul>
+
+          <h3 class="sub">核心定理（一张表记住判定）</h3>
+          <div class="table-wrap"><table class="fixed">
+            <colgroup><col style="width:36%"><col style="width:30%"><col style="width:34%"></colgroup>
+            <thead><tr><th>情形</th><th>秩条件</th><th>解数</th></tr></thead>
+            <tbody>
+              <tr><td>$Ax=0$ 只有零解</td><td>$r(A)=n$</td><td>唯一（零解）</td></tr>
+              <tr><td>$Ax=0$ 有非零解</td><td>$r(A)&lt;n$</td><td>无穷多，基础解系含 $n-r(A)$ 个</td></tr>
+              <tr><td>$Ax=b$ 无解</td><td>$r(\bar A)=r(A)+1$</td><td>—</td></tr>
+              <tr><td>$Ax=b$ 唯一解</td><td>$r(A)=r(\bar A)=n$</td><td>1</td></tr>
+              <tr><td>$Ax=b$ 无穷多解</td><td>$r(A)=r(\bar A)&lt;n$</td><td>无穷</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout c-thm"><span class="tag">定理4.4</span>
+            $r(A)=r&lt;n$ 时，$Ax=0$ 的<strong>基础解系恰含 $n-r(A)$ 个线性无关解</strong>（解空间维数）。
+          </div>
+          <div class="callout c-thm"><span class="tag">解的结构</span>
+            齐次解线性组合仍是齐次解；非齐次两解之差 $\alpha-\beta$ 是 $Ax=0$ 的解；非齐次解+齐次解仍是非齐次解。<br>
+            <strong>非齐次通解 = 一个特解 $\xi_0$ + 导出组基础解系</strong>：$x=\xi_0+k_1\eta_1+\cdots+k_{n-r}\eta_{n-r}$。系数和为 1 的凸组合（如 $\frac13(\alpha_1+\alpha_2+\alpha_3)$）仍是 $Ax=b$ 的解。
+          </div>
+
+          <h3 class="sub">题型与通法</h3>
+          <div class="signal-grid">
+            <div class="sg"><div class="cond">求 Ax=0 基础解系</div>化阶梯→主元列作主变量、自由列 $n-r$ 个→自由变量依次取单位向量回代。<span class="arrow">→</span>例4.1</div>
+            <div class="sg"><div class="cond">含参齐次求非零解</div>方阵优先 $|A|=0$ 定参数，分 $a=0$ 与 $a\ne0$ 两支（不能漏除 0 分支）。<span class="arrow">→</span>例4.2</div>
+            <div class="sg"><div class="cond">证明某组是基础解系</div>三步：①是解（非齐次两解之差）②线性无关③个数 $=n-r(A)$。<span class="arrow">→</span>例4.3–4.4</div>
+            <div class="sg"><div class="cond">解具体 Ax=b</div>化阶梯看 $d_{r+1}$ 定有解；自由变量取 0 读特解，取单位向量读齐次解；加约束代入。<span class="arrow">→</span>例4.5–4.7</div>
+            <div class="sg"><div class="cond">给 r(A) 和几个解推通解</div>非齐次解凑系数和 1 的特解；用"解的线性组合使 $A$ 作用为 0"造齐次解。<span class="arrow">→</span>例4.8</div>
+            <div class="sg"><div class="cond">A=αβᵀ / 矩阵方程造方程组</div>用 $A^2=lA$ 化简；正规方程 $A^TAx=A^T\beta$ 必有解（$r(A^TA)=r(A)$）。<span class="arrow">→</span>例4.9–4.10</div>
+            <div class="sg"><div class="cond">命题辨析（有没有解）</div>非方阵没有行列式；"只有零解"不保证 $Ax=b$ 有解；有两个不同解⇒齐次无穷多解。<span class="arrow">→</span>例4.11–4.13</div>
+            <div class="sg"><div class="cond">两个方程组公共解</div>联立 $\begin{pmatrix}A\\B\end{pmatrix}x=0$；或通解相等移项构造齐次；或代入法。<span class="arrow">→</span>例4.14–4.16</div>
+            <div class="sg"><div class="cond">两个方程组同解</div>同解 $\Leftrightarrow r(A)=r(B)=r\begin{pmatrix}A\\B\end{pmatrix}\Leftrightarrow$ 行向量组等价；秩相等不充分。<span class="arrow">→</span>例4.17–4.20</div>
+            <div class="sg"><div class="cond">矩阵方程/向量表出</div>未知矩阵按元素展开成方程组，或按列分块成 $Ax=\beta$，再用秩判定。<span class="arrow">→</span>例4.21–4.23</div>
+          </div>
+          <div class="callout c-sig"><span class="tag">秩夹逼参数</span>
+            含参题别一上来分类：先用子式给下界（$A\ne O\Rightarrow r\ge1$、有非零 2 阶子式 $\Rightarrow r\ge2$）、再用解的个数给上界（有 $k$ 个无关解 $\Rightarrow n-r\ge k\Rightarrow r\le n-k$），夹出 $r(A)$ 再求参（例4.4、4.17）。
+          </div>
+
+          <h3 class="sub">公共解 / 同解 / 包含（秩的等价收口）</h3>
+          <div class="table-wrap"><table class="fixed">
+            <colgroup><col style="width:18%"><col style="width:82%"></colgroup>
+            <tbody>
+              <tr><td><strong>包含</strong></td><td>$S_{Ax=0}\subseteq S_{Bx=0}\Leftrightarrow r\begin{pmatrix}A\\B\end{pmatrix}=r(A)\Leftrightarrow B$ 的行可由 $A$ 的行表出。</td></tr>
+              <tr><td><strong>同解</strong></td><td>$S_A=S_B\Leftrightarrow r(A)=r(B)=r\begin{pmatrix}A\\B\end{pmatrix}\Leftrightarrow$ 行向量组等价 $\Leftrightarrow$ 两基础解系等价。<b>同解⇒秩相等，反之不成立</b>。</td></tr>
+              <tr><td><strong>天然包含</strong></td><td>$\{Ax=0\}\subseteq\{A^2x=0\}$、$\{Bx=0\}\subseteq\{ABx=0\}$；不同解即真包含，可用来夹秩（例4.17）。</td></tr>
+              <tr><td><strong>三个同解</strong></td><td>$A^TAx=0\Leftrightarrow Ax=0$（⇒$r(A^TA)=r(A)$）；$A$ 列满秩时 $ABx=0\Leftrightarrow Bx=0$；行最简形与原方程组同解。</td></tr>
+            </tbody>
+          </table></div>
+
+          <details>
+            <summary>练习严选 · 13 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① $k_1(2,1,0,0)^T+k_2(-3,0,1,0)^T+k_3(4,0,0,1)^T$　② $a=3$（$a=1$ 无解舍去）　③ $a=-1$（由系数和条件 $a+b+3=0$、$4a-3b-1=1$）　④ $(1,2,3,4)^T+k(1,3,2,4)^T$　⑤ $t=2$，$B$ 三列均为 $(-1,1,1)^T$ 的倍数、不全为 0　⑥ $(-3,2,0)^T+k(2,-1,1)^T$（$r(A^*)=1\Rightarrow r(A)=2$）</p>
+              <h4>选择</h4>
+              <p>① D　② C（系数和 1 的特解 + 两个无关差向量）　③ B（$k(\alpha_1-\alpha_2)$，差非零）</p>
+              <h4>解答</h4>
+              <p>① 可交换矩阵 $\begin{pmatrix}-3t+u&2t\\3t&u\end{pmatrix}$　② $a=1$，通解 $k_1(1,-1,1,0)^T+k_2(0,-1,0,1)^T$　③ $a\ne2$ 时有解（$a=2$ 无解），通解见讲义含 $k(-3,0,1,1)^T$　④ $\alpha_4=-2\alpha_1-\alpha_2+b$。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            $Ax=b$ 有解 $\Leftrightarrow r(A)=r(\bar A)\Leftrightarrow b$ 可由 $A$ 的列表出；$Ax=0$ 与 $Bx=0$ 同解 $\Leftrightarrow r(A)=r(B)=r\begin{pmatrix}A\\B\end{pmatrix}\Leftrightarrow$ 行向量组等价。
+          </div>
+        </div>
+        <!-- PANE_CH5 -->
+        <div class="ch-pane" id="pane-ch5">
+          <h2 class="sec">第五章 特征值与特征向量 · 综合枢纽</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            从 $A\alpha=\lambda\alpha$ 出发：用 $|\lambda E-A|=0$ 求特征值、用 $(\lambda E-A)x=0$ 求特征向量，再用 $P^{-1}AP=\Lambda$ 拆解—重组以求 $A^n$、反求 $A$、判相似。<strong>可对角化的本质仍是秩：重根的代数重数 = 几何重数。</strong>
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <ul>
+            <li><strong>特征值/特征向量</strong>：$A\alpha=\lambda\alpha,\ \alpha\ne0$；即 $\alpha$ 是 $(\lambda E-A)x=0$ 的<strong>非零解</strong>。</li>
+            <li><strong>特征多项式/特征方程</strong>：$|\lambda E-A|=0$。<strong>相似</strong>：$P^{-1}AP=B$；与对角阵相似称<strong>可对角化</strong>。</li>
+          </ul>
+
+          <h3 class="sub">核心定理</h3>
+          <div class="two-col">
+            <div class="callout c-thm" style="margin:0">
+              <span class="tag">两个最高频等式</span>
+              $\sum\lambda_i=\operatorname{tr}(A)=\sum a_{ii}$；$\prod\lambda_i=|A|$（$|A|=0\Leftrightarrow0$ 是特征值）。
+            </div>
+            <div class="callout c-thm" style="margin:0">
+              <span class="tag">无关性</span>
+              <strong>不同特征值的特征向量必线性无关</strong>（一般矩阵只无关；实对称则<strong>正交</strong>）。同特征值特征向量的非零组合仍是特征向量；<b>不同特征值特征向量之和不是特征向量</b>。
+            </div>
+          </div>
+          <div class="callout c-thm" style="margin-top:12px"><span class="tag">对角化判据（金标准）</span>
+            $A$ 可对角化 $\Leftrightarrow$ 有 $n$ 个线性无关特征向量 $\Leftrightarrow$ 对每个 $n_i$ 重特征值 $\lambda_i$，都有 $\boldsymbol{r(\lambda_i E-A)=n-n_i}$（几何重数=代数重数）。<br>
+            特征值互异必可对角化（充分非必要）；几何重数恒 $\le$ 代数重数。<br>
+            <strong>实对称阵</strong>：特征值全实数、不同特征值向量正交、<strong>必可正交对角化</strong> $Q^TAQ=\Lambda$（无条件，二次型基石）。
+          </div>
+
+          <h3 class="sub">关联矩阵特征值表（$A$ 特征值 $\lambda$、特征向量 $\alpha$）</h3>
+          <div class="table-wrap"><table>
+            <colgroup><col style="width:34%"><col style="width:30%"><col style="width:36%"></colgroup>
+            <thead><tr><th>矩阵</th><th>特征值</th><th>特征向量 / 备注</th></tr></thead>
+            <tbody>
+              <tr><td>$kA+E$</td><td>$k\lambda+1$</td><td>$\alpha$</td></tr>
+              <tr><td>$A+kE$</td><td>$\lambda+k$</td><td>$\alpha$</td></tr>
+              <tr><td>$A^m$</td><td>$\lambda^m$</td><td>$\alpha$</td></tr>
+              <tr><td>$A^{-1}$</td><td>$1/\lambda$</td><td>需可逆</td></tr>
+              <tr><td>$A^*$</td><td>$\|A\|/\lambda$（=其余特征值之积）</td><td>由 $AA^*=|A|E$</td></tr>
+              <tr><td>$f(A)$</td><td>$f(\lambda)$</td><td>矩阵多项式</td></tr>
+              <tr><td>$P^{-1}AP=B$ 里 $B$</td><td>$\lambda$</td><td>向量 $P^{-1}\alpha$</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout c-sig"><span class="tag">秩1秒杀</span>
+            $r(A)=1\Rightarrow A=\alpha\beta^T$，特征值 $\lambda_1=\operatorname{tr}(A)$，其余全为 $0$；$A^n=[\operatorname{tr}(A)]^{n-1}A$。<br>
+            "各行元素之和为 $k$"$\Rightarrow A(1,1,\dots,1)^T=k(1,1,\dots,1)^T$；$AB=kB$ 且 $B$ 列无关 $\Rightarrow$ 这些列是 $\lambda=k$ 的特征向量。
+          </div>
+          <div class="callout c-warn"><span class="tag">相似的必要条件（都不能反推）</span>
+            $A\sim B\Rightarrow|A|=|B|$、$r(A)=r(B)$、$\operatorname{tr}A=\operatorname{tr}B$、特征值相同、$f(A)\sim f(B)$、$A^*\sim B^*$。<br>
+            <b>经典反例</b>：$E=\begin{pmatrix}1&0\\0&1\end{pmatrix}$ 与 Jordan 块 $J=\begin{pmatrix}1&1\\0&1\end{pmatrix}$ 特征值/迹/行列式/秩全同，但 $r(E-E)=0\ne r(J-E)=1$，<b>不相似</b>。判重根相似就查 $r(A-\lambda_0E)$。
+          </div>
+
+          <h3 class="sub">题型与通法</h3>
+          <div class="signal-grid">
+            <div class="sg"><div class="cond">数字阵求特征值/向量</div>$|\lambda E-A|$ 提公因子 $(\lambda-c)$ 分解；重根<b>务必查几何重数</b>（例5.3可对角化 vs 例5.4不可对角化）。<span class="arrow">→</span>例5.1–5.5</div>
+            <div class="sg"><div class="cond">矩阵方程 g(A)=O</div>特征值满足 $g(\lambda)=0$ 定取值集合，再用迹/行列式/秩筛选出现几次。<span class="arrow">→</span>例5.6–5.8</div>
+            <div class="sg"><div class="cond">给 Aαᵢ=αⱼ 的组合</div>按列拼 $AP=PB$，$A\sim B$；特征值同 $B$，特征向量 $=P$ 乘 $B$ 的特征向量。<span class="arrow">→</span>例5.9–5.10</div>
+            <div class="sg"><div class="cond">判能否对角化/判相似</div>实对称、特征值互异先过；重根查 $r(\lambda_iE-A)=n-n_i$；判相似查 $r(A-\lambda_0E)$。<span class="arrow">→</span>例5.11–5.16</div>
+            <div class="sg"><div class="cond">相似/重根求参数</div>迹相等列一方程，已知特征值代入 $|\lambda_0E-A|=0$ 列二方程，重根分情况查几何重数。<span class="arrow">→</span>例5.17–5.18</div>
+            <div class="sg"><div class="cond">求 P 使 P⁻¹AP=Λ</div>特征向量按列拼 $P$，第 $i$ 列严格对应 $\Lambda$ 第 $i$ 个对角元。<span class="arrow">→</span>例5.19–5.21</div>
+            <div class="sg"><div class="cond">求 Aⁿ</div>$A=P\Lambda P^{-1}\Rightarrow A^n=P\Lambda^nP^{-1}$；若 $B=E+C$ 且 $C^2=O$，$(E+C)^n=E+nC$ 更快。<span class="arrow">→</span>例5.22–5.23</div>
+            <div class="sg"><div class="cond">反求矩阵 A</div>$A(\alpha_1,\alpha_2,\alpha_3)=(\lambda_1\alpha_1,\dots)$，$A=P\Lambda P^{-1}$；用"不同特征值向量必无关"排除伪解。<span class="arrow">→</span>例5.24</div>
+            <div class="sg"><div class="cond">实对称求正交阵 Q</div>四步：定参→特征值→单根单位化、重根 Schmidt 正交化再单位化→拼 $Q$，$Q^TAQ=\Lambda$。<span class="arrow">→</span>例5.25–5.27</div>
+          </div>
+          <div class="callout c-sig"><span class="tag">实对称正交化提速</span>
+            知道两个特征向量可利用<strong>正交</strong>直接求第三个（内积为 0 列方程），免去解 $(\lambda E-A)x=0$；有重根时，知道单根向量就能用正交方程求重根的全部向量。幂等 $A^2=A$ 给 $\lambda=0$ 或 $1$，再由秩数个数（例5.25）。
+          </div>
+
+          <details>
+            <summary>练习严选 · 14 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① $a=-4$（$|E-A|=a+4$）　② $k(1,1,1)^T$（行和为 5）　③ $a=-1$（二重根 $\lambda=4$，几何重数 1）　④ $A$ 特征值 $4,-2,-1,\frac12$（$|A^*|=64=|A|^3\Rightarrow|A|=4$）　⑤ $a=1$ 或 $-2$（$A\alpha=\lambda\alpha$）</p>
+              <h4>选择</h4>
+              <p>① A（特征值 $1,4,0$）　② D（$\alpha_2-\alpha_3$ 是不同特征值向量之和）　③ C（特征值 $4,0$ 不同）　④ B（重根几何重数不足）</p>
+              <h4>解答</h4>
+              <p>① 实对称 $1,1,-2$，由正交求另两向量，$A^3=\begin{pmatrix}-7/2&0&-9/2\\0&1&0\\-9/2&0&-7/2\end{pmatrix}$。　② $a=-3$，$P=\begin{pmatrix}1&1&1\\1&0&-3\\0&1&0\end{pmatrix}$，$\Lambda=\operatorname{diag}(3,3,-1)$。　③ $a=2$，$Q^TAQ=\operatorname{diag}(2,2,8)$，$Q$ 见讲义。　④ 反证：若 $\alpha_1+\alpha_2$ 是特征向量，则 $\lambda_3=\lambda_1=\lambda_2$，矛盾。　⑤ $A^3=O$ 特征值全 0，$A\ne O\Rightarrow r(A)\ge1$，几何重数 $n-r(A)&lt;n$，不可对角化。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            可对角化 $\Leftrightarrow n$ 个无关特征向量 $\Leftrightarrow$ 每重根 $r(\lambda_iE-A)=n-n_i$；幂等 $A^2=A\Rightarrow\lambda=0/1$ 且 $r(A)+r(A-E)=n$；幂零 $A^k=O\Rightarrow$ 特征值全 0、一般不可对角化。
+          </div>
+        </div>
+        <!-- PANE_CH6 -->
+        <div class="ch-pane" id="pane-ch6">
+          <h2 class="sec">第六章 二次型 · 实对称化身与三关系收口</h2>
+          <div class="callout c-core"><span class="tag">定位</span>
+            二次型 $f=\boldsymbol{x}^TA\boldsymbol{x}$ 是<strong>实对称矩阵</strong>的化身。正交变换化标准形就是 $Q^TAQ=Q^{-1}AQ=\Lambda$，<strong>标准形系数 = 特征值</strong>；合同 $C^TAC$ 引入惯性指数；正定是"满秩"在二次型里的新名字。
+          </div>
+
+          <h3 class="sub">核心定义</h3>
+          <ul>
+            <li><strong>二次型矩阵</strong>：$f=\boldsymbol{x}^TA\boldsymbol{x}$，$A^T=A$；交叉项系数对半写：$x_ix_j$ 系数 $k\Rightarrow a_{ij}=a_{ji}=k/2$。$r(f)=r(A)$。</li>
+            <li><strong>标准形</strong>（只含平方项，系数 $d_i$ 任意、不唯一）vs <strong>规范形</strong>（系数只取 $1,-1,0$，唯一）。</li>
+            <li><strong>正负惯性指数</strong>：标准形中正/负平方项个数 $p,q$，$r(A)=p+q$。<strong>合同</strong>：$C^TAC=B$（$C$ 可逆）。</li>
+            <li><strong>正定</strong>：$\forall\boldsymbol{x}\ne0,\ \boldsymbol{x}^TA\boldsymbol{x}&gt;0$。</li>
+          </ul>
+          <div class="callout c-warn"><span class="tag">陷阱</span>
+            "平方和套平方和"（如 $(x_1+x_2)^2+(x_2-x_3)^2+(x_3+x_1)^2$）<strong>不能直接把括号当新变量</strong>——括号间可能线性相关（变换矩阵行列式为 0）。必须展开重新配方（例6.3）。
+          </div>
+
+          <h3 class="sub">核心定理</h3>
+          <div class="callout c-thm"><span class="tag">惯性定理</span>
+            无论怎样化标准形，正、负平方项个数 $p,q$ 唯一确定。<b>规范形唯一，标准形不唯一</b>；合同的不变量就是 $(p,q)$。坐标变换 $\boldsymbol{x}=C\boldsymbol{y}$ 后矩阵 $B=C^TAC$。
+          </div>
+          <div class="callout c-thm"><span class="tag">定理6.5</span>
+            实对称阵必存在正交变换化标准形 $\lambda_1y_1^2+\cdots+\lambda_ny_n^2$，$\lambda_i$ 即 $A$ 的特征值（正交变换既相似又合同，特征值顺序与 $Q$ 列顺序一致）。
+          </div>
+          <div class="callout c-core"><span class="tag">正定的四条等价链</span>
+            $A$ 正定 $\Leftrightarrow p=n$ $\Leftrightarrow A\simeq E$（即 $A=C^TC$，$C$ 可逆）$\Leftrightarrow$ 特征值 $\lambda_i&gt;0$ $\Leftrightarrow$ 各阶顺序主子式 $\Delta_k&gt;0$。<br>
+            <b>必要不充分</b>：正定 $\Rightarrow a_{ii}&gt;0$ 且 $|A|&gt;0$，但反推不成立（$x_1^2+3x_2^2$ 在三元时 $p=2&lt;3$）。
+          </div>
+
+          <h3 class="sub">三大关系总表（全书收口）</h3>
+          <div class="table-wrap"><table class="fixed">
+            <colgroup><col style="width:12%"><col style="width:22%"><col style="width:24%"><col style="width:26%"><col style="width:16%"></colgroup>
+            <thead><tr><th>关系</th><th>对象 / 定义</th><th>不变量</th><th>充要条件</th><th>快速排除</th></tr></thead>
+            <tbody>
+              <tr><td><strong>等价</strong></td><td>同型 $m\times n$；$PAQ=B$</td><td>秩 $r$</td><td>$r(A)=r(B)$</td><td>秩不等即不等价</td></tr>
+              <tr><td><strong>相似</strong></td><td>方阵；$P^{-1}AP=B$</td><td>特征值、迹、行列式、秩</td><td>实对称：$\lambda_A=\lambda_B$（重根再查 $r(A-\lambda E)$）</td><td>迹/行列式/特征值不同</td></tr>
+              <tr><td><strong>合同</strong></td><td>实对称；$C^TAC=B$</td><td>秩、正负惯性指数 $(p,q)$、行列式符号</td><td>$p_A=p_B,\ q_A=q_B$</td><td>$|A|,|B|$ 异号即不合同</td></tr>
+            </tbody>
+          </table></div>
+          <div class="callout c-core"><span class="tag">强弱链</span>
+            实对称范围内：<strong>相似 ⇒ 合同 ⇒ 等价</strong>，反向均不成立。例 $\operatorname{diag}(1,2)$ 与 $\operatorname{diag}(1,4)$ 秩同（等价）、$p=2$ 同（合同），但特征值不同（不相似）。正交变换下 $Q^TAQ=\Lambda$ 三者同时成立。
+          </div>
+
+          <h3 class="sub">题型与通法</h3>
+          <div class="signal-grid">
+            <div class="sg"><div class="cond">写矩阵/秩/惯性指数</div>乘积式先展开再对称化；$r(f)=r(A)$；$p,q$ 靠配方或特征值数正负。<span class="arrow">→</span>例6.1–6.3</div>
+            <div class="sg"><div class="cond">配方法化标准形</div>有平方项逐个配方；无平方项先用 $x_1=y_1+y_2,x_2=y_1-y_2$ 造平方项，两次变换相乘。<span class="arrow">→</span>例6.4–6.5</div>
+            <div class="sg"><div class="cond">正交变换化标准形</div>标准形系数=特征值；反求参数用迹/行列式/特征值代入；正交阵列与特征值同序。<span class="arrow">→</span>例6.6–6.9</div>
+            <div class="sg"><div class="cond">规范形反求参数</div>规范形 $(p,q)$ 唯一，把"几个正几个负几个零"翻译成特征值符号列不等式。<span class="arrow">→</span>例6.10–6.13</div>
+            <div class="sg"><div class="cond">正定判定/证明</div>数字阵用顺序主子式；抽象用特征值/与 E 合同/定义 $\|Cx\|^2$；$A^TA$ 正定 $\Leftrightarrow A$ 列满秩。<span class="arrow">→</span>例6.14–6.23</div>
+            <div class="sg"><div class="cond">判等价/相似/合同</div>按顺序：先看秩（等价），实对称再看特征值（相似），最后看惯性指数（合同）；行列式异号直接排除合同。<span class="arrow">→</span>例6.24–6.25</div>
+          </div>
+          <div class="callout c-sig"><span class="tag">两个秒杀结论</span>
+            ① $\boldsymbol{x}^T\boldsymbol{x}=r$ 下 $f$ 最大/最小值 $=\lambda_{\max/\min}\cdot r$（正交变换保长度）。② $g(A)=O$ 则特征值满足 $g(\lambda)=0$，再用秩/已知特征向量定重数。
+          </div>
+
+          <details>
+            <summary>练习严选 · 12 题（点击展开答案）</summary>
+            <div class="d-body">
+              <h4>填空</h4>
+              <p>① $r(f)=2$　② $a=-1$，标准形 $3y_1^2-y_3^2$　③ 规范形 $y_1^2+y_2^2-y_3^2$（$p=2,q=1$）　④ $t&gt;2$　⑤ $k&gt;0$（$A$ 特征值 $3,0,0$）</p>
+              <h4>选择</h4>
+              <p>① B（$p=2,q=1$）　② D（规范形唯一）　③ C（$A$ 与 $E$ 合同）</p>
+              <h4>解答</h4>
+              <p>① $c=2$，特征值 $6,6,0$，标准形 $6y_1^2+6y_2^2$。　② $A$ 正定时 $A^*$ 对称且特征值 $|A|/\lambda_i&gt;0$，故正定。　③ $a=2$，标准形仅两项，$Q$ 见讲义。　④ 同时合同对角化，$P=CQ$，$\Lambda_1=E$、$\Lambda_2=\operatorname{diag}(2,1,-1)$。</p>
+              <p class="ans"><b>讲义留白补出</b>：$f=ax_1^2+(a-1)x_2^2+(a+2)x_3^2$ 规范形一正两负 $\Rightarrow -2&lt;a&lt;0$；$(x_1+ax_2)^2+\cdots$ 正定 $\Rightarrow a\ne-1$；2013 选 B、2008 选 D。</p>
+            </div>
+          </details>
+          <div class="callout c-core" style="margin-top:14px"><span class="tag">本章等价链</span>
+            正定 $\Leftrightarrow p=n\Leftrightarrow A\simeq E\Leftrightarrow A=C^TC\Leftrightarrow\lambda_i&gt;0\Leftrightarrow\Delta_k&gt;0$；$A\simeq B\Leftrightarrow$ 规范形相同 $\Leftrightarrow(p,q)$ 相同；正交变换化标准形 = 实对称正交对角化。
+          </div>
+        </div>
+        <!-- PANE_DONE -->
+      </section>
+
+      <!-- VIEW: tables -->
+      <section class="view" id="view-tables">
+        <div class="page-head">
+          <div class="kicker">第 一 部 分 · 横 向 分 块</div>
+          <h1>定义 · 定理 · 公式总表</h1>
+          <p class="lead">把六章的同类内容抽出来放在一起：<b>所有定义一处、所有定理一处、所有公式一处</b>，相似公式并排对比。想纵向按章学，去「六章分讲」；想横向背记，就在这里。</p>
+        </div>
+        <div>
+
+        <h2 class="sec" id="tab-def">一、定义总表（按主题，不按章）</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:16%"><col style="width:20%"><col style="width:64%"></colgroup>
+          <thead><tr><th>主题</th><th>概念</th><th>准确定义</th></tr></thead>
+          <tbody>
+            <tr><td rowspan="2"><strong>行列式</strong></td><td>行列式</td><td>所有取自不同行不同列的 $n$ 个元素乘积的代数和，共 $n!$ 项，偶排列取正、奇排列取负。它是<b>一个数</b>。</td></tr>
+            <tr><td>余子式 / 代数余子式</td><td>划去 $a_{ij}$ 所在行列后剩余 $n-1$ 阶行列式为 $M_{ij}$；$A_{ij}=(-1)^{i+j}M_{ij}$。</td></tr>
+            <tr><td rowspan="7"><strong>矩阵</strong></td><td>伴随矩阵 $A^*$</td><td>由各代数余子式 $A_{ij}$ 构成后<b>再转置排列</b>：$A^*=(A_{ji})$。核心恒等式 $AA^*=A^*A=|A|E$。</td></tr>
+            <tr><td>可逆矩阵</td><td>存在 $B$ 使 $AB=BA=E$，记 $B=A^{-1}$。同阶方阵时只需验 $AB=E$。</td></tr>
+            <tr><td>初等变换 / 初等矩阵</td><td>倍乘、互换、倍加三类；单位阵 $E$ 做一次初等变换得到初等矩阵。<b>左乘行变换、右乘列变换</b>。</td></tr>
+            <tr><td>矩阵等价 $A\cong B$</td><td>经有限次初等变换由 $A$ 到 $B$，等价于存在可逆 $P,Q$ 使 $PAQ=B$，等价于 $r(A)=r(B)$。</td></tr>
+            <tr><td>正交矩阵</td><td>$AA^T=A^TA=E$，即 $A^T=A^{-1}$；行/列向量是标准正交组，$|A|=\pm1$。</td></tr>
+            <tr><td>对称 / 反对称</td><td>对称 $A^T=A$（$a_{ij}=a_{ji}$）；反对称 $A^T=-A$（$a_{ii}=0$、$a_{ij}=-a_{ji}$，奇数阶必奇异）。</td></tr>
+            <tr><td>秩 $r(A)$</td><td>非零子式的最高阶数 = 列秩 = 行秩 = 极大无关组所含向量个数（三秩相等）。</td></tr>
+            <tr><td rowspan="5"><strong>向量</strong></td><td>线性相关 / 无关</td><td>存在不全为零的系数使 $\sum k_i\alpha_i=0$ 即相关；仅当系数全为零时成立即无关。</td></tr>
+            <tr><td>线性表出</td><td>$\beta$ 能写成 $\sum k_i\alpha_i$；等价于 $[\alpha_i]x=\beta$ 有解。</td></tr>
+            <tr><td>向量组等价</td><td>两组能互相线性表出；等价于 $r(I)=r(II)=r(I,II)$。</td></tr>
+            <tr><td>极大无关组 / 秩</td><td>自身无关、再添任一向量即相关的子组；其向量个数即向量组的秩。</td></tr>
+            <tr><td>基 / 维数 / 过渡矩阵<span class="todo-flag">仅数一</span></td><td>无关且能表出全空间的向量组为基，个数为维数；新旧基之间 $[\beta]=[\alpha]C$，$C$ 可逆为过渡矩阵。</td></tr>
+            <tr><td rowspan="2"><strong>方程组</strong></td><td>基础解系</td><td>$Ax=0$ 的一组解、线性无关、且能表出所有解；含 $n-r(A)$ 个向量，不唯一。</td></tr>
+            <tr><td>主变量 / 自由变量</td><td>阶梯形主元对应主变量，其余为自由变量，自由变量个数 $=n-r(A)$。</td></tr>
+            <tr><td rowspan="3"><strong>特征值</strong></td><td>特征值 / 特征向量</td><td>$A\alpha=\lambda\alpha,\ \alpha\ne0$；$\alpha$ 是 $(\lambda E-A)x=0$ 的非零解。</td></tr>
+            <tr><td>特征多项式</td><td>$|\lambda E-A|$；特征方程 $|\lambda E-A|=0$。</td></tr>
+            <tr><td>相似 / 可对角化</td><td>存在可逆 $P$ 使 $P^{-1}AP=B$ 即 $A\sim B$；$B$ 为对角阵时称可对角化。</td></tr>
+            <tr><td rowspan="4"><strong>二次型</strong></td><td>二次型矩阵</td><td>$f=\boldsymbol{x}^TA\boldsymbol{x}$，$A^T=A$；交叉项系数对半写 $a_{ij}=a_{ji}=k/2$。</td></tr>
+            <tr><td>标准形 / 规范形</td><td>标准形只含平方项、系数 $d_i$ 任意（不唯一）；规范形系数只取 $1,-1,0$（唯一）。</td></tr>
+            <tr><td>惯性指数 / 合同</td><td>正/负平方项个数 $p,q$，$r=p+q$；存在可逆 $C$ 使 $C^TAC=B$ 即合同 $A\simeq B$。</td></tr>
+            <tr><td>正定</td><td>对任意 $\boldsymbol{x}\ne0$ 恒有 $\boldsymbol{x}^TA\boldsymbol{x}&gt;0$。</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="tab-thm">二、定理总表（按使用频率排序）</h2>
+        <div class="callout c-core"><span class="tag">最高频 · 全书核心等价链</span>
+          对 $n$ 阶方阵 $A$，下列命题<b>两两等价</b>：$|A|\ne0 \Leftrightarrow r(A)=n \Leftrightarrow A$ 可逆 $\Leftrightarrow A$ 可化为 $E$（$A=$ 初等矩阵之积）$\Leftrightarrow$ 列（行）向量组无关 $\Leftrightarrow Ax=0$ 只有零解 $\Leftrightarrow Ax=b$ 对任意 $b$ 有唯一解 $\Leftrightarrow 0$ 不是特征值 $\Leftrightarrow A^TA$ 正定。
+        </div>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:20%"><col style="width:80%"></colgroup>
+          <thead><tr><th>定理</th><th>内容与关键提示</th></tr></thead>
+          <tbody>
+            <tr><td><strong>展开定理</strong></td><td>行列式等于任一行（列）元素与代数余子式乘积之和；<b>异行（列）乘积之和为 0</b>（代数余子式求和的核心工具）。</td></tr>
+            <tr><td><strong>行列式乘法定理</strong></td><td>$|AB|=|A||B|$（同阶方阵）；由此 $|A^*|=|A|^{n-1}$。</td></tr>
+            <tr><td><strong>克拉默法则</strong></td><td>$n$ 方程 $n$ 未知数、$D\ne0$ 时 $x_j=D_j/D$；齐次有非零解 $\Rightarrow|A|=0$。</td></tr>
+            <tr><td><strong>可逆判定（定理2.2）</strong></td><td>即上方核心等价链。同阶方阵 $AB=E\Rightarrow BA=E$（定理2.3）。</td></tr>
+            <tr><td><strong>初等变换</strong></td><td>左行右列（定理2.4）；初等矩阵皆可逆，逆是同型初等矩阵（倍乘取倒数、倍加变号、互换不变）。</td></tr>
+            <tr><td><strong>相关性判定（定理3.1）</strong></td><td>$\alpha_1,\dots,\alpha_s$ 相关 $\Leftrightarrow [\alpha_i]x=0$ 有非零解 $\Leftrightarrow r(\alpha_1,\dots,\alpha_s)&lt;s$。</td></tr>
+            <tr><td><strong>相关的结构性质</strong></td><td>部分相关⇒整体相关；整体无关⇒部分无关。无关组加分量（延伸）仍无关；相关组减分量（缩短）仍相关。</td></tr>
+            <tr><td><strong>表出判定（定理3.4）</strong></td><td>$\beta$ 可由 $\alpha_i$ 表出 $\Leftrightarrow[\alpha_i]x=\beta$ 有解 $\Leftrightarrow r(A)=r(A,\beta)$。</td></tr>
+            <tr><td><strong>无关添一（定理3.6）</strong></td><td>无关组添一个 $\beta$ 后相关，则 $\beta$ 可由原组唯一表出。</td></tr>
+            <tr><td><strong>多数由少数（定理3.7）</strong></td><td>$s$ 个向量可由 $t$ 个表出且 $s&gt;t$，则 $s$ 个必相关；无关组能被表出则个数不超过对方。</td></tr>
+            <tr><td><strong>基础解系（定理4.4）</strong></td><td>$r(A)=r&lt;n$ 时，$Ax=0$ 基础解系恰含 $n-r(A)$ 个线性无关解。</td></tr>
+            <tr><td><strong>解的结构</strong></td><td>非齐次两解之差是齐次解；非齐次通解 = 一个特解 + 导出组基础解系。</td></tr>
+            <tr><td><strong>特征值两等式</strong></td><td>$\sum\lambda_i=\operatorname{tr}(A)=\sum a_{ii}$；$\prod\lambda_i=|A|$。全章最高频。</td></tr>
+            <tr><td><strong>特征向量无关（定理5.3）</strong></td><td>不同特征值的特征向量线性无关；实对称阵则<b>正交</b>。几何重数恒 $\le$ 代数重数。</td></tr>
+            <tr><td><strong>对角化判据（定理5.8）</strong></td><td>可对角化 $\Leftrightarrow$ 有 $n$ 个无关特征向量 $\Leftrightarrow$ 每个 $n_i$ 重特征值都有 $r(\lambda_iE-A)=n-n_i$。</td></tr>
+            <tr><td><strong>实对称三定理</strong></td><td>特征值全为实数；不同特征值向量正交；<b>必可正交对角化</b> $Q^TAQ=\Lambda$（无条件）。</td></tr>
+            <tr><td><strong>惯性定理</strong></td><td>无论怎样化标准形，正、负平方项个数 $p,q$ 唯一；规范形唯一、标准形不唯一；合同不变量是 $(p,q)$。</td></tr>
+            <tr><td><strong>正交变换标准形</strong></td><td>实对称阵必存在正交变换化标准形，系数 $\lambda_i$ 恰为特征值（既相似又合同）。</td></tr>
+            <tr><td><strong>正定四等价</strong></td><td>正定 $\Leftrightarrow p=n\Leftrightarrow A\simeq E$（$A=C^TC$）$\Leftrightarrow\lambda_i&gt;0\Leftrightarrow$ 各阶顺序主子式全正。</td></tr>
+          </tbody>
+        </table></div>
+        <h2 class="sec" id="tab-formula">三、公式总表（相似公式并排对比）</h2>
+
+        <h3 class="sub">3.1 行列式：七个核心公式</h3>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:40%"><col style="width:60%"></colgroup>
+          <thead><tr><th>公式</th><th>易错点 / 备注</th></tr></thead>
+          <tbody>
+            <tr><td>$|A^T|=|A|$</td><td>行、列地位对等</td></tr>
+            <tr><td>$|kA|=k^n|A|$</td><td>每一行提一个 $k$，共 $n$ 行；<b>不是</b> $k|A|$</td></tr>
+            <tr><td>$|AB|=|A||B|$</td><td>只对同阶方阵；$|A+B|$ 无公式</td></tr>
+            <tr><td>$|A^*|=|A|^{n-1}$</td><td>由 $AA^*=|A|E$ 两边取行列式</td></tr>
+            <tr><td>$|A^{-1}|=|A|^{-1}=1/|A|$</td><td>由 $AA^{-1}=E$ 取行列式</td></tr>
+            <tr><td>$|A|=\prod\lambda_i$</td><td>特征值之积</td></tr>
+            <tr><td>$A\sim B\Rightarrow|A|=|B|,\ |A+kE|=|B+kE|$</td><td>$P^{-1}(A+kE)P=B+kE$</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-warn"><span class="tag">特殊行列式</span>
+          上（下）三角 $=$ 主对角乘积；副对角 $=(-1)^{n(n-1)/2}$ 乘副对角元素（符号别丢）；分块 $\begin{vmatrix}A&*\\O&B\end{vmatrix}=|A||B|$，$\begin{vmatrix}O&A\\B&*\end{vmatrix}=(-1)^{mn}|A||B|$；<b>范德蒙德</b> $=\prod_{j&lt;i}(x_i-x_j)$（下标大减小）。
+        </div>
+
+        <h3 class="sub">3.2 逆 · 伴随 · 转置（反序规律并排）</h3>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:34%"><col style="width:34%"><col style="width:32%"></colgroup>
+          <thead><tr><th>对象</th><th>公式</th><th>规律</th></tr></thead>
+          <tbody>
+            <tr><td>逆的乘积</td><td>$(AB)^{-1}=B^{-1}A^{-1}$</td><td rowspan="3" style="vertical-align:middle">三者都<b>反序</b>，一起记</td></tr>
+            <tr><td>伴随的乘积</td><td>$(AB)^*=B^*A^*$</td></tr>
+            <tr><td>转置的乘积</td><td>$(AB)^T=B^TA^T$</td></tr>
+            <tr><td>和的转置 / 逆</td><td>$(A+B)^T=A^T+B^T$；$(A+B)^{-1}$ <b>无公式</b></td><td>转置可拆，逆不能拆</td></tr>
+            <tr><td>数乘的逆</td><td>$(kA)^{-1}=\frac1k A^{-1}$</td><td>系数取倒数（指数 $-1$）</td></tr>
+            <tr><td>数乘的伴随</td><td>$(kA)^*=k^{n-1}A^*$</td><td>指数 $n-1$，别与上混</td></tr>
+            <tr><td>数乘的行列式</td><td>$|kA|=k^n|A|$</td><td>指数 $n$</td></tr>
+            <tr><td>伴随核心</td><td>$AA^*=|A|E,\ A^*=|A|A^{-1}$</td><td>见 $A^*$ 就乘 $A$ 消元</td></tr>
+            <tr><td>伴随的伴随</td><td>$(A^*)^*=|A|^{n-2}A$</td><td>$n\ge3$</td></tr>
+            <tr><td>伴随的逆</td><td>$(A^*)^{-1}=(A^{-1})^*=\frac1{|A|}A$</td><td>两式相等</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-core"><span class="tag">伴随的秩三值公式</span>
+          $$r(A^*)=\begin{cases}n,&r(A)=n\\1,&r(A)=n-1\\0,&r(A)&lt;n-1\end{cases}$$
+          已知 $r(A^*)$ 反推 $r(A)$ 是高频题型（$r(A^*)=1\Rightarrow r(A)=n-1$）。
+        </div>
+
+        <h3 class="sub">3.3 秩：不等式与等式全表</h3>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:52%"><col style="width:48%"></colgroup>
+          <thead><tr><th>公式</th><th>条件 / 触发</th></tr></thead>
+          <tbody>
+            <tr><td>$r(A)=r(A^T)=r(AA^T)=r(A^TA)$</td><td>实数域；$k\ne0$ 时 $r(kA)=r(A)$</td></tr>
+            <tr><td>$r(AB)\le\min\{r(A),r(B)\}$</td><td>上界</td></tr>
+            <tr><td>$r(A)+r(B)-n\le r(AB)$</td><td><b>Sylvester</b>（$A_{m\times n},B_{n\times s}$）</td></tr>
+            <tr><td>$AB=O\Rightarrow r(A)+r(B)\le n$</td><td>见 $AB=O$ 立刻写；$B$ 的列是 $Ax=0$ 的解</td></tr>
+            <tr><td>$r(A+B)\le r(A,B)\le r(A)+r(B)$</td><td>和 ≤ 拼宽 ≤ 分块对角和</td></tr>
+            <tr><td>$r\begin{pmatrix}A&O\\O&B\end{pmatrix}=r(A)+r(B)$</td><td>对角分块；$\begin{pmatrix}A&B\\O&B\end{pmatrix}$ 经可逆变换化对角也相等</td></tr>
+            <tr><td>可逆（列满秩 / 行满秩）乘不改秩</td><td>$A$ 可逆 $r(AB)=r(B)$；$A$ 列满秩 $r(AB)=r(B)$；$B$ 行满秩 $r(AB)=r(A)$</td></tr>
+            <tr><td>Frobenius：$r(AB)+r(BC)\le r(ABC)+r(B)$</td><td>三个矩阵连乘</td></tr>
+            <tr><td>$r(A)=r$ 时 $\lambda=0$ 几何重数 $=n-r$</td><td>连接特征值</td></tr>
+          </tbody>
+        </table></div>
+
+        <h3 class="sub">3.4 特征值：关联矩阵变换表</h3>
+        <div class="callout c-thm"><span class="tag">特征值随矩阵变换</span>
+          $A$ 特征值 $\lambda$、特征向量 $\alpha$：$kA+E\to k\lambda+1$；$A+kE\to\lambda+k$；$A^m\to\lambda^m$；$A^{-1}\to1/\lambda$；$A^*\to|A|/\lambda$；$f(A)\to f(\lambda)$；$P^{-1}AP=B$ 特征值同为 $\lambda$（向量变为 $P^{-1}\alpha$）。<br>
+          秩 1 阵：$\lambda_1=\operatorname{tr}(A)$，其余全 $0$，且 $A^n=[\operatorname{tr}(A)]^{n-1}A$。
+        </div>
+
+        <h3 class="sub">3.5 二次型：坐标变换与判定</h3>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:46%"><col style="width:54%"></colgroup>
+          <tbody>
+            <tr><td>坐标变换 $\boldsymbol{x}=C\boldsymbol{y}$</td><td>新矩阵 $B=C^TAC$（一般可逆只合同；正交 $Q$ 时既合同又相似）</td></tr>
+            <tr><td>秩与惯性指数</td><td>$r(f)=r(A)=p+q$；合同保 $p,q$，$|B|=|C|^2|A|$（行列式同号）</td></tr>
+            <tr><td>正交变换标准形</td><td>系数即特征值，$Q^TAQ=\operatorname{diag}(\lambda_1,\dots,\lambda_n)$</td></tr>
+            <tr><td>球面约束最值</td><td>$\boldsymbol{x}^T\boldsymbol{x}=r$ 时 $f$ 最大 $=\lambda_{\max}r$、最小 $=\lambda_{\min}r$</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-warn"><span class="tag">二项式何时成立</span>
+          仅当 $A,B$ 可交换（$AB=BA$）才有 $(A+B)^2=A^2+2AB+B^2$、$(A+B)(A-B)=A^2-B^2$；但 $(A+E)^2=A^2+2A+E$ 永远成立（$E$ 与一切矩阵可交换）。
+        </div>
+
+        </div>
+      </section>
+
+      <!-- VIEW: signals -->
+      <section class="view" id="view-signals">
+        <!-- VIEW_SIGNALS -->
+        <div class="page-head">
+          <div class="kicker">第 二 部 分 · 条 件 反 射</div>
+          <h1>题型条件反射手册</h1>
+          <p class="lead">目标：<b>题目给什么条件，就等于在告诉你什么信息</b>。左列是题干里的原话，中列是它隐含的信息，右列是第一反应的动作。按条件类型横切六章，考前反复刷左列，逼自己盖住中列也能背出。</p>
+        </div>
+
+        <h2 class="sec" id="sig-inv">一、见到「可逆 / 不可逆 / 行列式 / 秩」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>$|A|\ne0$ / $A$ 可逆 / 满秩</td><td>$r(A)=n$；列向量无关；$Ax=0$ 只零解；$0$ 不是特征值；$A$ 可化为 $E$</td><td>可在 $A$ 两边随意乘逆</td></tr>
+            <tr><td>$|A|=0$ / 不可逆</td><td>$r(A)&lt;n$；列相关；$Ax=0$ 有非零解；$0$ 是特征值</td><td>找非零解或降秩</td></tr>
+            <tr><td>$A$ 是 $n$ 阶且含参数，要讨论秩</td><td>秩由参数决定</td><td>找最高阶非零子式给下界，$|A|=0$ 给上界，夹逼</td></tr>
+            <tr><td>$r(A^*)=1$</td><td>三值公式 $\Rightarrow r(A)=n-1$，$|A|=0$ 且有 $n-1$ 阶子式非零</td><td>令 $|A|=0$ 解参，再排除 $r(A)\le n-2$</td></tr>
+            <tr><td>$r(A)+r(A^*)=n$ 之类</td><td>三值公式逐档试</td><td>只有 $r(A)=n-1$ 满足 $n-1+1=n$</td></tr>
+            <tr><td>各行元素之和为 $k$</td><td>$A(1,\dots,1)^T=k(1,\dots,1)^T$</td><td>$k$ 是特征值、全 1 向量是特征向量</td></tr>
+            <tr><td>反对称矩阵（$A^T=-A$）</td><td>对角元全 0；奇数阶 $|A|=0$（必奇异）</td><td>用 $|A|=(-1)^n|A|$ 证奇阶降秩</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="sig-prod">二、见到「矩阵乘积 / 矩阵方程」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>$AB=O$ 且 $B\ne O$</td><td>$B$ 的列都是 $Ax=0$ 的非零解；$r(A)+r(B)\le n$</td><td>得 $Ax=0$ 有非零解 $\Rightarrow|A|=0$ 定参</td></tr>
+            <tr><td>$A$ 列满秩（$r(A)=$ 列数）</td><td>$AB=O\Rightarrow B=O$；$r(AB)=r(B)$</td><td>可左消去 $A$</td></tr>
+            <tr><td>矩阵每行（列）成比例 / 全元素同值</td><td>$r(A)=1$，$A=\alpha\beta^T$</td><td>特征值 $\operatorname{tr}(A),0,\dots$；$A^n=[\operatorname{tr}(A)]^{n-1}A$</td></tr>
+            <tr><td>$\alpha\beta^T$（列×行）</td><td>是 $n$ 阶秩 1 矩阵</td><td>$\beta^T\alpha$（行×列）是个数 $=\operatorname{tr}(\alpha\beta^T)$</td></tr>
+            <tr><td>$A$ 正交（$AA^T=E$）</td><td>$A^T=A^{-1}$；$|A|=\pm1$；列单位正交</td><td>先用 $|A|=\pm1$ 定符号，$E$ 写成 $AA^T$</td></tr>
+            <tr><td>关系式含 $A^{-1}$ 或 $A^*$ 与 $X$</td><td>矩阵方程</td><td>先左右乘 $A$ 或 $A^{-1}$ 把 $A^*$ 换成 $|A|E$，解出 $X$</td></tr>
+            <tr><td>$|A+B|$、$|A^{-1}+B^{-1}|$</td><td>和的行列式/逆无公式</td><td>插 $E$ 造乘积：$A^{-1}+B^{-1}=A^{-1}(B+A)B^{-1}$</td></tr>
+            <tr><td>把某行（列）作变换得到 $B$</td><td>左乘/右乘初等矩阵</td><td>行变换左乘、列变换右乘；反变换取逆（倍加变号）</td></tr>
+            <tr><td>同时含 $A$ 与 $A^*$</td><td>—</td><td>万能钥匙 $AA^*=|A|E$，见到 $A^*$ 就乘 $A$</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="sig-vec">三、见到「线性相关 / 无关 / 表出」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>$s$ 个 $n$ 维向量，问相关</td><td>$s=n$ 用行列式；$s\ne n$ 拼矩阵看秩</td><td>算 $r(A)\stackrel{?}{&lt;}s$</td></tr>
+            <tr><td>含零向量 / 两向量成比例 / $n+1$ 个 $n$ 维向量</td><td>必相关</td><td>秒杀，不必计算</td></tr>
+            <tr><td>新向量都是已知无关组的组合 $\beta_j=\sum c_{ij}\alpha_i$</td><td>$[\beta]=[\alpha]C$</td><td>写过渡矩阵 $C$：同阶看 $|C|\stackrel{?}{=}0$，个数多必相关</td></tr>
+            <tr><td>给 $A\alpha=\lambda\alpha$ 类条件证无关</td><td>特征向量关系</td><td>设组合为 0，左乘 $(A-\lambda E)$ 或 $A^{m-1}$ 逐个降出系数</td></tr>
+            <tr><td>问 $\beta$ 能否由 $\alpha_i$ 表出</td><td>非齐次方程有没有解</td><td>拼增广 $[\alpha_i\mid\beta]$，比 $r(A)$ 与 $r(A,\beta)$</td></tr>
+            <tr><td>无关组添 $\beta$ 后相关</td><td>定理3.6</td><td>$\beta$ 可由原组唯一表出，直接写表出式</td></tr>
+            <tr><td>多数向量能由少数向量表出</td><td>定理3.7</td><td>多数必相关；反过来证无关用个数不等式</td></tr>
+            <tr><td>问两组向量是否等价</td><td>互相表出</td><td>合并矩阵，验 $r(I)=r(II)=r(I,II)$</td></tr>
+            <tr><td>两两正交的非零向量</td><td>必线性无关</td><td>设组合为 0 左乘 $\alpha_i^T$，逐个得系数为 0</td></tr>
+          </tbody>
+        </table></div>
+        <h2 class="sec" id="sig-eq">四、见到「线性方程组 / 解的个数」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>$Ax=0$ 有非零解</td><td>$r(A)&lt;n$（$n$ 个未知数）</td><td>方阵时 $|A|=0$；基础解系有 $n-r(A)$ 个</td></tr>
+            <tr><td>$Ax=b$ 有解</td><td>$r(A)=r(\bar A)$，即 $b$ 可由 $A$ 的列表出</td><td>比系数矩阵与增广矩阵的秩</td></tr>
+            <tr><td>出现 $0=d\ (d\ne0)$ 行</td><td>无解</td><td>$r(\bar A)=r(A)+1$</td></tr>
+            <tr><td>给了几个解和 $r(A)$，要通解</td><td>解的结构</td><td>凑系数和为 1 的特解；两解之差造齐次解</td></tr>
+            <tr><td>非齐次解的线性组合</td><td>系数和为 1 仍是非齐次解，系数和为 0 是齐次解</td><td>用 $A$ 作用一遍判系数和</td></tr>
+            <tr><td>问两个方程组公共解</td><td>联立</td><td>$\begin{pmatrix}A\\B\end{pmatrix}x=0$，或一通解代入另一方程</td></tr>
+            <tr><td>问两方程组是否同解</td><td>行向量组等价</td><td>验 $r(A)=r(B)=r\begin{pmatrix}A\\B\end{pmatrix}$（秩相等不够）</td></tr>
+            <tr><td>含参方程要讨论</td><td>主元可能为 0</td><td>化阶梯，抓主元为 0 的参数值代回，看右端常数判有解/无解</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="sig-eig">五、见到「特征值 / 相似 / 对角化」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>数字阵求特征值</td><td>—</td><td>行列变换提公因子 $(\lambda-c)$，别硬展开三次方程</td></tr>
+            <tr><td>矩阵方程 $g(A)=O$</td><td>特征值满足 $g(\lambda)=0$</td><td>定取值集合，再用迹/行列式/秩筛出现几次</td></tr>
+            <tr><td>给 $A\alpha_i=\sum c_{ij}\alpha_j$ 且 $\alpha_i$ 无关</td><td>$AP=PB$，$A\sim B$</td><td>拼出 $B$，特征值同 $B$，特征向量 $=P$ 乘 $B$ 的向量</td></tr>
+            <tr><td>特征值有重根，问能否对角化</td><td>几何重数 = 代数重数？</td><td>算 $r(\lambda_i E-A)\stackrel{?}{=}n-n_i$</td></tr>
+            <tr><td>判断 $A\sim B$</td><td>特征值同只是必要</td><td>先比迹/行列式/特征值，重根再比 $r(A-\lambda_0E)$</td></tr>
+            <tr><td>实对称矩阵</td><td>必可正交对角化，特征值实数、向量正交</td><td>知道两个向量可用正交求第三个</td></tr>
+            <tr><td>求 $A^n$ / $A^{100}$</td><td>对角化降幂</td><td>$A=P\Lambda P^{-1}$，$A^n=P\Lambda^nP^{-1}$</td></tr>
+            <tr><td>$B=E+C$ 且 $C^2=O$</td><td>幂零</td><td>$(E+C)^n=E+nC$，比对角化更快</td></tr>
+            <tr><td>已知特征值与特征向量，反求 $A$</td><td>—</td><td>按列拼 $A=P\Lambda P^{-1}$，用"不同特征值向量必无关"排伪解</td></tr>
+            <tr><td>$A^2=A$（幂等）</td><td>特征值 $0$ 或 $1$</td><td>$r(A)+r(A-E)=n$，再由秩数个数</td></tr>
+            <tr><td>$A^k=O$（幂零）且 $A\ne O$</td><td>特征值全 0</td><td>一般不可对角化（$r(A)\ge1$，几何重数不足）</td></tr>
+            <tr><td>求正交阵 $Q$ 化对角</td><td>实对称专属</td><td>单根单位化、重根 Schmidt 正交化再单位化，列与对角元同序</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="sig-quad">六、见到「二次型 / 标准形 / 正定 / 合同」</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:30%"><col style="width:40%"><col style="width:30%"></colgroup>
+          <thead><tr><th>题目给的条件</th><th>等于告诉你</th><th>第一动作</th></tr></thead>
+          <tbody>
+            <tr><td>给二次型多项式</td><td>对应实对称矩阵</td><td>交叉项系数对半写进 $A$；乘积式先展开再对称化</td></tr>
+            <tr><td>"平方和套平方和"（括号线性组合）</td><td>括号可能线性相关</td><td>先验变换矩阵行列式是否为 0，再决定能否直接读标准形</td></tr>
+            <tr><td>正交变换下标准形</td><td>系数就是特征值</td><td>用迹相等、行列式相等、特征值代入反求参数</td></tr>
+            <tr><td>问规范形</td><td>由 $(p,q)$ 唯一决定</td><td>求特征值符号个数（或配方）</td></tr>
+            <tr><td>数字阵问正定 / 含参正定求范围</td><td>—</td><td>各阶顺序主子式 $\Delta_k&gt;0$ 列不等式组取交集</td></tr>
+            <tr><td>抽象矩阵证正定</td><td>四条等价</td><td>特征值法 / 与 $E$ 合同 / 定义 $\|Cx\|^2&gt;0$ / 正惯性指数</td></tr>
+            <tr><td>$A^TA$ 问正定</td><td>—</td><td>$A^TA$ 正定 $\Leftrightarrow A$ 列满秩（$Ax=0$ 只零解）</td></tr>
+            <tr><td>问两实对称阵合同与否</td><td>看惯性指数</td><td>比 $p,q$；行列式异号直接排除合同</td></tr>
+            <tr><td>问等价 / 相似 / 合同三者</td><td>按秩 → 特征值 → 惯性指数</td><td>先秩（等价），再特征值（相似），再 $p,q$（合同）</td></tr>
+            <tr><td>正交变换 $Q^TAQ=\Lambda$</td><td>既相似又合同</td><td>三关系同时成立</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-core"><span class="tag">使用方法</span>
+          这张表是"<b>条件 → 翻译</b>"的索引。做题时先在题干里圈出左列关键词，逼自己先在脑中读出中列，再决定右列动作。配合「六章分讲」里每个题型的代表例题，信号与套路就能焊死。
+        </div>
+      </section>
+
+      <!-- VIEW: ranknet -->
+      <section class="view" id="view-ranknet">
+        <!-- VIEW_RANKNET -->
+        <div class="page-head">
+          <div class="kicker">第 三 部 分 · 秩 为 纲</div>
+          <h1>以秩为核心的等价网络</h1>
+          <p class="lead">线代虽分六章，本质是一个大章：<b>所有判断都在说同一个数 $r(A)$</b>。这里把全书的等价链、不等式、三种关系全部挂到秩上，形成一张可双向翻译的网。秩总图给"地图"，本页给"全部路网"。</p>
+        </div>
+
+        <h2 class="sec" id="net-full">一、满秩链：$r(A)=n$ 的九种说法（背到条件反射）</h2>
+        <div class="callout c-core" style="font-size:15.2px">
+          <span class="tag">可逆 ⇔ 满秩</span>
+          对 $n$ 阶方阵 $A$，下列命题两两等价：
+          <div style="margin-top:10px;line-height:2.4">
+            <span class="pill r">$|A|\ne0$</span>
+            <span class="pill r">$r(A)=n$</span>
+            <span class="pill r">$A$ 可逆</span>
+            <span class="pill b">$A$ 可化为 $E$</span>
+            <span class="pill b">$A=$ 初等矩阵之积</span>
+            <span class="pill g">列（行）向量组无关</span>
+            <span class="pill g">$Ax=0$ 只有零解</span>
+            <span class="pill o">$Ax=b$ 对任意 $b$ 有唯一解</span>
+            <span class="pill o">$0$ 不是特征值</span>
+            <span class="pill r">$A^TA$ 正定</span>
+          </div>
+        </div>
+        <h2 class="sec" id="net-rankdown">二、降秩链：$r(A)&lt;n$（$|A|=0$）的一串说法</h2>
+        <div class="callout c-warn" style="font-size:15.2px">
+          <span class="tag">不可逆 ⇔ 降秩</span>
+          <div style="margin-top:10px;line-height:2.4">
+            <span class="pill r">$|A|=0$</span>
+            <span class="pill r">$r(A)&lt;n$</span>
+            <span class="pill r">$A$ 不可逆</span>
+            <span class="pill g">列（行）向量组相关</span>
+            <span class="pill g">$Ax=0$ 有非零解</span>
+            <span class="pill o">$0$ 是特征值</span>
+            <span class="pill o">$n\ge2$ 时 $|A^*|=0$</span>
+            <span class="pill b">实对称阵非正定</span>
+          </div>
+          <p style="margin-bottom:0">非齐次 $Ax=b$ 此时不是无解就是无穷多解（$r(A)=r(\bar A)$ 才有无穷解）。</p>
+        </div>
+
+        <h2 class="sec" id="net-twonum">三、两个核心数：$r(A)$ 与 $n-r(A)$ 的全部身份</h2>
+        <div class="two-col">
+          <div class="card" style="border-top:4px solid var(--vermilion)">
+            <h4 style="margin-top:0;color:var(--vermilion)">$r(A)$ = 列空间维数（"有的东西"）</h4>
+            <ul>
+              <li>主元（非零行）个数</li>
+              <li>列（行）极大无关组个数（三秩相等）</li>
+              <li>值域 $R(A)$ 的维数</li>
+              <li>可对角化时非零特征值个数（计重数）</li>
+              <li>有 $r$ 阶子式非零、所有 $r+1$ 阶子式全零</li>
+            </ul>
+          </div>
+          <div class="card" style="border-top:4px solid var(--green)">
+            <h4 style="margin-top:0;color:var(--green)">$n-r(A)$ = 零空间维数（"缺的东西"）</h4>
+            <ul>
+              <li>$Ax=0$ 基础解系向量个数</li>
+              <li>解空间 $N(A)$ 的维数</li>
+              <li>自由变量个数</li>
+              <li>$\lambda=0$ 的几何重数</li>
+              <li>守恒律：$r(A)+[n-r(A)]=n$</li>
+            </ul>
+          </div>
+        </div>
+
+        <h2 class="sec" id="net-abzero">四、$AB=O$ 这个枢纽（秩与方程组的接口）</h2>
+        <div class="callout c-thm"><span class="tag">AB=O 双语</span>
+          ① $B$ 的每一列都是 $Ax=0$ 的解（$B$ 的列空间 $\subseteq N(A)$）；② 秩不等式 $r(A)+r(B)\le n$。<br>
+          推论：$A$ 列满秩（$r(A)=n$）时 $AB=O\Rightarrow B=O$。
+        </div>
+        <div class="callout c-sig"><span class="tag">由它夹逼参数</span>
+          含参题出现 $AB=O,\ B\ne O$：先由 $A$ 有非零子式给 $r(A)$ 下界，再由 $AB=O\Rightarrow r(A)&lt;n$ 给上界，夹出 $r(A)$，再解参数（例2.30、例1.20）。
+        </div>
+
+        <h2 class="sec" id="net-adj">五、伴随矩阵：秩三值 + 特征值</h2>
+        <div class="two-col">
+          <div class="callout c-thm" style="margin:0"><span class="tag">秩三值</span>
+            $$r(A^*)=\begin{cases}n,&r(A)=n\\1,&r(A)=n-1\\0,&r(A)&lt;n-1\end{cases}$$
+          </div>
+          <div class="callout c-thm" style="margin:0"><span class="tag">特征值与行列式</span>
+            $|A^*|=|A|^{n-1}$；$A^*$ 的特征值为 $|A|/\lambda_i$（即其余特征值之积）；$A^*=|A|A^{-1}$。
+          </div>
+        </div>
+        <h2 class="sec" id="net-ineq">六、秩不等式全集（夹逼与证明的武器）</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:58%"><col style="width:42%"></colgroup>
+          <thead><tr><th>不等式 / 等式</th><th>用途</th></tr></thead>
+          <tbody>
+            <tr><td>$r(AB)\le\min\{r(A),r(B)\}$</td><td>相乘秩不增</td></tr>
+            <tr><td>$r(A)+r(B)-n\le r(AB)$（Sylvester）</td><td>给秩下界；$AB=O$ 时即 $\le n$</td></tr>
+            <tr><td>Frobenius：$r(AB)+r(BC)\le r(ABC)+r(B)$</td><td>三阵连乘</td></tr>
+            <tr><td>$r(A)+r(B)\le r\begin{pmatrix}A&O\\O&B\end{pmatrix}=r(A)+r(B)$</td><td>对角分块等于和</td></tr>
+            <tr><td>$r(A+B)\le r(A,B)\le r(A)+r(B)$</td><td>和不超拼宽、拼宽不超和</td></tr>
+            <tr><td>可逆 / 满秩乘不改秩</td><td>左乘可逆 $r(PA)=r(A)$；$P,Q$ 可逆 $r(PAQ)=r(A)$</td></tr>
+            <tr><td>列满秩左乘、行满秩右乘不改秩</td><td>$A$ 列满秩 $r(AB)=r(B)$；$B$ 行满秩 $r(AB)=r(A)$</td></tr>
+            <tr><td>$r(A)=r(A^T)=r(A^TA)=r(AA^T)$</td><td>实数域；转置、乘自身不改秩</td></tr>
+            <tr><td>分块 $\begin{pmatrix}A&B\\O&B\end{pmatrix}=2r(A)$</td><td>当 $B=BA$ 可配平方时（2021 真题）</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="net-eig">七、特征值世界的秩语言</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:34%"><col style="width:34%"><col style="width:32%"></colgroup>
+          <thead><tr><th>条件</th><th>秩 / 特征值翻译</th><th>结论</th></tr></thead>
+          <tbody>
+            <tr><td>$r(A)=0$</td><td>特征值全 $0$</td><td>$A=O$</td></tr>
+            <tr><td>$r(A)=1$</td><td>$\operatorname{tr}(A),\,0,\dots,0$</td><td>$A=\alpha\beta^T$，$A^n=[\operatorname{tr}(A)]^{n-1}A$</td></tr>
+            <tr><td>可对角化</td><td>每个 $n_i$ 重根 $r(\lambda_iE-A)=n-n_i$</td><td>几何重数 = 代数重数</td></tr>
+            <tr><td>$A^2=A$（幂等）</td><td>特征值 $0/1$，$r(A)+r(A-E)=n$</td><td>必可对角化（幂等投影）</td></tr>
+            <tr><td>$A^k=O$（幂零）</td><td>特征值全 $0$，唯一可能可对角化的是 $A=O$</td><td>$A\ne O$ 时不可对角化</td></tr>
+            <tr><td>实对称 $r(A)=r$</td><td>恰有 $r$ 个非零特征值</td><td>$0$ 是 $n-r$ 重特征值</td></tr>
+            <tr><td>特征值互异（$n$ 个）</td><td>自动有 $n$ 个无关特征向量</td><td>必可对角化</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="net-eqs">八、方程组解的关系（用秩刻画）</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:24%"><col style="width:76%"></colgroup>
+          <thead><tr><th>关系</th><th>秩判据（$A,B$ 为方程组系数矩阵）</th></tr></thead>
+          <tbody>
+            <tr><td>有公共解</td><td>联立 $\begin{pmatrix}A\\B\end{pmatrix}x=0$ 有解；有非零公共解 $\Leftrightarrow r\begin{pmatrix}A\\B\end{pmatrix}&lt;n$</td></tr>
+            <tr><td><b>同解</b></td><td>$r(A)=r(B)=r\begin{pmatrix}A\\B\end{pmatrix}$（两秩相等不够，必须三秩相等）</td></tr>
+            <tr><td>解集包含</td><td>$B$ 的解都是 $A$ 的解 $\Rightarrow$ 行空间 $R(B)\subseteq R(A)$，再由维数相等推 $r(B)\le r(A)$</td></tr>
+            <tr><td>非齐次解个数</td><td>$r(A)=r(\bar A)=n$ 唯一；$r(A)=r(\bar A)&lt;n$ 无穷；$r(A)&lt;r(\bar A)$ 无解</td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="net-three">九、三种关系总表：等价 / 相似 / 合同（秩是最弱的公共门槛）</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:14%"><col style="width:20%"><col style="width:22%"><col style="width:22%"><col style="width:22%"></colgroup>
+          <thead><tr><th>关系</th><th>定义</th><th>不变量</th><th>判定</th><th>适用</th></tr></thead>
+          <tbody>
+            <tr><td><b>等价</b></td><td>$PAQ=B$，$P,Q$ 可逆</td><td><b>秩</b></td><td>$r(A)=r(B)$</td><td>任意同型矩阵</td></tr>
+            <tr><td><b>相似</b></td><td>$P^{-1}AP=B$</td><td>秩、特征值、迹、行列式、特征多项式</td><td>可经同一 $P$ 共轭（$P^{-1}AP$ 可逆变换）</td><td>方阵</td></tr>
+            <tr><td><b>合同</b></td><td>$C^TAC=B$，$C$ 可逆</td><td>秩、<b>正惯性指数 $p$、负惯性指数 $q$</b></td><td>实对称阵看 $p,q$ 是否相同</td><td>实对称阵（二次型）</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-warn"><span class="tag">三者强弱</span>
+          正交相似 $Q^TAQ=B$ 是三者的交集：既相似又合同（$Q^T=Q^{-1}$）。一般地：相似 ⇒ 等价（$P^{-1}AP=P^{-1}AE$，取 $Q=P^{-1}$ 对应 $PAQ$ 形式）；合同 ⇒ 等价（$C^TAC$ 即 $C^T A C$）。但相似与合同之间无必然包含。判别顺序：先看秩（等价），再看特征值（相似），最后看惯性指数（合同）。
+        </div>
+
+        <h2 class="sec" id="net-pos">十、正定链：从秩到二次型</h2>
+        <div class="callout c-core"><span class="tag">正定四等价</span>
+          <div style="margin-top:10px;line-height:2.4">
+            <span class="pill r">$f&gt;0$ 对任意 $x\ne0$</span>
+            <span class="pill b">正惯性指数 $p=n$（规范形全 $+1$）</span>
+            <span class="pill g">$A\simeq E$，即 $A=C^TC$</span>
+            <span class="pill o">特征值全为正</span>
+            <span class="pill r">各阶顺序主子式全为正</span>
+          </div>
+          衍生：$A$ 正定 $\Rightarrow|A|&gt;0$、$r(A)=n$、$A^{-1}$/$A^T$/$A^*$ 均正定；$A^TA$ 正定 $\Leftrightarrow A$ 列满秩。
+        </div>
+
+        <div class="callout c-key" style="margin-top:18px">
+          <span class="tag">总纲</span>
+          <b>行列式是秩的数字化身，方程组是秩的条件形式，向量是秩的组成单元，特征值是秩在相似变换下的不动点，二次型是秩在合同变换下的不变结构。</b>抓住 $r(A)$ 与 $n-r(A)$ 这一对数，六章就从六个章节变成一张网。
+        </div>
+      </section>
+
+      <!-- VIEW: selftest -->
+      <section class="view" id="view-selftest">
+        <!-- VIEW_SELFTEST -->
+        <div class="page-head">
+          <div class="kicker">附 录 · 45 分 钟 水 平 测 试</div>
+          <h1>两套综合自测（讲义原卷）</h1>
+          <p class="lead">讲义附录两套 45 分钟水平测试，每套 6 题，跨章综合。<b>先限时做，再展开答案</b>；每题标注了考点与它对应的条件信号，做错的回相应分章面板重练。</p>
+        </div>
+
+        <h2 class="sec" id="test-1">自测（一）</h2>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">1</span> 若向量组 $\alpha_1=(4,-1,3,-2)^T,\ \alpha_2=(8,-2,a,-4)^T,\ \alpha_3=(3,-1,4,-2)^T,\ \alpha_4=(a,-2,8,-4)^T$ 的秩为 $2$，则 $a=$ ＿＿。<span class="qtype">向量组的秩</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$a=6$。</b>秩为 2 说明所有 3 阶子式为零。注意 $\alpha_2$ 与 $\alpha_1$ 的前两、四分量成比例（$8:4=2$），据此构造含 $a$ 的 3 阶子式令其为零，解得 $a=6$；代回验证秩恰为 2。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">2</span> 已知 $A=\begin{pmatrix}0&0&0&0\\1&0&0&0\\0&1&0&0\\0&0&1&0\end{pmatrix}$，$E$ 是四阶单位阵，则 $(E+A+A^2+A^3+A^4+A^5)^{-1}=$ ＿＿。<span class="qtype">幂零阵 / 求逆</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$\begin{pmatrix}1&0&0&0\\-1&1&0&0\\0&-1&1&0\\0&0&-1&1\end{pmatrix}$。</b>
+            $A$ 是四次幂零移位阵，$A^4=O$。由 $(E-A)(E+A+A^2+A^3+A^4+A^5)=E-A^6=E$（$A^6=O$），所求逆即 $E-A$。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">3</span> 矩阵 $A=\begin{pmatrix}-1&1&0\\-4&3&0\\1&0&2\end{pmatrix}$ 的特征值是（ ）：(A) $1,1,2$；(B) $-1,1,2$；(C) $0,1,3$；(D) $1,2,2$。<span class="qtype">特征值速判</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：A。</b>用 $\sum a_{ii}=\sum\lambda_i$：迹 $=-1+3+2=4$，B 迹为 $2$、D 迹为 $5$，排除；$|A|\ne0$ 说明 $0$ 不是特征值，排除 C。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">4</span> $\alpha_1=(1,0,0,c_1)^T,\ \alpha_2=(1,-1,0,c_2)^T,\ \alpha_3=(1,-1,1,c_3)^T,\ \alpha_4=(1,2,3,c_4)^T$，任意 $c_i$ 总有（ ）：(A) $\alpha_1,\alpha_2,\alpha_3$ 相关；(B) $\alpha_1,\dots,\alpha_4$ 相关；(C) $\alpha_1,\alpha_2,\alpha_3$ 无关；(D) $\alpha_1,\dots,\alpha_4$ 无关。<span class="qtype">无关加分量</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：C。</b>取前三行构成的部分组 $\begin{vmatrix}1&1&1\\0&-1&-1\\0&0&1\end{vmatrix}=-1\ne0$，部分组无关；无关组<b>加分量（延伸）仍无关</b>，故 $\alpha_1,\alpha_2,\alpha_3$ 必无关。四个向量的相关性无法保证（$\alpha_4$ 未知）。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">5</span> 已知 $\beta=(2,3,4)^T$ 可由 $\alpha_1=(1,1,1)^T,\ \alpha_2=(a,1,1)^T,\ \alpha_3=(1,2,b)^T$ 线性表出，求 $a,b$，并在 $\beta$ 表示不唯一时写出 $\beta$ 的表达式。<span class="qtype">表出 / 含参</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$a=1,\ b=3,\ \beta=t\alpha_1+(1-t)\alpha_2+\alpha_3$，$t$ 为任意常数。</b>
+            要表示不唯一须 $r(A)=r(\bar A)&lt;3$，系数阵降秩给 $a=1$；再由增广秩一致得 $b=3$。此时 $\alpha_1=\alpha_2$、$\beta-\alpha_3=(1,1,1)=\alpha_1$，故含一个自由参数。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">6</span> 已知 $A=\begin{pmatrix}2&0&1\\a&-1&2\\3&0&0\end{pmatrix}$ 有 3 个线性无关的特征向量，求 $a$ 并求 $A^{10}$。<span class="qtype">对角化条件</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$a=6$，$A^{10}=\dfrac14\begin{pmatrix}3^{11}+1&0&3^{10}-1\\2\cdot3^{11}-6&4&2\cdot3^{10}-2\\3^{11}-3&0&3^{10}+3\end{pmatrix}$。</b>
+            由 $|\lambda E-A|=(\lambda-3)(\lambda+1)^2$，重根 $\lambda=-1$ 须有两个无关特征向量，即 $r(-E-A)=1$，得 $a=6$。特征向量 $\alpha_1=(1,2,1)^T,\alpha_2=(0,1,0)^T,\alpha_3=(1,0,-3)^T$，$A^{10}=P\Lambda^{10}P^{-1}$。</div>
+          </div></details>
+        </div>
+
+        <h2 class="sec" id="test-2">自测（二）</h2>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">1</span> 设 $A$ 是秩为 2 的四阶矩阵，$\alpha_1,\alpha_2,\alpha_3$ 是 $Ax=b$ 的 3 个解，$\alpha_1+\alpha_2=(2,1,-8,10)^T$，$2\alpha_2-\alpha_3=(2,0,-24,29)^T$，$\alpha_2+\alpha_3=(1,0,-3,4)^T$，求 $Ax=b$ 的通解。<span class="qtype">解的结构</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$(2,0,-24,29)^T+k_1(1,1,-5,6)^T+k_2(2,-1,-40,48)^T$。</b>
+            $n-r(A)=4-2=2$ 个自由变量。$2\alpha_2-\alpha_3=\alpha_2+(\alpha_2-\alpha_3)$ 是特解（系数和 1）；$(\alpha_1+\alpha_2)-(\alpha_2+\alpha_3)=\alpha_1-\alpha_3$ 与 $2(\alpha_2-\alpha_3)+(\alpha_2-\alpha_1)$ 是两个齐次解。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">2</span> 已知 $A=\begin{pmatrix}1&1&1\\0&1&1\\1&0&2\end{pmatrix}$，$B$ 满足 $A^*BA-2A^*B=4E$，$A^*$ 是伴随矩阵，求 $B$。<span class="qtype">伴随矩阵方程</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$B=\begin{pmatrix}2&0&4\\2&0&2\\2&2&4\end{pmatrix}$。</b>
+            $|A|=2$，用 $A$ 左乘方程两端，$AA^*=|A|E$，化简为 $B(A-2E)=2A$，故 $B=2A(A-2E)^{-1}$。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">3</span> 已知 $n$ 维向量 $\alpha_1,\dots,\alpha_s,\beta_1,\dots,\beta_{s-1}$，若 $r(\alpha_1,\dots,\alpha_s,\beta_1,\dots,\beta_{s-1})=r(\beta_1,\dots,\beta_{s-1})$，则必有（ ）：(A) $\alpha_1,\dots,\alpha_s$ 相关；(B) $\beta_1,\dots,\beta_{s-1}$ 相关；(C) $\alpha_1,\dots,\alpha_s$ 无关；(D) $\beta_1,\dots,\beta_{s-1}$ 无关。<span class="qtype">秩不等式</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：A。</b>$r(\alpha_1,\dots,\alpha_s)\le r(\alpha_1,\dots,\alpha_s,\beta_1,\dots,\beta_{s-1})=r(\beta_1,\dots,\beta_{s-1})\le s-1&lt;s$，故 $\alpha_1,\dots,\alpha_s$ 线性相关。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">4</span> 设 $A$ 是三阶实对称矩阵，特征值为 $0,1,2$，$B=A^3-3A^2+2E$，则与 $B$ 相似的矩阵是（ ）：(A) $\operatorname{diag}(1,3,-1)$；(B) $\operatorname{diag}(2,0,-2)$；(C) $\operatorname{diag}(0,1,2)$；(D) $\operatorname{diag}(2,2,6)$。<span class="qtype">关联特征值</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：B。</b>特征值随多项式变换：$\lambda=0,1,2\Rightarrow A^2$ 为 $0,1,4$，$A^3$ 为 $0,1,8$；$B$ 的特征值为 $g(0)=2,\ g(1)=0,\ g(2)=-2$，故 $B\sim\operatorname{diag}(2,0,-2)$。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">5</span> 设 $A=\begin{pmatrix}1&0&1\\-4&5&1\\4&0&a\end{pmatrix}$ 与 $B=\begin{pmatrix}0&&\\&5&\\&&b\end{pmatrix}$ 相似，求 $a,b$ 及可逆矩阵 $P$ 使 $P^{-1}AP=B$。<span class="qtype">相似反求</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：$a=4,\ b=5,\ P=\begin{pmatrix}1&1&0\\1&0&1\\-1&4&0\end{pmatrix}$。</b>
+            由 $\sum a_{ii}=\sum b_{ii}$（$1+5+a=0+5+b$）与 $|A|=|B|=0$ 联立解得 $a=4,b=5$；特征值为 $0,5,5$，$P$ 的列按此顺序排对应特征向量。</div>
+          </div></details>
+        </div>
+        <div class="q">
+          <div class="qhead"><span class="qbadge">6</span> 已知 $f=x_1^2+x_2^2+9x_3^2-2x_1x_2+6x_1x_3-6x_2x_3$。(1) 求正交变换化二次型为标准形；(2) 判断是否正定。<span class="qtype">正交对角化 / 正定</span></div>
+          <details><summary>展开答案与提示</summary><div class="d-body">
+            <div class="ans"><b>答案：(1) $f=11y_1^2$，$P=\begin{pmatrix}\frac1{\sqrt{11}}&\frac1{\sqrt2}&-\frac3{\sqrt{22}}\\-\frac1{\sqrt{11}}&\frac1{\sqrt2}&\frac3{\sqrt{22}}\\\frac3{\sqrt{11}}&0&\frac2{\sqrt{22}}\end{pmatrix}$；(2) 不是正定二次型。</b>
+            矩阵 $A=\begin{pmatrix}1&-1&3\\-1&1&-3\\3&-3&9\end{pmatrix}$ 是秩 1 矩阵（各行成比例），特征值为 $11,0,0$；重根 $0$ 的特征向量需 Schmidt 正交化。特征值非全正（有零），正惯性指数小于 $n$，故不正定。</div>
+          </div></details>
+        </div>
+        <div class="callout c-sig"><span class="tag">自测诊断</span>
+          两套卷子各覆盖一个高综合点：自测一偏重「秩与对角化」（第 2、6 题靠 $A^k=O$ 与重根几何重数），自测二偏重「解的结构与相似/合同」（第 1、4、6 题）。任何一题做错，去「条件反射手册」找对应信号，再回分章面板的同类例题。
+        </div>
+      </section>
+
+      <!-- VIEW: errata -->
+      <section class="view" id="view-errata">
+        <!-- VIEW_ERRATA -->
+        <div class="page-head">
+          <div class="kicker">求 真 · 勘 误 与 存 疑</div>
+          <h1>勘误、待核与补全清单</h1>
+          <p class="lead">讲义是第一真相，但讲义本身有印刷错、有留白、有未给答案的新真题；AI 转录也会误植。所有发现的问题集中在此，<b>标「待核」的务必以官方解析或老师课堂为准</b>，不要把它当成确定结论。</p>
+        </div>
+
+        <h2 class="sec" id="err-a">A · 讲义印刷错误（已照录讲义答案并标注）</h2>
+        <div class="callout c-warn"><span class="tag">例1.13（分块行列式）</span>
+          <b>题面写「$A$ 三阶、$E$ 二阶」，但分块板书把两种阶数混用：</b>分块内的 $(3A)^{-1}$、$(2A)^*$ 按三阶算（$(2A)^*=2^2A^*$），左下的 $|3E|$ 又按二阶算（$3^2$），混用得到板书答案 <b>125</b>。若严格统一按三阶计算，结果应为 <b>−375</b>。复习时记住这是题目分块阶数自相矛盾，不是你的计算错。
+        </div>
+
+        <h2 class="sec" id="err-b">B · 2026 最新真题（讲义只列题、未给答案，结论待核）<span class="todo-flag">待核</span></h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:12%"><col style="width:44%"><col style="width:44%"></colgroup>
+          <thead><tr><th>章</th><th>题目</th><th>整理结论（待核官方解析）</th></tr></thead>
+          <tbody>
+            <tr><td>二章</td><td>置换矩阵题（pdf043）</td><td>倾向 <b>B</b></td></tr>
+            <tr><td>二章</td><td>$AX=C$ 矩阵方程题</td><td>倾向 <b>D</b></td></tr>
+            <tr><td>二章</td><td>$A^*=-2A$（与 p44 练习同题）</td><td>较确定 <b>D</b>：推出 $A^2=4E$</td></tr>
+            <tr><td>三章</td><td>$A=GH$ 求 $A^{10}$（pdf081）</td><td>已求出极大无关组、$H$、$HG$；<b>最终 $A^{10}$ 数值未算完，待核</b></td></tr>
+            <tr><td>四章</td><td>$A$ 的列可由 $B$ 的列表示（$A=BC$）</td><td>初判 <b>C</b>：$Bx=\beta$ 有解 $\Rightarrow Ax=\beta$ 有解</td></tr>
+            <tr><td>五章</td><td>(2026,1) 含参题（pdf131）</td><td>得 <b>$a&lt;0$</b></td></tr>
+            <tr><td>五章</td><td>(2026,2/3) 选 $C=A-B$</td><td>选 <b>D</b>：$C^2=O\Rightarrow r(C)=1$，几何重数为 2 而非 1</td></tr>
+            <tr><td>六章</td><td>(2026,1) 曲面判定（pdf176）</td><td>选 <b>B</b>：$a=-4$，特征值 $0,-6,-6$ 对应圆柱面</td></tr>
+            <tr><td>六章</td><td>(2026,2/3) $AA^T$ 规范形</td><td>得 <b>$a+b=2$（即 $a=1,b=1$）</b></td></tr>
+          </tbody>
+        </table></div>
+
+        <h2 class="sec" id="err-c">C · 讲义留白 / 无答案练习（据课程补出，可信但非讲义原文）</h2>
+        <details><summary>展开第一章（7 道内嵌题）</summary><div class="d-body">
+          pdf028/030/032/033/034/038 共 7 道：含 $|A+E|=1/30$、范德蒙德 $x=(1,0,\dots,0)^T$、2021 代数余子式之和 $=3/2$ 等，均已在分章面板补出答案。
+        </div></details>
+        <details><summary>展开第二章</summary><div class="d-body">
+          pdf074（2015）$A^3=O$ 题得 $a=0$，但 $X$ 的具体数值未算完，待核；pdf065（2026）$A^{10}$ 数值取自课程，建议手算复核。
+        </div></details>
+        <details><summary>展开第三章</summary><div class="d-body">
+          2021 分块秩 $r\begin{pmatrix}A&O\\BA&A^T\end{pmatrix}=2r(A)$ 的证明步骤待验算；例3.12、例3.18 讲义跳步处已补严。
+        </div></details>
+        <details><summary>展开第四章</summary><div class="d-body">
+          练习 1.(2) $a=3$（$a=1$ 无解的推理已补）、练习 3.(3) $a=2$ 无解、例4.17 $a=5$ 处的二阶子式，均为讲义略写后补。
+        </div></details>
+        <details><summary>展开第五章</summary><div class="d-body">
+          pdf148（2003）$A^*$ 特征向量题：$a=2$、$b=1,\lambda=1$ 或 $b=-2,\lambda=4$，取自课程，建议核。
+        </div></details>
+        <details><summary>展开第六章</summary><div class="d-body">
+          例6.8(2) $BA$ 秩 1 标准形 $6y_1^2$；例6.9 $Q=Q_1Q_2^T$ 讲义未化简；例6.10 后练习 $-2&lt;a&lt;0$；2013 / 2008 真题选 B / D。
+        </div></details>
+
+        <h2 class="sec" id="err-d">D · AI 转录错误（已回讲义扫描图勘误，勿采信 AI 原说法）</h2>
+        <div class="table-wrap"><table class="fixed">
+          <colgroup><col style="width:16%"><col style="width:84%"></colgroup>
+          <thead><tr><th>章</th><th>勘误</th></tr></thead>
+          <tbody>
+            <tr><td>六章</td><td>AI 总结称「正交变换特征值 $1,6,-6$」整题系<b>误植</b>；例6.7 实为 $f=(a+1)x_1^2-3x_2^2-3x_3^2+\cdots$，特征值 $2,-3,-4$。</td></tr>
+            <tr><td>二章</td><td>AI 把例2.12 的 $A$ 与 $E+A$ 写混。</td></tr>
+            <tr><td>三章</td><td>AI 所提「2023 分块秩题」不在第三章讲义（本章为 2018 / 2021 题）。</td></tr>
+            <tr><td>五章</td><td>AI 秩 1 例题（特征值 $7,0,0$）不在讲义；例5.12 选项数字以讲义为准。</td></tr>
+            <tr><td>一章</td><td>AI《01》「无规律四阶行列式 $=9$」是课堂另举例，不属讲义编号体系。</td></tr>
+          </tbody>
+        </table></div>
+        <div class="callout c-core"><span class="tag">权威性顺序</span>
+          辅导讲义 PDF ＞ 课堂讲授（AI 总结 / 课件）＞ 本整理。凡是本资料与讲义冲突，以讲义为准；B、C 两类待核项，建议以官方真题解析或老师答疑定稿后再背。
+        </div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<script>
+/* ================= 路由 ================= */
+var VIEWS=["home","rankmap","ch","tables","signals","ranknet","selftest","errata"];
+function showView(name,anchor){
+  VIEWS.forEach(function(v){
+    var el=document.getElementById("view-"+v);
+    if(el) el.classList.toggle("active",v===name);
+  });
+  document.querySelectorAll(".nav-item").forEach(function(n){
+    n.classList.toggle("active",n.getAttribute("data-view")===name);
+  });
+  document.getElementById("sidebar").classList.remove("open");
+  window.scrollTo(0,0);
+  if(anchor){ setTimeout(function(){var t=document.getElementById(anchor); if(t) t.scrollIntoView();},80); }
+}
+document.querySelectorAll(".nav-item").forEach(function(n){
+  n.addEventListener("click",function(){
+    var v=n.getAttribute("data-view");
+    var ch=v.indexOf("ch/")===0?"ch1":null;
+    location.hash=v;
+  });
+});
+function route(){
+  var h=location.hash.replace("#","")||"home";
+  var parts=h.split("/");
+  var v=VIEWS.indexOf(parts[0])>=0?parts[0]:"home";
+  if(v==="ch"){
+    showView("ch");
+    if(parts[1]){ selectChapter(parts[1]); }
+  } else {
+    showView(v, parts[1]||null);
+  }
+}
+window.addEventListener("hashchange",route);
+
+/* ================= 章节 tab ================= */
+function selectChapter(id){
+  document.querySelectorAll(".ch-pane").forEach(function(p){p.classList.toggle("on",p.id==="pane-"+id);});
+  document.querySelectorAll(".ch-tabs button").forEach(function(b){
+    b.classList.toggle("on",b.getAttribute("data-ch")===id);
+  });
+}
+window.addEventListener("DOMContentLoaded",function(){
+  document.querySelectorAll(".ch-tabs button").forEach(function(b){
+    b.addEventListener("click",function(){
+      selectChapter(b.getAttribute("data-ch"));
+    });
+  });
+  document.getElementById("menuToggle").addEventListener("click",function(){
+    document.getElementById("sidebar").classList.toggle("open");
+  });
+  document.addEventListener("click",function(e){
+    if(e.target.closest(".nav-item")){
+      var v=e.target.closest(".nav-item").getAttribute("data-view");
+      if(v==="ch"){ location.hash="ch/ch1"; return; }
+    }
+  });
+  buildSearch();
+});
+
+/* ================= KaTeX 渲染（视图切换后兜底） ================= */
+function renderKatex(){
+  if(window.renderMathInElement){
+    renderMathInElement(document.body,{
+      delimiters:[
+        {left:"$$",right:"$$",display:true},
+        {left:"$",right:"$",display:false},
+        {left:"\\[",right:"\\]",display:true},
+        {left:"\\(",right:"\\)",display:false}
+      ],
+      throwOnError:false
+    });
+  }
+}
+window.addEventListener("load",function(){
+  renderKatex();
+  route();
+  setTimeout(renderKatex,300);
+});
+
+/* ================= 搜索（数据由 buildSearch 填充） ================= */
+var SEARCH_INDEX=[];
+function buildSearch(){
+  var inp=document.getElementById("searchInput");
+  var box=document.getElementById("searchResults");
+  inp.addEventListener("input",function(){
+    var q=inp.value.trim().toLowerCase();
+    if(!q){ box.classList.remove("show"); box.innerHTML=""; return; }
+    var hits=SEARCH_INDEX.filter(function(e){return e.t.toLowerCase().indexOf(q)>=0;}).slice(0,30);
+    if(!hits.length){ box.innerHTML='<div class="sr" style="color:#8b909a">未找到「'+inp.value+'」</div>'; box.classList.add("show"); return; }
+    box.innerHTML=hits.map(function(e){return '<div class="sr" data-view="'+e.v+'" data-anchor="'+(e.a||"")+'"><span class="grp">'+e.g+'</span>'+e.t+'</div>';}).join("");
+    box.classList.add("show");
+    box.querySelectorAll(".sr[data-view]").forEach(function(s){
+      s.addEventListener("click",function(){
+        var v=s.getAttribute("data-view"),a=s.getAttribute("data-anchor");
+        box.classList.remove("show"); inp.value="";
+        if(a){ location.hash=v+"/"+a; } else { location.hash=v; }
+        route();
+      });
+    });
+  });
+  document.addEventListener("click",function(e){ if(!e.target.closest(".searchbox")) box.classList.remove("show"); });
+}
+function idx(t,v,g,a){ SEARCH_INDEX.push({t:t,v:v,g:g,a:a||""}); }
+/* SEARCH_DATA */
+(function(){
+  // 导航：六章
+  idx("第一章 行列式：判据入口、七个公式、5 题型","ch","六章分讲","ch1");
+  idx("第二章 矩阵：逆、伴随、初等变换、秩不等式、9 题型","ch","六章分讲","ch2");
+  idx("第三章 n维向量：相关性、表出、秩、向量空间(数一)、9 题型","ch","六章分讲","ch3");
+  idx("第四章 线性方程组：解的结构、同解公共解、10 题型","ch","六章分讲","ch4");
+  idx("第五章 特征值与特征向量：对角化、实对称、9 题型","ch","六章分讲","ch5");
+  idx("第六章 二次型：标准化、合同、正定、6 题型","ch","六章分讲","ch6");
+  // 导航：视图
+  idx("秩总图：五语言枢纽、r(A) 与 n-r(A)","rankmap","秩为纲","");
+  idx("定义·定理·公式总表（横向分块）","tables","横向分块","");
+  idx("定义总表（按主题）","tables","横向分块","tab-def");
+  idx("定理总表（按频率）","tables","横向分块","tab-thm");
+  idx("公式总表（相似公式并排）","tables","横向分块","tab-formula");
+  idx("题型条件反射手册：条件→信号→动作","signals","条件反射","");
+  idx("以秩为核心的等价网络","ranknet","秩为纲","");
+  idx("两套综合自测（45分钟，含答案）","selftest","自测","");
+  idx("勘误、待核与补全清单","errata","求真","");
+  // 条件反射：高频关键词
+  idx("AB=O（B的列是解、秩和不等式）","signals","条件反射","sig-prod");
+  idx("秩为1：A=αβᵀ、特征值、A^n","ranknet","秩为纲","net-eig");
+  idx("伴随矩阵 A*（AA*=|A|E、秩三值、特征值）","ranknet","秩为纲","net-adj");
+  idx("可逆 / 满秩 / 行列式为0 的九种等价","ranknet","秩为纲","net-full");
+  idx("降秩链 |A|=0 的说法","ranknet","秩为纲","net-rankdown");
+  idx("n-r(A) 基础解系个数、自由变量","ranknet","秩为纲","net-twonum");
+  idx("秩不等式：Sylvester、Frobenius、分块","ranknet","秩为纲","net-ineq");
+  idx("线性相关 / 无关 / 表出 判定","signals","条件反射","sig-vec");
+  idx("方程组：解的个数、通解、含参","signals","条件反射","sig-eq");
+  idx("公共解 / 同解 / 解集包含 的秩判据","ranknet","秩为纲","net-eqs");
+  idx("特征值：迹、行列式、g(A)=O 定取值","signals","条件反射","sig-eig");
+  idx("相似 / 可对角化 / 重根几何重数","signals","条件反射","sig-eig");
+  idx("幂等 A²=A、幂零 A^k=O","ranknet","秩为纲","net-eig");
+  idx("实对称正交对角化四步","signals","条件反射","sig-eig");
+  idx("二次型：标准形、规范形、配方法","signals","条件反射","sig-quad");
+  idx("正定判定：顺序主子式、四等价","ranknet","秩为纲","net-pos");
+  idx("合同 / 等价 / 相似 三关系总表","ranknet","秩为纲","net-three");
+  idx("惯性指数 p,q 与合同","ranknet","秩为纲","net-three");
+  idx("正交矩阵 / 正交变换","tables","公式总表","tab-def");
+  idx("初等矩阵与初等变换（左行右列）","tables","定义总表","tab-def");
+  idx("范德蒙德行列式、分块行列式","tables","公式总表","tab-formula");
+  idx("克拉默法则","tables","定理总表","tab-thm");
+  idx("向量空间、基、过渡矩阵（仅数一）","ch","六章分讲","ch3");
+  idx("特征值随矩阵变换表（A^m,A⁻¹,A*,f(A)）","tables","公式总表","tab-formula");
+  idx("反序公式：(AB)⁻¹、(AB)*、(AB)ᵀ","tables","公式总表","tab-formula");
+  idx("数乘易混：|kA|、(kA)⁻¹、(kA)*","tables","公式总表","tab-formula");
+  idx("坐标变换 B=CᵀAC、球面约束最值","tables","公式总表","tab-formula");
+  // 自测
+  idx("自测一（幂零求逆、对角化、含参）","selftest","自测","test-1");
+  idx("自测二（解的结构、伴随方程、相似、正交化）","selftest","自测","test-2");
+  // 勘误
+  idx("例1.13 分块行列式印刷错误（125 vs -375）","errata","勘误","err-a");
+  idx("2026 真题未给答案（待核）","errata","勘误","err-b");
+  idx("讲义留白练习据课程补全","errata","勘误","err-c");
+  idx("AI 转录错误勘误","errata","勘误","err-d");
+})();
+</script>
+</body>
+</html>
