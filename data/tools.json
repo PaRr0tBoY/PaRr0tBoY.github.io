@@ -74,6 +74,14 @@
       "group": "Data"
     },
     {
+      "name": "Linear Algebra Review",
+      "href": "/tools/la.html",
+      "code": "STUDY / 17",
+      "desc": "以秩为核心串联六章的线代强化复习全书：定义定理公式总表、题型条件反射与等价网络，附两套自测和勘误。",
+      "descEn": "A six-chapter linear-algebra review built around rank: definitions, theorems, formula sheets, problem-recognition cues, an equivalence map, self-tests and errata.",
+      "group": "Data"
+    },
+    {
       "name": "CombineSearch",
       "href": "/tools/combinesearch.html",
       "code": "EXPLORE / 13",
