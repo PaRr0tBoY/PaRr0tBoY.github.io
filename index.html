@@ -25,38 +25,44 @@
   <meta name="twitter:description" content="Acidev — 浏览器工具、产品与博客。">
   <meta name="twitter:image" content="https://acidev.cc/assets/og-default.png">
   <style>@import url('https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Noto+Sans+SC:wght@400;500;600;700&display=swap');.fold {
-      min-height: 100svh;
+      height: calc(100vh - 22px);
+      height: calc(100svh - 22px);
+      min-height: 560px;
       display: flex;
       flex-direction: column;
-      padding-top: 72px
-    }.hero {
-      transform: translateY(-18px)
+      padding-top: 72px;
+      padding-bottom: 0
     }.hero {
       display: grid;
       grid-template-columns: minmax(0, 1.06fr) minmax(330px, .94fr);
-      align-items: center;
-      gap: 8vw;
-      padding: 42px 0 0
+      align-items: stretch;
+      gap: clamp(24px, 4vw, 8vw);
+      flex: 1 1 auto;
+      min-height: 0;
+      padding: clamp(8px, 2svh, 42px) 0 0
+    }.hero .copy {
+      align-self: center;
+      min-width: 0
     }.eyebrow {
       font: 11px "IBM Plex Mono";
       letter-spacing: .08em;
       color: var(--accent);
       text-transform: uppercase
     }.hero h1 {
-      font-size: clamp(48px, 8vw, 110px);
-      line-height: .91;
-      letter-spacing: -.065em;
+      font-size: clamp(34px, 4.6vw, 56px);
+      line-height: 1.06;
+      letter-spacing: -.02em;
       font-weight: 600;
-      margin: 18px 0 28px;
-      max-width: 760px
+      margin: clamp(12px, 1.8svh, 18px) 0 clamp(10px, 1.6svh, 28px);
+      max-width: 650px
     }.hero h1 em {
       font-style: normal;
       color: var(--accent)
     }.lead {
       max-width: 570px;
       color: var(--muted);
-      font-size: 17px;
-      line-height: 1.85
+      font-size: clamp(15px, 1.1vw, 17px);
+      line-height: 1.8
     }.lead strong {
       color: var(--ink);
       font-weight: 500
@@ -64,7 +70,7 @@
       display: flex;
       gap: 9px;
       flex-wrap: wrap;
-      margin-top: 28px
+      margin-top: clamp(16px, 2svh, 28px)
     }.action {
       display: inline-flex;
       align-items: center;
@@ -85,7 +91,9 @@
       font-weight: 600
     }.instrument {
       position: relative;
-      min-height: 390px;
+      align-self: stretch;
+      height: 100%;
+      min-height: 240px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
       background: var(--surface-2);
@@ -131,9 +139,10 @@
       font-weight: 600;
       margin: 0
     }.products-head {
+      flex: 0 0 auto;
       border-bottom: 0;
       padding-bottom: 0;
-      margin-bottom: 8px
+      margin-bottom: clamp(4px, 1svh, 8px)
     }.products-head h2 {
       font-size: 13px
     }.section-head h2 small {
@@ -150,18 +159,21 @@
       grid-template-rows: repeat(2, minmax(218px, auto));
       gap: 12px
     }.core-products {
+      flex: 0 0 auto;
       display: grid;
       grid-template-columns: repeat(3, 1fr);
       gap: 12px;
-      margin-top: 8px
+      margin-top: clamp(4px, 1svh, 8px)
     }.core-products .project {
-      min-height: 154px
+      min-height: clamp(118px, 18svh, 154px);
+      padding: clamp(16px, 2svh, 22px)
     }.core-products .project h3 {
-      margin-top: 22px
+      margin-top: clamp(12px, 1.4svh, 22px)
     }.core-products .project .links {
       position: static;
-      margin-top: 16px
+      margin-top: clamp(10px, 1.4svh, 16px)
     }@media(max-width:900px){.core-products {
+        flex: none;
         grid-template-columns: 1fr 1fr;
         margin-top: 0
       }}@media(max-width:600px){.core-products {
@@ -400,13 +412,20 @@
         opacity: 1;
         transform: none
       }
-    }@media(max-width:900px){.hero {
+    }@media(max-width:900px){.fold {
+        height: auto;
+        min-height: 100svh
+      }.hero {
+        flex: none;
         grid-template-columns: 1fr;
         gap: 34px;
         padding-top: 48px
+      }.hero .copy {
+        align-self: auto
       }.hero h1 {
         font-size: clamp(54px, 15vw, 90px)
       }.instrument {
+        height: auto;
         min-height: 300px
       }.content-grid {
         grid-template-columns: 1fr;
@@ -418,6 +437,7 @@
       }.lead {
         font-size: 15px
       }.instrument {
+        height: auto;
         min-height: 260px
       }.project-grid {
         display: block
@@ -431,12 +451,7 @@
         grid-template-columns: 1fr 1fr
       }.directory {
         grid-template-columns: 1fr
-      }}.hero h1 {
-      font-size: clamp(32px, 4.6vw, 48px);
-      line-height: 1.08;
-      letter-spacing: -.015em;
-      max-width: 650px
-    }.hero h1 strong {
+      }}.hero h1 strong {
       color: var(--accent);
       font-weight: 600
     }.hero-title {
@@ -583,10 +598,7 @@
       display: grid
     }#featured-note:before {
       display: none
-    }@media(min-width:901px){.hero {
-        padding-top: 24px;
-        padding-bottom: 0
-      }}.featured-note__body {
+    }.featured-note__body {
       grid-column: 1/-1;
       padding-top: 0
     }</style>
