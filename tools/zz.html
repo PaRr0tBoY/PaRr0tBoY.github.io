@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>考研政治选择题技巧 · 19位名师精华汇总</title>
+<style>
+/* ===== 基础变量 ===== */
+:root {
+  --ink: #1a1a2e;
+  --ink-soft: #3d3d5c;
+  --paper: #f8f6f1;
+  --paper-warm: #f0ece0;
+  --vermillion: #c43a31;
+  --vermillion-soft: #e8a098;
+  --indigo: #2c3e6b;
+  --gold: #b8860b;
+  --teal: #1a6b5a;
+  --rule: #d4c9b8;
+  --card-bg: #ffffff;
+  --shadow: 0 2px 12px rgba(26,26,46,0.06);
+  --radius: 8px;
+}
+
+[data-theme="dark"] {
+  --ink: #e8e6e0;
+  --ink-soft: #b0aca4;
+  --paper: #1e1e2a;
+  --paper-warm: #252535;
+  --vermillion: #e0554a;
+  --vermillion-soft: #c47a6e;
+  --indigo: #7a8cc4;
+  --gold: #d4a84a;
+  --teal: #5ab8a0;
+  --rule: #3a3850;
+  --card-bg: #2a2a38;
+  --shadow: 0 2px 12px rgba(0,0,0,0.3);
+}
+
+/* ===== 重置 ===== */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; font-size: 16px; }
+
+body {
+  font-family: "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif;
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.75;
+  -webkit-font-smoothing: antialiased;
+  transition: background 0.3s, color 0.3s;
+}
+
+/* ===== 主题切换按钮 ===== */
+.theme-toggle {
+  position: fixed; top: 20px; right: 20px; z-index: 100;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--card-bg); border: 1px solid var(--rule);
+  color: var(--ink-soft); cursor: pointer; font-size: 1.1rem;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: var(--shadow); transition: all 0.2s;
+}
+.theme-toggle:hover { color: var(--vermillion); transform: rotate(20deg); }
+
+/* ===== 顶部导航 ===== */
+.nav {
+  position: sticky; top: 0; z-index: 90;
+  background: var(--paper); border-bottom: 1px solid var(--rule);
+  backdrop-filter: blur(12px);
+  padding: 0.75rem 2rem;
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; flex-wrap: wrap;
+}
+.nav-title {
+  font-family: "Noto Serif CJK SC", "SimSun", "STSong", serif;
+  font-size: 1.15rem; font-weight: 700; color: var(--ink);
+  white-space: nowrap;
+}
+.nav-links { display: flex; gap: 0.25rem; flex-wrap: wrap; }
+.nav-links a {
+  color: var(--ink-soft); text-decoration: none; font-size: 0.85rem;
+  padding: 0.35rem 0.75rem; border-radius: 20px; transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-links a:hover { background: var(--paper-warm); color: var(--vermillion); }
+
+/* ===== Hero 区 ===== */
+.hero {
+  padding: 5rem 2rem 4rem;
+  text-align: center;
+  background: var(--paper-warm);
+  border-bottom: 1px solid var(--rule);
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content: ""; position: absolute; top: -60px; right: -60px;
+  width: 300px; height: 300px; border-radius: 50%;
+  background: radial-gradient(circle, var(--vermillion-soft) 0%, transparent 70%);
+  opacity: 0.15;
+}
+.hero::after {
+  content: ""; position: absolute; bottom: -80px; left: -40px;
+  width: 250px; height: 250px; border-radius: 50%;
+  background: radial-gradient(circle, var(--indigo) 0%, transparent 70%);
+  opacity: 0.08;
+}
+.hero-badge {
+  display: inline-block; font-size: 0.75rem; letter-spacing: 0.15em;
+  text-transform: uppercase; color: var(--vermillion);
+  border: 1px solid var(--vermillion-soft); border-radius: 20px;
+  padding: 0.3rem 1rem; margin-bottom: 1.5rem;
+  font-weight: 600;
+}
+.hero h1 {
+  font-family: "Noto Serif CJK SC", "SimSun", "STSong", serif;
+  font-size: clamp(2rem, 5vw, 3.4rem);
+  font-weight: 900; line-height: 1.25; color: var(--ink);
+  margin-bottom: 1rem;
+  letter-spacing: 0.02em;
+}
+.hero h1 span { color: var(--vermillion); }
+.hero-sub {
+  max-width: 620px; margin: 0 auto 2rem;
+  font-size: 1.05rem; color: var(--ink-soft); line-height: 1.8;
+}
+.hero-stats {
+  display: flex; justify-content: center; gap: 3rem; flex-wrap: wrap;
+  margin-top: 2rem;
+}
+.hero-stat { text-align: center; }
+.hero-stat .num {
+  font-family: "Noto Serif CJK SC", serif;
+  font-size: 2.2rem; font-weight: 900; color: var(--vermillion);
+  line-height: 1.1;
+}
+.hero-stat .label { font-size: 0.85rem; color: var(--ink-soft); margin-top: 0.25rem; }
+
+/* ===== 容器 ===== */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+
+/* ===== 分区标题 ===== */
+.section-title {
+  font-family: "Noto Serif CJK SC", "SimSun", "STSong", serif;
+  font-size: 1.8rem; font-weight: 800; color: var(--ink);
+  margin: 4rem 0 2rem; padding-bottom: 0.75rem;
+  border-bottom: 2px solid var(--vermillion);
+  display: flex; align-items: baseline; gap: 0.75rem;
+}
+.section-title .en {
+  font-size: 0.75rem; color: var(--ink-soft);
+  font-family: "Georgia", serif; font-style: italic;
+  letter-spacing: 0.05em;
+}
+
+/* ===== 技巧卡片网格 ===== */
+.tools-grid {
+  display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem; margin-bottom: 3rem;
+}
+.tool-card {
+  background: var(--card-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 1.75rem;
+  box-shadow: var(--shadow); transition: all 0.25s;
+  position: relative; overflow: hidden;
+}
+.tool-card::before {
+  content: ""; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+  background: var(--accent, var(--vermillion));
+}
+.tool-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(0,0,0,0.1); }
+.tool-card .tool-num {
+  font-family: "Georgia", serif; font-size: 0.8rem; color: var(--ink-soft);
+  margin-bottom: 0.5rem; letter-spacing: 0.05em;
+}
+.tool-card h3 {
+  font-family: "Noto Serif CJK SC", serif;
+  font-size: 1.2rem; font-weight: 700; color: var(--ink);
+  margin-bottom: 0.75rem; line-height: 1.4;
+}
+.tool-card .tool-tag {
+  display: inline-block; font-size: 0.7rem; padding: 0.15rem 0.6rem;
+  border-radius: 10px; margin-bottom: 0.75rem; font-weight: 600;
+  background: var(--paper-warm); color: var(--indigo);
+}
+.tool-card p { font-size: 0.92rem; color: var(--ink-soft); line-height: 1.8; }
+.tool-card .tool-example {
+  margin-top: 1rem; padding: 0.75rem 1rem; border-left: 3px solid var(--vermillion-soft);
+  background: var(--paper-warm); border-radius: 0 var(--radius) var(--radius) 0;
+  font-size: 0.85rem; color: var(--ink-soft); line-height: 1.7;
+}
+
+/* 学科标签颜色 */
+.tag-mayuan { background: #f0e6e6; color: #a04040; }
+.tag-mao  { background: #e8eaf0; color: #3a4a8a; }
+.tag-shigang { background: #e8f0e8; color: #2a6a3a; }
+.tag-xin { background: #f0e8f0; color: #6a2a6a; }
+.tag-shizheng { background: #f8f0e0; color: #a07020; }
+.tag-common { background: #e8e8e8; color: #555; }
+[data-theme="dark"] .tag-mayuan { background: #3a2020; color: #e09090; }
+[data-theme="dark"] .tag-mao  { background: #20203a; color: #90a0e0; }
+[data-theme="dark"] .tag-shigang { background: #203020; color: #80c080; }
+[data-theme="dark"] .tag-xin { background: #302038; color: #e090c0; }
+[data-theme="dark"] .tag-shizheng { background: #302818; color: #e0b870; }
+[data-theme="dark"] .tag-common { background: #2a2a38; color: #aaa; }
+
+/* ===== 学科分区 ===== */
+.subject-block { margin-bottom: 3.5rem; }
+.subject-header {
+  display: flex; align-items: center; gap: 1rem;
+  margin-bottom: 1.5rem; padding-bottom: 0.75rem;
+  border-bottom: 1px solid var(--rule);
+}
+.subject-icon {
+  width: 48px; height: 48px; border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 1.5rem; font-weight: 700; color: #fff; flex-shrink: 0;
+}
+.subject-header h2 {
+  font-family: "Noto Serif CJK SC", serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--ink);
+}
+.subject-header .count { font-size: 0.85rem; color: var(--ink-soft); }
+
+/* ===== 高频词云 ===== */
+.word-cloud {
+  display: flex; flex-wrap: wrap; gap: 0.5rem 0.75rem;
+  padding: 1.5rem; background: var(--paper-warm);
+  border-radius: var(--radius); margin-bottom: 2rem;
+}
+.word-cloud .w {
+  font-size: 0.85rem; padding: 0.25rem 0.75rem; border-radius: 15px;
+  background: var(--card-bg); border: 1px solid var(--rule);
+  color: var(--ink-soft); cursor: default; transition: all 0.15s;
+}
+.word-cloud .w:hover { transform: scale(1.08); color: var(--vermillion); }
+.w.big { font-size: 1rem; font-weight: 700; }
+.w.mid { font-size: 0.9rem; }
+.w.small { font-size: 0.78rem; }
+
+/* ===== 考场策略卡片 ===== */
+.strategy-card {
+  background: var(--card-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius); padding: 2rem;
+  box-shadow: var(--shadow); margin-bottom: 2rem;
+  display: grid; grid-template-columns: 1fr 1fr; gap: 2rem;
+}
+.strategy-card h3 {
+  grid-column: 1 / -1;
+  font-family: "Noto Serif CJK SC", serif;
+  font-size: 1.4rem; font-weight: 700; color: var(--ink);
+  margin-bottom: 1rem; padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--vermillion);
+}
+.strategy-left, .strategy-right { }
+.strategy-left h4, .strategy-right h4 {
+  font-size: 1rem; font-weight: 700; color: var(--indigo);
+  margin-bottom: 0.75rem; display: flex; align-items: center; gap: 0.5rem;
+}
+.strategy-left ul, .strategy-right ul { list-style: none; }
+.strategy-left li, .strategy-right li {
+  font-size: 0.9rem; color: var(--ink-soft); line-height: 1.9;
+  padding-left: 1.2rem; position: relative;
+}
+.strategy-left li::before, .strategy-right li::before {
+  content: "→"; position: absolute; left: 0; color: var(--vermillion);
+}
+.strategy-right li::before { content: "✕"; color: var(--teal); }
+
+@media (max-width: 768px) {
+  .strategy-card { grid-template-columns: 1fr; }
+  .hero { padding: 3rem 1.5rem 2.5rem; }
+  .hero-stats { gap: 2rem; }
+  .container { padding: 0 1rem; }
+  .nav { padding: 0.75rem 1rem; }
+}
+
+/* ===== 底部 ===== */
+.footer {
+  text-align: center; padding: 3rem 2rem;
+  border-top: 1px solid var(--rule); margin-top: 3rem;
+  color: var(--ink-soft); font-size: 0.85rem;
+}
+.footer .heart { color: var(--vermillion); }
+
+/* ===== 打印优化 ===== */
+@media print {
+  .theme-toggle, .nav { display: none; }
+  body { background: #fff; }
+}
+</style>
+</head>
+<body>
+
+<!-- 主题切换 -->
+<button class="theme-toggle" onclick="toggleTheme()" title="切换深色/浅色">🌙</button>
+
+<!-- 顶部导航 -->
+<nav class="nav">
+  <div class="nav-title">📖 考研政治选择题技巧</div>
+  <div class="nav-links">
+    <a href="#core">核心心法</a>
+    <a href="#mayuan">马原</a>
+    <a href="#mao">毛中特</a>
+    <a href="#shigang">史纲</a>
+    <a href="#xin">新思想</a>
+    <a href="#strategies">考场策略</a>
+  </div>
+</nav>
+
+<!-- Hero -->
+<header class="hero">
+  <div class="hero-badge">19 位名师 · 精华汇总</div>
+  <h1>考研政治选择题<br><span>从不会到只错两个</span></h1>
+  <p class="hero-sub">
+    整合老苏、米璇、树菲、腿姐、阿榜、曲艺、帕拉迪宇等 19 位名师的
+    选择题技巧课程，提炼出一套不依赖死记硬背的「真题思维」解题体系。
+    不管你是零基础还是冲刺期，这里总有一招能用上。
+  </p>
+  <div class="hero-stats">
+    <div class="hero-stat"><div class="num">19</div><div class="label">位名师课程</div></div>
+    <div class="hero-stat"><div class="num">85</div><div class="label">个视频已转录</div></div>
+    <div class="hero-stat"><div class="num">15</div><div class="label">条核心技巧</div></div>
+    <div class="hero-stat"><div class="num">30+</div><div class="label">分保底策略</div></div>
+  </div>
+</header>
+
+<div class="container">
+
+<!-- 一、核心心法 -->
+<section id="core">
+  <h2 class="section-title">核心心法 <span>Core Mindset</span></h2>
+
+  <!-- 高频词云 -->
+  <div class="word-cloud">
+    <span class="w big" style="color:var(--vermillion)">心心相应</span>
+    <span class="w big" style="color:var(--vermillion)">排除法</span>
+    <span class="w big" style="color:var(--indigo)">从后往前读</span>
+    <span class="w big" style="color:var(--teal)">大对大·小对小</span>
+    <span class="w mid">绝对化表述</span>
+    <span class="w mid">选项矛盾</span>
+    <span class="w mid">关系平衡</span>
+    <span class="w mid">纠结即对</span>
+    <span class="w mid">有领导人选领导人</span>
+    <span class="w mid">爹儿对应</span>
+    <span class="w mid">逆向思维</span>
+    <span class="w mid">人类自大/自卑</span>
+    <span class="w mid">马原特殊规则</span>
+    <span class="w mid">史纲看时间</span>
+    <span class="w mid">时政找合作</span>
+  </div>
+
+  <!-- 核心技巧卡片 -->
+  <div class="tools-grid">
+
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <div class="tool-num">Technique 01</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>心心相应 · 题干关键词匹配</h3>
+      <p>几乎所有题目通用。题干中反复出现的关键词，选项中一模一样出现的——大胆选；完全不沾边或意思相反的——直接排。这是整个技巧体系的基石。</p>
+      <div class="tool-example">题干反复出现"体系"→ 选项中有"系统"→ 心心相应，选它。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <div class="tool-num">Technique 02</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>从后往前读 · 锁定主旨句</h3>
+      <p>读题干时从最后一句开始往前读。最后那句话往往是主旨句、小设问，含金量最高，答案往往就在其中。找不到就再往前读一句。</p>
+      <div class="tool-example">题干末句"这一论述表明……"→ 答案就在这个材料里。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--teal)">
+      <div class="tool-num">Technique 03</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>排除法 · 先排再选</h3>
+      <p>永远先排后选。能排掉两个，剩下两个中纠结的那一个大概率就是对的。不要试图直接找到正确答案——排除错误选项往往更容易。</p>
+      <div class="tool-example">看到"一切行为都会……"→ 极端表述 → 先排掉。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--gold)">
+      <div class="tool-num">Technique 04</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>大对大 · 小对小</h3>
+      <p>题干问宏观叙事（现代化、高质量发展、社会建设），选项用具体事务来干扰——排掉。题干问具体，选项用宏大概念来装——也排掉。匹配层级。</p>
+      <div class="tool-example">题干问"最有力体现"→ 选高度概括的A，排掉具体的BCD。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <div class="tool-num">Technique 05</div>
+      <span class="tool-tag tag-mao tag-shigang tag-xin">毛中特·史纲·新思想</span>
+      <h3>绝对化表述 · 99% 是错的</h3>
+      <p>史纲、毛中特、新思想这三门课中，出现极端夸大或绝对化用语的选项，99% 都是错的。典型词：彻底、完全、根本、最、一定、所有、从来没有、取代、比……更重要。</p>
+      <div class="tool-example">"彻底破坏""完全成为""根本性变化"→ 直接排。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <div class="tool-num">Technique 06</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>选项自相矛盾 · 有一错</h3>
+      <p>两个选项表述很像，只有几个词不同——这种情况下一般有一个是错的。如果 A 和 C 高度相似，B 有一错一对，说明出题人在 A/C 之间做了陷阱。</p>
+      <div class="tool-example">"随着主体变化" vs "随着客体变化"→ 一对矛盾选项，必有一错。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--teal)">
+      <div class="tool-num">Technique 07</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>强调平衡关系</h3>
+      <p>题干问 A 与 B 的关系，如果选项只突出强调某一方——大概率是错的。正确选项往往体现两者的辩证统一、相互依存、不可偏废。</p>
+      <div class="tool-example">"人与自然"→ 只强调"人类征服自然"→ 错；"和谐共生"→ 对。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--gold)">
+      <div class="tool-num">Technique 08</div>
+      <span class="tool-tag tag-mao tag-xin">毛中特·新思想</span>
+      <h3>纠结即对 · 多选救星</h3>
+      <p>多选题中，如果你对某个选项一直在纠结但无法判断它错在什么地方——把它当作正确选项。这是毛中特和新思想多选最有效的提分技巧，老苏强调了三遍。</p>
+      <div class="tool-example">纠结A选项→ 无法找到排除理由→ 视为正确，大胆选。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <div class="tool-num">Technique 09</div>
+      <span class="tool-tag tag-mao tag-xin">毛中特·新思想</span>
+      <h3>有领导人选领导人</h3>
+      <p>毛中特和新思想题目中，如果选项出现了毛泽东、邓小平以及其他领导人名字——直接选含领导人的。这是真题中反复验证的规律。</p>
+      <div class="tool-example">选项中有"毛泽东""邓小平"→ 秒选。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <div class="tool-num">Technique 10</div>
+      <span class="tool-tag tag-shizheng">时政</span>
+      <h3>时政找关键词对应</h3>
+      <p>时政题干中出现的关键词（如"合作""论坛""峰会"），选项中一模一样出现的大概率是正确选项。时政不靠理解，靠匹配。</p>
+      <div class="tool-example">题干"中非合作论坛"→ 选项中有"合作"→ 选它。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--teal)">
+      <div class="tool-num">Technique 11</div>
+      <span class="tool-tag tag-mayuan">马原</span>
+      <h3>马原单选 · 答案就在题干里</h3>
+      <p>马原单选题几乎 99.9% 的正确答案可以从题干中找到对应。不要用常识去判断，不要试图去理解陌生的表述——去题干里找关键词。</p>
+      <div class="tool-example">题干讲"国家"→ 选项中有"国家"→ 选它。不要用常识判断。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--gold)">
+      <div class="tool-num">Technique 12</div>
+      <span class="tool-tag tag-mayuan">马原</span>
+      <h3>马原多选 · 先排再选</h3>
+      <p>马原多选题四选四的情况非常少。先排除拿不准的，排完再用心心相应。唯心主义观点直接排，马恩列名言直接选，"实践"一词单独出现 99% 正确。</p>
+      <div class="tool-example">选项有"意识决定物质"→ 唯心→ 排。选项有"实践"→ 选。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <div class="tool-num">Technique 13</div>
+      <span class="tool-tag tag-shigang">史纲</span>
+      <h3>史纲看时间 · 王明口诀</h3>
+      <p>史纲题干要看时间。选项时间与题干时间不对应→ 直接排。另：出现"王明"这个人，一般是骂他的——土地革命时期"左"的错误，抗日战争时期"右"的错误。</p>
+      <div class="tool-example">题干1945年→ 选项有1927年→ 时间不对应→ 排。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <div class="tool-num">Technique 14</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>人类太自大 · 太自卑</h3>
+      <p>选项中过分抬高人类（"完全认识了""预测一切"）或过分贬低人类（"无能为力""只能被动适应"）的——直接排。错误率几乎 100%。</p>
+      <div class="tool-example">"人类已经完全掌握了"→ 太自大→ 排。"人只能被动适应自然"→ 太自卑→ 排。</div>
+    </div>
+
+    <div class="tool-card" style="--accent:var(--teal)">
+      <div class="tool-num">Technique 15</div>
+      <span class="tool-tag tag-common">通用</span>
+      <h3>爹儿对应 · 物质决定精神</h3>
+      <p>题干问的是"基础性""战略性"支撑（爹），答案就要找物质、客观、经济基础类的选项（爹）。题干问精神层面（儿），答案找精神、主观、上层建筑类的（儿）。经济基础决定上层建筑。</p>
+      <div class="tool-example">题干"基础性支撑"→ 找"教育科技人才"（实）而非"经济体制"（虚）。</div>
+    </div>
+
+  </div>
+</section>
+
+<!-- 二、分学科详解 -->
+<section id="mayuan">
+  <h2 class="section-title">马原 <span>Marxist Philosophy</span></h2>
+  <div class="subject-block">
+    <div class="subject-header">
+      <div class="subject-icon" style="background:var(--vermillion)">马</div>
+      <div>
+        <h2>马克思主义基本原理</h2>
+        <div class="count">单选 1-4 题 · 多选 17-21 题</div>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" style="--accent:var(--vermillion)">
+        <h3>🔑 单选铁律：答案在题干里</h3>
+        <p>马原单选几乎不会考你背诵，而是考你能不能从题干中找到对应。不要用常识，不要试图理解陌生表述，去题干里找重复出现的词。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 唯心主义标志词</h3>
+        <p>选项中出现"意识决定物质""意识先于物质""人可以改造规律""直观反应"——直接排。除非题干明确要求选唯心主义观点。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--teal)">
+        <h3>🔑 马恩列名言 = 正确</h3>
+        <p>马克思、恩格斯、列宁的原话出现在选项中，大概率是正确选项。特别是"意识创造客观世界"这种看似错的名言——因为有上下文，不要用常识判断。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--gold)">
+        <h3>🔑 "实践"= 99% 正确</h3>
+        <p>马原选项中如果"实践"一词单独出现，99% 是正确选项。这是马原最稳定的得分点。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--vermillion)">
+        <h3>🔑 多选：四选四极少</h3>
+        <p>马原多选四选四的概率很低。如果发现 ABCD 都对——再去题干找对应。大多数情况是四选二或四选三。先排再选。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 关系平衡原则</h3>
+        <p>题干问 A 与 B 的关系（如人与自然、主体与客体），选项只强调某一方→ 错。正确选项体现辩证统一、相互依存。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 三、毛中特 -->
+<section id="mao">
+  <h2 class="section-title">毛中特 <span>Theory &amp; Policy</span></h2>
+  <div class="subject-block">
+    <div class="subject-header">
+      <div class="subject-icon" style="background:var(--indigo)">毛</div>
+      <div>
+        <h2>毛泽东思想与中国特色社会主义理论体系</h2>
+        <div class="count">单选 5-9 题 · 多选 22-26 题</div>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 帽子题：背了就得分</h3>
+        <p>毛中特是帽子题最密集的科目。总依据、总任务、根本立场、根本目的、基本国策……这些固定搭配必须背。米璇老师总结了 12 个最高频帽子词，建议考前过一遍。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--teal)">
+        <h3>🔑 大对大·小对小</h3>
+        <p>题干问宏观（现代化、社会建设），选项选高度概括的。具体措施类选项（如"加强城乡社区治理""健全第三次分配"）虽然可能正确，但不如概括性选项优。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--gold)">
+        <h3>🔑 领导人原则</h3>
+        <p>选项中有毛泽东、邓小平及其他领导人→ 直接选。这是毛中特最稳定的秒杀技巧。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--vermillion)">
+        <h3>🔑 顿号 = 正确选项</h3>
+        <p>毛中特新思想多选题中，选项里出现顿号（、）列举多项内容的，大概率是正确选项。因为这代表全面、系统的表述。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 谦虚过程词</h3>
+        <p>"显著提升""不断提升""不断优化""渐进发展""历史性成就""历史性变革"——这些谦虚的、渐进式的表述往往是正确的。我们不自大。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--teal)">
+        <h3>🔑 多选：至少一道全选</h3>
+        <p>毛中特新思想多选（22-26题），历年真题中至少有一道是全选（四选四）。如果你发现选了很多四选三，回头检查是否有题目做错了。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 四、史纲 -->
+<section id="shigang">
+  <h2 class="section-title">史纲 <span>History</span></h2>
+  <div class="subject-block">
+    <div class="subject-header">
+      <div class="subject-icon" style="background:var(--teal)">史</div>
+      <div>
+        <h2>中国近现代史纲要</h2>
+        <div class="count">单选 10-13 题</div>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" style="--accent:var(--teal)">
+        <h3>🔑 看时间 · 选项时间不对应就排</h3>
+        <p>史纲的核心是时间线。题干中出现的时间点，选项中时间不匹配的——直接排。这是史纲最快最准的排除法。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--vermillion)">
+        <h3>🔑 王明 = 骂，不选</h3>
+        <p>选项中出现"王明"这个人，一般是骂他的。土地革命时期他是"左"的错误（教条主义），抗日战争时期他是"右"的错误。记住这个核心就够了。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 绝对化表述在史纲中尤其准</h3>
+        <p>史纲中出现"彻底""完全""根本性""取代"等绝对化表述——99% 是错的。这个规律在史纲中比在其他科目中更可靠。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--gold)">
+        <h3>🔑 会议题 · 看领导人</h3>
+        <p>史纲会议题中，选项有领导人的大概率是正确选项。特别是毛泽东、邓小平在重要会议上的正确论述。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 五、新思想 -->
+<section id="xin">
+  <h2 class="section-title">新思想 <span>New Thought</span></h2>
+  <div class="subject-block">
+    <div class="subject-header">
+      <div class="subject-icon" style="background:var(--gold)">新</div>
+      <div>
+        <h2>习近平新时代中国特色社会主义思想</h2>
+        <div class="count">单选 7-9 题 · 多选 22-26 题（与毛中特重叠）</div>
+      </div>
+    </div>
+    <div class="tools-grid">
+      <div class="tool-card" style="--accent:var(--gold)">
+        <h3>🔑 帽子题 · 高频词汇</h3>
+        <p>新思想有大量固定表述：总依据是社会主义初级阶段，总任务是实现社会主义现代化和中华民族伟大复兴，根本立场是以人民为中心……这些是必背的。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--vermillion)">
+        <h3>🔑 "最"字 = 高度概括</h3>
+        <p>题干中出现"最有力""最关键""最重要"——选项选高度概括性的表述，不选具体措施。具体的事是"小"，宏观的概括是"大"。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--indigo)">
+        <h3>🔑 顿号列举 = 正确</h3>
+        <p>选项中出现顿号列举多项（如"富强、民主、文明、和谐"）——大概率是正确选项。全面、系统的表述更可能是对的。</p>
+      </div>
+      <div class="tool-card" style="--accent:var(--teal)">
+        <h3>🔑 纠结即对 · 多选救星</h3>
+        <p>新思想多选中，如果你纠结某个选项但找不到排除理由——选它。这个技巧在毛中特和新思想中尤为有效。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 六、考场策略 -->
+<section id="strategies">
+  <h2 class="section-title">考场实战策略 <span>Exam Strategy</span></h2>
+
+  <div class="strategy-card">
+    <h3>⏱️ 做题流程：从后往前 · 心心相应 · 排除法</h3>
+    <div class="strategy-left">
+      <h4>✅ 推荐流程</h4>
+      <ul>
+        <li>从题干最后一句开始往前读</li>
+        <li>找到主旨句和重复出现的关键词</li>
+        <li>用"心心相应"匹配选项</li>
+        <li>能排的先排，排完再选</li>
+        <li>拿不准的标记，回头再看</li>
+      </ul>
+    </div>
+    <div class="strategy-right">
+      <h4>❌ 避免这些</h4>
+      <ul>
+        <li>不要从头到尾通读题干</li>
+        <li>不要用常识判断陌生表述</li>
+        <li>不要在一道题上纠结超过 1 分钟</li>
+        <li>不要看到"没见过"就放弃</li>
+        <li>不要忽略题干中的引号和关键词</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="tools-grid">
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <h3>🎯 保底目标：选择题 35+</h3>
+      <p>老苏用 2025 年真题验证：16 道单选 + 16 道多选，完全靠蒙题技巧拿到 40 分。即使 4-5 道完全不会，保底 30-35 分是可实现的。</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <h3>📚 分阶段策略</h3>
+      <p><strong>基础期：</strong>以知识为主，技巧为辅。先理解再刷题。<br><strong>冲刺期：</strong>以技巧为主，知识为辅。12 月后直接上真题思维，不碰教材。</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--teal)">
+      <h3>🔥 最后两周 · 邪修保命</h3>
+      <p>树菲和帕拉迪宇的共识：最后两周不要碰教材。选择题靠技巧保 30 分，分析题靠抄材料 + 肖四肖八。零基础也能 60+。</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--gold)">
+      <h3>📊 时间分配</h3>
+      <p>选择题控制在 40 分钟内。单选 15 分钟，多选 25 分钟。超过时间先蒙一个继续走，回头再检查。</p>
+    </div>
+  </div>
+</section>
+
+<!-- 七、快速参考卡 -->
+<section>
+  <h2 class="section-title">快速参考卡 <span>Cheat Sheet</span></h2>
+  <div class="tools-grid">
+    <div class="tool-card" style="--accent:var(--vermillion)">
+      <h3>❌ 看到就排</h3>
+      <p>彻底 · 完全 · 根本性 · 取代 · 比……更重要 · 一切行为都会 · 人类完全认识了 · 人只能被动适应 · 意识决定物质</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--teal)">
+      <h3>✅ 看到就选</h3>
+      <p>有领导人 · 有顿号列举 · 谦虚过程词（显著提升/不断优化）· "实践"单独出现 · 马恩列名言 · 题干关键词一模一样</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--indigo)">
+      <h3>🧠 马原专属</h3>
+      <p>单选：答案在题干里。多选：先排再选，四选四极少。唯心→排，名言→选，实践→选。</p>
+    </div>
+    <div class="tool-card" style="--accent:var(--gold)">
+      <h3>📖 史纲专属</h3>
+      <p>看时间不匹配就排。王明是骂不选。绝对化表述 99% 错。会议题选有领导人的。</p>
+    </div>
+  </div>
+</section>
+
+</div>
+
+<!-- 底部 -->
+<footer class="footer">
+  <p>
+    整合自 19 位考研名师的选择题技巧课程 · 全部内容来自本地 whisper-large-v3-turbo 模型转录<br>
+    85 个视频已转录，4 个大块视频按需跳过 · 数据存储于 <code>~/Desktop/考研/考研资料/</code><br>
+    <span class="heart">❤</span> 祝你一战成硕，考研必上岸
+  </p>
+  <p style="margin-top:1rem; font-size:0.75rem; opacity:0.6;">
+    Generated with MacWhisper (whisper-large-v3-turbo) + whisper.cpp Metal · 2026.11
+  </p>
+</footer>
+
+<script>
+function toggleTheme() {
+  const html = document.documentElement;
+  const current = html.getAttribute('data-theme');
+  const next = current === 'dark' ? '' : 'dark';
+  html.setAttribute('data-theme', next);
+  localStorage.setItem('theme', next);
+  document.querySelector('.theme-toggle').textContent = next === 'dark' ? '☀️' : '🌙';
+}
+
+// 恢复主题
+(function() {
+  const saved = localStorage.getItem('theme');
+  if (saved) {
+    document.documentElement.setAttribute('data-theme', saved);
+    document.querySelector('.theme-toggle').textContent = saved === 'dark' ? '☀️' : '🌙';
+  }
+})();
+</script>
+</body>
+</html>
