@@ -1,0 +1,1303 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>证明题保分急救包 · 考研数学</title>
+<meta name="description" content="把 11 个考研数学证明题视频浓缩成一份可背、可套、可拿分的 HTML 课件。">
+<link rel="canonical" href="https://acidev.cc/tools/prove.html">
+<meta name="theme-color" content="#f4eee1">
+<meta property="og:type" content="article">
+<meta property="og:title" content="证明题保分急救包 · 考研数学">
+<meta property="og:description" content="11 个视频、约 10 小时，压成一份能带上考场的证明题手册：6 个定理、10 个辅助函数构造、40 分钟最短路线。">
+<meta property="og:url" content="https://acidev.cc/tools/prove.html">
+<meta property="og:image" content="https://acidev.cc/tools/assets/cover.png">
+<script>
+window.MathJax = {
+  tex: { inlineMath: [['\\(', '\\)']], displayMath: [['\\[', '\\]']] },
+  svg: { fontCache: 'global' },
+  options: { skipHtmlTags: ['script','noscript','style','textarea','pre','code'] }
+};
+</script>
+<script defer src="assets/mathjax/tex-svg.js"></script>
+<style>
+:root{
+  --paper:#f4eee1; --paper-2:#efe6d4; --card:#fffdf6;
+  --ink:#191713; --ink-soft:#3a352d; --muted:#6d6457;
+  --red:#b83327; --red-dark:#8b2118; --yellow:#f0cf6a; --green:#2e6b4f;
+  --blue:#2f4f6f;
+  --serif:"Songti SC","Noto Serif SC","Source Han Serif SC",Georgia,"Times New Roman",serif;
+  --sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei",system-ui,-apple-system,sans-serif;
+  --mono:"SF Mono","JetBrains Mono",Menlo,Consolas,monospace;
+  --shadow:4px 4px 0 rgba(25,23,19,.88);
+  --line:1.5px solid rgba(25,23,19,.88);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0; color:var(--ink); font-family:var(--sans);
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(184,51,39,.06), transparent 60%),
+    repeating-linear-gradient(0deg, rgba(25,23,19,.025) 0 1px, transparent 1px 28px),
+    var(--paper);
+  font-size:16px; line-height:1.75; -webkit-font-smoothing:antialiased;
+}
+::selection{background:var(--yellow); color:var(--ink)}
+a{color:var(--red-dark); text-decoration:none; border-bottom:1px solid rgba(139,33,24,.35)}
+a:hover{border-bottom-color:var(--red)}
+.wrap{max-width:1180px; margin:0 auto; padding:0 24px}
+.mono{font-family:var(--mono)}
+
+/* ---------- top bar ---------- */
+.topbar{
+  position:sticky; top:0; z-index:50; height:58px;
+  background:rgba(244,238,225,.92); backdrop-filter:blur(10px);
+  border-bottom:1px solid rgba(25,23,19,.18);
+}
+.topbar .wrap{height:100%; display:flex; align-items:center; gap:18px}
+.brand{display:flex; align-items:center; gap:9px; font-weight:700; font-size:14px; letter-spacing:.06em; white-space:nowrap}
+.brand .dot{width:10px;height:10px;background:var(--red);border-radius:50%;box-shadow:0 0 0 3px rgba(184,51,39,.15)}
+.brand small{font-family:var(--mono); font-weight:400; color:var(--muted); letter-spacing:0}
+.modes{display:flex; gap:6px; margin-left:auto}
+.mode{
+  appearance:none; border:1px solid rgba(25,23,19,.35); background:transparent;
+  font-family:var(--sans); font-size:12.5px; color:var(--ink-soft);
+  padding:5px 10px; border-radius:999px; cursor:pointer; white-space:nowrap;
+}
+.mode[aria-pressed="true"]{background:var(--ink); color:var(--paper); border-color:var(--ink)}
+.tool{appearance:none;border:0;background:none;font-size:12.5px;color:var(--muted);cursor:pointer;padding:6px;white-space:nowrap}
+.tool:hover{color:var(--ink)}
+.back{font-size:12.5px;color:var(--muted);border:0;padding:6px 4px;white-space:nowrap}
+.back:hover{color:var(--red)}
+.progress{position:absolute; left:0; bottom:-1px; height:2px; background:var(--red); width:0; transition:width .25s}
+
+/* ---------- hero ---------- */
+.hero{position:relative; overflow:hidden; border-bottom:var(--line)}
+.hero .wrap{padding-top:62px; padding-bottom:54px; position:relative}
+.kicker{display:flex; align-items:center; gap:10px; font-family:var(--mono); font-size:12px; letter-spacing:.16em; color:var(--red-dark); text-transform:uppercase}
+.kicker::before{content:""; width:34px; height:1px; background:var(--red)}
+h1{
+  font-family:var(--serif); font-weight:900; letter-spacing:-.02em;
+  font-size:clamp(44px,7.4vw,92px); line-height:1.02; margin:16px 0 18px;
+}
+h1 em{font-style:normal; color:var(--red); position:relative; white-space:nowrap}
+h1 em::after{content:""; position:absolute; left:-2%; right:-2%; bottom:.08em; height:.18em; background:var(--yellow); z-index:-1}
+.lede{max-width:640px; font-size:18px; color:var(--ink-soft); margin:0 0 26px}
+.lede b{background:linear-gradient(transparent 62%, var(--yellow) 62%)}
+.hero-grid{display:grid; grid-template-columns:1fr 220px; gap:24px; align-items:start}
+.stats{display:flex; flex-wrap:wrap; gap:10px; margin-top:8px}
+.stat{border:1px solid rgba(25,23,19,.3); padding:8px 12px; font-size:12.5px; background:rgba(255,253,246,.6)}
+.stat b{font-family:var(--mono); font-size:16px; margin-right:4px}
+.seal{
+  width:150px; height:150px; border:4px double var(--red); color:var(--red);
+  display:grid; place-items:center; transform:rotate(-8deg); opacity:.9;
+  font-family:var(--serif); font-weight:900; font-size:40px; line-height:1;
+  letter-spacing:.05em; margin:8px auto 0; position:relative;
+}
+.seal::before{content:"KEEP THE POINTS"; position:absolute; bottom:12px; font-family:var(--mono); font-size:8px; letter-spacing:.12em; font-weight:400}
+.seal::after{content:"数学一 / 二 / 三"; position:absolute; top:12px; font-family:var(--mono); font-size:8px; letter-spacing:.1em; font-weight:400}
+
+/* ---------- layout ---------- */
+.shell{display:grid; grid-template-columns:210px minmax(0,1fr); gap:48px; align-items:start; padding:44px 0 90px}
+main{min-width:0}
+.toc{position:sticky; top:86px; font-size:13px}
+.toc-title{font-family:var(--mono); font-size:10.5px; letter-spacing:.18em; color:var(--muted); margin-bottom:12px}
+.toc a{display:flex; gap:9px; padding:5px 0; color:var(--muted); border:0; line-height:1.35}
+.toc a span{font-family:var(--mono); font-size:10.5px; padding-top:2px; opacity:.7}
+.toc a:hover,.toc a.active{color:var(--ink)}
+.toc a.active span{color:var(--red); opacity:1}
+.toc .toc-rule{height:1px;background:rgba(25,23,19,.15);margin:12px 0}
+.toc-note{font-size:11.5px; color:var(--muted); line-height:1.5}
+
+/* ---------- sections ---------- */
+section.doc{padding:0 0 74px; scroll-margin-top:80px}
+.sec-head{display:flex; align-items:flex-start; gap:16px; border-top:var(--line); padding-top:18px; margin-bottom:22px}
+.sec-no{font-family:var(--mono); font-size:13px; color:var(--red); padding-top:6px; min-width:28px}
+.sec-head h2{font-family:var(--serif); font-size:clamp(28px,3.4vw,40px); line-height:1.12; margin:0; letter-spacing:-.01em}
+.sec-sub{color:var(--muted); font-size:13.5px; margin-top:5px}
+.tier-badge{
+  margin-left:auto; font-family:var(--mono); font-size:10px; letter-spacing:.08em;
+  border:1px solid currentColor; padding:3px 7px; color:var(--muted); white-space:nowrap; margin-top:8px;
+}
+h3.sub{font-family:var(--serif); font-size:21px; margin:34px 0 10px; padding-left:12px; border-left:4px solid var(--red)}
+h4{font-size:15.5px; margin:22px 0 6px}
+p{margin:8px 0}
+.lead{font-size:17px}
+.muted{color:var(--muted)}
+.small{font-size:13px}
+.red{color:var(--red)}
+.hl{background:linear-gradient(transparent 58%, var(--yellow) 58%); padding:0 2px}
+
+/* ---------- boxes ---------- */
+.box{background:var(--card); border:var(--line); box-shadow:var(--shadow); padding:22px 24px; margin:18px 0}
+.box.tight{padding:16px 18px}
+.box h3{margin:0 0 8px; font-family:var(--serif); font-size:20px}
+.box p:last-child{margin-bottom:0}
+.grid2{display:grid; grid-template-columns:1fr 1fr; gap:16px}
+.grid3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+@media (max-width:900px){.grid2,.grid3{grid-template-columns:1fr}}
+
+.callout{border-left:5px solid var(--yellow); background:rgba(240,207,106,.18); padding:12px 16px; margin:16px 0; font-size:14.5px}
+.callout.red{border-left-color:var(--red); background:rgba(184,51,39,.07)}
+.callout.green{border-left-color:var(--green); background:rgba(46,107,79,.08)}
+.callout b{font-weight:700}
+
+.template{border:1.5px dashed rgba(25,23,19,.55); background:#fbf6e9; padding:14px 16px; margin:14px 0; position:relative; font-size:14.5px}
+.template::before{content:"考场原话 · 直接抄"; position:absolute; top:-9px; left:12px; background:var(--paper); padding:0 6px; font-family:var(--mono); font-size:9.5px; letter-spacing:.12em; color:var(--red)}
+.template p{margin:5px 0}
+
+.formula{font-size:17.5px; overflow-x:auto; padding:6px 0}
+mjx-container{max-width:100%; overflow-x:auto; overflow-y:hidden}
+mjx-container[jax="SVG"] > svg{max-width:100%; height:auto}
+mjx-container[jax="SVG"][display="true"]{display:block; text-align:center}
+.formula.big{font-size:19px}
+.center{text-align:center}
+
+/* ---------- table ---------- */
+.table-wrap{max-width:100%; overflow-x:auto; border:var(--line); background:var(--card); margin:16px 0; -webkit-overflow-scrolling:touch}
+table{border-collapse:collapse; width:100%; font-size:14px; min-width:560px}
+th{background:var(--ink); color:var(--paper); text-align:left; font-weight:600; padding:9px 12px; font-size:12.5px; letter-spacing:.03em}
+td{padding:9px 12px; border-bottom:1px solid rgba(25,23,19,.13); vertical-align:top}
+tr:last-child td{border-bottom:0}
+tbody tr:nth-child(even){background:rgba(25,23,19,.025)}
+td.f{font-family:var(--serif); font-size:15px}
+td .tiny{font-size:11.5px; color:var(--muted); display:block; margin-top:2px}
+
+/* ---------- steps ---------- */
+.steps{counter-reset:step; margin:18px 0; padding:0; list-style:none}
+.steps li{counter-increment:step; position:relative; padding:10px 0 10px 46px; border-bottom:1px dashed rgba(25,23,19,.18)}
+.steps li:last-child{border-bottom:0}
+.steps li::before{
+  content:counter(step); position:absolute; left:0; top:9px; width:28px; height:28px;
+  border:1.5px solid var(--ink); border-radius:50%; display:grid; place-items:center;
+  font-family:var(--mono); font-size:12.5px; background:var(--card);
+}
+.steps b{font-weight:700}
+
+/* ---------- screenshot ---------- */
+.shot{margin:22px 0; border:var(--line); background:var(--card); box-shadow:var(--shadow); padding:8px}
+.shot .imgwrap{position:relative; background:#111; overflow:hidden}
+.shot img{display:block; width:100%; height:auto; filter:contrast(1.04) saturate(.92)}
+.shot .tag{
+  position:absolute; left:10px; top:10px; background:var(--red); color:#fff;
+  font-family:var(--mono); font-size:10px; letter-spacing:.1em; padding:4px 8px;
+}
+.shot .tsbadge{
+  position:absolute; right:10px; top:10px; background:rgba(15,14,12,.82); color:#fff;
+  font-family:var(--mono); font-size:10.5px; padding:4px 8px; letter-spacing:.05em;
+}
+.shot figcaption{display:flex; gap:10px; align-items:baseline; padding:10px 4px 4px; font-size:13px; color:var(--ink-soft); line-height:1.55}
+.shot figcaption .ts{font-family:var(--mono); font-size:10.5px; color:var(--red); white-space:nowrap}
+.shot figcaption a{margin-left:auto; white-space:nowrap; font-size:11.5px; border:0}
+
+/* ---------- example / solution ---------- */
+.ex{border:var(--line); background:var(--card); margin:20px 0; box-shadow:var(--shadow)}
+.ex-head{display:flex; align-items:center; gap:10px; padding:10px 16px; border-bottom:1px solid rgba(25,23,19,.22); background:rgba(25,23,19,.04)}
+.ex-head .label{font-family:var(--mono); font-size:10px; letter-spacing:.1em; background:var(--ink); color:var(--paper); padding:2px 7px}
+.ex-head h4{margin:0; font-size:15px}
+.ex-body{padding:14px 18px}
+.ex-body .ask{font-weight:600}
+.solution{margin-top:14px; border-top:1px dashed rgba(25,23,19,.3); padding-top:10px}
+.sol-head{display:flex; align-items:center; gap:8px; font-family:var(--mono); font-size:10px; letter-spacing:.12em; color:var(--green); margin-bottom:4px}
+.sol-head span{color:var(--muted); letter-spacing:0; font-family:var(--sans); font-size:11px}
+.sol-body{font-size:14.5px}
+.sol-body p{margin:6px 0}
+body.masked .sol-body{filter:blur(5px); user-select:none; pointer-events:none}
+body.masked .solution::after{content:"已遮住 · 点右上角「显示解答」"; display:block; font-size:11px; color:var(--muted); margin-top:4px}
+
+/* ---------- symbol strip ---------- */
+.symbols{display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:18px 0}
+.sym{border-top:2px solid var(--ink); padding-top:8px}
+.sym b{font-family:var(--serif); font-size:22px; display:block; line-height:1.2}
+.sym span{font-size:12px; color:var(--muted)}
+@media (max-width:700px){.symbols{grid-template-columns:1fr 1fr}}
+
+/* ---------- video cards ---------- */
+.vcard{border:1px solid rgba(25,23,19,.35); background:var(--card); padding:14px 16px; margin:10px 0; display:grid; grid-template-columns:44px 1fr auto; gap:14px; align-items:start}
+.vno{font-family:var(--mono); font-size:11px; color:var(--red); padding-top:3px}
+.vcard h4{margin:0 0 2px; font-size:15px; line-height:1.4}
+.vmeta{font-size:11.5px; color:var(--muted); font-family:var(--mono); margin-bottom:4px}
+.vmeta a{border:0; color:var(--muted)}
+.vmeta a:hover{color:var(--red)}
+.vwhy{font-size:13px; margin:0; color:var(--ink-soft)}
+.vuse{font-size:12.5px; margin-top:4px}
+.vuse b{color:var(--red)}
+.vtag{align-self:start; font-size:10.5px; font-family:var(--mono); border:1px solid; padding:2px 6px; white-space:nowrap}
+.vtag.must{color:var(--red); border-color:var(--red)}
+.vtag.opt{color:var(--muted); border-color:rgba(25,23,19,.35)}
+.vtag.skip{color:var(--muted); border-color:rgba(25,23,19,.2); text-decoration:line-through}
+@media (max-width:700px){.vcard{grid-template-columns:32px 1fr}.vtag{grid-column:2}}
+
+/* ---------- footer ---------- */
+footer{border-top:var(--line); padding:30px 0 60px; font-size:12.5px; color:var(--muted)}
+footer b{color:var(--ink)}
+
+/* ---------- tier dimming ---------- */
+body[data-tier="1"] .tier2, body[data-tier="1"] .tier3{opacity:.26; filter:grayscale(.8)}
+body[data-tier="2"] .tier3{opacity:.3; filter:grayscale(.8)}
+body[data-tier="1"] .tier2:hover, body[data-tier="1"] .tier3:hover, body[data-tier="2"] .tier3:hover{opacity:1;filter:none}
+.tier-note{display:none; font-size:12px; color:var(--muted); margin:6px 0 0}
+body[data-tier="1"] .tier2 .tier-note, body[data-tier="1"] .tier3 .tier-note, body[data-tier="2"] .tier3 .tier-note{display:block}
+
+/* ---------- cheat sheet ---------- */
+.cheat{background:var(--card); border:var(--line); box-shadow:var(--shadow); padding:26px}
+.cheat h3{font-family:var(--serif); border-bottom:2px solid var(--ink); padding-bottom:4px; margin:18px 0 8px; font-size:17px}
+.cheat .formula{font-size:15px}
+.cheat ul{margin:4px 0; padding-left:18px; font-size:13.5px}
+.cheat li{margin:3px 0}
+
+/* ---------- responsive ---------- */
+@media (max-width:980px){
+  .shell{grid-template-columns:minmax(0,1fr); padding-top:30px}
+  .toc{position:static; display:none}
+  .hero-grid{grid-template-columns:1fr}
+  .seal{display:none}
+}
+@media (max-width:620px){
+  .wrap{padding:0 16px}
+  .topbar .brand{font-size:12px; gap:6px}
+  .topbar .brand small{display:none}
+  .topbar .wrap{gap:8px}
+  .modes{gap:3px}
+  .mode{padding:4px 6px; font-size:10.5px}
+  .topbar button.tool:last-of-type{display:none}
+  .back{display:none}
+  .tool{padding:4px 2px; font-size:11px}
+  .box{padding:16px}
+  .shot{margin:18px -6px}
+  .hero .wrap{padding-top:40px}
+  .sec-head{gap:10px}
+}
+
+/* ---------- print ---------- */
+@media print{
+  @page{size:A4; margin:12mm}
+  body{background:#fff; font-size:11.5pt; line-height:1.5}
+  .topbar,.toc,.no-print,.modes,.tool{display:none !important}
+  .shell{display:block; padding:0}
+  .hero{display:none}
+  section.doc{page-break-before:always; padding-bottom:20px}
+  .box,.ex,.shot,.table-wrap{box-shadow:none; break-inside:avoid}
+  .shot img{filter:none}
+  body[data-tier="1"] .tier2, body[data-tier="1"] .tier3, body[data-tier="2"] .tier3{opacity:1;filter:none}
+  body.masked .sol-body{filter:none}
+  a{color:inherit;border:0}
+  .cheat{break-before:page}
+}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+</style>
+</head>
+<body data-tier="2">
+
+<div class="topbar">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>证明题保分急救包 <small>v1.0</small></div>
+    <a class="back" href="./" title="返回工具箱">← 工具箱</a>
+    <nav class="modes" aria-label="时间预算">
+      <button class="mode" data-mode="1" aria-pressed="false">只剩 40 分钟</button>
+      <button class="mode" data-mode="2" aria-pressed="true">半天</button>
+      <button class="mode" data-mode="3" aria-pressed="false">还有 3 天</button>
+    </nav>
+    <button class="tool" id="maskBtn" aria-pressed="false">遮住解答</button>
+    <button class="tool" onclick="window.print()">打印 / PDF</button>
+    <div class="progress" id="bar"></div>
+  </div>
+</div>
+
+<header class="hero">
+  <div class="wrap">
+    <div class="kicker">考研数学 · 证明题专题 · 保分版</div>
+    <h1>证明题<br><em>保分</em>急救包</h1>
+    <div class="hero-grid">
+      <div>
+        <p class="lede">11 个视频、约 10 小时，压成这一份。基础差也能拿分：<b>不背证明，只背「构造 + 验证 + 引用」三步。</b></p>
+        <div class="stats">
+          <span class="stat"><b>5</b>个模板</span>
+          <span class="stat"><b>8</b>个辅助函数</span>
+          <span class="stat"><b>40</b>分钟最短路线</span>
+          <span class="stat"><b>4–8</b>分现实目标</span>
+        </div>
+      </div>
+      <div class="seal">保分</div>
+    </div>
+    <div class="callout red" style="margin-top:30px;max-width:900px">
+      <b>先说清楚：</b>这份东西不保证你做出压轴题，只保证你<b>不空着</b>。证明题按步骤给分，构造写对一半、条件写全，通常就能拿到 3–6 分；完全空着是 0 分。你要做的是把「能写的」写满。
+    </div>
+    <div class="symbols">
+      <div class="sym"><b>ξ</b><span>读“克西”，就是“某一个点”</span></div>
+      <div class="sym"><b>f′(ξ)</b><span>函数在那一点的斜率</span></div>
+      <div class="sym"><b>∃</b><span>“存在”，至少找得到一个</span></div>
+      <div class="sym"><b>∈</b><span>“属于”，点落在哪个区间</span></div>
+    </div>
+  </div>
+</header>
+
+<div class="wrap shell">
+  <aside class="toc" aria-label="目录">
+    <div class="toc-title">CONTENTS</div>
+    <a href="#s01"><span>01</span>先认清：只有 5 种题</a>
+    <a href="#s02"><span>02</span>六个定理（只背条件）</a>
+    <a href="#s03"><span>03</span>万能第一步：构造 F</a>
+    <a href="#s04"><span>04</span>单中值：3 个信号</a>
+    <a href="#s05"><span>05</span>双中值：找分点</a>
+    <a href="#s06"><span>06</span>泰勒：看到 f″ 就展开</a>
+    <a href="#s07"><span>07</span>数列：三招</a>
+    <a href="#s08"><span>08</span>不等式：作差求导</a>
+    <a href="#s09"><span>09</span>考场 12 分钟怎么写</a>
+    <a href="#s10"><span>10</span>11 个视频怎么用</a>
+    <a href="#s11"><span>11</span>考前 10 分钟一页纸</a>
+    <div class="toc-rule"></div>
+    <div class="toc-note">灰色章节 = 当前时间预算下可以跳过。<br>勾选「已掌握」会记录在本机。</div>
+  </aside>
+
+  <main>
+
+  <section class="doc tier1" id="s01" data-key="s01">
+    <div class="sec-head">
+      <div class="sec-no">01</div>
+      <div>
+        <h2>先认清：证明题只有 5 种</h2>
+        <div class="sec-sub">不要一上来就想“怎么证”，先判断“这是哪一型”。</div>
+      </div>
+      <span class="tier-badge">必看</span>
+    </div>
+
+    <p class="lead">考研证明题（通常 10–12 分）翻来覆去就考下面五类。你不需要会“创造”，只需要认出来，然后套对应动作。</p>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:38%">题面长什么样</th><th>类型</th><th>你的第一个动作</th><th style="width:12%">频率</th></tr></thead>
+        <tbody>
+          <tr><td>存在 ξ，使 f′(ξ)=… 或 f(ξ)+f′(ξ)=0</td><td><b>单中值</b></td><td>把结论改成 F′(ξ)=0，构造 F</td><td>★★★★★</td></tr>
+          <tr><td>存在两个不同点 ξ、η，使 f′(ξ) 与 f′(η) 满足关系</td><td><b>双中值</b></td><td>找一个分点，两段分别拉格朗日</td><td>★★★</td></tr>
+          <tr><td>存在 ξ，使 f″(ξ)=… 或含 f‴</td><td><b>泰勒中值</b></td><td>选展开点，写带余项的泰勒</td><td>★★★</td></tr>
+          <tr><td>数列递推 a<sub>n+1</sub>=f(a<sub>n</sub>)，证收敛/求极限</td><td><b>数列极限</b></td><td>先猜极限，再证单调有界</td><td>★★★</td></tr>
+          <tr><td>证明某个不等式成立</td><td><b>不等式</b></td><td>作差 F=左−右，求导看单调</td><td>★★</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout"><b>频率说明：</b>这是按近十几年真题的粗略体感，不是精确统计。你要记的不是百分比，而是<b>“看到哪种话，做哪个动作”</b>。</div>
+
+    <div class="box">
+      <h3 style="font-size:17px">按你剩下的时间，只做这些</h3>
+      <div class="table-wrap" style="margin:10px 0 0;border:0">
+        <table style="min-width:520px">
+          <thead><tr><th style="width:16%">时间</th><th>路线（按顺序）</th><th style="width:26%">目标</th></tr></thead>
+          <tbody>
+            <tr><td><b>40 分钟</b></td><td>02 六定理 → 03 构造表 → 09 四句救命话 → 11 一页纸</td><td>会写步骤，拿 3–4 分</td></tr>
+            <tr><td><b>半天</b></td><td>上面全部 → 04 单中值 3 例 → 05 双中值 1 例 → 06 泰勒 1 例 → 07 数列 2 例</td><td>常见题型能套，拿 5–6 分</td></tr>
+            <tr><td><b>3 天</b></td><td>上面全部 → 08 不等式 → 10 里挑 2 个视频补课 → 真题合集挑 6 题</td><td>冲击 8 分，稳住步骤分</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="small muted" style="margin:8px 0 0">顶部的「只剩 40 分钟 / 半天 / 还有 3 天」会把当前不需要看的章节变灰，跟着亮的部分读就行。</p>
+    </div>
+
+    <h3 class="sub">12 分是怎么被拆开的</h3>
+    <div class="grid2">
+      <div class="box tight">
+        <h3 style="font-size:16px">阅卷人实际在找的 5 样东西</h3>
+        <ul style="margin:6px 0 0;padding-left:18px;font-size:14px">
+          <li>辅助函数 F(x) 写出来了（约 3 分）</li>
+          <li>“连续、可导”条件写全了（约 2 分）</li>
+          <li>端点值 F(a)=F(b) 验证了（约 2 分）</li>
+          <li>定理名字和结论引用对了（约 2 分）</li>
+          <li>最后化简回题目要的形式（约 3 分）</li>
+        </ul>
+      </div>
+      <div class="box tight" style="background:#fdf3ef">
+        <h3 style="font-size:16px">所以，不会做也要写满这 3 句</h3>
+        <p class="small" style="line-height:1.9">① 因为 f(x) 在 [a,b] 上连续，在 (a,b) 内可导……<br>
+        ② 令 F(x)=……，则 F(x) 在 [a,b] 上连续，在 (a,b) 内可导；<br>
+        ③ 又 F(a)=F(b)=0，由罗尔定理，存在 ξ∈(a,b)，使 F′(ξ)=0。</p>
+        <p class="small muted" style="margin-bottom:0">这三句本身就是分。空白才是 0 分。</p>
+      </div>
+    </div>
+
+    <div class="callout green"><b>三条铁律：</b>区间写全（闭区间连续、开区间可导）；定理条件逐条写；最后一定要“即 …”，把结论抄回题目形式。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s01"> 已掌握</label>
+  </section>
+
+  <section class="doc tier1" id="s02" data-key="s02">
+    <div class="sec-head">
+      <div class="sec-no">02</div>
+      <div>
+        <h2>六个定理：只背条件和结论</h2>
+        <div class="sec-sub">不背证明过程。你只要能在卷子上把“条件”和“结论”各写一行。</div>
+      </div>
+      <span class="tier-badge">必看</span>
+    </div>
+
+    <div class="grid2">
+      <div class="box tight">
+        <h3>① 零点定理 <span class="mono small muted">证“有根”</span></h3>
+        <p class="small">条件：f 在 [a,b] 上连续，且 f(a)·f(b) &lt; 0。</p>
+        <p class="small">结论：存在 ξ∈(a,b)，使 f(ξ)=0。</p>
+        <div class="formula">\[ f(a)f(b)\lt 0 \;\Rightarrow\; \exists\,\xi\in(a,b),\ f(\xi)=0 \]</div>
+        <p class="small muted" style="margin:0">人话：一头正、一头负，中间一定穿过 0。</p>
+      </div>
+
+      <div class="box tight">
+        <h3>② 罗尔定理 <span class="mono small muted">最常用</span></h3>
+        <p class="small">条件：在 [a,b] 连续，在 (a,b) 可导，且 f(a)=f(b)。</p>
+        <p class="small">结论：存在 ξ∈(a,b)，使 f′(ξ)=0。</p>
+        <div class="formula">\[ f(a)=f(b)\;\Rightarrow\;\exists\,\xi,\ f'(\xi)=0 \]</div>
+        <p class="small muted" style="margin:0">人话：两端一样高，中间必有一个“平”的点。</p>
+      </div>
+
+      <div class="box tight">
+        <h3>③ 拉格朗日中值定理</h3>
+        <p class="small">条件：在 [a,b] 连续，在 (a,b) 可导。</p>
+        <p class="small">结论：存在 ξ∈(a,b)，使 f(b)−f(a)=f′(ξ)(b−a)。</p>
+        <div class="formula">\[ f(b)-f(a)=f'(\xi)(b-a) \]</div>
+        <p class="small muted" style="margin:0">人话：平均斜率 = 某一点的瞬时斜率。</p>
+      </div>
+
+      <div class="box tight">
+        <h3>④ 柯西中值定理 <span class="mono small muted">两个函数</span></h3>
+        <p class="small">条件：f、g 在 [a,b] 连续，在 (a,b) 可导，且 g′(x)≠0。</p>
+        <p class="small">结论：存在 ξ∈(a,b)，使</p>
+        <div class="formula">\[ \frac{f(b)-f(a)}{g(b)-g(a)}=\frac{f'(\xi)}{g'(\xi)} \]</div>
+        <p class="small muted" style="margin:0">人话：两个函数的“平均斜率之比” = 某点“导数之比”。</p>
+      </div>
+
+      <div class="box tight">
+        <h3>⑤ 泰勒公式 <span class="mono small muted">二阶就够</span></h3>
+        <p class="small">条件：f 在含 x<sub>0</sub> 的区间内有二阶导数。</p>
+        <p class="small">结论：在 x 与 x<sub>0</sub> 之间存在 ξ，使</p>
+        <div class="formula">\[ f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(\xi)}{2}(x-x_0)^2 \]</div>
+        <p class="small muted" style="margin:0">人话：用 x<sub>0</sub> 的信息去估 x，误差由 f″ 控制。</p>
+      </div>
+
+      <div class="box tight">
+        <h3>⑥ 积分中值定理 <span class="mono small muted">看到积分</span></h3>
+        <p class="small">条件：f 在 [a,b] 上连续。</p>
+        <p class="small">结论：存在 ξ∈[a,b]，使</p>
+        <div class="formula">\[ \int_a^b f(x)\,dx=f(\xi)(b-a) \]</div>
+        <p class="small muted" style="margin:0">人话：曲边梯形的面积 = 某个高 × 底。</p>
+      </div>
+    </div>
+
+    <h3 class="sub">写条件时的“三件套”</h3>
+    <div class="template">
+      <p>“因为 \(f(x)\) 在 \([a,b]\) 上连续，在 \((a,b)\) 内可导，所以 \(f(x)\) 在 \([a,b]\) 上满足拉格朗日中值定理的条件。”</p>
+      <p class="small muted" style="margin:0">把这句话背到能默写。所有中值题的第一行都可以先写它。</p>
+    </div>
+
+    <div class="callout red"><b>最容易丢的分：</b>只写“由罗尔定理”却不写“连续、可导、端点相等”。阅卷老师不会帮你补条件。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s02"> 已掌握</label>
+  </section>
+
+  <section class="doc tier1" id="s03" data-key="s03">
+    <div class="sec-head">
+      <div class="sec-no">03</div>
+      <div>
+        <h2>万能第一步：把结论变成 F′(ξ)=0</h2>
+        <div class="sec-sub">90% 的单中值题，都能用这一个动作开头。不会想，就机械照做。</div>
+      </div>
+      <span class="tier-badge">必看</span>
+    </div>
+
+    <p class="lead">题目让你证“存在 ξ 使某个式子成立”。你要做的不是盯着 ξ 发呆，而是<b>把 ξ 换成 x，把式子整理成“某个函数求导等于 0”</b>。那个函数就是 F。</p>
+
+    <h3 class="sub">四步机械操作</h3>
+    <ol class="steps">
+      <li><b>换字母：</b>把结论里的 ξ 全部换成 x，移项，让右边等于 0。</li>
+      <li><b>凑形式：</b>整理成 \(f'(x)+P(x)f(x)=0\)。P(x) 就是 f(x) 前面那一坨。</li>
+      <li><b>乘因子：</b>算 \(\mu(x)=e^{\int P(x)\,dx}\)，令 \(F(x)=\mu(x)f(x)\)。</li>
+      <li><b>用罗尔：</b>验证 F(a)=F(b)，由罗尔得 F′(ξ)=0；约掉 μ(ξ)（永远为正），就是题目要的式子。</li>
+    </ol>
+
+    <div class="box">
+      <h3 style="font-size:17px">为什么乘 \(e^{\int P\,dx}\) 就对了？</h3>
+      <p class="small">因为 \((e^{\int P}f)'=e^{\int P}(f'+Pf)\)。你希望 \(f'+Pf=0\)，那就把整个式子乘一个恒正的因子，让它变成“一个函数的导数 = 0”。</p>
+      <div class="formula">\[ F(x)=e^{\int P(x)dx}f(x)\quad\Rightarrow\quad F'(x)=e^{\int P(x)dx}\bigl[f'(x)+P(x)f(x)\bigr] \]</div>
+      <p class="small muted" style="margin:0">你不需要会解微分方程，只需要会“认出 P、乘上去”。</p>
+    </div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/u_045.jpg" alt="微分方程法板书截图：构造 F(x)=f(x)e^{∫P dx}" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">00:45</span>
+      </div>
+      <figcaption><span class="ts">BV1u5411U7iS · 00:45</span> 老师把这一步叫“微分方程法”：把结论化成 \(f'+Pf=Q\)，再构造 \(F=f e^{\int P dx}\)。<a href="https://www.bilibili.com/video/BV1u5411U7iS/?t=45" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <h3 class="sub">背这张表：看到左边，直接写右边</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:52%">题目要你证</th><th>你就令 F(x)=</th><th style="width:18%">备注</th></tr></thead>
+        <tbody>
+          <tr><td class="f">f′(ξ)=0</td><td class="f">f(x)</td><td class="tiny">直接罗尔</td></tr>
+          <tr><td class="f">f′(ξ)+f(ξ)=0</td><td class="f">e<sup>x</sup>f(x)</td><td class="tiny">P=1</td></tr>
+          <tr><td class="f">f′(ξ)+λf(ξ)=0</td><td class="f">e<sup>λx</sup>f(x)</td><td class="tiny">P=λ</td></tr>
+          <tr><td class="f">f′(ξ)+g′(ξ)f(ξ)=0</td><td class="f">e<sup>g(x)</sup>f(x)</td><td class="tiny">P=g′</td></tr>
+          <tr><td class="f">ξf′(ξ)+nf(ξ)=0</td><td class="f">x<sup>n</sup>f(x)</td><td class="tiny">ξ≠0 时</td></tr>
+          <tr><td class="f">ξf′(ξ)−nf(ξ)=0</td><td class="f">f(x)/x<sup>n</sup></td><td class="tiny">ξ≠0 时</td></tr>
+          <tr><td class="f">ξf′(ξ)+f(ξ)=0</td><td class="f">x f(x)</td><td class="tiny">n=1 的特例</td></tr>
+          <tr><td class="f">ξf′(ξ)−f(ξ)=0</td><td class="f">f(x)/x</td><td class="tiny">n=1 的特例</td></tr>
+          <tr><td class="f">f′(ξ)=k（常数）</td><td class="f">f(x)−kx</td><td class="tiny">罗尔</td></tr>
+          <tr><td class="f">f′(ξ)=[f(b)−f(a)]/(b−a)</td><td class="f">f(x)−f(a)−k(x−a)</td><td class="tiny">k 为那个斜率</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="callout red"><b>唯一要小心：</b>表里带 \(x^n\)、\(f(x)/x\) 的构造，要求 ξ≠0。如果区间包含 0，先看题目有没有给 f(0)=0；没有就换别的构造，或者分区间讨论。考场上宁可多写一句“显然 ξ≠0”，也别默认。</div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/p1_2500.jpg" alt="万能构造板书截图：将 ξ 换成 x，若形如 f′+P(x)f=0，则构造 G=f e^{∫P dx}" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">41:40</span>
+      </div>
+      <figcaption><span class="ts">BV1WL411C7HC · P1 · 41:40</span> 老师把这套叫“万能构造”：把 ξ 换成 x，只要整理成 \(f'+P(x)f=0\)，就令 \(G(x)=f(x)e^{\int P\,dx}\)。<a href="https://www.bilibili.com/video/BV1WL411C7HC/?p=1&amp;t=2500" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 1</span><h4>最标准的罗尔 + 构造（12 分题的样子）</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，在 (0,1) 内可导，且 f(0)=f(1)=0。证明：存在 ξ∈(0,1)，使 \(f'(\xi)+f(\xi)=0\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>先自己写 30 秒，再看</span></div>
+          <div class="sol-body">
+            <p>令 \(F(x)=e^{x}f(x)\)。</p>
+            <p>因为 \(e^x\) 与 \(f(x)\) 在 \([0,1]\) 上连续、在 \((0,1)\) 内可导，所以 \(F(x)\) 在 \([0,1]\) 上连续，在 \((0,1)\) 内可导。</p>
+            <p>又 \(F(0)=e^0f(0)=0\)，\(F(1)=e^1f(1)=0\)，故 \(F(0)=F(1)\)。</p>
+            <p>由罗尔定理，存在 \(\xi\in(0,1)\)，使 \(F'(\xi)=0\)，即</p>
+            <p class="center">\(e^{\xi}\bigl[f'(\xi)+f(\xi)\bigr]=0\)。</p>
+            <p>因为 \(e^{\xi}\gt 0\)，所以 \(f'(\xi)+f(\xi)=0\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 2</span><h4>换成 x²f(x)，同一套动作</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，在 (0,1) 内可导，f(0)=f(1)=0。证明：存在 ξ∈(0,1)，使 \(\xi f'(\xi)+2f(\xi)=0\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>注意 ξ≠0 才可约</span></div>
+          <div class="sol-body">
+            <p>令 \(F(x)=x^2f(x)\)。则 F 在 [0,1] 连续、在 (0,1) 可导，且 \(F(0)=F(1)=0\)。</p>
+            <p>由罗尔定理，存在 \(\xi\in(0,1)\)，使 \(F'(\xi)=0\)。而</p>
+            <p class="center">\(F'(x)=2xf(x)+x^2f'(x)=x\bigl[2f(x)+xf'(x)\bigr]\)。</p>
+            <p>因为 \(\xi\gt 0\)，约去 ξ，得 \(\xi f'(\xi)+2f(\xi)=0\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s03"> 已掌握</label>
+  </section>
+
+  <section class="doc tier2" id="s04" data-key="s04">
+    <div class="sec-head">
+      <div class="sec-no">04</div>
+      <div>
+        <h2>单中值：先认 3 个信号</h2>
+        <div class="sec-sub">结论里只有一个“存在 ξ”。这是出现频率最高的一类。</div>
+      </div>
+      <span class="tier-badge">半天+</span>
+    </div>
+    <p class="tier-note">40 分钟模式可跳过；先把 02、03 的构造表背熟，再回来做这节。</p>
+
+    <div class="grid3">
+      <div class="box tight">
+        <h3 style="font-size:15px">信号 A</h3>
+        <p class="small">结论只有 \(f'(\xi)\) 和一个数，<b>没有 f(ξ)</b>。</p>
+        <p class="small muted">动作：直接罗尔（端点相等）或拉格朗日（出现差商）。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">信号 B</h3>
+        <p class="small">结论里 \(f(\xi)\) 和 \(f'(\xi)\) <b>同时出现</b>。</p>
+        <p class="small muted">动作：查 03 的表，乘积分因子构造 F。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">信号 C</h3>
+        <p class="small">结论是 \(f(\xi)=\xi\)、\(f(\xi)=1-\xi\) 这类“具体值”。</p>
+        <p class="small muted">动作：移项令 F=f(x)−(那个式子)，用零点定理。</p>
+      </div>
+    </div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/p1_2380.jpg" alt="原函数法板书截图：把通解化成 F(x)=C" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">39:40</span>
+      </div>
+      <figcaption><span class="ts">BV1WL411C7HC · P1 · 39:40</span> 原函数法的核心一句话：把微分方程的通解化成 \(F(x)=C\)，那个 F 就是你要构造的辅助函数。<a href="https://www.bilibili.com/video/BV1WL411C7HC/?p=1&amp;t=2380" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 3</span><h4>看到“具体值”就移项：零点定理</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，f(0)=0，f(1)=1。证明：存在 ξ∈(0,1)，使 \(f(\xi)=1-\xi\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>这题 3 行，必须拿满</span></div>
+          <div class="sol-body">
+            <p>令 \(F(x)=f(x)+x-1\)。则 F 在 [0,1] 上连续。</p>
+            <p>\(F(0)=f(0)+0-1=-1\lt 0\)，\(F(1)=f(1)+1-1=1\gt 0\)。</p>
+            <p>由零点定理，存在 \(\xi\in(0,1)\)，使 \(F(\xi)=0\)，即 \(f(\xi)=1-\xi\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 4</span><h4>看到“差商”就用拉格朗日</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，在 (0,1) 内可导，f(0)=0，f(1)=1。证明：存在 ξ∈(0,1)，使 \(f'(\xi)=1\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>一行定理，一行结论</span></div>
+          <div class="sol-body">
+            <p>因为 f 在 [0,1] 上连续、在 (0,1) 内可导，由拉格朗日中值定理，存在 \(\xi\in(0,1)\)，使</p>
+            <p class="center">\(f(1)-f(0)=f'(\xi)(1-0)\)。</p>
+            <p>代入 \(f(0)=0,\ f(1)=1\)，得 \(f'(\xi)=1\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 5</span><h4>负号陷阱：\(f'(\xi)=f(\xi)\)</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，在 (0,1) 内可导，f(0)=f(1)=0。证明：存在 ξ∈(0,1)，使 \(f'(\xi)=f(\xi)\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>注意是 e<sup>−x</sup>，不是 e<sup>x</sup></span></div>
+          <div class="sol-body">
+            <p>令 \(F(x)=e^{-x}f(x)\)。则 F 在 [0,1] 连续、在 (0,1) 可导，且 \(F(0)=F(1)=0\)。</p>
+            <p>由罗尔定理，存在 \(\xi\in(0,1)\)，使 \(F'(\xi)=0\)。而</p>
+            <p class="center">\(F'(x)=e^{-x}\bigl[f'(x)-f(x)\bigr]\)，</p>
+            <p>故 \(f'(\xi)-f(\xi)=0\)，即 \(f'(\xi)=f(\xi)\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout"><b>快速判断口诀：</b>只有 \(f'\) → 罗尔/拉格朗日；\(f\) 和 \(f'\) 都有 → 乘因子；出现具体数 → 移项零点；出现积分 → 积分中值。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s04"> 已掌握</label>
+  </section>
+
+  <section class="doc tier2" id="s05" data-key="s05">
+    <div class="sec-head">
+      <div class="sec-no">05</div>
+      <div>
+        <h2>双中值：找一个分点，切两段</h2>
+        <div class="sec-sub">结论里出现两个不同点 ξ、η。核心不是“用两次定理”，而是“在哪切”。</div>
+      </div>
+      <span class="tier-badge">半天+</span>
+    </div>
+    <p class="tier-note">40 分钟模式可跳过；这一型性价比高，但需要先会单中值。</p>
+
+    <p class="lead">双中值题的套路非常固定：<b>把区间切成两段，在两段上各用一次拉格朗日</b>，让两个导数分别等于两段弦的斜率，再按题目要求相加、相乘或相除。</p>
+
+    <h3 class="sub">三步操作</h3>
+    <ol class="steps">
+      <li><b>看结论怎么组合：</b>是 \(f'(\xi)+f'(\eta)\)、\(f'(\xi)f'(\eta)\)，还是 \(\frac{a}{f'(\xi)}+\frac{b}{f'(\eta)}\)。这决定你后面是加、乘还是除。</li>
+      <li><b>定分点 c：</b>优先取中点；如果第一问已经给了一个点（比如 \(f(\xi)=1-\xi\)），就用那个点当分点；如果题目给了 \(f(c)\) 的值，直接用。</li>
+      <li><b>两段分别拉格朗日：</b>在 \([a,c]\) 得 \(f'(\eta)=\frac{f(c)-f(a)}{c-a}\)，在 \([c,b]\) 得 \(f'(\zeta)=\frac{f(b)-f(c)}{b-c}\)，再组合。</li>
+    </ol>
+
+    <div class="callout green"><b>为什么两个点一定不同？</b>因为一个落在 \((a,c)\)，另一个落在 \((c,b)\)，两个开区间不重叠。写完这句，阅卷老师就知道你懂。</div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/p9_870.jpg" alt="双中值题板书截图：f(0)=0，f(1)=1，存在两个不同点" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">14:30</span>
+      </div>
+      <figcaption><span class="ts">BV1WL411C7HC · P9 · 14:30</span> 双中值的典型题面：\(f(0)=0,\ f(1)=1\)，证存在两个不同点，使 \(\frac{a}{f'(\xi)}+\frac{b}{f'(\eta)}=a+b\)。老师正在用“分点 + 两段斜率”的方法。<a href="https://www.bilibili.com/video/BV1WL411C7HC/?p=9&amp;t=870" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 6 · 真题</span><h4>2013 数一：第一问的点，就是第二问的分点</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上连续，在 (0,1) 内可导，f(0)=0，f(1)=1。<br>
+        （Ⅰ）证明：存在 ξ∈(0,1)，使 \(f(\xi)=1-\xi\)；<br>
+        （Ⅱ）证明：存在两个不同的点 η、ζ∈(0,1)，使 \(f'(\eta)f'(\zeta)=1\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>这题是双中值的标准答案，建议整段背</span></div>
+          <div class="sol-body">
+            <p><b>（Ⅰ）</b>令 \(F(x)=f(x)+x-1\)。F 在 [0,1] 连续，且 \(F(0)=-1\lt 0,\ F(1)=1\gt 0\)。由零点定理，存在 \(\xi\in(0,1)\)，使 \(F(\xi)=0\)，即 \(f(\xi)=1-\xi\)。</p>
+            <p><b>（Ⅱ）</b>由（Ⅰ）知 \(f(\xi)=1-\xi\)，且 \(0\lt \xi\lt 1\)。在 \([0,\xi]\) 上用拉格朗日：存在 \(\eta\in(0,\xi)\)，使</p>
+            <p class="center">\(f'(\eta)=\frac{f(\xi)-f(0)}{\xi-0}=\frac{1-\xi}{\xi}\)。</p>
+            <p>在 \([\xi,1]\) 上用拉格朗日：存在 \(\zeta\in(\xi,1)\)，使</p>
+            <p class="center">\(f'(\zeta)=\frac{f(1)-f(\xi)}{1-\xi}=\frac{1-(1-\xi)}{1-\xi}=\frac{\xi}{1-\xi}\)。</p>
+            <p>两式相乘：\(f'(\eta)f'(\zeta)=\frac{1-\xi}{\xi}\cdot\frac{\xi}{1-\xi}=1\)。</p>
+            <p>又 \(\eta\in(0,\xi)\)，\(\zeta\in(\xi,1)\)，所以 \(\eta\ne\zeta\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout red"><b>这题的启发：</b>双中值题如果第一问让你证 \(f(\xi)=\) 某值，那十有八九<b>第二问就用这个 ξ 当分点</b>。不要另外找中点。</div>
+
+    <div class="box tight">
+      <h3 style="font-size:16px">另一种常见组合：\(f'(\xi)+f'(\eta)=\) 常数</h3>
+      <p class="small">同样切两段，但这次把两个拉格朗日式子<b>相加</b>。若两段长度相等（取中点），分母相同，直接合并分子 \(f(b)-f(a)\)。</p>
+      <p class="small muted" style="margin:0">口诀：<b>相乘找乘积，相加找中点和。</b></p>
+    </div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s05"> 已掌握</label>
+  </section>
+
+  <section class="doc tier2" id="s06" data-key="s06">
+    <div class="sec-head">
+      <div class="sec-no">06</div>
+      <div>
+        <h2>泰勒：看到 f″(ξ) 就展开</h2>
+        <div class="sec-sub">不需要理解泰勒级数。你只需要会写“带余项的二阶泰勒”，并选对展开点。</div>
+      </div>
+      <span class="tier-badge">半天+</span>
+    </div>
+    <p class="tier-note">40 分钟模式可跳过；如果目标只是 4 分，这一节可以最后看。</p>
+
+    <p class="lead">题面里只要出现 <b>\(f''(\xi)\)</b>、<b>\(f'''(\xi)\)</b>，或者“二阶可导 + 证明存在某点使 …”，第一反应就是泰勒。别去凑罗尔，凑不出来。</p>
+
+    <div class="box">
+      <h3 style="font-size:17px">你只需要背这两个式子</h3>
+      <p class="small">二阶（最常用）：在 \(x_0\) 处展开，余项里是 \(f''(\xi)\)：</p>
+      <div class="formula big center">\[ f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(\xi)}{2!}(x-x_0)^2 \]</div>
+      <p class="small">三阶（看到 \(f'''\) 才用）：</p>
+      <div class="formula center">\[ f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(x_0)}{2!}(x-x_0)^2+\frac{f'''(\xi)}{3!}(x-x_0)^3 \]</div>
+      <p class="small muted" style="margin:0">ξ 在 x 与 \(x_0\) 之间。写的时候加一句“其中 ξ 介于 x 与 \(x_0\) 之间”，这是条件分。</p>
+    </div>
+
+    <h3 class="sub">展开点怎么选：三句话</h3>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:34%">题面特征</th><th>在哪展开</th><th>为什么</th></tr></thead>
+        <tbody>
+          <tr><td>给了 \(f(0)\)、\(f(1)\)、\(f'(0)\) 等具体值</td><td>就在这些点展开</td><td>把这些值代进去，能消掉一大片</td></tr>
+          <tr><td>给了最大值、最小值、极值</td><td>在极值点 \(x_0\) 展开</td><td>极值点 \(f'(x_0)=0\)，一次项自动消失</td></tr>
+          <tr><td>要证 \(f''(\xi)\) 与区间长度有关</td><td>在两个端点各展开一次，再相减</td><td>把 \(f(x_0)\)、\(f'(x_0)\) 消掉，只剩 \(f''\)</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/taylor_400.jpg" alt="泰勒中值定理题型板书截图：展开点选择" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">06:40</span>
+      </div>
+      <figcaption><span class="ts">BV1MPts6REzW · 06:40</span> 老师的原话：泰勒题的核心不是计算，是“确定在哪个点、哪些点展开”；特殊点、端点、x 处，三种选法。<a href="https://www.bilibili.com/video/BV1MPts6REzW/?t=400" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 7</span><h4>在最小值点展开：一次项自动消失</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 f(x) 在 [0,1] 上二阶可导，f(0)=f(1)=0，且 f 在 [0,1] 上的最小值为 −1。证明：存在 ξ∈(0,1)，使 \(f''(\xi)\ge 8\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>关键是“最小值点导数为 0”</span></div>
+          <div class="sol-body">
+            <p>设 f 在 \(x_0\in(0,1)\) 处取最小值 −1。由费马定理，\(f'(x_0)=0\)。</p>
+            <p>在 \(x_0\) 处分别对 \(x=0\) 和 \(x=1\) 写二阶泰勒：存在 \(\xi_1\in(0,x_0)\)、\(\xi_2\in(x_0,1)\)，使</p>
+            <p class="center">\(0=f(0)=-1+\frac{f''(\xi_1)}{2}x_0^2\)，</p>
+            <p class="center">\(0=f(1)=-1+\frac{f''(\xi_2)}{2}(1-x_0)^2\)。</p>
+            <p>于是 \(f''(\xi_1)=\frac{2}{x_0^2}\)，\(f''(\xi_2)=\frac{2}{(1-x_0)^2}\)。</p>
+            <p>若 \(x_0\le\frac12\)，则 \(f''(\xi_1)\ge 8\)；若 \(x_0\gt\frac12\)，则 \(f''(\xi_2)\ge 8\)。取对应的 ξ 即可。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="template">
+      <p>“因为 \(f(x)\) 在区间上二阶可导，所以对任意 x，存在 ξ 介于 x 与 \(x_0\) 之间，使</p>
+      <p>\(f(x)=f(x_0)+f'(x_0)(x-x_0)+\frac{f''(\xi)}{2}(x-x_0)^2\)。”</p>
+      <p class="small muted" style="margin:0">把这句当模板，先写出来，再代入具体点。即使后面算错，这句本身也有分。</p>
+    </div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s06"> 已掌握</label>
+  </section>
+
+  <section class="doc tier2" id="s07" data-key="s07">
+    <div class="sec-head">
+      <div class="sec-no">07</div>
+      <div>
+        <h2>数列极限：只会三招就够</h2>
+        <div class="sec-sub">递推、和式、根式，分别对应三招。不要自创方法。</div>
+      </div>
+      <span class="tier-badge">半天+</span>
+    </div>
+    <p class="tier-note">40 分钟模式可跳过；数列题步骤固定，是性价比很高的一类。</p>
+
+    <div class="grid3">
+      <div class="box tight">
+        <h3 style="font-size:15px">① 单调有界</h3>
+        <p class="small"><b>看到：</b>\(a_{n+1}=f(a_n)\) 递推。</p>
+        <p class="small"><b>三步：</b>猜极限 A → 归纳证有界 → 证单调 → 令 n→∞ 解 A=f(A)。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">② 夹逼</h3>
+        <p class="small"><b>看到：</b>n 项和、根号、分母里有 n。</p>
+        <p class="small"><b>三步：</b>找最大项和最小项 → 放成两个可求的数列 → 两边极限相同。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">③ 压缩（比值）</h3>
+        <p class="small"><b>看到：</b>题目直接给 \(|a_{n+1}-A|\le k|a_n-A|\)。</p>
+        <p class="small"><b>三步：</b>反复代入 → 得 \(|a_n-A|\le k^n|a_1-A|\) → \(k\lt1\) 时趋于 0。</p>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 8</span><h4>递推数列：先猜 2，再证有界、单调</h4></div>
+      <div class="ex-body">
+        <p class="ask">设 \(a_1=1\)，\(a_{n+1}=\sqrt{2+a_n}\)。证明 \(\{a_n\}\) 收敛，并求极限。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>“有界 + 单调”两句都要写</span></div>
+          <div class="sol-body">
+            <p><b>先猜：</b>若极限为 A，则 \(A=\sqrt{2+A}\)，解得 \(A=2\)（\(A=-1\) 舍）。</p>
+            <p><b>证有界：</b>归纳证明 \(0\lt a_n\lt 2\)。\(a_1=1\in(0,2)\)；若 \(0\lt a_n\lt 2\)，则 \(a_{n+1}=\sqrt{2+a_n}\lt\sqrt{4}=2\)，且显然 \(a_{n+1}\gt0\)。</p>
+            <p><b>证单调：</b>\(a_{n+1}^2-a_n^2=2+a_n-a_n^2=(2-a_n)(1+a_n)\gt0\)，故 \(a_{n+1}\gt a_n\)，数列单调递增。</p>
+            <p><b>下结论：</b>由单调有界准则，\(\{a_n\}\) 收敛。设极限为 A，由递推式两边取极限得 \(A=\sqrt{2+A}\)，所以 A=2。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 9</span><h4>n 项和：夹逼，找最大项和最小项</h4></div>
+      <div class="ex-body">
+        <p class="ask">求 \(\displaystyle\lim_{n\to\infty}\left(\frac{1}{\sqrt{n^2+1}}+\frac{1}{\sqrt{n^2+2}}+\cdots+\frac{1}{\sqrt{n^2+n}}\right)\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>分母最大 → 最小项；分母最小 → 最大项</span></div>
+          <div class="sol-body">
+            <p>记 \(a_n=\sum_{k=1}^{n}\frac{1}{\sqrt{n^2+k}}\)。对每个 k，有</p>
+            <p class="center">\(\frac{1}{\sqrt{n^2+n}}\le\frac{1}{\sqrt{n^2+k}}\le\frac{1}{\sqrt{n^2+1}}\)。</p>
+            <p>共 n 项，相加得</p>
+            <p class="center">\(\frac{n}{\sqrt{n^2+n}}\le a_n\le\frac{n}{\sqrt{n^2+1}}\)。</p>
+            <p>两端极限都为 1（分子分母同除以 n），由夹逼准则，\(\lim a_n=1\)。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <figure class="shot">
+      <div class="imgwrap">
+        <img src="assets/shots/shulie_120.jpg" alt="数列极限课堂板书截图" loading="lazy">
+        <span class="tag">视频截图</span><span class="tsbadge">02:00</span>
+      </div>
+      <figcaption><span class="ts">BV1eqhV6VE8R · 02:00</span> 数列证明的“理论基础”页：单调有界、夹逼、压缩，三招对应三种题面。<a href="https://www.bilibili.com/video/BV1eqhV6VE8R/?t=120" target="_blank" rel="noopener">看原片 ↗</a></figcaption>
+    </figure>
+
+    <div class="callout green"><b>数列题保分三句话：</b>“显然 \(a_n\gt0\)”；“由归纳法，\(a_n\lt A\)，故有界”；“由单调有界准则，\(\{a_n\}\) 收敛，设极限为 A”。把这三句写出来，即使极限算错，也有步骤分。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s07"> 已掌握</label>
+  </section>
+
+  <section class="doc tier3" id="s08" data-key="s08">
+    <div class="sec-head">
+      <div class="sec-no">08</div>
+      <div>
+        <h2>不等式：作差、求导、看端点</h2>
+        <div class="sec-sub">这一类不是每次考，但套路最机械，学会就是白捡分。</div>
+      </div>
+      <span class="tier-badge">3 天</span>
+    </div>
+    <p class="tier-note">40 分钟 / 半天模式可跳过；目标 6 分以上再看。</p>
+
+    <p class="lead">要证 \(A(x)\ge B(x)\)，最稳的动作只有一个：<b>令 \(F(x)=A(x)-B(x)\)，证明 \(F(x)\ge 0\)</b>。怎么证？求导看单调，再用端点值。</p>
+
+    <h3 class="sub">三种常见收尾</h3>
+    <div class="grid3">
+      <div class="box tight">
+        <h3 style="font-size:15px">① 单调性</h3>
+        <p class="small">\(F(a)=0\)，且 \(F'(x)\ge0\)，则 \(x\ge a\) 时 \(F(x)\ge0\)。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">② 最值</h3>
+        <p class="small">求出 \(F\) 的最小值，证明最小值 ≥ 0。</p>
+      </div>
+      <div class="box tight">
+        <h3 style="font-size:15px">③ 中值定理</h3>
+        <p class="small">把 \(F(b)-F(a)\) 写成 \(F'(\xi)(b-a)\)，再估 \(F'(\xi)\) 的符号。</p>
+      </div>
+    </div>
+
+    <div class="box">
+      <h3 style="font-size:17px">背四个“送分不等式”</h3>
+      <div class="formula center">\[ e^x\ge 1+x\quad(x\in\mathbb{R}) \]</div>
+      <div class="formula center">\[ \ln(1+x)\le x\quad(x\gt -1) \]</div>
+      <div class="formula center">\[ \ln x\le x-1\quad(x\gt0) \]</div>
+      <div class="formula center">\[ \sin x\le x\quad(x\ge0) \]</div>
+      <p class="small muted" style="margin:0">这四个的证明都是“移项 + 求导 + 端点值为 0”，考试可以直接引用，但最好会证。</p>
+    </div>
+
+    <div class="ex">
+      <div class="ex-head"><span class="label">例 10</span><h4>作差 + 求导，三行结束</h4></div>
+      <div class="ex-body">
+        <p class="ask">证明：当 \(x\gt0\) 时，\(\ln(1+x)\lt x\)。</p>
+        <div class="solution">
+          <div class="sol-head">解答 <span>注意等号只在 x=0 取得</span></div>
+          <div class="sol-body">
+            <p>令 \(F(x)=x-\ln(1+x)\)，定义域 \(x\gt -1\)。则 \(F(0)=0\)，且</p>
+            <p class="center">\(F'(x)=1-\frac{1}{1+x}=\frac{x}{1+x}\)。</p>
+            <p>当 \(x\gt0\) 时，\(F'(x)\gt0\)，所以 \(F(x)\) 在 \([0,+\infty)\) 上单调递增。</p>
+            <p>于是 \(x\gt0\) 时，\(F(x)\gt F(0)=0\)，即 \(\ln(1+x)\lt x\)。证毕。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout"><b>看到积分的不等式：</b>令 \(F(x)=\int_a^x f(t)\,dt-\text{右边}\)，再求导。变上限积分求导是这类题的固定起手式。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s08"> 已掌握</label>
+  </section>
+
+  <section class="doc tier1" id="s09" data-key="s09">
+    <div class="sec-head">
+      <div class="sec-no">09</div>
+      <div>
+        <h2>考场 12 分钟：怎么写满</h2>
+        <div class="sec-sub">从读题到收尾，每一步都有固定动作。照着做，别临场想。</div>
+      </div>
+      <span class="tier-badge">必看</span>
+    </div>
+
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th style="width:18%">时间</th><th>动作</th><th>写下来的东西</th></tr></thead>
+        <tbody>
+          <tr><td>0–1 min</td><td>圈关键词</td><td>“存在”“ξ”“η”“f″”“两个不同点”</td></tr>
+          <tr><td>1–3 min</td><td>判断类型，写 F</td><td>\(F(x)=\cdots\)（即使不确定，也先写一个）</td></tr>
+          <tr><td>3–6 min</td><td>写条件、验端点</td><td>“在 [a,b] 连续，在 (a,b) 可导；F(a)=F(b)=…”</td></tr>
+          <tr><td>6–8 min</td><td>引用定理、求导</td><td>“由罗尔定理，存在 ξ∈(a,b)，使 F′(ξ)=0”</td></tr>
+          <tr><td>8–11 min</td><td>化到题目形式</td><td>“即 …”，把要证的式子抄一遍</td></tr>
+          <tr><td>11–12 min</td><td>检查</td><td>区间开闭、ξ 范围、结论有没有抄反</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <h3 class="sub">四句“救命话”，不会做也先写</h3>
+    <div class="template">
+      <p>① “由闭区间上连续函数的最值定理，\(f(x)\) 在 \([a,b]\) 上取得最大值 M 和最小值 m。”</p>
+      <p>② “由零点定理，存在 \(\xi\in(a,b)\)，使 \(f(\xi)=0\)。”</p>
+      <p>③ “由罗尔定理，存在 \(\xi\in(a,b)\)，使 \(f'(\xi)=0\)。”</p>
+      <p>④ “由单调有界准则，数列 \(\{a_n\}\) 收敛。”</p>
+    </div>
+
+    <div class="grid2">
+      <div class="box tight" style="background:#f4faf6">
+        <h3 style="font-size:16px">写不出来时，按这个顺序硬写</h3>
+        <ol style="margin:4px 0 0;padding-left:18px;font-size:13.5px">
+          <li>抄题目条件：连续、可导、端点值</li>
+          <li>写一个 F(x)（从 03 的表里挑最像的）</li>
+          <li>写 F(a)、F(b) 的值</li>
+          <li>写“由罗尔定理”</li>
+          <li>写“即 …”（把结论抄一遍）</li>
+        </ol>
+      </div>
+      <div class="box tight" style="background:#fdf3ef">
+        <h3 style="font-size:16px">千万别犯的 4 个错</h3>
+        <ul style="margin:4px 0 0;padding-left:18px;font-size:13.5px">
+          <li>空着不写（0 分）</li>
+          <li>只写“由定理”不写条件</li>
+          <li>闭区间、开区间写反</li>
+          <li>把 ξ 又写回 x，结论不成立</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="callout red"><b>最后提醒：</b>证明题在卷面上要“分段、分行、写因为所以”。阅卷老师找的是关键词，不是你的草稿。把“令、则、因为、所以、由…定理、即”这些字写清楚。</div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s09"> 已掌握</label>
+  </section>
+
+  <section class="doc tier3" id="s10" data-key="s10">
+    <div class="sec-head">
+      <div class="sec-no">10</div>
+      <div>
+        <h2>11 个视频怎么用（别从头刷）</h2>
+        <div class="sec-sub">你给的 12 条链接里，有 1 条重复。按下面的顺序看，不要按收藏顺序看。</div>
+      </div>
+      <span class="tier-badge">3 天</span>
+    </div>
+    <p class="tier-note">40 分钟 / 半天模式可跳过；需要补课时再按卡片点进去。</p>
+
+    <div class="callout green"><b>观看总原则：</b>先看 2.5 分钟的“划重点”，知道不考什么；再看 33 分钟的“万能构造”，把架子搭起来；其余视频当“字典”，哪一型不会就查哪一型。不要从 5 小时那套的第一集开始顺序播。</div>
+
+    <div class="box">
+      <h3 style="font-size:17px">V01 原话整理：哪些定理要会证</h3>
+      <p class="small">武忠祥这 2.5 分钟信息量最大，直接把“定理证明”的范围点了一遍。下面按录音整理（ASR 个别词可能有误，以大纲为准）：</p>
+      <div class="grid2">
+        <div>
+          <h4 style="margin-top:6px;color:var(--green)">要会证</h4>
+          <ul class="small" style="margin:4px 0;padding-left:18px;line-height:1.8">
+            <li>一元函数：连续、可导、可微之间的关系</li>
+            <li>罗尔定理</li>
+            <li>拉格朗日中值定理</li>
+            <li>变上限积分求导（微积分第一基本定理）</li>
+            <li>一元约 7 个证明，视频里逐一点了</li>
+            <li>多元微分：偏导数连续 ⇒ 可微</li>
+            <li>数一：格林公式（三大公式里最难）、高斯公式、斯托克斯公式</li>
+            <li>数一 / 数三：正项级数判别法（比值判别法等）</li>
+          </ul>
+        </div>
+        <div>
+          <h4 style="margin-top:6px;color:var(--red)">不会专门考</h4>
+          <ul class="small" style="margin:4px 0;padding-left:18px;line-height:1.8">
+            <li>柯西中值定理：不会专门考</li>
+            <li>数二 / 数三：二重积分的定理证明（教材里没证）</li>
+            <li>数二：级数整章不要求</li>
+            <li>数二 / 数三：多元积分定理证明不是重点</li>
+          </ul>
+          <p class="small muted" style="margin-top:8px">复习顺序建议：先罗尔、拉格朗日、变上限求导；数一再加格林；数二/数三把二重积分证明直接划掉。</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V01</div>
+      <div>
+        <h4>27 考研数学武忠祥定理证明题划重点</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1Z5a365ENt/" target="_blank" rel="noopener">BV1Z5a365ENt</a> · 2.5 min</div>
+        <p class="vwhy">2.5 分钟把“哪些定理要会证、哪些不会考”点了一遍，信息密度最高。</p>
+        <p class="vuse"><b>只看：</b>全片。把老师标成“了解 / 不要求”的点记下来，贴到书桌前。</p>
+      </div>
+      <span class="vtag must">先看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V02</div>
+      <div>
+        <h4>教你一招解决 95% 以上的微分中值定理题目</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1u5411U7iS/" target="_blank" rel="noopener">BV1u5411U7iS</a> · 33 min</div>
+        <p class="vwhy">把“构造辅助函数”讲成了一套机械流程，和本课件第 03 节完全对应。</p>
+        <p class="vuse"><b>只看：</b>00:45 微分方程法总口诀 → 15:45 例 4；中间原理段可 1.5 倍速。其余例题可跳。</p>
+      </div>
+      <span class="vtag must">必看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V03</div>
+      <div>
+        <h4>中值问题所有题型和方法都在这里（14P）</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1WL411C7HC/" target="_blank" rel="noopener">BV1WL411C7HC</a> · 635 min</div>
+        <p class="vwhy">目前最全的中值题型字典。不要通看，按题型查。</p>
+        <p class="vuse"><b>按需查：</b>P1 原函数法（39:40 有通解构造）· P2 万能构造 · P9 双中值 · P10 泰勒 · P11 中值极限。</p>
+      </div>
+      <span class="vtag must">字典</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V04</div>
+      <div>
+        <h4>一小时一网打尽泰勒中值证明</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1MPts6REzW/" target="_blank" rel="noopener">BV1MPts6REzW</a> · 82 min</div>
+        <p class="vwhy">把泰勒题按“展开点”分成三类，条理最清楚。</p>
+        <p class="vuse"><b>只看：</b>00:00–05:03 原理 · 05:03 例 1 · 56:27 区间端点展开。后面例题挑 2 道。</p>
+      </div>
+      <span class="vtag must">必看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V05</div>
+      <div>
+        <h4>两小时一网打尽数列极限证明</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1eqhV6VE8R/" target="_blank" rel="noopener">BV1eqhV6VE8R</a> · 137 min</div>
+        <p class="vwhy">数列证明的完整框架：单调有界、夹逼、压缩映射。</p>
+        <p class="vuse"><b>只看：</b>00:00–16:51 理论基础 · 16:51 类型一例 1 · 01:14:13 类型二。后面按类型补。</p>
+      </div>
+      <span class="vtag must">必看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V06</div>
+      <div>
+        <h4>24 考研数学证明题救命系列（5P）</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1rw411x7B6/" target="_blank" rel="noopener">BV1rw411x7B6</a> · 112 min</div>
+        <p class="vwhy">罗尔定理“找原函数”讲得最直白，适合基础差的人。</p>
+        <p class="vuse"><b>只看：</b>P2 套路复盘（17 min）· P3 罗尔找 10 个原函数（40 min）· P4 泰勒（15 min）。P5 拉格朗日选看。</p>
+      </div>
+      <span class="vtag must">推荐</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V07</div>
+      <div>
+        <h4>【考研数学冲刺】证明题怎么学？看这个，不烧心</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1dyxE6LESB/" target="_blank" rel="noopener">BV1dyxE6LESB</a> · 74 min</div>
+        <p class="vwhy">讲“证明题该怎么想”的框架，适合看完 V02 后建立整体感。</p>
+        <p class="vuse"><b>只看：</b>前 20 分钟。后面的具体题可跳。</p>
+      </div>
+      <span class="vtag opt">选看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V08</div>
+      <div>
+        <h4>2000–2024 考研数学证明题大合集（46P）</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1JbyUYWEWJ/" target="_blank" rel="noopener">BV1JbyUYWEWJ</a> · 121 min</div>
+        <p class="vwhy">真题题库，每段 1–5 分钟。适合最后阶段“看题 → 暂停 → 自己写 → 对照”。</p>
+        <p class="vuse"><b>只看：</b>挑 6 题：中值 2、数列 2、零点 1、不等式 1。不要按 P1–P46 顺序刷。</p>
+      </div>
+      <span class="vtag opt">题库</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V09</div>
+      <div>
+        <h4>【数一147】中值定理证明技术大公开（2P）</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1tEVkz7Erw/" target="_blank" rel="noopener">BV1tEVkz7Erw</a> · 128 min</div>
+        <p class="vwhy">和 V03 有重叠，讲得更细。时间不够时优先 V03。</p>
+        <p class="vuse"><b>选看：</b>P1 中值定理（58 min）里挑“构造”部分；P2 泰勒可跳。</p>
+      </div>
+      <span class="vtag opt">选看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V10</div>
+      <div>
+        <h4>全网最强：中值定理证明题，5 小时，彻底拿下（4P）</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1zGZ3Y2EnK/" target="_blank" rel="noopener">BV1zGZ3Y2EnK</a> · 355 min</div>
+        <p class="vwhy">最全但也最长。不要从头看，会挤掉其他科目。</p>
+        <p class="vuse"><b>当字典：</b>P2 上（157 min）查单中值/双中值 · P3 下（191 min）查泰勒/中值极限。只看你要的那一型。</p>
+      </div>
+      <span class="vtag skip">别通看</span>
+    </div>
+
+    <div class="vcard">
+      <div class="vno">V11</div>
+      <div>
+        <h4>全网最牛的泰勒公式证明</h4>
+        <div class="vmeta"><a href="https://www.bilibili.com/video/BV1qDcBzdEg9/" target="_blank" rel="noopener">BV1qDcBzdEg9</a> · 77 min</div>
+        <p class="vwhy">讲泰勒公式“怎么来的”，偏原理。应试优先级最低。</p>
+        <p class="vuse"><b>可跳：</b>时间紧直接跳过；想理解公式来源时看前 20 分钟。</p>
+      </div>
+      <span class="vtag skip">可跳</span>
+    </div>
+
+    <p class="small muted" style="margin-top:14px">注：时间戳按视频页面标注，实际播放可能有一两秒偏差；点链接会直接跳到对应位置。</p>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:6px"><input type="checkbox" data-done="s10"> 已掌握</label>
+  </section>
+
+  <section class="doc tier1" id="s11" data-key="s11">
+    <div class="sec-head">
+      <div class="sec-no">11</div>
+      <div>
+        <h2>考前 10 分钟：一页纸</h2>
+        <div class="sec-sub">进考场前只看这一页。能默写多少算多少。</div>
+      </div>
+      <span class="tier-badge">必看</span>
+    </div>
+
+    <div class="cheat">
+      <div class="grid2">
+        <div>
+          <h3>六个定理</h3>
+          <ul>
+            <li>零点：连续 + 两端异号 → 有根</li>
+            <li>罗尔：连续 + 可导 + 两端相等 → f′(ξ)=0</li>
+            <li>拉格朗日：连续 + 可导 → f(b)−f(a)=f′(ξ)(b−a)</li>
+            <li>柯西：两函数连续可导 + g′≠0 → 斜率之比</li>
+            <li>泰勒：二阶可导 → f(x)=f(x₀)+f′(x₀)(x−x₀)+f″(ξ)/2·(x−x₀)²</li>
+            <li>积分中值：连续 → ∫=f(ξ)(b−a)</li>
+          </ul>
+
+          <h3>数列三招</h3>
+          <ul>
+            <li>递推 → 单调有界：猜 A → 证有界 → 证单调 → A=f(A)</li>
+            <li>n 项和/根式 → 夹逼：最大项 ≤ 和 ≤ 最小项×n</li>
+            <li>给 |a<sub>n+1</sub>−A|≤k|a<sub>n</sub>−A| → 压缩到 0</li>
+          </ul>
+        </div>
+        <div>
+          <h3>构造表（背左边→写右边）</h3>
+          <ul>
+            <li>f′+f=0 → e<sup>x</sup>f</li>
+            <li>f′+λf=0 → e<sup>λx</sup>f</li>
+            <li>f′+g′f=0 → e<sup>g</sup>f</li>
+            <li>ξf′+nf=0 → x<sup>n</sup>f</li>
+            <li>ξf′−nf=0 → f/x<sup>n</sup></li>
+            <li>ξf′+f=0 → xf</li>
+            <li>ξf′−f=0 → f/x</li>
+            <li>f′=k → f−kx</li>
+            <li>f′=差商 → f−f(a)−k(x−a)</li>
+          </ul>
+
+          <h3>四句救命话</h3>
+          <ul>
+            <li>“在 [a,b] 连续，在 (a,b) 可导”</li>
+            <li>“令 F(x)=…，则 F 连续可导”</li>
+            <li>“由罗尔定理，存在 ξ，使 F′(ξ)=0”</li>
+            <li>“即 …（抄结论）。”</li>
+          </ul>
+        </div>
+      </div>
+      <h3>进考场前的 5 个检查</h3>
+      <ul>
+        <li>ξ 的范围是开区间还是闭区间？</li>
+        <li>F(a)=F(b) 真的相等吗？</li>
+        <li>定理名字写对了吗？（罗尔 / 拉格朗日 / 柯西 / 零点）</li>
+        <li>最后有没有“即 …”，把结论抄回题目形式？</li>
+        <li>有没有把 ξ 又写回 x？</li>
+      </ul>
+    </div>
+    <label class="small mono" style="display:inline-flex;gap:6px;align-items:center;margin-top:12px"><input type="checkbox" data-done="s11"> 已掌握</label>
+  </section>
+
+  </main>
+</div>
+
+<footer>
+  <div class="wrap">
+    <p><b>证明题保分急救包</b> · 根据你提供的 11 个视频整理（12 条链接，BV1tEVkz7Erw 重复一次）。</p>
+    <p>截图均取自上述视频的公开画面，仅用于学习笔记；时间戳链接指向 Bilibili 原片。数学结论按考研通用教材口径整理，具体以你所用大纲为准。</p>
+    <p><a href="./">← 返回工具箱</a> · <a href="../index.html">回到主页</a></p>
+    <p style="margin-top:10px"><b>使用说明：</b>保持 <span class="mono">index.html</span> 与 <span class="mono">assets/</span> 文件夹的相对位置，双击即可离线打开（公式由本地 MathJax 渲染）；只有点视频链接时才需要联网。</p>
+    <p class="mono" style="font-size:11px;margin-top:14px">2027 考研 · 2026.11</p>
+  </div>
+</footer>
+
+<script>
+(function(){
+  const body = document.body;
+  const store = {
+    get(k){ try { return localStorage.getItem(k); } catch(e){ return null; } },
+    set(k,v){ try { localStorage.setItem(k,v); } catch(e){} }
+  };
+  const modes = [...document.querySelectorAll('.mode')];
+  const saved = store.get('proof-tier');
+  function setTier(t, save){
+    body.dataset.tier = t;
+    modes.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.mode === t)));
+    if(save) store.set('proof-tier', t);
+  }
+  if(saved) setTier(saved, false);
+  modes.forEach(b => b.addEventListener('click', () => setTier(b.dataset.mode, true)));
+
+  const maskBtn = document.getElementById('maskBtn');
+  maskBtn.addEventListener('click', () => {
+    body.classList.toggle('masked');
+    const on = body.classList.contains('masked');
+    maskBtn.setAttribute('aria-pressed', String(on));
+    maskBtn.textContent = on ? '显示解答' : '遮住解答';
+  });
+
+  // progress
+  const boxes = [...document.querySelectorAll('input[data-done]')];
+  const bar = document.getElementById('bar');
+  function refresh(){
+    let n = 0;
+    boxes.forEach(cb => {
+      const k = 'proof-done-' + cb.dataset.done;
+      if(store.get(k) === '1'){ cb.checked = true; n++; }
+    });
+    bar.style.width = (boxes.length ? n/boxes.length*100 : 0) + '%';
+  }
+  boxes.forEach(cb => cb.addEventListener('change', () => {
+    store.set('proof-done-' + cb.dataset.done, cb.checked ? '1' : '0');
+    refresh();
+  }));
+  refresh();
+
+  // toc active
+  const links = [...document.querySelectorAll('.toc a')];
+  const secs = links.map(a => document.querySelector(a.getAttribute('href'))).filter(Boolean);
+  if('IntersectionObserver' in window){
+    const io = new IntersectionObserver(es => {
+      es.forEach(e => {
+        if(e.isIntersecting){
+          links.forEach(a => a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id));
+        }
+      });
+    }, {rootMargin:'-15% 0px -75% 0px', threshold:0});
+    secs.forEach(s => io.observe(s));
+  }
+})();
+</script>
+</body>
+</html>
