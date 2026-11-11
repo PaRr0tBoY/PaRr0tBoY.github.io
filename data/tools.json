@@ -1,5 +1,11 @@
 {
-  "groups": ["Writing", "Planning", "Data", "Explore", "Make"],
+  "groups": [
+    "Writing",
+    "Planning",
+    "Data",
+    "Explore",
+    "Make"
+  ],
   "groupZh": {
     "Writing": "写作",
     "Planning": "规划",
@@ -144,6 +150,14 @@
       "desc": "一个面向文本转换的实验工具。",
       "descEn": "An experimental tool for text transformation.",
       "group": "Make"
+    },
+    {
+      "name": "Essay Desk",
+      "href": "/tools/essay.html",
+      "code": "WRITE / 18",
+      "desc": "考研英语作文工作台：276 条讲义句式、43 篇范文、9 张图表数据，练习、背诵、答题卡和导出都在一个页面里。",
+      "descEn": "A writing desk for the Chinese postgraduate English exam: 276 lecture sentences, 43 model essays, 9 chart datasets, with practice, review, answer sheet and export in one page.",
+      "group": "Writing"
     }
   ]
 }
